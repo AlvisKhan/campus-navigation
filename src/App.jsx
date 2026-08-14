@@ -29,7 +29,7 @@ import locations, {
   getLocationById,
   getVerifiedLocations,
 } from "./data/locations";
-import { getUserLocation } from "./utils/geoUtils";
+import { getUserLocation, formatDistance } from "./utils/geoUtils";
 import SearchBar from "./components/SearchBar";
 import DestinationCard from "./components/DestinationCard";
 
@@ -176,7 +176,7 @@ function MapViewController({ targetCoords, routeCoords }) {
   useEffect(() => {
     if (routeCoords && routeCoords.length > 0) {
       const bounds = routeCoords.map(([lat, lng]) => [lat, lng]);
-      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 18 });
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 18 });
     } else if (
       targetCoords &&
       targetCoords[0] != null &&
@@ -259,6 +259,63 @@ function LocationStatusToast({
   );
 }
 
+function ActiveRouteHud({
+  destination,
+  routeStats,
+  onClearRoute,
+  onViewDetails,
+}) {
+  if (!routeStats) return null;
+
+  const distanceText = routeStats.distance
+    ? formatDistance(routeStats.distance)
+    : "";
+  const durationMinutes = routeStats.duration
+    ? Math.max(1, Math.round(routeStats.duration / 60))
+    : 1;
+
+  return (
+    <div className="active-route-hud">
+      <div className="route-hud-pill">
+        <div className="route-hud-info">
+          <span className="route-hud-beacon"></span>
+          <div className="route-hud-text">
+            <span className="route-hud-dest">
+              {destination?.name
+                ? `TO: ${destination.name.toUpperCase()}`
+                : "ACTIVE WALKING ROUTE"}
+            </span>
+            <div className="route-hud-metrics">
+              <span className="route-metric-dist">📍 {distanceText}</span>
+              <span className="route-metric-sep">•</span>
+              <span className="route-metric-time">🚶 {durationMinutes} MIN WALK</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="route-hud-actions">
+          {destination && (
+            <button
+              className="route-hud-details-btn"
+              onClick={onViewDetails}
+              title="Show target node details"
+            >
+              ℹ️ INFO
+            </button>
+          )}
+          <button
+            className="route-hud-clear-btn"
+            onClick={onClearRoute}
+            title="End navigation and clear route"
+          >
+            ✕ CLEAR ROUTE
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const defaultAdmin = getLocationById("admin-building") || locations[0];
   const campusCenter = [defaultAdmin.latitude, defaultAdmin.longitude];
@@ -272,6 +329,7 @@ function App() {
   const [locationError, setLocationError] = useState(null);
 
   const [selectedDestination, setSelectedDestination] = useState(defaultAdmin);
+  const [activeDestination, setActiveDestination] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [route, setRoute] = useState([]);
   const [routeStats, setRouteStats] = useState(null);
@@ -325,19 +383,16 @@ function App() {
 
   const handleSelectDestination = (loc) => {
     setSelectedDestination(loc);
-    setRoute([]);
-    setRouteStats(null);
   };
 
   const handleClearRoute = () => {
     setRoute([]);
     setRouteStats(null);
+    setActiveDestination(null);
   };
 
   const handleCloseCard = () => {
     setSelectedDestination(null);
-    setRoute([]);
-    setRouteStats(null);
   };
 
   const getRoute = async () => {
@@ -382,6 +437,9 @@ function App() {
           distance: routeData.distance,
           duration: routeData.duration,
         });
+        setActiveDestination(selectedDestination);
+        // Automatically hide the large target location detail card so the map & navigation path are fully visible, especially on mobile!
+        setSelectedDestination(null);
       } else {
         alert("No traversal path found to this campus destination.");
       }
@@ -471,6 +529,16 @@ function App() {
           onRetry={() => handleAcquireLocation()}
           onDismiss={() => setLocationError(null)}
         />
+
+        {/* Compact Active Navigation HUD Bar (shown when route exists and large card is hidden) */}
+        {route.length > 0 && routeStats && !selectedDestination && (
+          <ActiveRouteHud
+            destination={activeDestination}
+            routeStats={routeStats}
+            onClearRoute={handleClearRoute}
+            onViewDetails={() => setSelectedDestination(activeDestination)}
+          />
+        )}
 
         <MapContainer
           center={campusCenter}
@@ -583,7 +651,7 @@ function App() {
           )}
         </MapContainer>
 
-        {/* Destination Card */}
+        {/* Destination Card (shown when a destination is selected) */}
         {selectedDestination && (
           <DestinationCard
             destination={selectedDestination}
