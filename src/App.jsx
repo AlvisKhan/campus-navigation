@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -29,6 +29,7 @@ import locations, {
   getLocationById,
   getVerifiedLocations,
 } from "./data/locations";
+import { getUserLocation } from "./utils/geoUtils";
 import SearchBar from "./components/SearchBar";
 import DestinationCard from "./components/DestinationCard";
 
@@ -50,60 +51,65 @@ const MAP_LAYERS = {
   },
 };
 
-function LocationHudButton({ setUserLocation }) {
+function LocationHudButton({
+  userLocation,
+  locationStatus,
+  onAcquireLocation,
+}) {
   const map = useMap();
-  const [isLocating, setIsLocating] = useState(false);
+  const isLocating =
+    locationStatus === "acquiring" || locationStatus === "fallback";
 
-  const findMyLocation = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
+  const handleClick = async () => {
+    if (userLocation && locationStatus !== "error") {
+      map.flyTo(userLocation, 18, { duration: 1.2 });
       return;
     }
 
-    setIsLocating(true);
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setIsLocating(false);
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        const location = [latitude, longitude];
-        setUserLocation(location);
-        map.flyTo(location, 18, { duration: 1.5 });
-      },
-      (error) => {
-        setIsLocating(false);
-        console.error("Geolocation error:", error);
-
-        if (error.code === error.PERMISSION_DENIED) {
-          alert("Please enable GPS / Location permissions in browser settings.");
-        } else if (error.code === error.POSITION_UNAVAILABLE) {
-          alert("GPS satellite lock could not be acquired.");
-        } else if (error.code === error.TIMEOUT) {
-          alert("Location request timed out. Retrying...");
-        } else {
-          alert("Unable to acquire current GPS coordinates.");
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      }
-    );
+    const loc = await onAcquireLocation();
+    if (loc) {
+      map.flyTo(loc, 18, { duration: 1.5 });
+    }
   };
 
   return (
     <button
-      className="hud-gps-button"
-      onClick={findMyLocation}
-      title="Acquire user GPS telemetry"
+      className={`hud-gps-button ${
+        locationStatus === "error"
+          ? "btn-gps-error"
+          : userLocation
+          ? "btn-gps-locked"
+          : ""
+      }`}
+      onClick={handleClick}
+      title={
+        userLocation
+          ? "Center view on current user location"
+          : "Acquire user GPS telemetry"
+      }
       disabled={isLocating}
     >
-      <span className="gps-indicator-dot"></span>
+      <span
+        className={`gps-indicator-dot ${
+          locationStatus === "error"
+            ? "dot-rose"
+            : locationStatus === "fallback"
+            ? "dot-amber"
+            : userLocation
+            ? "dot-emerald"
+            : ""
+        }`}
+      ></span>
       <span className="gps-btn-text">
-        {isLocating ? "ACQUIRING FIX..." : "LOCK MY GPS"}
+        {locationStatus === "acquiring"
+          ? "ACQUIRING FIX..."
+          : locationStatus === "fallback"
+          ? "RETRYING (NETWORK)..."
+          : locationStatus === "error"
+          ? "RETRY GPS LOCK"
+          : userLocation
+          ? "MY LOCATION"
+          : "LOCK MY GPS"}
       </span>
     </button>
   );
@@ -127,14 +133,20 @@ function CampusCenterButton({ center }) {
 }
 
 function MapHudControls({
-  setUserLocation,
+  userLocation,
+  locationStatus,
+  onAcquireLocation,
   campusCenter,
   activeLayer,
   setActiveLayer,
 }) {
   return (
     <div className="hud-floating-controls">
-      <LocationHudButton setUserLocation={setUserLocation} />
+      <LocationHudButton
+        userLocation={userLocation}
+        locationStatus={locationStatus}
+        onAcquireLocation={onAcquireLocation}
+      />
       <CampusCenterButton center={campusCenter} />
 
       {/* Map Layer Switcher Pills */}
@@ -165,12 +177,86 @@ function MapViewController({ targetCoords, routeCoords }) {
     if (routeCoords && routeCoords.length > 0) {
       const bounds = routeCoords.map(([lat, lng]) => [lat, lng]);
       map.fitBounds(bounds, { padding: [60, 60], maxZoom: 18 });
-    } else if (targetCoords && targetCoords[0] != null && targetCoords[1] != null) {
+    } else if (
+      targetCoords &&
+      targetCoords[0] != null &&
+      targetCoords[1] != null
+    ) {
       map.flyTo(targetCoords, 17, { duration: 1.2 });
     }
   }, [targetCoords, routeCoords, map]);
 
   return null;
+}
+
+function LocationStatusToast({
+  locationStatus,
+  locationStatusDetail,
+  locationError,
+  onRetry,
+  onDismiss,
+}) {
+  const isLocating =
+    locationStatus === "acquiring" || locationStatus === "fallback";
+
+  if (!isLocating && !locationError) return null;
+
+  return (
+    <div
+      className={`hud-location-toast ${
+        locationError ? "toast-error" : "toast-info"
+      }`}
+    >
+      {isLocating && (
+        <div className="toast-inner">
+          <div className="spinner-ring"></div>
+          <div className="toast-text-group">
+            <span className="toast-title">
+              {locationStatus === "fallback"
+                ? "STANDARD ACCURACY FALLBACK"
+                : "ACQUIRING GPS SATELLITE FIX"}
+            </span>
+            <span className="toast-desc">{locationStatusDetail}</span>
+          </div>
+        </div>
+      )}
+
+      {locationError && (
+        <div className="toast-inner">
+          <div className="toast-icon">
+            {locationError.type === "PERMISSION_DENIED"
+              ? "🔒"
+              : locationError.type === "TIMEOUT"
+              ? "⏱️"
+              : "⚠️"}
+          </div>
+          <div className="toast-text-group">
+            <div className="toast-title-row">
+              <span className="toast-title">{locationError.title}</span>
+              {locationError.code && (
+                <span className="toast-code-pill">CODE {locationError.code}</span>
+              )}
+            </div>
+            <span className="toast-desc">{locationError.message}</span>
+          </div>
+          <div className="toast-actions">
+            {locationError.canRetry && (
+              <button className="toast-retry-btn" onClick={onRetry}>
+                🔄 RETRY
+              </button>
+            )}
+            <button
+              className="toast-dismiss-btn"
+              onClick={onDismiss}
+              title="Dismiss notification"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function App() {
@@ -179,6 +265,12 @@ function App() {
 
   const [activeLayer, setActiveLayer] = useState("OSM");
   const [userLocation, setUserLocation] = useState(null);
+  const [userLocationAccuracy, setUserLocationAccuracy] = useState(null);
+  const [isFallbackLocation, setIsFallbackLocation] = useState(false);
+  const [locationStatus, setLocationStatus] = useState("idle");
+  const [locationStatusDetail, setLocationStatusDetail] = useState("");
+  const [locationError, setLocationError] = useState(null);
+
   const [selectedDestination, setSelectedDestination] = useState(defaultAdmin);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [route, setRoute] = useState([]);
@@ -186,6 +278,50 @@ function App() {
   const [isRouting, setIsRouting] = useState(false);
 
   const verifiedLocations = getVerifiedLocations();
+
+  const handleAcquireLocation = useCallback(
+    async (options = {}) => {
+      setLocationStatus("acquiring");
+      setLocationStatusDetail("Acquiring high-accuracy GPS fix (20–30s timeout)...");
+      setLocationError(null);
+
+      const result = await getUserLocation({
+        onStatusChange: ({ phase, detail }) => {
+          if (phase === "high_accuracy") {
+            setLocationStatus("acquiring");
+            setLocationStatusDetail(detail || "Acquiring high-accuracy GPS fix...");
+          } else if (phase === "fallback_low_accuracy") {
+            setLocationStatus("fallback");
+            setLocationStatusDetail(
+              detail || "High accuracy unavailable, retrying with network-assisted positioning..."
+            );
+          }
+        },
+        ...options,
+      });
+
+      if (result.success && result.coords) {
+        const loc = [result.coords.latitude, result.coords.longitude];
+        setUserLocation(loc);
+        setUserLocationAccuracy(result.coords.accuracy);
+        setIsFallbackLocation(result.isFallback);
+        setLocationStatus("success");
+        setLocationStatusDetail(
+          result.isFallback
+            ? `Position locked via Network/Wi-Fi (±${Math.round(result.coords.accuracy)}m)`
+            : `Position locked via Precise GPS (±${Math.round(result.coords.accuracy)}m)`
+        );
+        setLocationError(null);
+        return loc;
+      } else {
+        setLocationStatus("error");
+        setLocationError(result.error);
+        setLocationStatusDetail(result.error?.message || "Location acquisition failed.");
+        return null;
+      }
+    },
+    []
+  );
 
   const handleSelectDestination = (loc) => {
     setSelectedDestination(loc);
@@ -210,13 +346,16 @@ function App() {
       return;
     }
 
-    if (!userLocation) {
-      alert("Please initialize GPS telemetry by clicking 'LOCK MY GPS' first.");
-      return;
+    let currentUserLoc = userLocation;
+    if (!currentUserLoc) {
+      currentUserLoc = await handleAcquireLocation();
+      if (!currentUserLoc) {
+        return;
+      }
     }
 
     setIsRouting(true);
-    const start = `${userLocation[1]},${userLocation[0]}`;
+    const start = `${currentUserLoc[1]},${currentUserLoc[0]}`;
     const destination = `${selectedDestination.longitude},${selectedDestination.latitude}`;
 
     const url = `https://router.project-osrm.org/route/v1/driving/${start};${destination}?overview=full&geometries=geojson`;
@@ -254,7 +393,7 @@ function App() {
     }
   };
 
-  const currentTileLayer = MAP_LAYERS[activeLayer] || MAP_LAYERS.VOYAGER;
+  const currentTileLayer = MAP_LAYERS[activeLayer] || MAP_LAYERS.OSM;
 
   return (
     <div className="app">
@@ -283,8 +422,30 @@ function App() {
             </div>
             <div className="telemetry-item">
               <span className="telem-label">GPS STATUS</span>
-              <span className={`telem-val ${userLocation ? "text-neon-cyan" : "text-amber"}`}>
-                {userLocation ? "LOCKED (3D FIX)" : "STANDBY"}
+              <span
+                className={`telem-val ${
+                  userLocation
+                    ? isFallbackLocation
+                      ? "text-neon-emerald"
+                      : "text-neon-cyan"
+                    : locationStatus === "error"
+                    ? "text-neon-rose"
+                    : locationStatus === "acquiring" || locationStatus === "fallback"
+                    ? "text-neon-amber"
+                    : "text-amber"
+                }`}
+              >
+                {userLocation
+                  ? isFallbackLocation
+                    ? `LOCKED (EST. ±${Math.round(userLocationAccuracy || 30)}m)`
+                    : "LOCKED (3D FIX)"
+                  : locationStatus === "acquiring"
+                  ? "ACQUIRING..."
+                  : locationStatus === "fallback"
+                  ? "FALLBACK FIX..."
+                  : locationStatus === "error"
+                  ? "FIX FAILED"
+                  : "STANDBY"}
               </span>
             </div>
           </div>
@@ -302,6 +463,15 @@ function App() {
 
       {/* Main Map Viewport */}
       <div className="map-container">
+        {/* Floating HUD Location Status Toast */}
+        <LocationStatusToast
+          locationStatus={locationStatus}
+          locationStatusDetail={locationStatusDetail}
+          locationError={locationError}
+          onRetry={() => handleAcquireLocation()}
+          onDismiss={() => setLocationError(null)}
+        />
+
         <MapContainer
           center={campusCenter}
           zoom={17}
@@ -325,7 +495,9 @@ function App() {
 
           {/* Map HUD Controls inside MapContainer */}
           <MapHudControls
-            setUserLocation={setUserLocation}
+            userLocation={userLocation}
+            locationStatus={locationStatus}
+            onAcquireLocation={handleAcquireLocation}
             campusCenter={campusCenter}
             activeLayer={activeLayer}
             setActiveLayer={setActiveLayer}
@@ -370,11 +542,26 @@ function App() {
             <Marker position={userLocation}>
               <Popup className="cyber-leaflet-popup">
                 <div className="marker-popup">
-                  <span className="popup-category">USER LOCATION</span>
-                  <strong className="popup-title">Current GPS Position</strong>
-                  <p className="popup-desc">Real-time GPS coordinates acquired</p>
+                  <div className="popup-top-badge">
+                    <span className="popup-category">
+                      {isFallbackLocation
+                        ? "USER POSITION (NETWORK FIX)"
+                        : "USER POSITION (GPS LOCK)"}
+                    </span>
+                    {userLocationAccuracy && (
+                      <span className="popup-node-id">
+                        ±{Math.round(userLocationAccuracy)}m
+                      </span>
+                    )}
+                  </div>
+                  <strong className="popup-title">Current Position</strong>
+                  <p className="popup-desc">
+                    {isFallbackLocation
+                      ? "Standard network-assisted positioning coordinates"
+                      : "High-precision satellite telemetry locked"}
+                  </p>
                   <div className="popup-coords">
-                    {userLocation[0].toFixed(5)}° N, {userLocation[1].toFixed(5)}° E
+                    📍 {userLocation[0].toFixed(5)}° N, {userLocation[1].toFixed(5)}° E
                   </div>
                 </div>
               </Popup>
