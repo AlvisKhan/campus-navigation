@@ -8,6 +8,7 @@ import {
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
+import "leaflet-rotate";
 import "leaflet/dist/leaflet.css";
 import "./App.css";
 
@@ -132,6 +133,91 @@ function CampusCenterButton({ center }) {
   );
 }
 
+function CompassHudControl() {
+  const map = useMap();
+  const [bearing, setBearing] = useState(0);
+
+  useEffect(() => {
+    if (!map) return;
+
+    const updateBearing = () => {
+      if (typeof map.getBearing === "function") {
+        const currentBearing = Math.round(map.getBearing() || 0);
+        const normalized = ((currentBearing % 360) + 360) % 360;
+        setBearing(normalized);
+      }
+    };
+
+    map.on("rotate", updateBearing);
+    updateBearing();
+
+    return () => {
+      map.off("rotate", updateBearing);
+    };
+  }, [map]);
+
+  const handleResetNorth = () => {
+    if (typeof map.setBearing === "function") {
+      map.setBearing(0);
+    }
+  };
+
+  const handleRotateLeft = () => {
+    if (typeof map.setBearing === "function") {
+      const current = typeof map.getBearing === "function" ? map.getBearing() : bearing;
+      map.setBearing(current - 45);
+    }
+  };
+
+  const handleRotateRight = () => {
+    if (typeof map.setBearing === "function") {
+      const current = typeof map.getBearing === "function" ? map.getBearing() : bearing;
+      map.setBearing(current + 45);
+    }
+  };
+
+  const cardinals = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+  const cardinalIndex = Math.round(bearing / 22.5) % 16;
+  const directionName = cardinals[cardinalIndex];
+
+  const isRotated = bearing !== 0;
+
+  return (
+    <div className={`hud-compass-box ${isRotated ? "is-rotated" : ""}`}>
+      <button
+        className="hud-rotate-btn"
+        onClick={handleRotateLeft}
+        title="Rotate map counter-clockwise (45°)"
+      >
+        ↺
+      </button>
+
+      <button
+        className="hud-compass-dial"
+        onClick={handleResetNorth}
+        title={isRotated ? "Click to reset orientation to North-Up (0°)" : "Map aligned North-Up"}
+      >
+        <div
+          className="compass-needle"
+          style={{ transform: `rotate(${-bearing}deg)` }}
+        >
+          <span className="needle-north">▲</span>
+          <span className="needle-south">▼</span>
+        </div>
+        <span className="compass-bearing-label">{bearing}° {directionName}</span>
+      </button>
+
+      <button
+        className="hud-rotate-btn"
+        onClick={handleRotateRight}
+        title="Rotate map clockwise (45°)"
+      >
+        ↻
+      </button>
+    </div>
+  );
+}
+
 function MapHudControls({
   userLocation,
   locationStatus,
@@ -147,6 +233,7 @@ function MapHudControls({
         locationStatus={locationStatus}
         onAcquireLocation={onAcquireLocation}
       />
+      <CompassHudControl />
       <CampusCenterButton center={campusCenter} />
 
       {/* Map Layer Switcher Pills */}
@@ -544,6 +631,11 @@ function App() {
           center={campusCenter}
           zoom={17}
           scrollWheelZoom={true}
+          rotate={true}
+          touchRotate={true}
+          shiftKeyRotate={true}
+          rotateControl={false}
+          bearing={0}
           className={`map ${activeLayer.toLowerCase()}-mode`}
         >
           <TileLayer
