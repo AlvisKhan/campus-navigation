@@ -34,6 +34,41 @@ import { getUserLocation, formatDistance } from "./utils/geoUtils";
 import SearchBar from "./components/SearchBar";
 import DestinationCard from "./components/DestinationCard";
 
+// Custom Leaflet Pin Icons
+
+// User Starting Location Pin (Emerald Green - distinct from blue and red)
+const UserLocationIcon = L.divIcon({
+  className: "user-gps-pin-container",
+  html: `
+    <div class="user-gps-beacon user-beacon-emerald">
+      <div class="radar-wave wave-emerald wave-1"></div>
+      <div class="radar-wave wave-emerald wave-2"></div>
+      <div class="radar-wave wave-emerald wave-3"></div>
+      <div class="gps-core-dot dot-emerald-glow"></div>
+    </div>
+  `,
+  iconSize: [36, 36],
+  iconAnchor: [18, 18],
+  popupAnchor: [0, -18],
+});
+
+// Destination Target Pin (Vivid Crimson Red)
+const DestinationPinIcon = L.divIcon({
+  className: "dest-pin-container",
+  html: `
+    <div class="dest-marker-pin">
+      <svg width="30" height="42" viewBox="0 0 30 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 0C6.71573 0 0 6.71573 0 15C0 25.5 15 42 15 42C15 42 30 25.5 30 15C30 6.71573 23.2843 0 15 0Z" fill="#EF4444"/>
+        <circle cx="15" cy="15" r="7.5" fill="#FFFFFF"/>
+        <circle cx="15" cy="15" r="4.5" fill="#DC2626"/>
+      </svg>
+    </div>
+  `,
+  iconSize: [30, 42],
+  iconAnchor: [15, 42],
+  popupAnchor: [0, -38],
+});
+
 // Map tile layers
 const MAP_LAYERS = {
   OSM: {
@@ -663,13 +698,17 @@ function App() {
             setActiveLayer={setActiveLayer}
           />
 
-          {/* Standard Location Pins */}
+          {/* Campus Location Pins: Earlier default pin for all standard nodes, Red pin for destination */}
           {verifiedLocations.map((loc) => {
-            const isSelected = selectedDestination?.id === loc.id;
+            const isDestination =
+              selectedDestination?.id === loc.id ||
+              activeDestination?.id === loc.id;
+
             return (
               <Marker
                 key={loc.id}
                 position={[loc.latitude, loc.longitude]}
+                icon={isDestination ? DestinationPinIcon : DefaultIcon}
                 eventHandlers={{
                   click: () => handleSelectDestination(loc),
                 }}
@@ -689,7 +728,7 @@ function App() {
                       className="popup-select-btn"
                       onClick={() => handleSelectDestination(loc)}
                     >
-                      {isSelected ? "✓ CURRENT TARGET" : "🎯 LOCK AS DESTINATION"}
+                      {isDestination ? "✓ CURRENT DESTINATION" : "🎯 LOCK AS DESTINATION"}
                     </button>
                   </div>
                 </Popup>
@@ -697,9 +736,9 @@ function App() {
             );
           })}
 
-          {/* User Location Marker */}
+          {/* User Location Marker (Vivid Emerald Green — Not Blue, Not Red) */}
           {userLocation && (
-            <Marker position={userLocation}>
+            <Marker position={userLocation} icon={UserLocationIcon}>
               <Popup className="cyber-leaflet-popup">
                 <div className="marker-popup">
                   <div className="popup-top-badge">
@@ -714,7 +753,7 @@ function App() {
                       </span>
                     )}
                   </div>
-                  <strong className="popup-title">Current Position</strong>
+                  <strong className="popup-title">Current Live Position</strong>
                   <p className="popup-desc">
                     {isFallbackLocation
                       ? "Standard network-assisted positioning coordinates"
