@@ -698,43 +698,51 @@ function App() {
             setActiveLayer={setActiveLayer}
           />
 
-          {/* Campus Location Pins: Earlier default pin for all standard nodes, Red pin for destination */}
-          {verifiedLocations.map((loc) => {
-            const isDestination =
-              selectedDestination?.id === loc.id ||
-              activeDestination?.id === loc.id;
+          {/* Campus Location Pins: Default pin for standard nodes, Red pin for destination. Filtered to only target destination when direction is shown */}
+          {verifiedLocations
+            .filter((loc) => {
+              if (route.length > 0) {
+                const targetId = activeDestination?.id || selectedDestination?.id;
+                return loc.id === targetId;
+              }
+              return true;
+            })
+            .map((loc) => {
+              const isDestination =
+                selectedDestination?.id === loc.id ||
+                activeDestination?.id === loc.id;
 
-            return (
-              <Marker
-                key={loc.id}
-                position={[loc.latitude, loc.longitude]}
-                icon={isDestination ? DestinationPinIcon : DefaultIcon}
-                eventHandlers={{
-                  click: () => handleSelectDestination(loc),
-                }}
-              >
-                <Popup className="cyber-leaflet-popup">
-                  <div className="marker-popup">
-                    <div className="popup-top-badge">
-                      <span className="popup-category">{loc.category}</span>
-                      <span className="popup-node-id">#{loc.id}</span>
+              return (
+                <Marker
+                  key={loc.id}
+                  position={[loc.latitude, loc.longitude]}
+                  icon={isDestination ? DestinationPinIcon : DefaultIcon}
+                  eventHandlers={{
+                    click: () => handleSelectDestination(loc),
+                  }}
+                >
+                  <Popup className="cyber-leaflet-popup">
+                    <div className="marker-popup">
+                      <div className="popup-top-badge">
+                        <span className="popup-category">{loc.category}</span>
+                        <span className="popup-node-id">#{loc.id}</span>
+                      </div>
+                      <strong className="popup-title">{loc.name}</strong>
+                      <p className="popup-desc">{loc.description}</p>
+                      <div className="popup-coords">
+                        📍 {loc.latitude.toFixed(5)}° N, {loc.longitude.toFixed(5)}° E
+                      </div>
+                      <button
+                        className="popup-select-btn"
+                        onClick={() => handleSelectDestination(loc)}
+                      >
+                        {isDestination ? "✓ CURRENT DESTINATION" : "🎯 LOCK AS DESTINATION"}
+                      </button>
                     </div>
-                    <strong className="popup-title">{loc.name}</strong>
-                    <p className="popup-desc">{loc.description}</p>
-                    <div className="popup-coords">
-                      📍 {loc.latitude.toFixed(5)}° N, {loc.longitude.toFixed(5)}° E
-                    </div>
-                    <button
-                      className="popup-select-btn"
-                      onClick={() => handleSelectDestination(loc)}
-                    >
-                      {isDestination ? "✓ CURRENT DESTINATION" : "🎯 LOCK AS DESTINATION"}
-                    </button>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+                  </Popup>
+                </Marker>
+              );
+            })}
 
           {/* User Location Marker (Vivid Emerald Green — Not Blue, Not Red) */}
           {userLocation && (
