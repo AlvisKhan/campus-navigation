@@ -167,6 +167,17 @@ export const FIRST_YEAR_DRIVES = [
 
 export const STUDY_PLATFORMS = [
   {
+    id: "algonotes",
+    name: "AlgoNotes",
+    url: "https://algonotes.in/",
+    type: "Coding Notes Workspace",
+    badge: "DSA & Interview Prep",
+    description: "Get interview-ready faster with ALGONOTES. Turn coding problems and theory topics into polished revision notes with a clean workflow, readable formatting, and fast revisit support.",
+    tags: ["DSA Revision", "Coding Notes", "Interview Ready", "Theory & Practice"],
+    icon: "⚡",
+    accent: "#10B981",
+  },
+  {
     id: "cse23",
     name: "CSE23",
     url: "https://cse23.xyz/",
