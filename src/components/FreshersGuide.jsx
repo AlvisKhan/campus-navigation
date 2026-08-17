@@ -77,11 +77,14 @@ export default function FreshersGuide({ onNavigateToMap, onSelectMapLocation }) 
 
           {/* Quick Jump Anchors */}
           <div className="hero-quick-actions">
-            <a href="#campus-basics" className="hero-action-pill">
-              <span>🏛️</span> Campus Basics
-            </a>
             <a href="#emergency-section" className="hero-action-pill alert-pill">
               <span>🚑</span> Emergency Contacts
+            </a>
+            <a href="#network-section" className="hero-action-pill">
+              <span>📶</span> Networks & Wi-Fi
+            </a>
+            <a href="#campus-basics" className="hero-action-pill">
+              <span>🏛️</span> Campus Basics
             </a>
             <a href="#campus-services" className="hero-action-pill">
               <span>🛺</span> Transit & Food
@@ -157,7 +160,134 @@ export default function FreshersGuide({ onNavigateToMap, onSelectMapLocation }) 
           </div>
         </section>
 
-        {/* ================= 2. CAMPUS BASICS & KEY HUBS ================= */}
+        {/* ================= 2. MOBILE NETWORKS & CAMPUS WI-FI (ABOVE CAMPUS BASICS) ================= */}
+        <section id="network-section" className="guide-section">
+          <div className="section-hud-tag">
+            <span className="hud-blinker cyan"></span>
+            <span>CAMPUS CONNECTIVITY // CELLULAR TELECOM & WI-FI</span>
+          </div>
+
+          <div className="section-header-block">
+            <h2 className="section-title">
+              <span className="title-icon">📶</span> Mobile Networks & Wi-Fi on Campus
+            </h2>
+            <p className="section-desc">
+              Ground-truth student network guide: Speed hotspots, hostel coverage reality, and campus Wi-Fi credentials.
+            </p>
+          </div>
+
+          <div className="network-info-grid">
+            {/* Airtel Card */}
+            <div className="network-card airtel-theme">
+              <div className="net-header">
+                <span className="net-brand">AIRTEL</span>
+                <span className="net-tag fast">Fast Across Most Areas</span>
+              </div>
+              <p className="net-desc">
+                Fast and consistent connectivity across almost the entire campus for calling and daily internet usage.
+              </p>
+              <ul className="net-tips-list">
+                <li>
+                  <strong>Hostels True 5G:</strong> True 5G works reliably <em>only from 2nd floors and above</em> across all hostels. Ground & 1st floors usually fall back to 4G.
+                </li>
+                <li>
+                  <strong>Sports & Cricket Grounds:</strong> Speed is decent / okayish outdoors.
+                </li>
+                <li>
+                  <strong>Central Computer Center (CC):</strong> Signal keeps fluctuating inside CC labs, and data speed is noticeably slow.
+                </li>
+              </ul>
+            </div>
+
+            {/* Jio Card */}
+            <div className="network-card jio-theme">
+              <div className="net-header">
+                <span className="net-brand">JIO</span>
+                <span className="net-tag true-5g">True 5G in Select Zones</span>
+              </div>
+              <p className="net-desc">
+                Blazing fast 5G speeds in central corridors, but high variation depending on campus coordinates.
+              </p>
+              <ul className="net-tips-list">
+                <li>
+                  <strong>T-Point to Main Gate:</strong> Very fast True 5G speeds throughout this main corridor.
+                </li>
+                <li>
+                  <strong>Beyond T-Point:</strong> Network speed drops significantly / is very low.
+                </li>
+                <li>
+                  <strong>Hostel 9 (BH9) to Food Court:</strong> Internet speed is okayish / usable.
+                </li>
+                <li>
+                  <strong>Computer Center (CC) Labs:</strong> Jio works <em>very fast</em> inside CC labs (unlike Airtel).
+                </li>
+                <li>
+                  <strong>Campus Grounds:</strong> Very slow on both grounds — often struggles to send WhatsApp messages.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Campus & Library Wi-Fi Card */}
+          <div className="wifi-passwords-card">
+            <div className="wifi-card-header">
+              <div className="wifi-title-group">
+                <span className="wifi-icon">📡</span>
+                <div>
+                  <h3 className="wifi-title">Library & Campus Wi-Fi Passwords</h3>
+                  <span className="wifi-subtitle">Central Library & departmental access points</span>
+                </div>
+              </div>
+              <span className="wifi-badge">CAMPUS WI-FI</span>
+            </div>
+
+            <p className="wifi-desc">
+              The Central Library and multiple academic zones have active Wi-Fi hotspots. These two common default passwords work on various campus networks:
+            </p>
+
+            <div className="wifi-keys-grid">
+              <div className="wifi-key-item">
+                <span className="key-label">COMMON PASSWORD 1</span>
+                <div className="key-box">
+                  <code className="key-value">abcde</code>
+                  <button
+                    className="copy-key-btn"
+                    onClick={(e) => {
+                      navigator.clipboard?.writeText("abcde");
+                      const btn = e.currentTarget;
+                      btn.innerText = "✓ COPIED";
+                      setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+                    }}
+                    title="Copy password to clipboard"
+                  >
+                    COPY
+                  </button>
+                </div>
+              </div>
+
+              <div className="wifi-key-item">
+                <span className="key-label">COMMON PASSWORD 2</span>
+                <div className="key-box">
+                  <code className="key-value">nits@54321</code>
+                  <button
+                    className="copy-key-btn"
+                    onClick={(e) => {
+                      navigator.clipboard?.writeText("nits@54321");
+                      const btn = e.currentTarget;
+                      btn.innerText = "✓ COPIED";
+                      setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+                    }}
+                    title="Copy password to clipboard"
+                  >
+                    COPY
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 3. CAMPUS BASICS & KEY HUBS ================= */}
         <section id="campus-basics" className="guide-section">
           <div className="section-hud-tag">
             <span className="hud-blinker"></span>
@@ -586,133 +716,6 @@ export default function FreshersGuide({ onNavigateToMap, onSelectMapLocation }) 
                   <span className="plat-link-cta">Explore Competitions ↗</span>
                 </a>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ================= 8. MOBILE NETWORKS & CAMPUS TELECOM ================= */}
-        <section className="guide-section">
-          <div className="section-hud-tag">
-            <span className="hud-blinker"></span>
-            <span>CAMPUS CONNECTIVITY // CELLULAR TELECOM & WI-FI</span>
-          </div>
-
-          <div className="section-header-block">
-            <h2 className="section-title">
-              <span className="title-icon">📶</span> Mobile Networks & Wi-Fi on Campus
-            </h2>
-            <p className="section-desc">
-              Ground-truth student network guide: Speed hotspots, hostel coverage reality, and campus Wi-Fi credentials.
-            </p>
-          </div>
-
-          <div className="network-info-grid">
-            {/* Airtel Card */}
-            <div className="network-card airtel-theme">
-              <div className="net-header">
-                <span className="net-brand">AIRTEL</span>
-                <span className="net-tag fast">Fast Across Most Areas</span>
-              </div>
-              <p className="net-desc">
-                Fast and consistent connectivity across almost the entire campus for calling and daily internet usage.
-              </p>
-              <ul className="net-tips-list">
-                <li>
-                  <strong>Hostels True 5G:</strong> True 5G works reliably <em>only from 2nd floors and above</em> across all hostels. Ground & 1st floors usually fall back to 4G.
-                </li>
-                <li>
-                  <strong>Sports & Cricket Grounds:</strong> Speed is decent / okayish outdoors.
-                </li>
-                <li>
-                  <strong>Central Computer Center (CC):</strong> Signal keeps fluctuating inside CC labs, and data speed is noticeably slow.
-                </li>
-              </ul>
-            </div>
-
-            {/* Jio Card */}
-            <div className="network-card jio-theme">
-              <div className="net-header">
-                <span className="net-brand">JIO</span>
-                <span className="net-tag true-5g">True 5G in Select Zones</span>
-              </div>
-              <p className="net-desc">
-                Blazing fast 5G speeds in central corridors, but high variation depending on campus coordinates.
-              </p>
-              <ul className="net-tips-list">
-                <li>
-                  <strong>T-Point to Main Gate:</strong> Very fast True 5G speeds throughout this main corridor.
-                </li>
-                <li>
-                  <strong>Beyond T-Point:</strong> Network speed drops significantly / is very low.
-                </li>
-                <li>
-                  <strong>Hostel 9 (BH9) to Food Court:</strong> Internet speed is okayish / usable.
-                </li>
-                <li>
-                  <strong>Computer Center (CC) Labs:</strong> Jio works <em>very fast</em> inside CC labs (unlike Airtel).
-                </li>
-                <li>
-                  <strong>Campus Grounds:</strong> Very slow on both grounds — often struggles to send WhatsApp messages.
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Campus & Library Wi-Fi Card */}
-          <div className="wifi-passwords-card">
-            <div className="wifi-card-header">
-              <div className="wifi-title-group">
-                <span className="wifi-icon">📡</span>
-                <div>
-                  <h3 className="wifi-title">Library & Campus Wi-Fi Passwords</h3>
-                  <span className="wifi-subtitle">Central Library & departmental access points</span>
-                </div>
-              </div>
-              <span className="wifi-badge">CAMPUS WI-FI</span>
-            </div>
-
-            <p className="wifi-desc">
-              The Central Library and multiple academic zones have active Wi-Fi hotspots. These two common default passwords work on various campus networks:
-            </p>
-
-            <div className="wifi-keys-grid">
-              <div className="wifi-key-item">
-                <span className="key-label">COMMON PASSWORD 1</span>
-                <div className="key-box">
-                  <code className="key-value">abcde</code>
-                  <button
-                    className="copy-key-btn"
-                    onClick={(e) => {
-                      navigator.clipboard?.writeText("abcde");
-                      const btn = e.currentTarget;
-                      btn.innerText = "✓ COPIED";
-                      setTimeout(() => { btn.innerText = "COPY"; }, 2000);
-                    }}
-                    title="Copy password to clipboard"
-                  >
-                    COPY
-                  </button>
-                </div>
-              </div>
-
-              <div className="wifi-key-item">
-                <span className="key-label">COMMON PASSWORD 2</span>
-                <div className="key-box">
-                  <code className="key-value">nits@54321</code>
-                  <button
-                    className="copy-key-btn"
-                    onClick={(e) => {
-                      navigator.clipboard?.writeText("nits@54321");
-                      const btn = e.currentTarget;
-                      btn.innerText = "✓ COPIED";
-                      setTimeout(() => { btn.innerText = "COPY"; }, 2000);
-                    }}
-                    title="Copy password to clipboard"
-                  >
-                    COPY
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </section>
