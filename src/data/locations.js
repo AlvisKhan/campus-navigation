@@ -780,6 +780,28 @@ const locations = [
     aliases: ["gh4 canteen", "girls hostel 4 canteen", "gh 4 canteen"],
     verified: true,
   },
+  {
+    id: "city-dhaba",
+    name: "City Dhaba",
+    category: "Food & Dining",
+    categoryId: "food",
+    latitude: 24.758279,
+    longitude: 92.796463,
+    description: "Popular student dining spot and dhaba near the campus perimeter.",
+    aliases: ["city dhaba", "dhaba", "food", "dining", "city dhaba nits"],
+    verified: true,
+  },
+  {
+    id: "bishal-dhaba",
+    name: "Bishal Dhaba",
+    category: "Food & Dining",
+    categoryId: "food",
+    latitude: 24.75973146305674,
+    longitude: 92.7967676315138,
+    description: "Favorite student dhaba offering meals, dinner, and late-evening dining.",
+    aliases: ["bishal dhaba", "vishal dhaba", "dhaba", "food", "dining"],
+    verified: true,
+  },
 
   // ==================== Healthcare, Services & Shopping ====================
   {

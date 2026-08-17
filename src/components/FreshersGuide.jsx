@@ -285,6 +285,148 @@ export default function FreshersGuide({ onNavigateToMap, onSelectMapLocation }) 
               </div>
             </div>
           </div>
+
+          {/* Institute LAN & Gateway Authentication Guide */}
+          <div className="lan-auth-card">
+            <div className="lan-card-header">
+              <div className="lan-title-group">
+                <span className="lan-icon">🌐</span>
+                <div>
+                  <h3 className="lan-title">Institute LAN & Gateway Authentication (CCC)</h3>
+                  <span className="lan-subtitle">Hostel LAN Ports, Computer Center & Academic Network Access</span>
+                </div>
+              </div>
+              <span className="lan-badge">PORTAL: 10.10.10.1:8090</span>
+            </div>
+
+            <div className="lan-body">
+              <p className="lan-instruction">
+                When you connect your laptop or device to the institute network using a <strong>LAN Cable</strong> or <strong>Campus Wi-Fi</strong>, authentication is required through your browser:
+              </p>
+
+              <div className="lan-steps-list">
+                <div className="lan-step-item">
+                  <span className="step-badge-num">1</span>
+                  <div className="step-text">
+                    <strong>Automatic Captive Portal:</strong>
+                    <p>Open any browser and try accessing any web page. The institute login portal will appear automatically.</p>
+                  </div>
+                </div>
+
+                <div className="lan-step-item">
+                  <span className="step-badge-num">2</span>
+                  <div className="step-text">
+                    <strong>Manual Login Gateway Link:</strong>
+                    <p>If the captive portal does not load automatically, navigate directly to:</p>
+                    <div className="gateway-link-box">
+                      <code className="gateway-url">http://10.10.10.1:8090</code>
+                      <div className="gateway-btn-group">
+                        <a
+                          href="http://10.10.10.1:8090"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="gateway-open-btn"
+                          title="Open Gateway in new tab (when connected to Campus Network)"
+                        >
+                          OPEN PORTAL ↗
+                        </a>
+                        <button
+                          className="copy-key-btn"
+                          onClick={(e) => {
+                            navigator.clipboard?.writeText("http://10.10.10.1:8090");
+                            const btn = e.currentTarget;
+                            btn.innerText = "✓ COPIED";
+                            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+                          }}
+                          title="Copy login URL"
+                        >
+                          COPY URL
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="lan-step-item">
+                  <span className="step-badge-num">3</span>
+                  <div className="step-text">
+                    <strong>CCC Login Credentials:</strong>
+                    <p>
+                      Enter your individual <strong>Username</strong> and <strong>Password</strong> provided officially by the <strong>Central Computer Center (CCC)</strong>. After successful validation, you can use any browser or application for uninterrupted internet access.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Troubleshooting, Complaint Forms & Internet Policy */}
+              <div className="lan-support-grid">
+                {/* LAN Issue Complaint Form */}
+                <div className="lan-support-card complaint-card">
+                  <div className="support-header">
+                    <span className="supp-icon">🛠️</span>
+                    <div>
+                      <strong>LAN Issue / Fault Complaint:</strong>
+                      <p>If you encounter port issues or connection faults, register your complaint here:</p>
+                    </div>
+                  </div>
+                  <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSdUfRSZ4KJiLLsi06gBWCxCSXC4tu6q4M_Ss24bhzWI82dVXA/viewform"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="support-action-btn complaint-btn"
+                  >
+                    <span>📝</span>
+                    <span>LAN Issue Complaint Form</span>
+                    <span className="ext-arrow">↗</span>
+                  </a>
+                </div>
+
+                {/* Change Credentials Form */}
+                <div className="lan-support-card complaint-card">
+                  <div className="support-header">
+                    <span className="supp-icon">🔑</span>
+                    <div>
+                      <strong>Change Credentials:</strong>
+                      <p>If you need to reset or update internet login credentials, use this form:</p>
+                    </div>
+                  </div>
+                  <a
+                    href="https://forms.gle/oXXPhCrf1e9XhJWx7"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="support-action-btn complaint-btn"
+                  >
+                    <span>📝</span>
+                    <span>Request to Change User credentials for Internet Access</span>
+                    <span className="ext-arrow">↗</span>
+                  </a>
+                </div>
+
+                {/* Internet Policy */}
+                <div className="lan-support-card policy-card">
+                  <div className="support-header">
+                    <span className="supp-icon">📜</span>
+                    <div>
+                      <strong>Institute's Internet Usage Policy:</strong>
+                      <p>
+                        All users are requested to familiarize themselves with the Institute&apos;s Internet Usage Policy, accessible here: <a href="http://ec.nits.ac.in/lan" target="_blank" rel="noopener noreferrer" className="policy-inline-link">http://ec.nits.ac.in/lan</a>
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href="http://ec.nits.ac.in/lan"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="support-action-btn policy-btn"
+                  >
+                    <span>🏛️</span>
+                    <span>http://ec.nits.ac.in/lan</span>
+                    <span className="ext-arrow">↗</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ================= 3. CAMPUS BASICS & KEY HUBS ================= */}
