@@ -27,19 +27,19 @@ export default function SearchBar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Filter locations based on query and selected category
+  // Filter locations: Global search when query is present; Category filter when query is empty
+  const hasQuery = query.trim().length > 0;
   const filteredLocations = locations.filter((loc) => {
-    const matchesCategory =
-      !selectedCategory || loc.categoryId === selectedCategory;
+    if (!hasQuery) {
+      // Category browsing mode: if category selected, show matching; otherwise none or all
+      return selectedCategory ? loc.categoryId === selectedCategory : false;
+    }
 
-    if (!matchesCategory) return false;
-
-    if (!query.trim()) return selectedCategory ? true : false;
-
+    // Global Search mode: always searches across all campus locations regardless of category
     const q = query.toLowerCase().trim();
-    const matchesName = loc.name.toLowerCase().includes(q);
-    const matchesCategoryName = loc.category.toLowerCase().includes(q);
-    const matchesDescription = loc.description.toLowerCase().includes(q);
+    const matchesName = loc.name?.toLowerCase().includes(q);
+    const matchesCategoryName = loc.category?.toLowerCase().includes(q);
+    const matchesDescription = loc.description?.toLowerCase().includes(q);
     const matchesAliases = loc.aliases?.some((alias) =>
       alias.toLowerCase().includes(q)
     );
@@ -133,7 +133,13 @@ export default function SearchBar({
       {isOpen && (
         <div className="search-dropdown">
           <div className="dropdown-hud-header">
-            <span className="hud-label">GEOSPATIAL DIRECTORY MATCHES</span>
+            <span className="hud-label">
+              {hasQuery
+                ? "GLOBAL CAMPUS SEARCH"
+                : selectedCategory
+                ? `FILTER: ${categoryList.find((c) => c.id === selectedCategory)?.name?.toUpperCase() || "CATEGORY"}`
+                : "ALL CAMPUS NODES"}
+            </span>
             <span className="hud-count">
               {filteredLocations.length} RESULT{filteredLocations.length === 1 ? "" : "S"}
             </span>

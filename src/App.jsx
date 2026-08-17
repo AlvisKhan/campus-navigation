@@ -33,6 +33,7 @@ import locations, {
 import { getUserLocation, formatDistance } from "./utils/geoUtils";
 import SearchBar from "./components/SearchBar";
 import DestinationCard from "./components/DestinationCard";
+import FreshersGuide from "./components/FreshersGuide";
 
 // Custom Leaflet Pin Icons
 
@@ -442,6 +443,27 @@ function App() {
   const defaultAdmin = getLocationById("admin-building") || locations[0];
   const campusCenter = [defaultAdmin.latitude, defaultAdmin.longitude];
 
+  // Routing State
+  const [currentPath, setCurrentPath] = useState(
+    typeof window !== "undefined" ? window.location.pathname : "/"
+  );
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const navigateTo = (path) => {
+    if (typeof window !== "undefined" && window.location.pathname !== path) {
+      window.history.pushState(null, "", path);
+      setCurrentPath(path);
+      window.scrollTo(0, 0);
+    }
+  };
+
   const [activeLayer, setActiveLayer] = useState("OSM");
   const [userLocation, setUserLocation] = useState(null);
   const [userLocationAccuracy, setUserLocationAccuracy] = useState(null);
@@ -505,6 +527,14 @@ function App() {
 
   const handleSelectDestination = (loc) => {
     setSelectedDestination(loc);
+  };
+
+  const handleSelectMapLocationFromGuide = (locationId) => {
+    const target = getLocationById(locationId);
+    if (target) {
+      setSelectedDestination(target);
+    }
+    navigateTo("/");
   };
 
   const handleClearRoute = () => {
@@ -575,6 +605,16 @@ function App() {
 
   const currentTileLayer = MAP_LAYERS[activeLayer] || MAP_LAYERS.OSM;
 
+  // Render dedicated Freshers Guide page if path is /freshers
+  if (currentPath === "/freshers" || currentPath.startsWith("/freshers")) {
+    return (
+      <FreshersGuide
+        onNavigateToMap={() => navigateTo("/")}
+        onSelectMapLocation={handleSelectMapLocationFromGuide}
+      />
+    );
+  }
+
   return (
     <div className="app">
       {/* Top Telemetry & Header Bar */}
@@ -594,41 +634,80 @@ function App() {
             </div>
           </div>
 
-          {/* Quick HUD Telemetry Bar */}
-          <div className="telemetry-bar">
-            <div className="telemetry-item">
-              <span className="telem-label">NODES ONLINE</span>
-              <span className="telem-val">{locations.length} VERIFIED</span>
-            </div>
-            <div className="telemetry-item">
-              <span className="telem-label">GPS STATUS</span>
-              <span
-                className={`telem-val ${
-                  userLocation
+          {/* Quick Header Actions: Freshers Button & Telemetry */}
+          <div className="header-right-actions">
+            <button
+              className="header-freshers-pill-btn"
+              onClick={() => navigateTo("/freshers")}
+              title="Open Freshers Compass & Onboarding Guide"
+            >
+              <span className="pill-sparkle">🎓</span>
+              <span className="pill-text">FRESHERS GUIDE</span>
+              <span className="pill-tag">2026</span>
+            </button>
+
+            {/* Quick HUD Telemetry Bar */}
+            <div className="telemetry-bar">
+              <div className="telemetry-item">
+                <span className="telem-label">NODES ONLINE</span>
+                <span className="telem-val">{locations.length} VERIFIED</span>
+              </div>
+              <div className="telemetry-item">
+                <span className="telem-label">GPS STATUS</span>
+                <span
+                  className={`telem-val ${
+                    userLocation
+                      ? isFallbackLocation
+                        ? "text-neon-emerald"
+                        : "text-neon-cyan"
+                      : locationStatus === "error"
+                      ? "text-neon-rose"
+                      : locationStatus === "acquiring" || locationStatus === "fallback"
+                      ? "text-neon-amber"
+                      : "text-amber"
+                  }`}
+                >
+                  {userLocation
                     ? isFallbackLocation
-                      ? "text-neon-emerald"
-                      : "text-neon-cyan"
+                      ? `LOCKED (EST. ±${Math.round(userLocationAccuracy || 30)}m)`
+                      : "LOCKED (3D FIX)"
+                    : locationStatus === "acquiring"
+                    ? "ACQUIRING..."
+                    : locationStatus === "fallback"
+                    ? "FALLBACK FIX..."
                     : locationStatus === "error"
-                    ? "text-neon-rose"
-                    : locationStatus === "acquiring" || locationStatus === "fallback"
-                    ? "text-neon-amber"
-                    : "text-amber"
-                }`}
-              >
-                {userLocation
-                  ? isFallbackLocation
-                    ? `LOCKED (EST. ±${Math.round(userLocationAccuracy || 30)}m)`
-                    : "LOCKED (3D FIX)"
-                  : locationStatus === "acquiring"
-                  ? "ACQUIRING..."
-                  : locationStatus === "fallback"
-                  ? "FALLBACK FIX..."
-                  : locationStatus === "error"
-                  ? "FIX FAILED"
-                  : "STANDBY"}
-              </span>
+                    ? "FIX FAILED"
+                    : "STANDBY"}
+                </span>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Freshers Welcome Highlight Card */}
+        <div
+          className="freshers-welcome-strip"
+          onClick={() => navigateTo("/freshers")}
+          role="button"
+          tabIndex={0}
+          title="Open Freshers Guide (/freshers)"
+        >
+          <div className="strip-left">
+            <span className="strip-badge">🎓 NEW TO NIT SILCHAR?</span>
+            <span className="strip-desc">
+              Everything you need to get started: Emergency contacts, transport, mess, study links & senior advice.
+            </span>
+          </div>
+          <button
+            className="strip-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigateTo("/freshers");
+            }}
+          >
+            <span>EXPLORE FRESHERS GUIDE</span>
+            <span className="strip-arrow">→</span>
+          </button>
         </div>
 
         {/* Global Search & Category Filters */}
