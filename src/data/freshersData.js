@@ -131,6 +131,27 @@ export const AUTO_CONTACTS = [
   // Additional auto-rickshaw contacts can be easily added here
 ];
 
+export const STUDENT_VENTURES = [
+  {
+    id: "egnotus",
+    name: "Egnotus",
+    tagline: "3D Printing & Rapid Prototyping",
+    badge: "Student Tech Service",
+    contactPerson: "Muaz",
+    number: "6900973276",
+    displayNumber: "+91 69009 73276",
+    email: "egnotus@gmail.com",
+    instagram: "https://www.instagram.com/_egnotus_?igsh=eDB5bDcxa25ycTFk&utm_source=qr",
+    instagramHandle: "@_egnotus_",
+    website: "https://egnotus.netlify.app/",
+    websiteDisplay: "egnotus.netlify.app",
+    description: "3D printing of any model available! Single colour models available now, multi-colour coming soon. Perfect for robotics, engineering projects, hobby miniatures, and custom models. (T&C Applied).",
+    tags: ["3D Printing", "Any CAD Model", "Single Colour", "Multi-Colour Soon", "Robotics & Projects"],
+    icon: "🖨️",
+    accent: "#06B6D4",
+  },
+];
+
 export const FIRST_YEAR_DRIVES = [
   {
     id: "ug-first-year-materials",

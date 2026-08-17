@@ -3,6 +3,7 @@ import {
   EMERGENCY_CONTACTS,
   TRANSPORT_CONTACTS,
   FOOD_AND_SERVICES,
+  STUDENT_VENTURES,
   FIRST_YEAR_DRIVES,
   STUDY_PLATFORMS,
   STUDY_CATEGORIES,
@@ -567,6 +568,85 @@ export default function FreshersGuide({ onNavigateToMap, onSelectMapLocation }) 
               </div>
             ))}
           </div>
+
+          {/* Student Innovation & 3D Printing Spotlight (Egnotus) */}
+          {STUDENT_VENTURES.map((v) => (
+            <div key={v.id} className="venture-spotlight-card">
+              <div className="venture-top-row">
+                <div className="venture-title-block">
+                  <span className="venture-icon">{v.icon}</span>
+                  <div>
+                    <div className="venture-name-wrapper">
+                      <h3 className="venture-name">{v.name}</h3>
+                      <span className="venture-badge">{v.badge}</span>
+                    </div>
+                    <span className="venture-tagline">{v.tagline}</span>
+                  </div>
+                </div>
+
+                <div className="venture-primary-links">
+                  <a
+                    href={v.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="venture-btn web-btn"
+                    title="Visit Official Website"
+                  >
+                    <span>🌐</span>
+                    <span>{v.websiteDisplay}</span>
+                    <span className="ext-arrow">↗</span>
+                  </a>
+                  <a
+                    href={v.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="venture-btn insta-btn"
+                    title="Open Instagram Profile"
+                  >
+                    <span>📸</span>
+                    <span>{v.instagramHandle}</span>
+                    <span className="ext-arrow">↗</span>
+                  </a>
+                </div>
+              </div>
+
+              <p className="venture-desc">{v.description}</p>
+
+              <div className="venture-details-grid">
+                <div className="v-detail-item">
+                  <span className="v-label">SERVICE CAPABILITIES</span>
+                  <div className="v-tags-wrap">
+                    <span className="v-pill active">✓ Single Colour Models (Available Now)</span>
+                    <span className="v-pill upcoming">⏳ Multi Colour Models (Coming Soon)</span>
+                    <span className="v-pill">Any 3D / CAD Model</span>
+                    <span className="v-pill tc">T&C Applied</span>
+                  </div>
+                </div>
+
+                <div className="v-detail-item">
+                  <span className="v-label">DIRECT INQUIRIES & ORDERS</span>
+                  <div className="v-contact-actions">
+                    <a
+                      href={`tel:${v.number}`}
+                      className="v-call-btn"
+                      title={`Call ${v.contactPerson} at ${v.displayNumber}`}
+                    >
+                      <span>📞</span>
+                      <span>{v.displayNumber} ({v.contactPerson})</span>
+                    </a>
+                    <a
+                      href={`mailto:${v.email}`}
+                      className="v-email-btn"
+                      title={`Email ${v.email}`}
+                    >
+                      <span>✉️</span>
+                      <span>{v.email}</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
 
           <div className="extensible-note-card">
             <div className="ext-icon">💡</div>
