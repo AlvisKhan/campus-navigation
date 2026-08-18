@@ -376,6 +376,14 @@ export const CAMPUS_BASICS_HUBS = [
     mapLocationId: "bh1",
     icon: "🏠",
   },
+  {
+    id: "guest-house-hub",
+    name: "Institute Guest House",
+    category: "Visitor & Parent Stay",
+    desc: "Campus VIP accommodation and guest rooms for parents and visitors. Bookable online via ERP portal.",
+    mapLocationId: "guest-house",
+    icon: "🏨",
+  },
 ];
 
 export const SENIOR_TIPS = [

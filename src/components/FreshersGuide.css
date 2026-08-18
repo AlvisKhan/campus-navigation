@@ -2144,6 +2144,559 @@
   color: #ffffff;
 }
 
+/* ================= Hostel Washing Machine & Laundry Styles ================= */
+.laundry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.laundry-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.laundry-card.connected-theme {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 60%),
+              rgba(30, 41, 59, 0.65);
+}
+
+.laundry-card.connected-theme:hover {
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.15);
+}
+
+.laundry-card.hotspot-theme {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.08), transparent 60%),
+              rgba(30, 41, 59, 0.65);
+}
+
+.laundry-card.hotspot-theme:hover {
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.15);
+}
+
+.laundry-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.laundry-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.laundry-icon {
+  font-size: 26px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.laundry-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 2px;
+}
+
+.laundry-card-subtitle {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.laundry-badge {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.laundry-badge.green {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+}
+
+.laundry-badge.amber {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fcd34d;
+}
+
+.laundry-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.laundry-step-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.laundry-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.laundry-step-content {
+  flex: 1;
+}
+
+.laundry-step-content strong {
+  display: block;
+  font-size: 14px;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.laundry-step-content p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.app-store-btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.app-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.app-download-btn:hover {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+}
+
+.app-download-btn.apple-btn:hover {
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.2);
+}
+
+.app-download-btn.android-btn:hover {
+  border-color: #10b981;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+}
+
+.store-icon {
+  font-size: 20px;
+}
+
+.store-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.store-small {
+  font-size: 10px;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+}
+
+.store-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.laundry-troubleshoot-intro {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.hotspot-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hotspot-step-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+
+.h-step-badge {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fcd34d;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.h-step-info {
+  flex: 1;
+}
+
+.h-step-info strong {
+  display: block;
+  font-size: 13px;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.h-step-info p {
+  font-size: 12.5px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.hotspot-name-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-top: 6px;
+}
+
+.hotspot-ssid {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fcd34d;
+  letter-spacing: 0.05em;
+}
+
+.highlight-text {
+  color: #fcd34d !important;
+}
+
+.fallback-step {
+  border-color: rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.fallback-note {
+  margin-top: 6px !important;
+  font-size: 11.5px !important;
+  color: #cbd5e1 !important;
+}
+
+/* ================= Guest House Room Booking Styles ================= */
+.guesthouse-card {
+  background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.1), transparent 60%),
+              rgba(30, 41, 59, 0.65);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  transition: all 0.25s ease;
+}
+
+.guesthouse-card:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
+}
+
+.guesthouse-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.gh-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.gh-icon {
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gh-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 3px;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.gh-sub {
+  font-size: 13px;
+  color: #c4b5fd;
+}
+
+.gh-badge {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: #c4b5fd;
+}
+
+.guesthouse-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.guesthouse-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.gh-step-box {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gh-step-badge-num {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.18);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.gh-step-content h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 6px;
+}
+
+.gh-step-content p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.gh-link-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gh-url-code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: #a78bfa;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  word-break: break-all;
+}
+
+.gh-btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+.gh-open-portal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(139, 92, 246, 0.25);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  color: #ddd6fe;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.gh-open-portal-btn:hover {
+  background: rgba(139, 92, 246, 0.4);
+  color: #ffffff;
+}
+
+.gh-card-preview-box {
+  margin-top: 10px;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px dashed rgba(139, 92, 246, 0.4);
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gh-card-icon {
+  font-size: 20px;
+}
+
+.gh-card-preview-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.gh-card-preview-text strong {
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.gh-card-preview-text span {
+  font-size: 11.5px;
+  color: #c4b5fd;
+}
+
+.gh-alert-box {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.gh-alert-icon {
+  font-size: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.gh-alert-text strong {
+  display: block;
+  font-size: 14px;
+  color: #fcd34d;
+  margin-bottom: 4px;
+}
+
+.gh-alert-text p {
+  font-size: 13px;
+  color: #e2e8f0;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.gh-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.gh-action-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  border: 1px solid rgba(167, 139, 250, 0.5);
+  color: #ffffff;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+}
+
+.gh-action-primary-btn:hover {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(139, 92, 246, 0.45);
+}
+
 /* ================= Mobile Responsiveness ================= */
 @media (max-width: 768px) {
   .freshers-nav-inner {
@@ -2195,8 +2748,29 @@
   }
 
   .study-platforms-grid,
-  .scholarship-split-grid {
+  .scholarship-split-grid,
+  .laundry-grid,
+  .guesthouse-steps-grid {
     grid-template-columns: 1fr;
+  }
+
+  .gh-actions-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gh-action-primary-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .app-store-btn-group {
+    flex-direction: column;
+  }
+
+  .app-download-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .map-invitation-banner {

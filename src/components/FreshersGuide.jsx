@@ -94,8 +94,14 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
             <a href="#network-section" className="hero-action-pill">
               <span>📶</span> Networks & Wi-Fi
             </a>
+            <a href="#laundry-section" className="hero-action-pill">
+              <span>🧺</span> Washing Machines
+            </a>
             <a href="#campus-basics" className="hero-action-pill">
               <span>🏛️</span> Campus Basics
+            </a>
+            <a href="#guesthouse-section" className="hero-action-pill">
+              <span>🏨</span> Guest House Booking
             </a>
             <a href="#campus-services" className="hero-action-pill">
               <span>🛺</span> Transit & Food
@@ -440,7 +446,186 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
           </div>
         </section>
 
-        {/* ================= 3. CAMPUS BASICS & KEY HUBS ================= */}
+        {/* ================= 3. HOSTEL WASHING MACHINES & LAUNDRY GUIDE ================= */}
+        <section id="laundry-section" className="guide-section">
+          <div className="section-hud-tag">
+            <span className="hud-blinker cyan"></span>
+            <span>HOSTEL UTILITIES // IOT LAUNDRY AUTOMATION</span>
+          </div>
+
+          <div className="section-header-block">
+            <h2 className="section-title">
+              <span className="title-icon">🧺</span> Hostel Washing Machines & Laundry
+            </h2>
+            <p className="section-desc">
+              How to operate IoT washing machines in hostels using the Laundry Crew app, plus hotspot bypass troubleshooting.
+            </p>
+          </div>
+
+          <div className="laundry-grid">
+            {/* Standard Operation Card (Connected to Wi-Fi) */}
+            <div className="laundry-card connected-theme">
+              <div className="laundry-card-header">
+                <div className="laundry-title-group">
+                  <span className="laundry-icon">📶</span>
+                  <div>
+                    <h3 className="laundry-card-title">If Machine is Connected to Wi-Fi</h3>
+                    <span className="laundry-card-subtitle">Normal Operation via Laundry Crew App</span>
+                  </div>
+                </div>
+                <span className="laundry-badge green">WI-FI ONLINE</span>
+              </div>
+
+              <div className="laundry-steps-list">
+                <div className="laundry-step-item">
+                  <span className="laundry-step-num">1</span>
+                  <div className="laundry-step-content">
+                    <strong>Download & Open Laundry Crew App:</strong>
+                    <p>Get the official laundry application for your phone:</p>
+                    <div className="app-store-btn-group">
+                      <a
+                        href="https://apps.apple.com/in/app/laundry-crew/id1529539729"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="app-download-btn apple-btn"
+                        title="Download Laundry Crew on Apple App Store"
+                      >
+                        <span className="store-icon">🍏</span>
+                        <div className="store-text">
+                          <span className="store-small">Download on</span>
+                          <span className="store-name">Apple App Store</span>
+                        </div>
+                        <span className="ext-arrow">↗</span>
+                      </a>
+
+                      <a
+                        href="https://play.google.com/store/apps/details?id=com.lge.laundrymanager&pcampaignid=web_share"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="app-download-btn android-btn"
+                        title="Download Laundry Crew on Google Play Store"
+                      >
+                        <span className="store-icon">🤖</span>
+                        <div className="store-text">
+                          <span className="store-small">Get it on</span>
+                          <span className="store-name">Google Play</span>
+                        </div>
+                        <span className="ext-arrow">↗</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="laundry-step-item">
+                  <span className="laundry-step-num">2</span>
+                  <div className="laundry-step-content">
+                    <strong>Scan Machine QR Code:</strong>
+                    <p>Open the app and scan the QR code located on or near the washing machine you wish to use.</p>
+                  </div>
+                </div>
+
+                <div className="laundry-step-item">
+                  <span className="laundry-step-num">3</span>
+                  <div className="laundry-step-content">
+                    <strong>Select Settings & Pay:</strong>
+                    <p>Select your desired wash cycle settings and proceed to digital payment to start the wash cycle.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Troubleshooting / Mobile Hotspot Card */}
+            <div className="laundry-card hotspot-theme">
+              <div className="laundry-card-header">
+                <div className="laundry-title-group">
+                  <span className="laundry-icon">⚡</span>
+                  <div>
+                    <h3 className="laundry-card-title">If Machine is Not Connected</h3>
+                    <span className="laundry-card-subtitle">Mobile Hotspot Setup & Connection Fix</span>
+                  </div>
+                </div>
+                <span className="laundry-badge amber">HOTSPOT BYPASS</span>
+              </div>
+
+              <p className="laundry-troubleshoot-intro">
+                If the washing machine is offline or disconnected from Wi-Fi, follow these steps to connect it via your mobile hotspot:
+              </p>
+
+              <div className="hotspot-steps-list">
+                <div className="hotspot-step-item">
+                  <span className="h-step-badge">1</span>
+                  <div className="h-step-info">
+                    <strong>Take Hotspot Near Machine:</strong>
+                    <p>Take your mobile phone close to the washing machines.</p>
+                  </div>
+                </div>
+
+                <div className="hotspot-step-item">
+                  <span className="h-step-badge">2</span>
+                  <div className="h-step-info">
+                    <strong>Rename Hotspot to:</strong>
+                    <div className="hotspot-name-box">
+                      <code className="hotspot-ssid">NITS</code>
+                      <button
+                        className="copy-key-btn"
+                        onClick={(e) => {
+                          navigator.clipboard?.writeText("NITS");
+                          const btn = e.currentTarget;
+                          btn.innerText = "✓ COPIED";
+                          setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+                        }}
+                        title="Copy Hotspot Name NITS"
+                      >
+                        COPY
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="hotspot-step-item">
+                  <span className="h-step-badge">3</span>
+                  <div className="h-step-info">
+                    <strong>Keep it Passwordless:</strong>
+                    <p>Set hotspot security to <strong className="highlight-text">Open / None (No Password)</strong>.</p>
+                  </div>
+                </div>
+
+                <div className="hotspot-step-item">
+                  <span className="h-step-badge">4</span>
+                  <div className="h-step-info">
+                    <strong>Power Cycle Machine:</strong>
+                    <p>Switch the washing machine you want to use <strong>OFF</strong> and then turn it back <strong>ON</strong>. Wait for <strong>20–30 seconds</strong>.</p>
+                  </div>
+                </div>
+
+                <div className="hotspot-step-item fallback-step">
+                  <span className="h-step-badge">5</span>
+                  <div className="h-step-info">
+                    <strong>If it doesn&apos;t work, try renaming Hotspot to:</strong>
+                    <div className="hotspot-name-box">
+                      <code className="hotspot-ssid">NITS-WM</code>
+                      <button
+                        className="copy-key-btn"
+                        onClick={(e) => {
+                          navigator.clipboard?.writeText("NITS-WM");
+                          const btn = e.currentTarget;
+                          btn.innerText = "✓ COPIED";
+                          setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+                        }}
+                        title="Copy Hotspot Name NITS-WM"
+                      >
+                        COPY
+                      </button>
+                    </div>
+                    <p className="fallback-note">Then toggle power (OFF & ON) again and wait 20–30s before trying.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 4. CAMPUS BASICS & KEY HUBS ================= */}
         <section id="campus-basics" className="guide-section">
           <div className="section-hud-tag">
             <span className="hud-blinker"></span>
@@ -887,7 +1072,133 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
           </div>
         </section>
 
-        {/* ================= 7. HACKATHONS & COMPETITIONS ================= */}
+        {/* ================= 9. GUEST HOUSE ROOM BOOKING ================= */}
+        <section id="guesthouse-section" className="guide-section">
+          <div className="section-hud-tag">
+            <span className="hud-blinker violet"></span>
+            <span>INSTITUTE ACCOMMODATION // ERP PORTAL</span>
+          </div>
+
+          <div className="section-header-block">
+            <h2 className="section-title">
+              <span className="title-icon">🏨</span> Guest House Room Booking
+            </h2>
+            <p className="section-desc">
+              Online guest room booking procedure for visiting parents, guardians, and official guests via the NIT Silchar ERP portal.
+            </p>
+          </div>
+
+          <div className="guesthouse-card">
+            <div className="guesthouse-card-header">
+              <div className="gh-header-left">
+                <span className="gh-icon">🏛️</span>
+                <div>
+                  <h3 className="gh-title">NIT Silchar Guest House Reservation</h3>
+                  <span className="gh-sub">Conducted directly through the official ERP portal</span>
+                </div>
+              </div>
+              <span className="gh-badge">ERP PORTAL</span>
+            </div>
+
+            <div className="guesthouse-body">
+              <div className="guesthouse-steps-grid">
+                <div className="gh-step-box">
+                  <div className="gh-step-badge-num">1</div>
+                  <div className="gh-step-content">
+                    <h4>Go to ERP Portal Login</h4>
+                    <p>Open the official NIT Silchar ERP portal login page:</p>
+                    <div className="gh-link-container">
+                      <code className="gh-url-code">https://erp.nits.ac.in/erp/login</code>
+                      <div className="gh-btn-row">
+                        <a
+                          href="https://erp.nits.ac.in/erp/login"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="gh-open-portal-btn"
+                          title="Open ERP Login Portal in new tab"
+                        >
+                          OPEN PORTAL ↗
+                        </a>
+                        <button
+                          className="copy-key-btn"
+                          onClick={(e) => {
+                            navigator.clipboard?.writeText("https://erp.nits.ac.in/erp/login");
+                            const btn = e.currentTarget;
+                            btn.innerText = "✓ COPIED";
+                            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+                          }}
+                          title="Copy ERP URL"
+                        >
+                          COPY
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="gh-step-box">
+                  <div className="gh-step-badge-num">2</div>
+                  <div className="gh-step-content">
+                    <h4>Locate Guest House Booking Card</h4>
+                    <p>
+                      Scroll down towards the bottom of the login page and find the card labeled:
+                    </p>
+                    <div className="gh-card-preview-box">
+                      <span className="gh-card-icon">🏨</span>
+                      <div className="gh-card-preview-text">
+                        <strong>Guest House Room Booking</strong>
+                        <span>For guests room booking</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="gh-step-box">
+                  <div className="gh-step-badge-num">3</div>
+                  <div className="gh-step-content">
+                    <h4>Follow Booking Steps</h4>
+                    <p>
+                      Click the card, choose check-in & check-out dates, room type, number of guests, and submit your booking details following the on-screen instructions.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* First Time User Alert Notice */}
+              <div className="gh-alert-box">
+                <span className="gh-alert-icon">⚠️</span>
+                <div className="gh-alert-text">
+                  <strong>First-Time Users Notice:</strong>
+                  <p>
+                    First-time users have to <strong>create an account</strong> on the ERP portal before booking a room. Keep your mobile number & email accessible for OTP registration.
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="gh-actions-bar">
+                <a
+                  href="https://erp.nits.ac.in/erp/login"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="gh-action-primary-btn"
+                  title="Proceed to NIT Silchar ERP Portal"
+                >
+                  <span>🌐</span> OPEN ERP PORTAL ↗
+                </a>
+                <button
+                  className="guide-map-locate-btn"
+                  onClick={() => handleLocate("guest-house")}
+                  title="Locate Guest House on Campus Map"
+                >
+                  <span>📍</span> LOCATE GUEST HOUSE ON MAP
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 10. HACKATHONS & COMPETITIONS ================= */}
         <section id="hackathons-section" className="guide-section">
           <div className="section-hud-tag">
             <span className="hud-blinker neon"></span>
