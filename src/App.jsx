@@ -34,6 +34,7 @@ import locations, {
 import { getUserLocation, formatDistance } from "./utils/geoUtils";
 import SearchBar from "./components/SearchBar";
 import DestinationCard from "./components/DestinationCard";
+import GoogleMapsHandoffCard from "./components/GoogleMapsHandoffCard";
 import FreshersGuide from "./components/FreshersGuide";
 import LandingPage from "./components/LandingPage";
 
@@ -389,6 +390,7 @@ function ActiveRouteHud({
   routeStats,
   onClearRoute,
   onViewDetails,
+  onShowGmapsPopup,
 }) {
   if (!routeStats) return null;
 
@@ -419,6 +421,15 @@ function ActiveRouteHud({
         </div>
 
         <div className="route-hud-actions">
+          {onShowGmapsPopup && (
+            <button
+              className="route-hud-gmaps-btn"
+              onClick={onShowGmapsPopup}
+              title="Open turn-by-turn navigation in Google Maps"
+            >
+              🗺️ GMAPS
+            </button>
+          )}
           {destination && (
             <button
               className="route-hud-details-btn"
@@ -480,6 +491,7 @@ function App() {
   const [route, setRoute] = useState([]);
   const [routeStats, setRouteStats] = useState(null);
   const [isRouting, setIsRouting] = useState(false);
+  const [showGoogleMapsPopup, setShowGoogleMapsPopup] = useState(false);
 
   const verifiedLocations = getVerifiedLocations();
 
@@ -543,6 +555,7 @@ function App() {
     setRoute([]);
     setRouteStats(null);
     setActiveDestination(null);
+    setShowGoogleMapsPopup(false);
   };
 
   const handleCloseCard = () => {
@@ -594,6 +607,8 @@ function App() {
         setActiveDestination(selectedDestination);
         // Automatically hide the large target location detail card so the map & navigation path are fully visible, especially on mobile!
         setSelectedDestination(null);
+        // Display Google Maps Turn-by-Turn navigation handoff popup
+        setShowGoogleMapsPopup(true);
       } else {
         alert("No traversal path found to this campus destination.");
       }
@@ -767,6 +782,17 @@ function App() {
             routeStats={routeStats}
             onClearRoute={handleClearRoute}
             onViewDetails={() => setSelectedDestination(activeDestination)}
+            onShowGmapsPopup={() => setShowGoogleMapsPopup(true)}
+          />
+        )}
+
+        {/* Google Maps Turn-by-Turn Handoff Popup (shown after route calculation) */}
+        {showGoogleMapsPopup && activeDestination && route.length > 0 && (
+          <GoogleMapsHandoffCard
+            destination={activeDestination}
+            userLocation={userLocation}
+            onDismiss={() => setShowGoogleMapsPopup(false)}
+            routeStats={routeStats}
           />
         )}
 

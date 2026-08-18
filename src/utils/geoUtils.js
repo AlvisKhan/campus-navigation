@@ -93,6 +93,31 @@ export function calculateBearing(lat1, lon1, lat2, lon2) {
 }
 
 /**
+ * Generates a cross-platform Google Maps turn-by-turn directions URL.
+ * Works seamlessly on mobile (opening Google Maps App or browser fallback) and desktop (browser).
+ * 
+ * @param {number|null} originLat Latitude of origin (user location)
+ * @param {number|null} originLng Longitude of origin (user location)
+ * @param {number} destLat Latitude of destination
+ * @param {number} destLng Longitude of destination
+ * @param {string} [travelMode="walking"] Travel mode: "walking", "driving", "transit", "bicycling"
+ * @returns {string} Universal Google Maps Directions URL
+ */
+export function getGoogleMapsDirectionsUrl(originLat, originLng, destLat, destLng, travelMode = "walking") {
+  const params = new URLSearchParams({
+    api: "1",
+    destination: `${destLat},${destLng}`,
+    travelmode: travelMode,
+  });
+
+  if (originLat != null && originLng != null) {
+    params.set("origin", `${originLat},${originLng}`);
+  }
+
+  return `https://www.google.com/maps/dir/?${params.toString()}`;
+}
+
+/**
  * Standard Geolocation Error Classification
  */
 export const GEOLOCATION_ERROR_TYPES = {
