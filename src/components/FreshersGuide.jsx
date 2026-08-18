@@ -14,7 +14,7 @@ import {
 } from "../data/freshersData";
 import "./FreshersGuide.css";
 
-export default function FreshersGuide({ onNavigateToMap, onSelectMapLocation }) {
+export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSelectMapLocation }) {
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -33,14 +33,24 @@ export default function FreshersGuide({ onNavigateToMap, onSelectMapLocation }) 
       {/* Top Floating Cyber Navigation Bar */}
       <nav className="freshers-nav">
         <div className="freshers-nav-inner">
-          <button
-            className="nav-back-map-btn"
-            onClick={onNavigateToMap}
-            title="Return to Campus Navigation Map"
-          >
-            <span className="btn-icon">←</span>
-            <span className="btn-text">CAMPUS MAP</span>
-          </button>
+          <div className="nav-left-group">
+            <button
+              className="nav-home-btn"
+              onClick={onNavigateToHome || (() => {})}
+              title="Return to Main Portal Home"
+            >
+              <span className="btn-icon">⌂</span>
+              <span className="btn-text">PORTAL</span>
+            </button>
+            <button
+              className="nav-back-map-btn"
+              onClick={onNavigateToMap}
+              title="Return to Campus Navigation Map"
+            >
+              <span className="btn-icon">🗺️</span>
+              <span className="btn-text">CAMPUS MAP</span>
+            </button>
+          </div>
 
           <div className="nav-title-group">
             <span className="nav-brand-tag">NIT SILCHAR</span>

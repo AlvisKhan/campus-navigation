@@ -82,6 +82,24 @@ body, html, #root {
   gap: 14px;
 }
 
+.brand-badge-interactive {
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 4px;
+  margin: -4px;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.brand-badge-interactive:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.brand-badge-interactive:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
 .institute-emblem {
   width: 42px;
   height: 42px;
@@ -150,7 +168,30 @@ body, html, #root {
 .header-right-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+}
+
+.header-home-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f1f5f9;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+}
+
+.header-home-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
 }
 
 .header-freshers-pill-btn {

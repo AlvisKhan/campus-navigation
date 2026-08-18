@@ -35,6 +35,7 @@ import { getUserLocation, formatDistance } from "./utils/geoUtils";
 import SearchBar from "./components/SearchBar";
 import DestinationCard from "./components/DestinationCard";
 import FreshersGuide from "./components/FreshersGuide";
+import LandingPage from "./components/LandingPage";
 
 // Custom Leaflet Pin Icons
 
@@ -535,7 +536,7 @@ function App() {
     if (target) {
       setSelectedDestination(target);
     }
-    navigateTo("/");
+    navigateTo("/map");
   };
 
   const handleClearRoute = () => {
@@ -606,11 +607,22 @@ function App() {
 
   const currentTileLayer = MAP_LAYERS[activeLayer] || MAP_LAYERS.OSM;
 
+  // Render clean, minimal Landing Page at root URL (/) or /home
+  if (currentPath === "/" || currentPath === "" || currentPath === "/home") {
+    return (
+      <LandingPage
+        onNavigateToCampus={() => navigateTo("/map")}
+        onNavigateToFreshers={() => navigateTo("/freshers")}
+      />
+    );
+  }
+
   // Render dedicated Freshers Guide page if path is /freshers
   if (currentPath === "/freshers" || currentPath.startsWith("/freshers")) {
     return (
       <FreshersGuide
-        onNavigateToMap={() => navigateTo("/")}
+        onNavigateToMap={() => navigateTo("/map")}
+        onNavigateToHome={() => navigateTo("/")}
         onSelectMapLocation={handleSelectMapLocationFromGuide}
       />
     );
@@ -621,7 +633,14 @@ function App() {
       {/* Top Telemetry & Header Bar */}
       <header className="header">
         <div className="header-top-row">
-          <div className="brand-badge-group">
+          <div 
+            className="brand-badge-group brand-badge-interactive"
+            onClick={() => navigateTo("/")}
+            role="button"
+            tabIndex={0}
+            title="Return to Main Portal"
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") navigateTo("/"); }}
+          >
             <div className="institute-emblem">
               <span className="emblem-core">NIT</span>
             </div>
@@ -635,8 +654,17 @@ function App() {
             </div>
           </div>
 
-          {/* Quick Header Actions: Freshers Button & Telemetry */}
+          {/* Quick Header Actions: Home Portal, Freshers Button & Telemetry */}
           <div className="header-right-actions">
+            <button
+              className="header-home-pill-btn"
+              onClick={() => navigateTo("/")}
+              title="Return to Main Portal Home"
+            >
+              <span className="pill-sparkle">⌂</span>
+              <span className="pill-text">HOME</span>
+            </button>
+
             <button
               className="header-freshers-pill-btn"
               onClick={() => navigateTo("/freshers")}
