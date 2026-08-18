@@ -44,7 +44,7 @@ export default function LandingPage({ onNavigateToCampus, onNavigateToFreshers }
           </p>
 
           <p className="landing-tagline">
-            The official all-in-one companion for NIT Silchar students. Navigate every corner of campus with real-time GPS and unlock curated 1st-year survival guides, drive links, and essential contacts.
+            The all-in-one companion for NIT Silchar students. Navigate every corner of campus with real-time GPS and unlock curated 1st-year survival guides, drive links, and essential contacts.
           </p>
         </div>
 
