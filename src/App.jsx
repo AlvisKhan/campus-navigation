@@ -11,6 +11,7 @@ import L from "leaflet";
 import "leaflet-rotate";
 import "leaflet/dist/leaflet.css";
 import "./App.css";
+import { Analytics } from "@vercel/analytics/react";
 
 // Leaflet default location pin icons
 import icon from "leaflet/dist/images/marker-icon.png";
@@ -883,6 +884,7 @@ function App() {
           />
         )}
       </div>
+      <Analytics />
     </div>
   );
 }
