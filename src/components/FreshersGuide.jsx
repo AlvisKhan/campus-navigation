@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import {
   EMERGENCY_CONTACTS,
+  ARYABHATTA_HOSTEL_DATA,
   TRANSPORT_CONTACTS,
   FOOD_AND_SERVICES,
   STUDENT_VENTURES,
@@ -36,7 +37,7 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
           <div className="nav-left-group">
             <button
               className="nav-home-btn"
-              onClick={onNavigateToHome || (() => {})}
+              onClick={onNavigateToHome || (() => { })}
               title="Return to Main Portal Home"
             >
               <span className="btn-icon">⌂</span>
@@ -90,6 +91,9 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
           <div className="hero-quick-actions">
             <a href="#emergency-section" className="hero-action-pill alert-pill">
               <span>🚑</span> Emergency Contacts
+            </a>
+            <a href="#aryabhatta-section" className="hero-action-pill aryabhatta-pill">
+              <span>🏢</span> Aryabhatta Hostel
             </a>
             <a href="#network-section" className="hero-action-pill">
               <span>📶</span> Networks & Wi-Fi
@@ -177,7 +181,145 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
           </div>
         </section>
 
-        {/* ================= 2. MOBILE NETWORKS & CAMPUS WI-FI (ABOVE CAMPUS BASICS) ================= */}
+        {/* ================= 2. ARYABHATTA HOSTEL DIRECTORY ================= */}
+        <section id="aryabhatta-section" className="guide-section aryabhatta-section">
+          <div className="section-hud-tag">
+            <span className="hud-blinker violet"></span>
+            <span>HOSTEL RESIDENTIAL DIRECTORY // ARYABHATTA</span>
+          </div>
+
+          <div className="section-header-block">
+            <div className="title-with-action">
+              <div>
+                <h2 className="section-title">
+                  <span className="title-icon">🏢</span> Aryabhatta Hostel Contacts
+                </h2>
+                <p className="section-desc">
+                  Official directory for Aryabhatta Hostel residents. Contact the Hostel Supervisor for administration or the respective Block House Keeping Staff for room and sanitation assistance.
+                </p>
+              </div>
+              <button
+                className="guide-map-locate-btn"
+                onClick={() => handleLocate(ARYABHATTA_HOSTEL_DATA.mapLocationId)}
+                title="Locate Aryabhatta Hostel on Campus Map"
+              >
+                <span>📍</span> LOCATE ON MAP
+              </button>
+            </div>
+          </div>
+
+          {/* Supervisor Card */}
+          <div className="aryabhatta-supervisor-card">
+            <div className="supervisor-card-left">
+              <div className="supervisor-avatar-box">
+                <span className="supervisor-icon">{ARYABHATTA_HOSTEL_DATA.supervisor.icon}</span>
+              </div>
+              <div className="supervisor-info">
+                <div className="supervisor-badge-row">
+                  <span className="supervisor-badge">{ARYABHATTA_HOSTEL_DATA.supervisor.badge}</span>
+                  <span className="supervisor-tag">PGH</span>
+                </div>
+                <h3 className="supervisor-name">{ARYABHATTA_HOSTEL_DATA.supervisor.title}</h3>
+                <p className="supervisor-role">
+                  {ARYABHATTA_HOSTEL_DATA.supervisor.description}
+                </p>
+              </div>
+            </div>
+
+            <div className="supervisor-card-right">
+              <a
+                href={`tel:${ARYABHATTA_HOSTEL_DATA.supervisor.number}`}
+                className="supervisor-call-btn"
+                title={`Call ${ARYABHATTA_HOSTEL_DATA.supervisor.title}`}
+              >
+                <span className="call-icon">📞</span>
+                <div className="call-btn-text">
+                  <span className="call-label">TAP TO CALL</span>
+                  <span className="call-number">{ARYABHATTA_HOSTEL_DATA.supervisor.displayNumber}</span>
+                </div>
+              </a>
+              <button
+                className="copy-key-btn"
+                onClick={(e) => {
+                  navigator.clipboard?.writeText(ARYABHATTA_HOSTEL_DATA.supervisor.number);
+                  const btn = e.currentTarget;
+                  btn.innerText = "✓ COPIED";
+                  setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+                }}
+                title="Copy supervisor number"
+              >
+                COPY NUMBER
+              </button>
+            </div>
+          </div>
+
+          {/* Block House Keeping Staff 2x2 Grid */}
+          <div className="aryabhatta-blocks-wrapper">
+            <div className="blocks-section-header">
+              <span className="blocks-header-icon">🧹</span>
+              <div>
+                <h3 className="blocks-heading">Block House Keeping Staff</h3>
+                <span className="blocks-subheading">Dedicated sanitation, maintenance, and wing assistance</span>
+              </div>
+            </div>
+
+            <div className="aryabhatta-blocks-grid">
+              {ARYABHATTA_HOSTEL_DATA.blocks.map((b) => (
+                <div
+                  key={b.id}
+                  className="aryabhatta-block-card"
+                  style={{ "--block-accent": b.accent }}
+                >
+                  <div className="block-card-header">
+                    <div className="block-title-group">
+                      <span className="block-icon">{b.icon}</span>
+                      <div>
+                        <h4 className="block-name">{b.block}</h4>
+                        <span className="block-role">{b.role}</span>
+                      </div>
+                    </div>
+                    <span className="block-badge">{b.badge}</span>
+                  </div>
+
+                  <div className="block-staff-list">
+                    {b.staff.map((st) => (
+                      <div key={st.id} className="block-staff-item">
+                        <div className="staff-meta">
+                          <span className="staff-dot"></span>
+                          <span className="staff-label">{st.label}</span>
+                        </div>
+                        <div className="staff-actions">
+                          <a
+                            href={`tel:${st.number}`}
+                            className="staff-call-pill"
+                            title={`Call ${b.block} House Keeping Staff (${st.displayNumber})`}
+                          >
+                            <span className="pill-call-icon">📞</span>
+                            <span className="pill-call-num">{st.displayNumber}</span>
+                          </a>
+                          <button
+                            className="staff-copy-btn"
+                            onClick={(e) => {
+                              navigator.clipboard?.writeText(st.number);
+                              const btn = e.currentTarget;
+                              btn.innerText = "✓";
+                              setTimeout(() => { btn.innerText = "📋"; }, 2000);
+                            }}
+                            title={`Copy ${st.number}`}
+                          >
+                            📋
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ================= 3. MOBILE NETWORKS & CAMPUS WI-FI (ABOVE CAMPUS BASICS) ================= */}
         <section id="network-section" className="guide-section">
           <div className="section-hud-tag">
             <span className="hud-blinker cyan"></span>
@@ -922,37 +1064,37 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
             <h3 className="sub-section-title">Online Student Academic Platforms</h3>
             <div className="study-platforms-grid">
               {STUDY_PLATFORMS.map((portal) => (
-              <div key={portal.id} className="study-platform-card" style={{ "--plat-accent": portal.accent }}>
-                <div className="platform-card-header">
-                  <div className="platform-icon-box">
-                    <span>{portal.icon}</span>
+                <div key={portal.id} className="study-platform-card" style={{ "--plat-accent": portal.accent }}>
+                  <div className="platform-card-header">
+                    <div className="platform-icon-box">
+                      <span>{portal.icon}</span>
+                    </div>
+                    <div className="platform-meta">
+                      <span className="platform-type">{portal.type}</span>
+                      <span className="platform-badge">{portal.badge}</span>
+                    </div>
                   </div>
-                  <div className="platform-meta">
-                    <span className="platform-type">{portal.type}</span>
-                    <span className="platform-badge">{portal.badge}</span>
+
+                  <h3 className="platform-name">{portal.name}</h3>
+                  <p className="platform-desc">{portal.description}</p>
+
+                  <div className="platform-tags">
+                    {portal.tags.map((tag) => (
+                      <span key={tag} className="plat-tag">#{tag}</span>
+                    ))}
                   </div>
-                </div>
 
-                <h3 className="platform-name">{portal.name}</h3>
-                <p className="platform-desc">{portal.description}</p>
-
-                <div className="platform-tags">
-                  {portal.tags.map((tag) => (
-                    <span key={tag} className="plat-tag">#{tag}</span>
-                  ))}
-                </div>
-
-                <a
-                  href={portal.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="platform-visit-btn"
-                  title={`Visit ${portal.name} (Opens in new tab)`}
-                >
-                  <span>🌐</span>
-                  <span>VISIT {portal.name.toUpperCase()}</span>
-                  <span className="ext-arrow">↗</span>
-                </a>
+                  <a
+                    href={portal.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="platform-visit-btn"
+                    title={`Visit ${portal.name} (Opens in new tab)`}
+                  >
+                    <span>🌐</span>
+                    <span>VISIT {portal.name.toUpperCase()}</span>
+                    <span className="ext-arrow">↗</span>
+                  </a>
                 </div>
               ))}
             </div>

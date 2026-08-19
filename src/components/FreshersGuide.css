@@ -266,6 +266,17 @@
   color: #ffffff;
 }
 
+.hero-action-pill.aryabhatta-pill {
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+}
+
+.hero-action-pill.aryabhatta-pill:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: #a855f7;
+  color: #ffffff;
+}
+
 /* ================= Content Layout ================= */
 .freshers-content-wrapper {
   max-width: 1200px;
@@ -493,6 +504,403 @@
   font-size: 13px;
   margin: 0;
 }
+
+/* ================= 2. Aryabhatta Hostel Directory ================= */
+.aryabhatta-section {
+  border-color: rgba(168, 85, 247, 0.35);
+  background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.08), transparent 60%),
+              rgba(15, 23, 42, 0.7);
+}
+
+.aryabhatta-section::before {
+  background: linear-gradient(90deg, transparent, #a855f7, transparent);
+}
+
+/* Supervisor Card */
+.aryabhatta-supervisor-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(168, 85, 247, 0.4);
+  box-shadow: 0 8px 30px rgba(168, 85, 247, 0.15), inset 0 0 20px rgba(168, 85, 247, 0.05);
+  border-radius: 16px;
+  padding: 24px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  transition: all 0.25s ease;
+}
+
+.aryabhatta-supervisor-card:hover {
+  border-color: rgba(168, 85, 247, 0.7);
+  box-shadow: 0 12px 36px rgba(168, 85, 247, 0.25), inset 0 0 25px rgba(168, 85, 247, 0.1);
+  transform: translateY(-2px);
+}
+
+.supervisor-card-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1 1 340px;
+}
+
+.supervisor-avatar-box {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(59, 130, 246, 0.2));
+  border: 1.5px solid rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.supervisor-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.supervisor-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.supervisor-badge {
+  background: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+.supervisor-tag {
+  background: rgba(56, 189, 248, 0.15);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.supervisor-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.supervisor-role {
+  font-size: 13.5px;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.supervisor-card-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.supervisor-call-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #9333ea, #7c3aed);
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(147, 51, 234, 0.4);
+  transition: all 0.2s ease;
+}
+
+.supervisor-call-btn:hover {
+  background: linear-gradient(135deg, #a855f7, #9333ea);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.55);
+}
+
+.supervisor-call-btn .call-icon {
+  font-size: 20px;
+}
+
+.supervisor-call-btn .call-btn-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.supervisor-call-btn .call-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  opacity: 0.85;
+  letter-spacing: 0.05em;
+}
+
+.supervisor-call-btn .call-number {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* Blocks Housekeeping Wrapper & Grid */
+.aryabhatta-blocks-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.blocks-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.blocks-header-icon {
+  font-size: 24px;
+}
+
+.blocks-heading {
+  font-size: 17px;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.blocks-subheading {
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+
+.aryabhatta-blocks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.aryabhatta-block-card {
+  background: rgba(30, 41, 59, 0.65);
+  border: 1px solid var(--block-accent, rgba(255, 255, 255, 0.1));
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.aryabhatta-block-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--block-accent, #38bdf8);
+  opacity: 0.8;
+}
+
+.aryabhatta-block-card:hover {
+  background: rgba(30, 41, 59, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(56, 189, 248, 0.15);
+}
+
+.block-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.block-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.block-icon {
+  font-size: 22px;
+}
+
+.block-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.block-role {
+  font-size: 12px;
+  color: #94a3b8;
+  display: block;
+}
+
+.block-badge {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.block-staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.block-staff-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 8px 12px;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.block-staff-item:hover {
+  background: rgba(15, 23, 42, 0.85);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.staff-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.staff-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--block-accent, #38bdf8);
+  box-shadow: 0 0 6px var(--block-accent, #38bdf8);
+}
+
+.staff-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.staff-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.staff-call-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2));
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  transition: all 0.2s ease;
+}
+
+.staff-call-pill:hover {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
+}
+
+.staff-copy-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.staff-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .aryabhatta-supervisor-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px 16px;
+    gap: 16px;
+  }
+
+  .supervisor-card-right {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .supervisor-call-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .aryabhatta-supervisor-card .copy-key-btn {
+    width: 100%;
+  }
+
+  .block-staff-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .staff-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .staff-call-pill {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
 
 /* ================= 2. Campus Hubs Grid ================= */
 .campus-hubs-grid {

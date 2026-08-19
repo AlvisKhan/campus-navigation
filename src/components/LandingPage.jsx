@@ -50,63 +50,7 @@ export default function LandingPage({ onNavigateToCampus, onNavigateToFreshers }
 
         {/* Two Equal Primary Option Cards */}
         <div className="landing-cards-grid">
-          {/* Option 1: Campus Navigation */}
-          <div 
-            className="landing-card card-campus" 
-            onClick={onNavigateToCampus}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onNavigateToCampus(); }}
-          >
-            <div className="card-ambient-glow" aria-hidden="true"></div>
-            
-            <div className="card-top-row">
-              <div className="card-icon-box icon-campus">
-                <span className="card-icon">🗺️</span>
-              </div>
-              <div className="card-badge badge-campus">
-                <span className="card-badge-dot"></span>
-                <span>LIVE GPS & MAPS</span>
-              </div>
-            </div>
-
-            <div className="card-content">
-              <h2 className="card-heading">CAMPUS NAVIGATION</h2>
-              <p className="card-desc">
-                Interactive high-precision spatial map of NIT Silchar. Locate hostels, departments, SAC, sports complexes, food joints, and find optimized walking paths.
-              </p>
-
-              <ul className="card-features">
-                <li>
-                  <span className="feat-icon">📍</span>
-                  <span>Find verified campus locations & department buildings</span>
-                </li>
-                <li>
-                  <span className="feat-icon">🚶</span>
-                  <span>Get turn-by-turn walking routes & live distance metrics</span>
-                </li>
-                <li>
-                  <span className="feat-icon">🛰️</span>
-                  <span>Interactive 3D GPS, compass rotation & satellite view</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="card-footer">
-              <button 
-                className="card-cta-btn btn-campus"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onNavigateToCampus();
-                }}
-              >
-                <span>EXPLORE CAMPUS</span>
-                <span className="cta-arrow">→</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Option 2: Freshers Guide */}
+          {/* Option 1: Freshers Guide */}
           <div 
             className="landing-card card-freshers" 
             onClick={onNavigateToFreshers}
@@ -157,6 +101,62 @@ export default function LandingPage({ onNavigateToCampus, onNavigateToFreshers }
                 }}
               >
                 <span>EXPLORE FRESHERS GUIDE</span>
+                <span className="cta-arrow">→</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Option 2: Campus Navigation */}
+          <div 
+            className="landing-card card-campus" 
+            onClick={onNavigateToCampus}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onNavigateToCampus(); }}
+          >
+            <div className="card-ambient-glow" aria-hidden="true"></div>
+            
+            <div className="card-top-row">
+              <div className="card-icon-box icon-campus">
+                <span className="card-icon">🗺️</span>
+              </div>
+              <div className="card-badge badge-campus">
+                <span className="card-badge-dot"></span>
+                <span>LIVE GPS & MAPS</span>
+              </div>
+            </div>
+
+            <div className="card-content">
+              <h2 className="card-heading">CAMPUS NAVIGATION</h2>
+              <p className="card-desc">
+                Interactive high-precision spatial map of NIT Silchar. Locate hostels, departments, SAC, sports complexes, food joints, and find optimized walking paths.
+              </p>
+
+              <ul className="card-features">
+                <li>
+                  <span className="feat-icon">📍</span>
+                  <span>Find verified campus locations & department buildings</span>
+                </li>
+                <li>
+                  <span className="feat-icon">🚶</span>
+                  <span>Get turn-by-turn walking routes & live distance metrics</span>
+                </li>
+                <li>
+                  <span className="feat-icon">🛰️</span>
+                  <span>Interactive 3D GPS, compass rotation & satellite view</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="card-footer">
+              <button 
+                className="card-cta-btn btn-campus"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNavigateToCampus();
+                }}
+              >
+                <span>EXPLORE CAMPUS</span>
                 <span className="cta-arrow">→</span>
               </button>
             </div>

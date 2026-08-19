@@ -442,3 +442,113 @@ export const SENIOR_TIPS = [
     badge: "Notice Board",
   },
 ];
+
+export const ARYABHATTA_HOSTEL_DATA = {
+  id: "aryabhatta-hostel",
+  name: "Aryabhatta Hostel",
+  subtitle: "PG & Freshers Residential Block",
+  badge: "Hostel Directory",
+  mapLocationId: "aryabhatta-hostel",
+  description:
+    "Official directory for Aryabhatta Hostel residents. Contact the Hostel Supervisor for administrative issues or the respective Block House Keeping Staff for room, wing, and sanitation assistance.",
+  supervisor: {
+    title: "Hostel Supervisor",
+    role: "Hostel Administration & Supervision",
+    number: "9957599696",
+    displayNumber: "+91 99575 99696",
+    icon: "👨‍💼",
+    badge: "Supervisor In-Charge",
+    description: "Primary point of contact for hostel administration, room allocation queries, and general hostel supervision.",
+  },
+  blocks: [
+    {
+      id: "north-block",
+      block: "North Block",
+      role: "House Keeping Staff",
+      icon: "🧭",
+      badge: "North Wing",
+      accent: "#38BDF8",
+      staff: [
+        {
+          id: "nb-staff-1",
+          label: "Staff 1",
+          number: "9864347285",
+          displayNumber: "+91 98643 47285",
+        },
+        {
+          id: "nb-staff-2",
+          label: "Staff 2",
+          number: "8473833967",
+          displayNumber: "+91 84738 33967",
+        },
+      ],
+    },
+    {
+      id: "east-block",
+      block: "East Block",
+      role: "House Keeping Staff",
+      icon: "🌅",
+      badge: "East Wing",
+      accent: "#F59E0B",
+      staff: [
+        {
+          id: "eb-staff-1",
+          label: "Staff 1",
+          number: "8723845428",
+          displayNumber: "+91 87238 45428",
+        },
+        {
+          id: "eb-staff-2",
+          label: "Staff 2",
+          number: "9394389294",
+          displayNumber: "+91 93943 89294",
+        },
+      ],
+    },
+    {
+      id: "west-block",
+      block: "West Block",
+      role: "House Keeping Staff",
+      icon: "🌇",
+      badge: "West Wing",
+      accent: "#EC4899",
+      staff: [
+        {
+          id: "wb-staff-1",
+          label: "Staff 1",
+          number: "7099688384",
+          displayNumber: "+91 70996 88384",
+        },
+        {
+          id: "wb-staff-2",
+          label: "Staff 2",
+          number: "6001975610",
+          displayNumber: "+91 60019 75610",
+        },
+      ],
+    },
+    {
+      id: "south-block",
+      block: "South Block",
+      role: "House Keeping Staff",
+      icon: "🧭",
+      badge: "South Wing",
+      accent: "#10B981",
+      staff: [
+        {
+          id: "sb-staff-1",
+          label: "Staff 1",
+          number: "7002820131",
+          displayNumber: "+91 70028 20131",
+        },
+        {
+          id: "sb-staff-2",
+          label: "Staff 2",
+          number: "6001651466",
+          displayNumber: "+91 60016 51466",
+        },
+      ],
+    },
+  ],
+};
+
