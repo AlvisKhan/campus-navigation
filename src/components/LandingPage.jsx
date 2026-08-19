@@ -17,7 +17,7 @@ export default function LandingPage({ onNavigateToCampus, onNavigateToFreshers }
           </div>
           <div className="landing-brand-text">
             <span className="landing-brand-title">NATIONAL INSTITUTE OF TECHNOLOGY SILCHAR</span>
-            <span className="landing-brand-sub">CAMPUS INTELLIGENCE & CAMPUS COMPANION</span>
+            <span className="landing-brand-sub">CAMPUS COMPANION</span>
           </div>
         </div>
 
