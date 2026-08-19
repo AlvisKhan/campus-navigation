@@ -683,7 +683,7 @@ function App() {
             <button
               className="header-freshers-pill-btn"
               onClick={() => navigateTo("/freshers")}
-              title="Open Freshers Compass & Onboarding Guide"
+              title="Open Freshers Compass & Campus Companion"
             >
               <span className="pill-sparkle">🎓</span>
               <span className="pill-text">FRESHERS GUIDE</span>
