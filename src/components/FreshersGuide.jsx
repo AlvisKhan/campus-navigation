@@ -75,7 +75,7 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
         <div className="hero-container">
           <div className="hero-badge-pill">
             <span className="badge-sparkle">🎓</span>
-            <span>FRESHERS ONBOARDING PORTAL</span>
+            <span>FRESHERS CAMPUS COMPANION</span>
             <span className="badge-year">2026 EDITION</span>
           </div>
 
