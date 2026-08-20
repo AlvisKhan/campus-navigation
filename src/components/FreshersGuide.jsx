@@ -1168,7 +1168,7 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
             </div>
 
             {/* Bonafide Certificate Section */}
-            <div className="guide-info-card highlight-border">
+            <div className="guide-info-card highlight-border bonafide-card">
               <div className="card-top-header">
                 <span className="info-icon">🏛️</span>
                 <span className="info-badge highlight">Administrative Procedure</span>
@@ -1178,38 +1178,99 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
                 A Bonafide Certificate verifies your active enrollment at NIT Silchar. It is often required for education loans, external scholarships, bus/train student concessions, and passport applications.
               </p>
 
+              {/* Mandatory Notice Banner */}
+              <div className="bonafide-mandatory-alert">
+                <span className="b-alert-icon">⚠️</span>
+                <div className="b-alert-content">
+                  <strong>Mandatory Submission Requirement:</strong>
+                  <p>
+                    The official application format must be <strong>printed out, filled in, and submitted</strong> in person at the Scholarship Section. In addition, <strong>filling the Google Form is strictly mandatory</strong>.
+                  </p>
+                </div>
+              </div>
+
               <div className="procedure-step-box">
                 <div className="step-point">
-                  <span className="step-num">📍</span>
+                  <span className="step-num">1️⃣</span>
                   <div className="step-content">
-                    <strong>Where to Approach:</strong>
-                    <p><strong>Scholarship Section / Academic Section</strong>, located inside the <strong>New Administrative Building</strong>.</p>
+                    <strong>Download & Print Official Application Format:</strong>
+                    <p>Download the official institute format and print it out on paper:</p>
+                    <a
+                      href="https://www.nits.ac.in/storage/StudentCorner/studentcorner_68ed9e6bc956d.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bonafide-link-btn pdf-btn"
+                      title="Download Official Bonafide Certificate Application Format (PDF)"
+                    >
+                      <span>📄</span>
+                      <span>Bonafide Certificate Application Format (PDF)</span>
+                      <span className="ext-arrow">↗</span>
+                    </a>
                   </div>
                 </div>
 
                 <div className="step-point">
-                  <span className="step-num">📄</span>
+                  <span className="step-num">2️⃣</span>
                   <div className="step-content">
-                    <strong>Documents to Carry:</strong>
-                    <p>Student ID card / Institute Admission letter, current semester fee payment receipt, and the relevant application form format.</p>
+                    <strong>Fill Details & Attach Documents:</strong>
+                    <p>Fill out the printed application form manually. Attach copies of your Student ID card / Institute Admission letter and current semester fee payment receipt.</p>
                   </div>
                 </div>
 
                 <div className="step-point">
-                  <span className="step-num">ℹ️</span>
+                  <span className="step-num">3️⃣</span>
                   <div className="step-content">
-                    <strong>Verification:</strong>
-                    <p>Always verify the current application format and signature workflow with the dealing staff at the Scholarship Section.</p>
+                    <strong>Fill Mandatory Google Form:</strong>
+                    <p>Filling the online Google form is mandatory before or alongside physical submission:</p>
+                    <a
+                      href="https://forms.gle/p895qwphmDNU4bpK7"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bonafide-link-btn gform-btn"
+                      title="Open Mandatory Google Form for Bonafide Certificate"
+                    >
+                      <span>📝</span>
+                      <span>Mandatory Bonafide Google Form</span>
+                      <span className="ext-arrow">↗</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div className="step-point">
+                  <span className="step-num">4️⃣</span>
+                  <div className="step-content">
+                    <strong>Submit at Scholarship Section:</strong>
+                    <p>Submit your filled and signed physical form along with document copies at the <strong>Scholarship Section</strong>, located inside the <strong>New Administrative Building</strong>.</p>
                   </div>
                 </div>
               </div>
 
-              <button
-                className="guide-map-locate-btn full-width"
-                onClick={() => handleLocate("admin-building")}
-              >
-                <span>🏢</span> LOCATE ADMINISTRATIVE BUILDING ON MAP
-              </button>
+              <div className="bonafide-actions-row">
+                <a
+                  href="https://www.nits.ac.in/storage/StudentCorner/studentcorner_68ed9e6bc956d.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bonafide-cta-btn download-cta"
+                  title="Download Application Format (PDF)"
+                >
+                  <span>📄</span> DOWNLOAD APPLICATION FORMAT (PDF) ↗
+                </a>
+                <a
+                  href="https://forms.gle/p895qwphmDNU4bpK7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bonafide-cta-btn form-cta"
+                  title="Fill Mandatory Google Form"
+                >
+                  <span>📝</span> FILL MANDATORY GOOGLE FORM ↗
+                </a>
+                <button
+                  className="guide-map-locate-btn full-width"
+                  onClick={() => handleLocate("admin-building")}
+                >
+                  <span>🏢</span> LOCATE ADMINISTRATIVE BUILDING ON MAP
+                </button>
+              </div>
             </div>
           </div>
         </section>
