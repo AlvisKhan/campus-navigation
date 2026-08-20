@@ -315,8 +315,8 @@ export const CAMPUS_BASICS_HUBS = [
   {
     id: "admin-building",
     name: "New Administrative Building",
-    category: "Administration & Scholarship",
-    desc: "Director's office, Dean Academics, Registrar, and the Scholarship / Bonafide Section.",
+    category: "Administration & Student Services",
+    desc: "Director's office, Dean Academics, Registrar, Students' Welfare (Bonafide), and Scholarship Section.",
     mapLocationId: "admin-building",
     icon: "🏢",
   },

@@ -1184,7 +1184,7 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
                 <div className="b-alert-content">
                   <strong>Mandatory Submission Requirement:</strong>
                   <p>
-                    The official application format must be <strong>printed out, filled in, and submitted</strong> in person at the Scholarship Section. In addition, <strong>filling the Google Form is strictly mandatory</strong>.
+                    The official application format must be <strong>printed out, filled in, and submitted</strong> in person at the <strong>Students’ Welfare Section</strong>. In addition, <strong>filling the Google Form is strictly mandatory</strong>.
                   </p>
                 </div>
               </div>
@@ -1212,8 +1212,22 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
                 <div className="step-point">
                   <span className="step-num">2️⃣</span>
                   <div className="step-content">
-                    <strong>Fill Details & Attach Documents:</strong>
-                    <p>Fill out the printed application form manually. Attach copies of your Student ID card / Institute Admission letter and current semester fee payment receipt.</p>
+                    <strong>Fill Details & Attach Mandatory Documents:</strong>
+                    <p>Fill out the printed application form manually and attach the following documents:</p>
+                    <ul className="bonafide-docs-checklist">
+                      <li>
+                        <strong>1. Academic Payment Proof:</strong> A copy of the &lsquo;Academic Payment Proof&rsquo; of the current session, duly verified by the Accounts Section.
+                      </li>
+                      <li>
+                        <strong>2. Identity / Library Card:</strong> Copy of Identity Card / Library card issued by the institute.
+                      </li>
+                      <li>
+                        <strong>3. Non-Hosteller Certificate:</strong> A copy of the Non-Hosteller certificate of the previous semester, if applicable.
+                      </li>
+                      <li>
+                        <strong>4. Passport Photograph:</strong> A passport-sized photograph to be brought when issuing the bonafide certificate.
+                      </li>
+                    </ul>
                   </div>
                 </div>
 
@@ -1239,8 +1253,8 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
                 <div className="step-point">
                   <span className="step-num">4️⃣</span>
                   <div className="step-content">
-                    <strong>Submit at Scholarship Section:</strong>
-                    <p>Submit your filled and signed physical form along with document copies at the <strong>Scholarship Section</strong>, located inside the <strong>New Administrative Building</strong>.</p>
+                    <strong>Submit at Students’ Welfare Section:</strong>
+                    <p>Submit your filled and signed physical form along with all attached document copies to the <strong>Students’ Welfare section</strong>, located inside the <strong>New Administrative Building</strong>.</p>
                   </div>
                 </div>
               </div>
