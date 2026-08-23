@@ -1532,7 +1532,7 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
       <footer className="freshers-footer">
         <div className="footer-inner">
           <div className="footer-brand">
-            <strong>NIT SILCHAR // CAMPUS NAVIGATION & FRESHERS COMPASS</strong>
+            <strong>NIT SILCHAR | CAMPUS NAVIGATION & FRESHERS COMPASS</strong>
             <p>Designed for incoming students. Keep learning, exploring, and coding.</p>
           </div>
           <button className="footer-back-top-btn" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
