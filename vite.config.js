@@ -39,7 +39,7 @@ function alvisDirectoryPlugin() {
     },
     configureServer(server) {
       generateIndex()
-      const alvisDir = path.resolve(__dirname, 'public/alvis')
+      const alvisDir = path.resolve(process.cwd(), 'public/alvis')
       if (fs.existsSync(alvisDir)) {
         server.watcher.add(alvisDir)
         server.watcher.on('all', (event, file) => {
