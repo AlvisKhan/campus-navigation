@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supply Chain Interview Prep — Manifest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#10233A;
+  --ink-2:#16314D;
+  --steel:#3B5166;
+  --paper:#F1ECE2;
+  --paper-2:#E7E0D2;
+  --amber:#E8A33D;
+  --amber-dark:#C97F1E;
+  --kraft:#C4703F;
+  --go:#4C7A5E;
+  --text:#1B2430;
+  --muted:#5B6774;
+  --white:#FFFDF9;
+  --line:rgba(16,35,58,0.14);
+  --shadow:0 10px 30px rgba(16,35,58,0.12);
+  --radius:14px;
+  --maxw:1120px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--text);
+  font-family:'IBM Plex Sans',sans-serif;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Oswald',sans-serif; margin:0; letter-spacing:0.01em;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+p{margin:0 0 1em 0;}
+img,svg{max-width:100%; display:block;}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+a{color:inherit;}
+
+/* ---------- top progress ---------- */
+#progressbar{
+  position:fixed; top:0; left:0; height:4px; width:0%;
+  background:linear-gradient(90deg, var(--amber), var(--kraft));
+  z-index:9999; transition:width 0.1s linear;
+}
+
+/* ---------- nav ---------- */
+header.nav{
+  position:sticky; top:0; z-index:500;
+  background:rgba(16,35,58,0.96);
+  backdrop-filter:blur(6px);
+  color:var(--white);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.nav-inner{
+  max-width:var(--maxw); margin:0 auto; padding:12px 24px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.brand{display:flex; align-items:center; gap:10px; font-family:'Oswald'; font-size:1.05rem; font-weight:600; letter-spacing:0.04em; white-space:nowrap;}
+.brand .tag{
+  background:var(--amber); color:var(--ink); font-family:'IBM Plex Mono'; font-size:0.62rem;
+  padding:2px 6px; border-radius:4px; font-weight:600; letter-spacing:0.05em;
+}
+#navToggle{
+  display:none; background:none; border:1px solid rgba(255,255,255,0.3); color:var(--white);
+  border-radius:8px; width:38px; height:38px; font-size:1.1rem; cursor:pointer;
+}
+.conveyor{
+  display:flex; gap:2px; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none;
+}
+.conveyor::-webkit-scrollbar{display:none;}
+.conveyor button{
+  background:none; border:none; color:rgba(255,255,255,0.55); font-family:'IBM Plex Mono';
+  font-size:0.72rem; letter-spacing:0.03em; padding:8px 10px; cursor:pointer; white-space:nowrap;
+  border-bottom:2px solid transparent; transition:color 0.2s, border-color 0.2s;
+}
+.conveyor button:hover{color:var(--white);}
+.conveyor button.active{color:var(--amber); border-bottom-color:var(--amber);}
+
+/* ---------- hero ---------- */
+.hero{
+  background:radial-gradient(circle at 20% -10%, #1c3d5e 0%, var(--ink) 55%), var(--ink);
+  color:var(--white);
+  padding:64px 0 40px;
+  overflow:hidden;
+  position:relative;
+}
+.hero .wrap{position:relative; z-index:2;}
+.eyebrow{
+  font-family:'IBM Plex Mono'; font-size:0.75rem; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--amber); display:flex; align-items:center; gap:10px; margin-bottom:18px;
+}
+.eyebrow::before{content:""; width:26px; height:1px; background:var(--amber); display:inline-block;}
+.hero h1{
+  font-size:clamp(2.1rem, 5.6vw, 3.6rem); font-weight:700; line-height:1.04; max-width:16ch;
+}
+.hero h1 em{font-style:normal; color:var(--amber);}
+.hero p.sub{
+  max-width:52ch; color:rgba(255,255,255,0.78); font-size:1.05rem; margin-top:18px;
+}
+.hero-stats{
+  display:flex; flex-wrap:wrap; gap:28px; margin-top:32px; padding-top:24px;
+  border-top:1px solid rgba(255,255,255,0.14);
+}
+.hero-stats div b{display:block; font-family:'Oswald'; font-size:1.5rem; color:var(--amber);}
+.hero-stats div span{font-size:0.78rem; color:rgba(255,255,255,0.6); font-family:'IBM Plex Mono';}
+
+.flow-diagram{margin-top:44px;}
+.flow-diagram svg{width:100%; height:auto;}
+
+/* ---------- section shell ---------- */
+section.sec{padding:60px 0; border-bottom:1px solid var(--line); position:relative;}
+section.sec.alt{background:var(--paper-2);}
+section.sec.dark{background:var(--ink); color:var(--white); border-bottom:none;}
+section.sec.dark .muted{color:rgba(255,255,255,0.65);}
+.sec-head{margin-bottom:32px; max-width:70ch;}
+.sec-head .num{
+  font-family:'IBM Plex Mono'; font-size:0.75rem; color:var(--kraft); letter-spacing:0.1em;
+  display:block; margin-bottom:8px;
+}
+.sec-head h2{font-size:clamp(1.5rem,3.4vw,2.1rem);}
+.sec-head p{color:var(--muted); margin-top:10px; font-size:1rem;}
+.reveal{opacity:0; transform:translateY(18px); transition:opacity 0.6s ease, transform 0.6s ease;}
+.reveal.in{opacity:1; transform:translateY(0);}
+
+/* ---------- generic cards/grids ---------- */
+.grid{display:grid; gap:18px;}
+.grid.cols-2{grid-template-columns:repeat(2,1fr);}
+.grid.cols-3{grid-template-columns:repeat(3,1fr);}
+.grid.cols-4{grid-template-columns:repeat(4,1fr);}
+@media (max-width:820px){
+  .grid.cols-2, .grid.cols-3, .grid.cols-4{grid-template-columns:1fr;}
+}
+.card{
+  background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+  padding:20px; box-shadow:var(--shadow);
+}
+.card h3{font-size:1.05rem; margin-bottom:8px;}
+.card p{color:var(--muted); font-size:0.94rem; margin:0;}
+.card .icon{width:40px; height:40px; margin-bottom:12px;}
+
+/* ---------- tip callout ---------- */
+.tip{
+  display:flex; gap:14px; align-items:flex-start;
+  background:repeating-linear-gradient(135deg, #fff8e8, #fff8e8 10px, #fdf1d4 10px, #fdf1d4 20px);
+  border:1px solid #e9c072; border-left:6px solid var(--amber-dark);
+  border-radius:10px; padding:16px 18px; margin:24px 0;
+}
+.tip .badge{
+  flex-shrink:0; font-family:'IBM Plex Mono'; font-size:0.65rem; font-weight:600; letter-spacing:0.06em;
+  background:var(--amber-dark); color:var(--white); padding:4px 8px; border-radius:5px; margin-top:2px;
+}
+.tip p{margin:0; font-size:0.94rem; color:#3a2c10;}
+.tip strong{color:#1c1204;}
+
+/* ---------- accordion (SCOR) ---------- */
+.accordion{border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--white);}
+.acc-item + .acc-item{border-top:1px solid var(--line);}
+.acc-head{
+  display:flex; align-items:center; gap:16px; width:100%; text-align:left;
+  background:none; border:none; padding:18px 20px; cursor:pointer; font-family:'IBM Plex Sans';
+}
+.acc-head .letter{
+  font-family:'Oswald'; font-weight:700; font-size:1.3rem; color:var(--kraft);
+  width:36px; flex-shrink:0;
+}
+.acc-head .title{font-weight:600; font-size:1.05rem; flex:1;}
+.acc-head .plus{font-family:'IBM Plex Mono'; font-size:1.2rem; color:var(--muted); transition:transform 0.25s;}
+.acc-item.open .acc-head .plus{transform:rotate(45deg); color:var(--kraft);}
+.acc-body{max-height:0; overflow:hidden; transition:max-height 0.35s ease;}
+.acc-body-inner{padding:0 20px 22px 72px; color:var(--muted); font-size:0.95rem;}
+.acc-body-inner ul{margin:8px 0 0 0; padding-left:18px;}
+.acc-body-inner li{margin-bottom:4px;}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+.tab-btn{
+  font-family:'IBM Plex Mono'; font-size:0.8rem; letter-spacing:0.02em;
+  background:var(--white); border:1px solid var(--line); padding:9px 16px; border-radius:30px;
+  cursor:pointer; color:var(--muted); transition:all 0.2s;
+}
+.tab-btn.active{background:var(--ink); color:var(--white); border-color:var(--ink);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ---------- flow / mini diagrams ---------- */
+.diagram-box{
+  background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+  padding:24px; box-shadow:var(--shadow);
+}
+
+/* ---------- flashcards ---------- */
+.flash-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+@media (max-width:900px){.flash-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:520px){.flash-grid{grid-template-columns:1fr;}}
+.flash{perspective:1200px; height:150px; cursor:pointer;}
+.flash-inner{
+  position:relative; width:100%; height:100%; transition:transform 0.5s; transform-style:preserve-3d;
+}
+.flash.flipped .flash-inner{transform:rotateY(180deg);}
+.flash-face{
+  position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; padding:16px;
+  display:flex; flex-direction:column; justify-content:center; box-shadow:var(--shadow);
+}
+.flash-front{background:var(--ink); color:var(--white); border:1px solid var(--ink);}
+.flash-front .term{font-family:'Oswald'; font-weight:600; font-size:1.1rem;}
+.flash-front .hint{font-family:'IBM Plex Mono'; font-size:0.68rem; color:var(--amber); margin-top:8px; letter-spacing:0.04em;}
+.flash-back{background:var(--amber); color:var(--ink); transform:rotateY(180deg);}
+.flash-back p{font-size:0.82rem; margin:0; line-height:1.45;}
+
+/* ---------- KPI cards ---------- */
+.kpi-card{background:var(--white); border:1px solid var(--line); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);}
+.kpi-card h4{font-size:0.95rem; margin-bottom:6px;}
+.kpi-formula{
+  font-family:'IBM Plex Mono'; font-size:0.78rem; background:var(--paper-2); border:1px dashed var(--line);
+  border-radius:8px; padding:8px 10px; margin:8px 0; color:var(--steel);
+}
+.kpi-card p{font-size:0.85rem; color:var(--muted); margin:0;}
+
+/* ---------- transport table ---------- */
+.tmode-table{width:100%; border-collapse:collapse; font-size:0.92rem; background:var(--white); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);}
+.tmode-table th, .tmode-table td{padding:12px 14px; border-bottom:1px solid var(--line); text-align:left;}
+.tmode-table th{background:var(--ink); color:var(--white); font-family:'IBM Plex Mono'; font-size:0.72rem; letter-spacing:0.04em; text-transform:uppercase;}
+.tmode-table tr:last-child td{border-bottom:none;}
+.bar-cell{display:flex; align-items:center; gap:8px;}
+.bar-track{flex:1; height:6px; background:var(--paper-2); border-radius:4px; overflow:hidden;}
+.bar-fill{height:100%; background:var(--kraft); border-radius:4px;}
+
+/* ---------- push pull toggle ---------- */
+.toggle-wrap{display:flex; justify-content:center; margin-bottom:24px;}
+.toggle{display:inline-flex; background:var(--white); border:1px solid var(--line); border-radius:30px; padding:4px; box-shadow:var(--shadow);}
+.toggle button{
+  border:none; background:none; padding:10px 22px; border-radius:24px; cursor:pointer;
+  font-family:'Oswald'; font-weight:600; letter-spacing:0.03em; color:var(--muted);
+}
+.toggle button.active{background:var(--ink); color:var(--white);}
+.strategy-panel{display:none;}
+.strategy-panel.active{display:block;}
+
+/* ---------- quiz ---------- */
+.quiz-box{background:var(--white); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px; max-width:680px; margin:0 auto;}
+.quiz-progress{font-family:'IBM Plex Mono'; font-size:0.75rem; color:var(--muted); margin-bottom:10px;}
+.quiz-q{font-family:'Oswald'; font-size:1.15rem; margin-bottom:16px;}
+.quiz-opt{
+  display:block; width:100%; text-align:left; background:var(--paper); border:1px solid var(--line);
+  border-radius:10px; padding:12px 14px; margin-bottom:10px; cursor:pointer; font-family:'IBM Plex Sans';
+  font-size:0.94rem; transition:all 0.15s;
+}
+.quiz-opt:hover{border-color:var(--kraft);}
+.quiz-opt.correct{background:#e4f2e8; border-color:var(--go); color:#204a34;}
+.quiz-opt.wrong{background:#fbe6e2; border-color:#c25c47; color:#6b2a1c;}
+.quiz-explain{font-size:0.86rem; color:var(--muted); background:var(--paper-2); border-radius:8px; padding:12px 14px; margin-top:10px; display:none;}
+.quiz-explain.show{display:block;}
+.quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+.quiz-nav button{
+  font-family:'Oswald'; font-weight:600; background:var(--ink); color:var(--white); border:none;
+  padding:10px 20px; border-radius:8px; cursor:pointer;
+}
+.quiz-nav button:disabled{opacity:0.4; cursor:not-allowed;}
+.quiz-score{text-align:center; padding:20px 0;}
+.quiz-score .big{font-family:'Oswald'; font-size:2.6rem; color:var(--amber-dark);}
+
+/* ---------- footer ---------- */
+footer{background:var(--ink); color:rgba(255,255,255,0.55); text-align:center; padding:36px 20px; font-family:'IBM Plex Mono'; font-size:0.78rem;}
+footer b{color:var(--amber);}
+
+/* mobile nav */
+@media (max-width:760px){
+  #navToggle{display:block;}
+  .conveyor{
+    display:none; position:absolute; top:100%; left:0; right:0; background:var(--ink);
+    flex-direction:column; padding:8px 24px 16px; box-shadow:0 12px 20px rgba(0,0,0,0.3);
+  }
+  .conveyor.open{display:flex;}
+  .conveyor button{text-align:left; border-bottom:1px solid rgba(255,255,255,0.08); padding:12px 4px;}
+}
+</style>
+</head>
+<body>
+
+<div id="progressbar"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="brand"><span class="tag">SCM</span> Interview Manifest</div>
+    <nav class="conveyor" id="conveyor">
+      <button data-target="intro">Intro</button>
+      <button data-target="scor">SCOR Flow</button>
+      <button data-target="flows">3 Flows</button>
+      <button data-target="inventory">Inventory</button>
+      <button data-target="forecast">Forecasting</button>
+      <button data-target="procurement">Procurement</button>
+      <button data-target="warehouse">Warehousing</button>
+      <button data-target="transport">Transport</button>
+      <button data-target="strategy">Push/Pull</button>
+      <button data-target="kpi">KPIs</button>
+      <button data-target="tech">Technology</button>
+      <button data-target="risk">Risk</button>
+      <button data-target="questions">Q&A Bank</button>
+      <button data-target="glossary">Glossary</button>
+      <button data-target="quiz">Self-Test</button>
+    </nav>
+    <button id="navToggle" aria-label="menu">☰</button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="intro">
+  <div class="wrap">
+    <div class="eyebrow">First-time prep · Zero jargon assumed</div>
+    <h1>Supply chain, <em>decoded</em> for your next interview.</h1>
+    <p class="sub">A visual, interactive manifest covering everything from "what even is a supply chain" to bullwhip effects, KPIs, and the questions interviewers actually ask — built so you can go from beginner to confident in one sitting.</p>
+    <div class="hero-stats">
+      <div><b>15</b><span>Topic modules</span></div>
+      <div><b>20+</b><span>Glossary flashcards</span></div>
+      <div><b>30+</b><span>Interview tips</span></div>
+      <div><b>8</b><span>Self-test questions</span></div>
+    </div>
+
+    <div class="flow-diagram">
+      <svg viewBox="0 0 1000 190" xmlns="http://www.w3.org/2000/svg" aria-label="Supply chain flow: supplier to manufacturer to warehouse to retailer to customer">
+        <defs>
+          <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="rgba(255,255,255,0.35)"/>
+          </marker>
+        </defs>
+        <path id="flowpath" d="M60,110 C220,60 260,160 400,110 C540,60 580,160 720,110 C820,80 850,140 940,110" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="2" stroke-dasharray="6 8" marker-end="url(#arrowhead)"/>
+
+        <!-- Supplier -->
+        <g transform="translate(30,80)">
+          <rect x="0" y="20" width="46" height="34" rx="3" fill="none" stroke="#E8A33D" stroke-width="2.5"/>
+          <polygon points="0,20 12,4 24,20" fill="none" stroke="#E8A33D" stroke-width="2.5"/>
+          <rect x="26" y="8" width="14" height="14" fill="none" stroke="#E8A33D" stroke-width="2.5"/>
+          <text x="23" y="72" fill="#fff" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">SUPPLIER</text>
+        </g>
+        <!-- Manufacturer -->
+        <g transform="translate(370,78)">
+          <rect x="0" y="16" width="50" height="36" rx="3" fill="none" stroke="#C4703F" stroke-width="2.5"/>
+          <circle cx="12" cy="16" r="7" fill="none" stroke="#C4703F" stroke-width="2.5"/>
+          <circle cx="30" cy="16" r="7" fill="none" stroke="#C4703F" stroke-width="2.5"/>
+          <text x="25" y="72" fill="#fff" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">MAKE</text>
+        </g>
+        <!-- Warehouse -->
+        <g transform="translate(690,78)">
+          <rect x="0" y="18" width="50" height="34" fill="none" stroke="#E8A33D" stroke-width="2.5"/>
+          <polygon points="-4,18 25,0 54,18" fill="none" stroke="#E8A33D" stroke-width="2.5"/>
+          <line x1="25" y1="18" x2="25" y2="52" stroke="#E8A33D" stroke-width="2"/>
+          <text x="25" y="72" fill="#fff" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">DELIVER</text>
+        </g>
+        <!-- Customer -->
+        <g transform="translate(895,80)">
+          <circle cx="16" cy="10" r="8" fill="none" stroke="#C4703F" stroke-width="2.5"/>
+          <path d="M2,44 C2,26 30,26 30,44" fill="none" stroke="#C4703F" stroke-width="2.5"/>
+          <text x="16" y="72" fill="#fff" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">CUSTOMER</text>
+        </g>
+
+        <circle r="5" fill="#E8A33D">
+          <animateMotion dur="4.5s" repeatCount="indefinite" path="M60,110 C220,60 260,160 400,110 C540,60 580,160 720,110 C820,80 850,140 940,110"/>
+        </circle>
+        <circle r="4" fill="#C4703F" opacity="0.8">
+          <animateMotion dur="4.5s" begin="1.5s" repeatCount="indefinite" path="M60,110 C220,60 260,160 400,110 C540,60 580,160 720,110 C820,80 850,140 940,110"/>
+        </circle>
+        <circle r="4" fill="#4C7A5E" opacity="0.8">
+          <animateMotion dur="4.5s" begin="3s" repeatCount="indefinite" path="M60,110 C220,60 260,160 400,110 C540,60 580,160 720,110 C820,80 850,140 940,110"/>
+        </circle>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WHAT IS SUPPLY CHAIN ================= -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 00</span>
+      <h2>What is a supply chain, really?</h2>
+      <p>Strip away the jargon: a supply chain is every step, person, and system involved in turning raw materials into something a customer can use — and getting it to them.</p>
+    </div>
+    <div class="grid cols-2 reveal">
+      <div class="card">
+        <h3>The simplest definition</h3>
+        <p>A supply chain is the network of organizations, people, activities, information, and resources involved in moving a product or service from raw material to end customer. <b>Supply Chain Management (SCM)</b> is the deliberate coordination of that network to deliver value at the lowest possible total cost.</p>
+      </div>
+      <div class="card">
+        <h3>A real example: your coffee cup</h3>
+        <p>Beans are grown in Brazil (source) → roasted at a facility (make) → packed and trucked to a distribution center (deliver) → stocked at your local café (retail) → served to you (consumption). Packaging, labels, and even the cup itself have their own mini supply chains feeding into this one.</p>
+      </div>
+    </div>
+    <div class="tip reveal">
+      <span class="badge">TIP</span>
+      <p><strong>Interviewers love this test:</strong> if asked "explain supply chain to a 5-year-old," use a concrete product (a T-shirt, a phone, a pizza) and walk through it step by step. It shows you can translate theory into plain language — a skill they're explicitly screening for.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SCOR MODEL ================= -->
+<section class="sec alt" id="scor">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 01 · THE CORE FRAMEWORK</span>
+      <h2>The 5 stages every supply chain runs on (SCOR model)</h2>
+      <p>The Supply Chain Operations Reference (SCOR) model breaks any supply chain into five repeating stages. This is the mental model to reach for whenever you're asked to "walk through" a supply chain.</p>
+    </div>
+    <div class="accordion reveal" id="scorAccordion">
+      <div class="acc-item open">
+        <button class="acc-head"><span class="letter">P</span><span class="title">Plan</span><span class="plus">+</span></button>
+        <div class="acc-body"><div class="acc-body-inner">
+          Balancing expected demand against available resources. Involves demand forecasting, inventory planning, and capacity planning so the rest of the chain isn't caught flat-footed.
+          <ul><li>Key question: "How much will we need, and when?"</li><li>Owned by: S&OP (Sales & Operations Planning) teams</li></ul>
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head"><span class="letter">S</span><span class="title">Source</span><span class="plus">+</span></button>
+        <div class="acc-body"><div class="acc-body-inner">
+          Finding, qualifying, and buying the raw materials or components needed to make the product. Includes supplier selection, negotiation, purchase orders, and receiving.
+          <ul><li>Key question: "Who do we buy from, and on what terms?"</li><li>Owned by: Procurement / Purchasing teams</li></ul>
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head"><span class="letter">M</span><span class="title">Make</span><span class="plus">+</span></button>
+        <div class="acc-body"><div class="acc-body-inner">
+          Converting raw materials into a finished product — manufacturing, assembly, quality testing, and packaging.
+          <ul><li>Key question: "How do we build it efficiently and to spec?"</li><li>Owned by: Operations / Manufacturing teams</li></ul>
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head"><span class="letter">D</span><span class="title">Deliver</span><span class="plus">+</span></button>
+        <div class="acc-body"><div class="acc-body-inner">
+          Warehousing, order management, and transportation — getting the finished product to the customer, on time and intact.
+          <ul><li>Key question: "How does it get there, and how fast?"</li><li>Owned by: Logistics / Distribution teams</li></ul>
+        </div></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head"><span class="letter">R</span><span class="title">Return</span><span class="plus">+</span></button>
+        <div class="acc-body"><div class="acc-body-inner">
+          Handling returns, repairs, recycling, and excess inventory — often called <b>reverse logistics</b>. Frequently overlooked, but a huge cost and customer-experience lever (think e-commerce returns).
+          <ul><li>Key question: "What happens when it comes back?"</li><li>Owned by: Customer service + reverse logistics teams</li></ul>
+        </div></div>
+      </div>
+    </div>
+    <div class="tip reveal">
+      <span class="badge">TIP</span>
+      <p><strong>Structure your answers around SCOR.</strong> If asked something broad like "tell me about a supply chain project you led," mentally slot your example into Plan / Source / Make / Deliver / Return — it instantly makes your answer sound organized and expert-level, even if you never say the word "SCOR" out loud.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3 FLOWS ================= -->
+<section class="sec" id="flows">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 02</span>
+      <h2>Every supply chain moves three things at once</h2>
+      <p>Products don't just move one way. Three flows run in parallel — mixing them up in an interview is a common beginner mistake.</p>
+    </div>
+    <div class="grid cols-3 reveal">
+      <div class="card">
+        <h3>📦 Material flow</h3>
+        <p>The physical movement — raw materials, components, and finished goods traveling from supplier to customer. This is the flow most people picture first.</p>
+      </div>
+      <div class="card">
+        <h3>💳 Financial flow</h3>
+        <p>Money moving in the <em>opposite</em> direction — payments, credit terms, invoices, and rebates flowing from customer back to supplier.</p>
+      </div>
+      <div class="card">
+        <h3>📊 Information flow</h3>
+        <p>The two-way exchange of data — orders, forecasts, shipment tracking, inventory levels — that lets every party coordinate. Poor information flow is the #1 cause of supply chain chaos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INVENTORY ================= -->
+<section class="sec alt" id="inventory">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 03</span>
+      <h2>Inventory management essentials</h2>
+      <p>Inventory is money sitting on a shelf. Every SCM interview probes how well you understand the trade-off between having enough stock and having too much.</p>
+    </div>
+
+    <div class="diagram-box reveal" style="margin-bottom:24px;">
+      <h3 style="margin-bottom:6px;">Reading the sawtooth: reorder point in action</h3>
+      <p class="mono" style="font-size:0.8rem;color:var(--muted);margin-bottom:14px;">Stock depletes steadily → hits the reorder point → an order is placed → lead time passes → stock is replenished before it hits zero (thanks to safety stock).</p>
+      <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+        <line x1="40" y1="10" x2="40" y2="190" stroke="#5B6774" stroke-width="1.5"/>
+        <line x1="40" y1="190" x2="620" y2="190" stroke="#5B6774" stroke-width="1.5"/>
+        <text x="10" y="15" font-family="IBM Plex Mono" font-size="10" fill="#5B6774">Stock</text>
+        <text x="590" y="205" font-family="IBM Plex Mono" font-size="10" fill="#5B6774">Time</text>
+        <line x1="40" y1="130" x2="620" y2="130" stroke="#C4703F" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <text x="450" y="125" font-family="IBM Plex Mono" font-size="10" fill="#C4703F">Reorder point</text>
+        <line x1="40" y1="165" x2="620" y2="165" stroke="#4C7A5E" stroke-width="1.5" stroke-dasharray="2 3"/>
+        <text x="450" y="160" font-family="IBM Plex Mono" font-size="10" fill="#4C7A5E">Safety stock</text>
+        <path d="M60,40 L200,130 L210,40 L350,130 L360,40 L500,130 L510,40 L610,110" fill="none" stroke="#E8A33D" stroke-width="3" stroke-linejoin="round">
+          <animate attributeName="stroke-dasharray" from="0,900" to="900,0" dur="2.4s" fill="freeze"/>
+        </path>
+      </svg>
+    </div>
+
+    <div class="grid cols-3 reveal">
+      <div class="card">
+        <h3>Safety Stock</h3>
+        <p>Buffer inventory held to protect against demand spikes or supplier delays. Too little = stockouts; too much = tied-up cash.</p>
+      </div>
+      <div class="card">
+        <h3>EOQ (Economic Order Quantity)</h3>
+        <p class="mono" style="font-size:0.85rem;background:var(--paper-2);padding:6px 8px;border-radius:6px;">EOQ = √(2DS / H)</p>
+        <p>D = annual demand, S = ordering cost per order, H = holding cost per unit. It finds the order size that minimizes total ordering + holding cost.</p>
+      </div>
+      <div class="card">
+        <h3>ABC Analysis</h3>
+        <p>Classifies inventory by value contribution: <b>A</b> items (≈20% of SKUs, ≈80% of value) get tight control; <b>C</b> items (bulk of SKUs, low value) get light-touch management.</p>
+      </div>
+      <div class="card">
+        <h3>JIT (Just-In-Time)</h3>
+        <p>Materials arrive exactly when needed for production — minimizes holding cost but raises exposure to disruption (famously exposed during COVID-19).</p>
+      </div>
+      <div class="card">
+        <h3>JIC (Just-In-Case)</h3>
+        <p>The opposite philosophy — carry buffer stock deliberately to absorb shocks. Trades cost efficiency for resilience.</p>
+      </div>
+      <div class="card">
+        <h3>Reorder Point</h3>
+        <p class="mono" style="font-size:0.85rem;background:var(--paper-2);padding:6px 8px;border-radius:6px;">ROP = (Avg. daily usage × Lead time) + Safety stock</p>
+        <p>The stock level that automatically triggers a new purchase order.</p>
+      </div>
+    </div>
+
+    <div class="tip reveal">
+      <span class="badge">TIP</span>
+      <p><strong>Know the JIT vs. JIC trade-off cold.</strong> A very common interview question is "would you recommend JIT or JIC for [industry]?" — there's no universally right answer; the strong answer explains the trade-off (cost efficiency vs. resilience) and ties it to the specific product's demand volatility and disruption risk.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FORECASTING / BULLWHIP ================= -->
+<section class="sec" id="forecast">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 04</span>
+      <h2>Demand forecasting & the bullwhip effect</h2>
+      <p>Forecasting predicts what customers will want. When it breaks down across a chain, you get the single most-asked concept in SCM interviews: the bullwhip effect.</p>
+    </div>
+
+    <div class="grid cols-2 reveal">
+      <div class="card">
+        <h3>Qualitative methods</h3>
+        <p>Used when there's little historical data — expert judgment, market research, Delphi method, sales-force polling. Common for new product launches.</p>
+      </div>
+      <div class="card">
+        <h3>Quantitative methods</h3>
+        <p>Uses historical data patterns — moving averages, exponential smoothing, regression, and increasingly, ML-based demand sensing.</p>
+      </div>
+    </div>
+
+    <div class="diagram-box reveal" style="margin-top:20px;">
+      <h3 style="margin-bottom:4px;">🐂 The Bullwhip Effect</h3>
+      <p style="color:var(--muted); font-size:0.92rem;">Small fluctuations in customer demand get amplified as each tier reacts and over-corrects — the further upstream, the wilder the swings.</p>
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="margin-top:10px;">
+        <text x="30" y="20" font-family="IBM Plex Mono" font-size="10" fill="#5B6774">Retailer</text>
+        <path d="M30,50 Q70,40 110,50 T190,50 T270,50" fill="none" stroke="#4C7A5E" stroke-width="2.5"/>
+        <text x="30" y="80" font-family="IBM Plex Mono" font-size="10" fill="#5B6774">Distributor</text>
+        <path d="M30,110 Q70,85 110,110 T190,110 T270,110" fill="none" stroke="#E8A33D" stroke-width="2.5"/>
+        <text x="30" y="145" font-family="IBM Plex Mono" font-size="10" fill="#5B6774">Manufacturer</text>
+        <path d="M30,175 Q90,120 150,175 T270,175" fill="none" stroke="#C4703F" stroke-width="3"/>
+        <text x="320" y="115" font-family="IBM Plex Mono" font-size="12" fill="#1B2430" font-weight="600">Variability</text>
+        <text x="320" y="132" font-family="IBM Plex Mono" font-size="12" fill="#1B2430">amplifies</text>
+        <text x="320" y="149" font-family="IBM Plex Mono" font-size="12" fill="#1B2430">upstream →</text>
+      </svg>
+      <p style="font-size:0.9rem;color:var(--muted);margin-top:10px;"><b>Causes:</b> order batching, price fluctuations/promotions, demand forecasting based on the last order (not real demand), and rationing games during shortages.</p>
+      <p style="font-size:0.9rem;color:var(--muted);margin:0;"><b>Fixes:</b> sharing real point-of-sale data upstream, smaller/more frequent orders, stable pricing, and Vendor Managed Inventory (VMI).</p>
+    </div>
+
+    <div class="tip reveal">
+      <span class="badge">TIP</span>
+      <p><strong>This is a favorite whiteboard question.</strong> Be ready to both define the bullwhip effect AND name 2–3 causes and 2–3 fixes without prompting — interviewers often follow up "how would you reduce it?" immediately after you define it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROCUREMENT ================= -->
+<section class="sec alt" id="procurement">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 05</span>
+      <h2>Procurement & sourcing</h2>
+      <p>Procurement is about getting the right inputs, from the right supplier, at the right cost — without creating risk.</p>
+    </div>
+    <div class="grid cols-2 reveal">
+      <div class="card">
+        <h3>Single vs. Multiple Sourcing</h3>
+        <p><b>Single sourcing</b> (one supplier) enables volume discounts and closer relationships but concentrates risk. <b>Multiple sourcing</b> spreads risk and increases negotiating leverage, at the cost of complexity and weaker per-supplier volume.</p>
+      </div>
+      <div class="card">
+        <h3>Make vs. Buy</h3>
+        <p>Decide whether to produce a component in-house ("make," more control, higher fixed cost) or purchase it from a supplier ("buy," more flexibility, potential dependency). Driven by core-competency, cost, and capacity analysis.</p>
+      </div>
+      <div class="card">
+        <h3>Supplier evaluation criteria</h3>
+        <p>Cost, quality (defect rate), delivery reliability, financial stability, capacity, and increasingly — sustainability and ethical labor practices.</p>
+      </div>
+      <div class="card">
+        <h3>Incoterms (know 3–4)</h3>
+        <p><b>EXW</b> — buyer handles everything from seller's dock. <b>FOB</b> — seller delivers to the ship; buyer takes over from there. <b>CIF</b> — seller pays cost, insurance, freight to destination port. <b>DDP</b> — seller delivers, duty paid, all the way to buyer's door.</p>
+      </div>
+    </div>
+    <div class="tip reveal">
+      <span class="badge">TIP</span>
+      <p><strong>You don't need to memorize all 11 Incoterms.</strong> Knowing EXW, FOB, CIF, and DDP — and being able to say who bears cost/risk at each handoff point — covers 90% of what gets asked.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WAREHOUSING ================= -->
+<section class="sec" id="warehouse">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 06</span>
+      <h2>Warehousing & distribution</h2>
+      <p>Warehouses aren't just storage — they're where orders get assembled, quality-checked, and staged for the final leg to the customer.</p>
+    </div>
+    <div class="grid cols-3 reveal">
+      <div class="card">
+        <h3>Core functions</h3>
+        <p>Receiving, put-away, storage, order picking, packing, and shipping (often abbreviated as the "warehouse cycle").</p>
+      </div>
+      <div class="card">
+        <h3>Cross-docking</h3>
+        <p>Goods move directly from inbound truck to outbound truck with little or no storage in between — cuts handling cost and speeds delivery. Common in grocery and retail replenishment.</p>
+      </div>
+      <div class="card">
+        <h3>DC network design</h3>
+        <p>Deciding how many distribution centers to run and where to place them — a trade-off between transportation cost (fewer, bigger DCs) and delivery speed (more, smaller DCs closer to customers).</p>
+      </div>
+      <div class="card">
+        <h3>FIFO vs. LIFO</h3>
+        <p><b>FIFO</b> (First-In-First-Out): oldest stock ships first — essential for perishables. <b>LIFO</b> (Last-In-First-Out): newest stock ships first — used for non-perishables or accounting purposes in some regions.</p>
+      </div>
+      <div class="card">
+        <h3>Pick methods</h3>
+        <p>Discrete picking (one order at a time), batch picking (multiple orders together), and zone picking (pickers assigned to warehouse zones) — chosen based on order volume and SKU variety.</p>
+      </div>
+      <div class="card">
+        <h3>3PL / 4PL</h3>
+        <p><b>3PL</b> (third-party logistics) — outsourced warehousing/transportation execution. <b>4PL</b> — a step further; a partner that manages the entire logistics strategy and other 3PLs on your behalf.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TRANSPORT ================= -->
+<section class="sec alt" id="transport">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 07</span>
+      <h2>Transportation: the cost vs. speed trade-off</h2>
+      <p>Every mode of transport trades cost against speed and flexibility. Interviewers want to see you can reason about which mode fits which scenario.</p>
+    </div>
+    <div class="reveal" style="overflow-x:auto;">
+    <table class="tmode-table">
+      <thead><tr><th>Mode</th><th>Speed</th><th>Cost</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td>✈️ Air</td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:95%;background:#4C7A5E;"></div></div></div></td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:90%;"></div></div></div></td><td>Urgent, high-value, low-volume goods</td></tr>
+        <tr><td>🚢 Ocean/Sea</td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:15%;background:#4C7A5E;"></div></div></div></td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:10%;"></div></div></div></td><td>Bulk, non-urgent, international volume</td></tr>
+        <tr><td>🚂 Rail</td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:40%;background:#4C7A5E;"></div></div></div></td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:30%;"></div></div></div></td><td>Heavy, bulky goods over land, medium distance</td></tr>
+        <tr><td>🚚 Road/Truck</td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:60%;background:#4C7A5E;"></div></div></div></td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:55%;"></div></div></div></td><td>Door-to-door flexibility, short-to-medium haul</td></tr>
+        <tr><td>🛢️ Pipeline</td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:30%;background:#4C7A5E;"></div></div></div></td><td><div class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:20%;"></div></div></div></td><td>Liquids/gases (oil, gas) — fixed route only</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="tip reveal">
+      <span class="badge">TIP</span>
+      <p><strong>"Would you ship by air or sea?"</strong> is a classic trade-off question. Anchor your answer to total landed cost and urgency: air wins when stockout cost or time-sensitivity outweighs the freight premium (e.g. a new phone launch); sea wins for predictable, high-volume, non-urgent replenishment.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STRATEGY: PUSH/PULL + LEAN/AGILE ================= -->
+<section class="sec" id="strategy">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 08</span>
+      <h2>Supply chain strategy</h2>
+      <p>Two classic strategic axes come up constantly: how you trigger production (push vs. pull), and how you optimize the chain (lean vs. agile).</p>
+    </div>
+
+    <div class="toggle-wrap reveal">
+      <div class="toggle" id="strategyToggle">
+        <button class="active" data-panel="push">Push</button>
+        <button data-panel="pull">Pull</button>
+        <button data-panel="hybrid">Push-Pull</button>
+      </div>
+    </div>
+    <div class="diagram-box reveal">
+      <div class="strategy-panel active" id="push-panel">
+        <h3>Push strategy</h3>
+        <p>Production is triggered by a <b>forecast</b> — goods are made and pushed into the market before actual demand is confirmed. Efficient for stable, predictable demand (e.g. FMCG, groceries) but risks overstock if the forecast is wrong.</p>
+      </div>
+      <div class="strategy-panel" id="pull-panel">
+        <h3>Pull strategy</h3>
+        <p>Production is triggered by <b>actual customer orders</b> — nothing is made until demand is confirmed. Minimizes excess inventory (think Dell's build-to-order model) but can mean longer lead times for the customer.</p>
+      </div>
+      <div class="strategy-panel" id="hybrid-panel">
+        <h3>Push-Pull (hybrid)</h3>
+        <p>The chain is "push" up to a <b>decoupling point</b> (e.g. generic sub-assemblies built to forecast), then "pull" from there (final assembly/customization happens only after the order arrives). This is how most modern manufacturers — automotive, electronics — actually operate.</p>
+      </div>
+    </div>
+
+    <div class="grid cols-2 reveal" style="margin-top:24px;">
+      <div class="card">
+        <h3>Lean supply chain</h3>
+        <p>Focused on eliminating waste and minimizing cost — works best with <b>stable, predictable</b> demand. Think automotive manufacturing.</p>
+      </div>
+      <div class="card">
+        <h3>Agile supply chain</h3>
+        <p>Focused on speed and flexibility to respond to <b>volatile, unpredictable</b> demand — works best in fast fashion or trend-driven electronics.</p>
+      </div>
+    </div>
+    <div class="tip reveal">
+      <span class="badge">TIP</span>
+      <p><strong>"Leagile"</strong> (lean + agile, split at a decoupling point) is a great answer when asked to design a strategy for a company with both stable core products and volatile seasonal ones — name it and you'll stand out.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KPIs ================= -->
+<section class="sec alt" id="kpi">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 09</span>
+      <h2>The KPIs every interviewer expects you to know</h2>
+      <p>Numbers signal competence. Being able to define and calculate these on the spot is one of the highest-leverage things you can prepare.</p>
+    </div>
+    <div class="grid cols-3 reveal">
+      <div class="kpi-card"><h4>Inventory Turnover</h4><div class="kpi-formula">COGS ÷ Avg. Inventory</div><p>How many times inventory is sold and replaced in a period. Higher = more efficient (usually).</p></div>
+      <div class="kpi-card"><h4>OTIF</h4><div class="kpi-formula">On-Time AND In-Full orders ÷ Total orders</div><p>The gold-standard delivery reliability metric — both conditions must be met.</p></div>
+      <div class="kpi-card"><h4>Fill Rate</h4><div class="kpi-formula">Units shipped ÷ Units ordered</div><p>How much of a customer's order you can fulfill from available stock.</p></div>
+      <div class="kpi-card"><h4>Perfect Order Rate</h4><div class="kpi-formula">% of orders: on-time + complete + damage-free + correct docs</div><p>The strictest composite delivery metric — all four conditions must hold.</p></div>
+      <div class="kpi-card"><h4>Cash-to-Cash Cycle</h4><div class="kpi-formula">DIO + DSO − DPO</div><p>Days between paying suppliers and collecting cash from customers. Shorter = healthier cash flow.</p></div>
+      <div class="kpi-card"><h4>Lead Time</h4><div class="kpi-formula">Order placed → Order received</div><p>Total time from triggering an order to having it in hand. A core lever for customer satisfaction.</p></div>
+    </div>
+    <div class="tip reveal">
+      <span class="badge">TIP</span>
+      <p><strong>Quantify your own experience.</strong> If you have any supply chain, ops, or retail experience — even a part-time job — reframe it with a metric: "I reduced stockouts by X%" beats "I helped manage inventory" every time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TECHNOLOGY ================= -->
+<section class="sec" id="tech">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 10</span>
+      <h2>Technology powering modern supply chains</h2>
+      <p>You don't need to be technical, but naming the right system for the right job shows real-world fluency.</p>
+    </div>
+    <div class="grid cols-4 reveal">
+      <div class="card"><h3>ERP</h3><p>Enterprise Resource Planning — integrates finance, HR, inventory, and orders into one system (e.g. SAP, Oracle).</p></div>
+      <div class="card"><h3>WMS</h3><p>Warehouse Management System — runs day-to-day warehouse ops: receiving, picking, packing.</p></div>
+      <div class="card"><h3>TMS</h3><p>Transportation Management System — plans routes, selects carriers, and tracks freight.</p></div>
+      <div class="card"><h3>RFID / Barcode</h3><p>Automated identification and tracking of items as they move through the chain.</p></div>
+      <div class="card"><h3>EDI</h3><p>Electronic Data Interchange — standardized digital document exchange (POs, invoices) between trading partners.</p></div>
+      <div class="card"><h3>IoT sensors</h3><p>Real-time tracking of location, temperature, and condition — critical for cold-chain and pharma.</p></div>
+      <div class="card"><h3>Blockchain</h3><p>Immutable shared ledger — used for provenance/traceability (e.g. verifying ethically-sourced materials).</p></div>
+      <div class="card"><h3>AI / ML</h3><p>Powers demand forecasting, predictive maintenance, dynamic routing, and anomaly detection.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RISK ================= -->
+<section class="sec alt" id="risk">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 11</span>
+      <h2>Risk & resilience</h2>
+      <p>Since 2020, "how would you make a supply chain more resilient" has become one of the most common interview questions in the field.</p>
+    </div>
+    <div class="grid cols-2 reveal">
+      <div class="card">
+        <h3>Common disruption types</h3>
+        <p>Natural disasters, geopolitical conflict/tariffs, single-supplier failure, sudden demand shocks, cyberattacks, and labor disputes/port strikes.</p>
+      </div>
+      <div class="card">
+        <h3>Mitigation strategies</h3>
+        <p>Dual/multiple sourcing, strategic safety stock, nearshoring or "friend-shoring," end-to-end visibility tools, and formal business continuity planning.</p>
+      </div>
+    </div>
+    <div class="tip reveal">
+      <span class="badge">TIP</span>
+      <p><strong>Reference a real event if you can</strong> — the 2021 Suez Canal blockage, COVID-19 chip shortages, or recent tariff changes. Connecting theory to a real headline instantly signals that you follow the industry, not just the textbook.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INTERVIEW QUESTION BANK ================= -->
+<section class="sec dark" id="questions">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num" style="color:var(--amber);">MODULE 12 · THE ACTUAL INTERVIEW</span>
+      <h2>Question bank, by category</h2>
+      <p class="muted">Use the STAR method (Situation, Task, Action, Result) for every behavioral question below — it's the format interviewers are trained to listen for.</p>
+    </div>
+    <div class="tabs reveal" id="qTabs">
+      <button class="tab-btn active" data-tab="behavioral">Behavioral</button>
+      <button class="tab-btn" data-tab="technical">Technical</button>
+      <button class="tab-btn" data-tab="case">Case / Scenario</button>
+    </div>
+    <div class="tab-panel active" id="behavioral-panel">
+      <div class="grid cols-2 reveal">
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"Tell me about a time you had to resolve a supply disruption."</p></div>
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"Describe a conflict you had with a supplier or vendor and how you resolved it."</p></div>
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"Tell me about a time you had to make a decision with incomplete data."</p></div>
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"Give an example of when you improved a process — what was the measurable result?"</p></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="technical-panel">
+      <div class="grid cols-2 reveal">
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"What is the bullwhip effect and how would you reduce it?"</p></div>
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"Walk me through the EOQ formula and what it's used for."</p></div>
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"What's the difference between JIT and JIC inventory strategies?"</p></div>
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"Explain the difference between a 3PL and a 4PL."</p></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="case-panel">
+      <div class="grid cols-2 reveal">
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"Our lead time just doubled overnight — walk me through how you'd diagnose and fix it."</p></div>
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"Design a distribution network for a company expanding into 3 new regions."</p></div>
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"A key supplier just went bankrupt. What's your first move?"</p></div>
+        <div class="card" style="background:var(--ink-2); border-color:rgba(255,255,255,0.12);"><p style="color:#fff;">"How would you decide between air freight and ocean freight for a new SKU?"</p></div>
+      </div>
+    </div>
+    <div class="tip reveal" style="background:#20304a; border-color:#3a4f6d; border-left-color:var(--amber);">
+      <span class="badge">TIP</span>
+      <p style="color:#e8ecf2;"><strong>Always end case questions with a trade-off, not a single answer.</strong> Interviewers are testing judgment, not a memorized "correct" response — showing you weighed cost vs. speed vs. risk is more impressive than picking the "right" mode of transport.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GLOSSARY FLASHCARDS ================= -->
+<section class="sec" id="glossary">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="num">MODULE 13</span>
+      <h2>Glossary — flip to review</h2>
+      <p>Tap or click any card to reveal the definition. A fast way to drill vocabulary the night before.</p>
+    </div>
+    <div class="flash-grid reveal" id="flashGrid"></div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="sec alt" id="quiz">
+  <div class="wrap">
+    <div class="sec-head reveal" style="text-align:center; max-width:none;">
+      <span class="num">MODULE 14 · SELF-TEST</span>
+      <h2>Quick knowledge check</h2>
+      <p>8 questions. No pressure — this is just to confirm what's sticking.</p>
+    </div>
+    <div class="quiz-box reveal" id="quizBox"></div>
+  </div>
+</section>
+
+<footer>
+  Built for interview prep · Review the <b>Glossary</b> and <b>Q&amp;A Bank</b> the night before · Good luck 🚀
+</footer>
+
+<script>
+/* ---------------- progress bar + nav active state ---------------- */
+const progressbar = document.getElementById('progressbar');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  progressbar.style.width = scrolled + '%';
+});
+
+const navToggle = document.getElementById('navToggle');
+const conveyor = document.getElementById('conveyor');
+navToggle.addEventListener('click', () => conveyor.classList.toggle('open'));
+
+const navButtons = document.querySelectorAll('.conveyor button');
+navButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.getElementById(btn.dataset.target);
+    if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    conveyor.classList.remove('open');
+  });
+});
+const sections = Array.from(document.querySelectorAll('section[id]'));
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navButtons.forEach(b => b.classList.remove('active'));
+      const match = document.querySelector(`.conveyor button[data-target="${entry.target.id}"]`);
+      if (match) match.classList.add('active');
+    }
+  });
+}, {rootMargin: '-40% 0px -55% 0px'});
+sections.forEach(s => navObserver.observe(s));
+
+/* ---------------- reveal on scroll ---------------- */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealObserver.unobserve(e.target); } });
+}, {threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* ---------------- accordion ---------------- */
+document.querySelectorAll('.acc-head').forEach(head => {
+  head.addEventListener('click', () => {
+    const item = head.parentElement;
+    const body = item.querySelector('.acc-body');
+    const wasOpen = item.classList.contains('open');
+    item.parentElement.querySelectorAll('.acc-item').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.acc-body').style.maxHeight = null;
+    });
+    if (!wasOpen) {
+      item.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  });
+});
+// open first accordion body on load
+window.addEventListener('load', () => {
+  const first = document.querySelector('.acc-item.open .acc-body');
+  if (first) first.style.maxHeight = first.scrollHeight + 'px';
+});
+
+/* ---------------- tabs (question bank) ---------------- */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(btn.dataset.tab + '-panel').classList.add('active');
+  });
+});
+
+/* ---------------- push/pull toggle ---------------- */
+document.querySelectorAll('#strategyToggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#strategyToggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.strategy-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(btn.dataset.panel + '-panel').classList.add('active');
+  });
+});
+
+/* ---------------- flashcards ---------------- */
+const glossary = [
+  {term:"SKU", hint:"stock keeping unit", def:"A unique code identifying a specific product variant (size, color, etc.) for tracking inventory."},
+  {term:"Lead Time", hint:"timing", def:"The total time between placing an order and receiving it."},
+  {term:"Safety Stock", hint:"buffer", def:"Extra inventory held to guard against demand spikes or supply delays."},
+  {term:"EOQ", hint:"formula", def:"Economic Order Quantity — the order size that minimizes total ordering + holding cost."},
+  {term:"Bullwhip Effect", hint:"phenomenon", def:"Small demand changes get amplified into large swings as you move upstream in the chain."},
+  {term:"Cross-Docking", hint:"warehouse ops", def:"Goods move straight from inbound to outbound trucks with little or no storage time."},
+  {term:"3PL", hint:"outsourcing", def:"Third-Party Logistics — an outsourced partner that executes warehousing/transportation."},
+  {term:"4PL", hint:"outsourcing", def:"Fourth-Party Logistics — a partner that manages your entire logistics strategy, including other 3PLs."},
+  {term:"Incoterms", hint:"trade rules", def:"Standardized international trade terms (e.g. FOB, CIF) defining who bears cost/risk at each shipping stage."},
+  {term:"JIT", hint:"philosophy", def:"Just-In-Time — materials arrive exactly when needed, minimizing inventory holding cost."},
+  {term:"MRP", hint:"planning system", def:"Material Requirements Planning — a system that calculates what materials are needed, and when, based on production schedules."},
+  {term:"Distribution Center", hint:"facility", def:"A warehouse focused on quickly receiving, sorting, and re-shipping goods to their next destination."},
+  {term:"FIFO", hint:"inventory rule", def:"First-In-First-Out — the oldest stock is sold or used first; critical for perishables."},
+  {term:"Backorder", hint:"stockout", def:"An order that can't be filled immediately because the item is out of stock, to be fulfilled later."},
+  {term:"Kanban", hint:"lean tool", def:"A visual signal system (often cards) that triggers replenishment only when stock is actually consumed."},
+  {term:"Milk Run", hint:"transport route", def:"A single truck route that picks up from multiple suppliers before returning, to consolidate loads."},
+  {term:"Landed Cost", hint:"true cost", def:"The total cost of a product including purchase price, freight, insurance, duties, and handling."},
+  {term:"Reorder Point", hint:"trigger level", def:"The inventory level at which a new order is automatically triggered."},
+  {term:"VMI", hint:"partnership model", def:"Vendor Managed Inventory — the supplier monitors and replenishes the buyer's stock directly."},
+  {term:"Bill of Lading", hint:"document", def:"A legal document issued by a carrier detailing the shipment's contents, origin, and destination."},
+];
+const flashGrid = document.getElementById('flashGrid');
+glossary.forEach(item => {
+  const card = document.createElement('div');
+  card.className = 'flash';
+  card.innerHTML = `
+    <div class="flash-inner">
+      <div class="flash-face flash-front">
+        <div class="term">${item.term}</div>
+        <div class="hint">${item.hint}</div>
+      </div>
+      <div class="flash-face flash-back"><p>${item.def}</p></div>
+    </div>`;
+  card.addEventListener('click', () => card.classList.toggle('flipped'));
+  flashGrid.appendChild(card);
+});
+
+/* ---------------- quiz ---------------- */
+const quizData = [
+  {q:"What does the bullwhip effect describe?", opts:["Trucks arriving faster than expected","Demand variability amplifying upstream","A method for reducing warehouse costs","A type of shipping container"], correct:1, explain:"The bullwhip effect is the amplification of demand fluctuations as you move from retailer to distributor to manufacturer to supplier."},
+  {q:"In the SCOR model, which stage handles reverse logistics?", opts:["Plan","Source","Deliver","Return"], correct:3, explain:"Return covers handling returns, repairs, and recycling — also known as reverse logistics."},
+  {q:"Which strategy triggers production based on actual customer orders?", opts:["Push","Pull","Lean","JIC"], correct:1, explain:"Pull strategies wait for confirmed demand (customer orders) before producing — minimizing excess inventory."},
+  {q:"OTIF stands for:", opts:["On Time In Full","Order Tracking and Inventory Flow","Optimal Transport and Inventory Fit","Order Total Item Fulfillment"], correct:0, explain:"OTIF = On-Time AND In-Full — both conditions must be met for an order to count."},
+  {q:"What is the main trade-off of Just-In-Time (JIT) inventory?", opts:["Higher holding cost, lower flexibility","Lower holding cost, higher disruption risk","Higher cost, higher safety stock","No trade-off — it's strictly better"], correct:1, explain:"JIT minimizes holding costs but leaves the chain more exposed to supply disruptions, since there's little buffer stock."},
+  {q:"A 4PL differs from a 3PL because it:", opts:["Only handles air freight","Manages the entire logistics strategy, including other 3PLs","Is always cheaper","Only applies to warehousing"], correct:1, explain:"A 4PL sits a layer above execution — it manages strategy and can coordinate multiple 3PLs on the client's behalf."},
+  {q:"Which transportation mode typically has the lowest cost per unit for bulk international cargo?", opts:["Air","Ocean/Sea","Rail","Road"], correct:1, explain:"Ocean freight is slow but by far the cheapest option for large volumes moved internationally."},
+  {q:"Cash-to-cash cycle time is calculated as:", opts:["DSO + DPO − DIO","DIO + DSO − DPO","DIO − DSO + DPO","COGS ÷ Average Inventory"], correct:1, explain:"Cash-to-Cash Cycle = Days Inventory Outstanding + Days Sales Outstanding − Days Payable Outstanding."},
+];
+let qIndex = 0, score = 0, answered = false;
+const quizBox = document.getElementById('quizBox');
+
+function renderQuiz(){
+  if (qIndex >= quizData.length){
+    quizBox.innerHTML = `
+      <div class="quiz-score">
+        <div class="mono" style="color:var(--muted);font-size:0.8rem;">RESULT</div>
+        <div class="big">${score} / ${quizData.length}</div>
+        <p style="color:var(--muted);margin-top:6px;">${score === quizData.length ? "Perfect score — you're ready." : score >= quizData.length*0.6 ? "Solid grasp — review the missed ones above." : "Worth another pass through the modules above."}</p>
+        <div class="quiz-nav" style="justify-content:center;"><button id="retryBtn">Retry Quiz</button></div>
+      </div>`;
+    document.getElementById('retryBtn').addEventListener('click', () => { qIndex=0; score=0; answered=false; renderQuiz(); });
+    return;
+  }
+  const item = quizData[qIndex];
+  answered = false;
+  quizBox.innerHTML = `
+    <div class="quiz-progress">QUESTION ${qIndex+1} OF ${quizData.length} · SCORE ${score}</div>
+    <div class="quiz-q">${item.q}</div>
+    <div id="optsWrap"></div>
+    <div class="quiz-explain" id="explainBox">${item.explain}</div>
+    <div class="quiz-nav"><span></span><button id="nextBtn" disabled>Next →</button></div>
+  `;
+  const optsWrap = document.getElementById('optsWrap');
+  item.opts.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.className = 'quiz-opt';
+    b.textContent = opt;
+    b.addEventListener('click', () => {
+      if (answered) return;
+      answered = true;
+      if (i === item.correct){ b.classList.add('correct'); score++; }
+      else {
+        b.classList.add('wrong');
+        optsWrap.children[item.correct].classList.add('correct');
+      }
+      document.getElementById('explainBox').classList.add('show');
+      document.getElementById('nextBtn').disabled = false;
+    });
+    optsWrap.appendChild(b);
+  });
+  document.getElementById('nextBtn').addEventListener('click', () => { qIndex++; renderQuiz(); });
+}
+renderQuiz();
+</script>
+</body>
+</html>
