@@ -405,8 +405,79 @@ footer .coin-mini{display:inline-block;width:14px;height:14px;border-radius:50%;
   .workbench{grid-template-columns:1fr;}
   .pattern-grid{grid-template-columns:1fr 1fr;}
   .cheat-grid{grid-template-columns:1fr;}
-  .vs-row{grid-template-columns:1fr;}
-  .vs-row > div:first-child{background:var(--bg-elev-2);font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;color:var(--gold);padding-bottom:6px;}
+  
+  /* Decision Table -> Mobile Card Transformation */
+  .vs-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .vs-row.head {
+    display: none;
+  }
+  .vs-row {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    gap: 10px;
+  }
+  .vs-row > div {
+    padding: 0;
+  }
+  .vs-row > div:first-child {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--gold);
+    padding: 0 0 6px;
+    border-bottom: 1px solid var(--line);
+    background: transparent;
+  }
+  .vs-row > div:nth-child(2) {
+    background: var(--emerald-soft);
+    border: 1px solid rgba(63,182,139,0.28);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.88rem;
+    color: #c4f1de;
+    line-height: 1.5;
+  }
+  .vs-row > div:nth-child(2)::before {
+    content: '✓ GREEDY TENDS TO WORK:';
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--emerald);
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+  }
+  .vs-row > div:nth-child(3) {
+    background: var(--coral-soft);
+    border: 1px solid rgba(226,87,76,0.28);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.88rem;
+    color: #fed7d7;
+    line-height: 1.5;
+  }
+  .vs-row > div:nth-child(3)::before {
+    content: '⚡ YOU PROBABLY NEED DP:';
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--coral);
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+  }
 }
 @media (max-width:600px){
   section, .problem{padding:60px 0;}
