@@ -1,13 +1,23 @@
 [
   {
+    "filename": "stack_queue_masterclass.html",
+    "title": "Stack & Queue — C++ Masterclass",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 93532,
+    "sizeFormatted": "91 KB",
+    "lastModified": "2026-08-26T21:37:34.203Z"
+  },
+  {
     "filename": "sql-interview-prep.html",
     "title": "sql://interview_prep",
     "extension": "HTML",
     "category": "web",
     "icon": "📄",
-    "sizeBytes": 73095,
-    "sizeFormatted": "71 KB",
-    "lastModified": "2026-08-26T20:02:53.093Z"
+    "sizeBytes": 74143,
+    "sizeFormatted": "72 KB",
+    "lastModified": "2026-08-26T21:37:18.739Z"
   },
   {
     "filename": "nn12.html",
@@ -15,39 +25,9 @@
     "extension": "HTML",
     "category": "web",
     "icon": "📄",
-    "sizeBytes": 79137,
-    "sizeFormatted": "77 KB",
-    "lastModified": "2026-08-26T18:14:29.994Z"
-  },
-  {
-    "filename": "OS_Interview_Prep.html",
-    "title": "OS // Interview Prep",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 41629,
-    "sizeFormatted": "41 KB",
-    "lastModified": "2026-08-20T18:01:10.449Z"
-  },
-  {
-    "filename": "DBMS_GATE_Study_Material.html",
-    "title": "DBMS – GATE CSE Complete Study Material",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 114152,
-    "sizeFormatted": "111 KB",
-    "lastModified": "2026-06-14T13:35:04.855Z"
-  },
-  {
-    "filename": "stack_queue_masterclass.html",
-    "title": "Stack & Queue — C++ Masterclass",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 92868,
-    "sizeFormatted": "91 KB",
-    "lastModified": "2026-06-08T19:58:43.472Z"
+    "sizeBytes": 80067,
+    "sizeFormatted": "78 KB",
+    "lastModified": "2026-08-26T21:37:02.121Z"
   },
   {
     "filename": "esl_study_material.html",
@@ -55,8 +35,28 @@
     "extension": "HTML",
     "category": "web",
     "icon": "📄",
-    "sizeBytes": 84600,
-    "sizeFormatted": "83 KB",
-    "lastModified": "2026-05-12T23:09:45.985Z"
+    "sizeBytes": 85877,
+    "sizeFormatted": "84 KB",
+    "lastModified": "2026-08-26T21:36:54.048Z"
+  },
+  {
+    "filename": "OS_Interview_Prep.html",
+    "title": "OS // Interview Prep",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 42660,
+    "sizeFormatted": "42 KB",
+    "lastModified": "2026-08-26T21:36:39.419Z"
+  },
+  {
+    "filename": "DBMS_GATE_Study_Material.html",
+    "title": "DBMS – GATE CSE Complete Study Material",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 115076,
+    "sizeFormatted": "112 KB",
+    "lastModified": "2026-08-26T21:36:27.362Z"
   }
 ]

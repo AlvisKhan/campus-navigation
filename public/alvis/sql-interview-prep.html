@@ -426,6 +426,30 @@
   .mark-btn.done{color:var(--green); border-color:var(--green);}
   .mark-btn .dot{width:8px;height:8px;border-radius:50%; border:1.5px solid currentColor;}
   .mark-btn.done .dot{background:var(--green);}
+
+  /* ---------- MOBILE RESPONSIVENESS ---------- */
+  @media (max-width: 768px) {
+    .sidebar { max-height: 260px; overflow-y: auto; padding: 14px 12px; }
+    .hero { padding: 36px 16px 28px; }
+    h1.hero-title { font-size: clamp(24px, 6vw, 36px); }
+    .hero-stats { gap: 14px; }
+    .content { padding: 6px 12px 60px; }
+    section.panel { margin: 24px 0; }
+    .panel-head { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+    .panel-head h2 { font-size: 17px; }
+    .panel-body { padding: 16px 14px 20px; }
+    .code-block pre { font-size: 12px; padding: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .flash-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .flashcard { height: 110px; }
+    .flashcard .face { font-size: 12px; padding: 8px; }
+    .cheat-grid { grid-template-columns: 1fr; }
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+    footer { padding: 24px 16px 40px; }
+  }
+
+  @media (max-width: 480px) {
+    .flash-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>

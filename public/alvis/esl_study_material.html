@@ -749,6 +749,29 @@
   }
   .quick-ref .qr-key { color: var(--gold); min-width: 160px; }
   .quick-ref .qr-val { color: #c8b89a; }
+
+  /* ── MOBILE RESPONSIVENESS ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 1rem; }
+    .nav-links { gap: 0.8rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .nav-links a { font-size: 0.72rem; }
+    .hero { padding: 5rem 1rem 3rem; min-height: auto; }
+    .hero-title { font-size: clamp(2.2rem, 8vw, 3.2rem); }
+    .hero-toc { min-width: 0; width: 100%; padding: 1.2rem 1rem; }
+    main { padding: 2.5rem 1rem; }
+    .chapter-header { margin: 3.5rem 0 2rem; padding-left: 1rem; }
+    .chapter-title { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+    .section-title { font-size: 1.3rem; margin: 2rem 0 0.8rem; }
+    .def-box { padding: 1rem 1.1rem; }
+    .math-block { padding: 1rem; font-size: 0.95em; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .math-block .eq-label { position: static; transform: none; display: block; text-align: right; margin-top: 6px; }
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; font-size: 0.85rem; }
+    th, td { padding: 0.5rem 0.7rem; }
+    #quiz { padding: 1.5rem 1rem; margin: 2.5rem 0; }
+    .quick-ref .qr-row { flex-direction: column; gap: 0.2rem; }
+    .quick-ref .qr-key { min-width: auto; }
+    svg.diagram { max-width: 100%; height: auto; }
+  }
 </style>
 </head>
 <body>

@@ -314,6 +314,31 @@
     font-size:12px;
     border-top:1px solid var(--line);
   }
+
+  /* ---------- MOBILE RESPONSIVENESS ---------- */
+  @media (max-width: 640px) {
+    .hero { padding: 36px 16px 24px; }
+    .layout { padding: 18px 12px 60px; gap: 20px; }
+    .hero-stats { gap: 16px; }
+    h1 { font-size: clamp(24px, 6vw, 32px); }
+    .topic-head h2 { font-size: 18px; }
+    details.qa summary { padding: 12px 14px; gap: 10px; font-size: 14px; }
+    .q-tag { font-size: 9.5px; padding: 2px 5px; }
+    .qa-body { padding: 0 12px 14px; font-size: 13.5px; }
+    .qa-body table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; font-size: 12.5px; }
+    pre { font-size: 11.5px; padding: 12px 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .rapid-grid { grid-template-columns: 1fr; }
+    .plan { padding: 14px 16px; }
+    .plan-row { flex-direction: column; gap: 4px; }
+    nav.toc {
+      max-height: 240px;
+      overflow-y: auto;
+      background: var(--panel);
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+  }
 </style>
 </head>
 <body>

@@ -336,10 +336,28 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
-    .layout { flex-direction: column; }
-    .sidebar { width: 100%; position: static; }
-    .topbar h1 { font-size: 1.4rem; }
+    .layout { flex-direction: column; padding: 1rem 0.75rem; gap: 1rem; }
+    .sidebar {
+      width: 100%;
+      position: static;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .topbar { padding: 1.8rem 1rem 1.4rem; }
+    .topbar h1 { font-size: 1.35rem; line-height: 1.3; }
+    .topbar p { font-size: 0.9rem; }
+    .section-header { padding: 1rem; }
+    .section-header h2 { font-size: 1.05rem; }
+    .section-body { padding: 1.1rem 0.85rem; }
     .def-grid { grid-template-columns: 1fr; }
+    .tx-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .diagram-wrap svg { max-width: 100%; height: auto; }
+    .nf-progress { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .nf-step { min-width: 70px; font-size: 0.72rem; padding: 0.6rem 0.3rem; }
+    pre { font-size: 0.8rem; padding: 0.8rem 1rem; }
+    .math-block { font-size: 0.95rem; padding: 0.8rem 1rem; overflow-x: auto; }
+    .table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    #back-top { bottom: 1.2rem; right: 1.2rem; width: 40px; height: 40px; font-size: 1rem; }
   }
 
   /* ── SCROLL TO TOP ── */
