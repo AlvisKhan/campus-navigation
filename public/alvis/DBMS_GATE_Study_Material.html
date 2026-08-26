@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBMS – GATE CSE Complete Study Material</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1a56db;
+    --blue-light: #e8f0fe;
+    --blue-dark: #0c3d91;
+    --teal: #0f766e;
+    --teal-light: #ccfbf1;
+    --amber: #b45309;
+    --amber-light: #fef3c7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --font-body: 'Inter', sans-serif;
+    --font-code: 'Fira Code', monospace;
+    --font-serif: 'Merriweather', serif;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: #f0f4f8;
+    color: var(--gray-900);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: linear-gradient(135deg, #0c3d91 0%, #1a56db 60%, #1e7fcb 100%);
+    color: white;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+  }
+  .topbar h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
+  .topbar p { font-size: 1rem; opacity: 0.85; margin-top: 0.4rem; }
+  .badge-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+  .badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem; gap: 1.5rem; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 1rem;
+    height: fit-content;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+  }
+  .sidebar-title {
+    background: var(--blue-dark);
+    color: white;
+    padding: 0.9rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-nav { padding: 0.5rem 0; }
+  .nav-group-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--gray-500);
+    padding: 0.6rem 1rem 0.2rem;
+    font-weight: 600;
+  }
+  .nav-link {
+    display: block;
+    padding: 0.45rem 1rem 0.45rem 1.25rem;
+    color: var(--gray-700);
+    text-decoration: none;
+    font-size: 0.87rem;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .nav-link:hover { background: var(--blue-light); color: var(--blue); border-left-color: var(--blue); }
+  .nav-link.active { background: var(--blue-light); color: var(--blue); border-left-color: var(--blue); font-weight: 500; }
+
+  /* ── MAIN CONTENT ── */
+  .main { flex: 1; min-width: 0; }
+
+  /* ── SECTION WRAPPER ── */
+  .section {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .section-header h2 { font-size: 1.2rem; font-weight: 600; color: var(--gray-900); }
+  .section-body { padding: 1.5rem; }
+
+  /* ── TYPOGRAPHY ── */
+  h3 { font-size: 1.05rem; font-weight: 600; color: var(--gray-900); margin: 1.5rem 0 0.5rem; }
+  h4 { font-size: 0.95rem; font-weight: 600; color: var(--blue-dark); margin: 1rem 0 0.4rem; }
+  p { margin-bottom: 0.8rem; }
+  ul, ol { margin: 0.5rem 0 0.8rem 1.5rem; }
+  li { margin-bottom: 0.3rem; }
+  strong { font-weight: 600; }
+
+  /* ── MATH DISPLAY ── */
+  .math {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    display: inline;
+  }
+  .math-block {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    overflow-x: auto;
+    text-align: center;
+  }
+  sub { font-size: 0.75em; }
+  sup { font-size: 0.75em; }
+
+  /* ── CODE ── */
+  code {
+    font-family: var(--font-code);
+    background: var(--gray-100);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.87rem;
+    color: #c7254e;
+  }
+  pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-family: var(--font-code);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin: 0.8rem 0;
+  }
+  pre .kw { color: #93c5fd; }
+  pre .fn { color: #86efac; }
+  pre .st { color: #fda4af; }
+  pre .cm { color: #94a3b8; font-style: italic; }
+  pre .num { color: #fdba74; }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    margin: 1rem 0;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 0.93rem;
+  }
+  .callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .callout.info { background: var(--blue-light); color: #1e3a8a; border-left: 3px solid var(--blue); }
+  .callout.tip { background: var(--green-light); color: #14532d; border-left: 3px solid var(--green); }
+  .callout.warning { background: var(--amber-light); color: #78350f; border-left: 3px solid var(--amber); }
+  .callout.danger { background: var(--red-light); color: #7f1d1d; border-left: 3px solid var(--red); }
+  .callout.purple { background: var(--purple-light); color: #3b0764; border-left: 3px solid var(--purple); }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 8px; border: 1px solid var(--gray-200); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  thead { background: var(--gray-900); color: white; }
+  thead th { padding: 10px 14px; text-align: left; font-weight: 600; }
+  tbody tr:nth-child(even) { background: var(--gray-50); }
+  tbody tr:hover { background: var(--blue-light); }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--gray-200); }
+  td:first-child { font-weight: 500; }
+
+  /* ── DEFINITION GRID ── */
+  .def-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 1rem 0; }
+  .def-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    background: var(--gray-50);
+  }
+  .def-card .def-term { font-weight: 600; color: var(--blue-dark); font-size: 0.9rem; margin-bottom: 0.25rem; }
+  .def-card .def-body { font-size: 0.87rem; color: var(--gray-700); line-height: 1.5; }
+
+  /* ── PYQ BLOCK ── */
+  .pyq {
+    border: 1.5px solid var(--blue);
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+  }
+  .pyq-header {
+    background: var(--blue);
+    color: white;
+    padding: 0.6rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pyq-body { padding: 1rem; }
+  .pyq-question { font-weight: 500; margin-bottom: 0.5rem; }
+  .pyq-options { margin: 0.5rem 0 0.5rem 0; list-style: none; }
+  .pyq-options li {
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    border: 1px solid var(--gray-200);
+  }
+  .pyq-options li.correct { background: var(--green-light); border-color: var(--green); color: #14532d; font-weight: 600; }
+  .pyq-sol {
+    background: var(--gray-50);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+  }
+  .pyq-sol strong { color: var(--green); }
+
+  /* ── EXAMPLE BLOCK ── */
+  .example {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  .example-title { font-weight: 600; color: #92400e; font-size: 0.9rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
+
+  /* ── SVG DIAGRAMS ── */
+  .diagram-wrap {
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 1rem;
+    background: var(--gray-50);
+    margin: 1rem 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  svg text { font-family: var(--font-body); }
+
+  /* ── NORMAL FORMS PROGRESS ── */
+  .nf-progress { display: flex; gap: 0; margin: 1rem 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--gray-200); }
+  .nf-step { flex: 1; padding: 0.7rem 0.5rem; text-align: center; font-size: 0.8rem; font-weight: 600; }
+  .nf-step.nf1 { background: #fee2e2; color: #991b1b; }
+  .nf-step.nf2 { background: #fef3c7; color: #92400e; }
+  .nf-step.nf3 { background: #d1fae5; color: #065f46; }
+  .nf-step.bcnf { background: #dbeafe; color: #1e3a8a; }
+  .nf-step.nf4 { background: #ede9fe; color: #3b0764; }
+  .nf-arrow { display: flex; align-items: center; color: var(--gray-500); font-size: 1.2rem; padding: 0 2px; background: white; }
+
+  /* ── SCROLLSPY ── */
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--blue);
+    width: 0%;
+    z-index: 1000;
+    transition: width 0.1s;
+  }
+
+  /* ── TOPIC TAGS ── */
+  .topic-tag {
+    display: inline-block;
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-right: 5px;
+  }
+  .topic-tag.marks2 { background: #fef3c7; color: #92400e; }
+
+  /* ── RELATION TABLE ── */
+  .rel-table { display: inline-block; border: 1.5px solid var(--gray-700); border-radius: 0; margin: 0.5rem 0.5rem 0.5rem 0; }
+  .rel-name { background: var(--gray-700); color: white; padding: 4px 12px; font-size: 0.85rem; font-weight: 600; text-align: center; }
+  .rel-body td { padding: 5px 12px; font-size: 0.85rem; border-bottom: 1px solid var(--gray-200); }
+  .rel-body thead th { background: var(--gray-200); color: var(--gray-900); padding: 5px 12px; font-size: 0.85rem; border-bottom: 1px solid var(--gray-300); }
+  .pk { text-decoration: underline; }
+  .fk { font-style: italic; color: var(--blue); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; position: static; }
+    .topbar h1 { font-size: 1.4rem; }
+    .def-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── SCROLL TO TOP ── */
+  #back-top {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 44px; height: 44px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  #back-top:hover { background: var(--blue-dark); }
+
+  /* ── HIGHLIGHT ── */
+  .hl { background: #fef9c3; border-radius: 3px; padding: 0 3px; }
+
+  /* ── FD ARROW ── */
+  .fd { font-family: var(--font-serif); }
+  .fd-arrow::after { content: " → "; font-style: normal; }
+
+  /* ── TRANSACTION TABLE ── */
+  .tx-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 0.8rem 0; }
+  .tx-col { border: 1px solid var(--gray-300); border-radius: 6px; overflow: hidden; font-size: 0.83rem; }
+  .tx-col-header { background: var(--gray-700); color: white; padding: 4px 8px; font-weight: 600; text-align: center; }
+  .tx-col-body .tx-row { padding: 4px 8px; border-bottom: 1px solid var(--gray-200); text-align: center; }
+  .tx-row.conflict { background: #fee2e2; color: #7f1d1d; font-weight: 600; }
+  .tx-row.commit { background: #d1fae5; color: #065f46; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="progress-bar"></div>
+
+<!-- TOP BANNER -->
+<div class="topbar">
+  <h1>📚 Database Management Systems (DBMS)</h1>
+  <p>Complete Study Material for GATE CSE · Based on Official Syllabus</p>
+  <div class="badge-row">
+    <span class="badge">⚖️ ~7 Marks in GATE</span>
+    <span class="badge">📋 7 Major Topics</span>
+    <span class="badge">✅ PYQs Included</span>
+    <span class="badge">📐 Diagrams & Solved Examples</span>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">📖 Topics</div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Introduction</div>
+      <a class="nav-link" href="#intro">DBMS Overview</a>
+
+      <div class="nav-group-label">Core Topics</div>
+      <a class="nav-link" href="#er-model">1. ER Model</a>
+      <a class="nav-link" href="#relational-model">2. Relational Model</a>
+      <a class="nav-link" href="#relational-algebra">3. Relational Algebra</a>
+      <a class="nav-link" href="#sql">4. SQL</a>
+      <a class="nav-link" href="#fd-normalization">5. FD & Normalization</a>
+      <a class="nav-link" href="#indexing">6. File Org & Indexing</a>
+      <a class="nav-link" href="#transactions">7. Transactions</a>
+      <a class="nav-link" href="#concurrency">8. Concurrency Control</a>
+
+      <div class="nav-group-label">Quick Ref</div>
+      <a class="nav-link" href="#pyq-summary">PYQ Summary</a>
+      <a class="nav-link" href="#formulae">Key Formulae</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ═══════════════════════════════════════════
+         INTRO
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="intro">
+      <div class="section-header">
+        <div class="section-icon" style="background:#e8f0fe;">🗄️</div>
+        <h2>DBMS Overview</h2>
+      </div>
+      <div class="section-body">
+        <p>A <strong>Database Management System (DBMS)</strong> is software that manages a collection of interrelated data and provides controlled access to that data. It acts as an interface between the database and its end users or application programs.</p>
+
+        <h3>Why DBMS over File Systems?</h3>
+        <div class="def-grid">
+          <div class="def-card">
+            <div class="def-term">Data Redundancy</div>
+            <div class="def-body">File systems duplicate data across files; DBMS minimizes redundancy via controlled storage.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Data Inconsistency</div>
+            <div class="def-body">DBMS maintains consistency through integrity constraints and transactions.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Data Independence</div>
+            <div class="def-body">Changes in physical storage don't affect application programs (logical/physical independence).</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Concurrent Access</div>
+            <div class="def-body">DBMS handles multiple users accessing data simultaneously without conflicts.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Security</div>
+            <div class="def-body">Access control and authorization are built-in features.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Recovery</div>
+            <div class="def-body">DBMS provides crash recovery through logs and backup mechanisms.</div>
+          </div>
+        </div>
+
+        <h3>Three-Schema Architecture</h3>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 560 280" width="100%" style="max-width:560px;">
+            <!-- External Level -->
+            <rect x="30" y="20" width="130" height="50" rx="6" fill="#dbeafe" stroke="#1a56db" stroke-width="1.5"/>
+            <text x="95" y="41" text-anchor="middle" font-size="11" fill="#1e3a8a" font-weight="600">External Schema</text>
+            <text x="95" y="58" text-anchor="middle" font-size="10" fill="#1e3a8a">(View Level)</text>
+            <rect x="200" y="20" width="130" height="50" rx="6" fill="#dbeafe" stroke="#1a56db" stroke-width="1.5"/>
+            <text x="265" y="41" text-anchor="middle" font-size="11" fill="#1e3a8a" font-weight="600">External Schema</text>
+            <text x="265" y="58" text-anchor="middle" font-size="10" fill="#1e3a8a">(View Level)</text>
+            <rect x="370" y="20" width="130" height="50" rx="6" fill="#dbeafe" stroke="#1a56db" stroke-width="1.5"/>
+            <text x="435" y="41" text-anchor="middle" font-size="11" fill="#1e3a8a" font-weight="600">External Schema</text>
+            <text x="435" y="58" text-anchor="middle" font-size="10" fill="#1e3a8a">(View Level)</text>
+
+            <!-- Label User views -->
+            <text x="265" y="12" text-anchor="middle" font-size="10" fill="#6b7280">User Views (different perspectives)</text>
+
+            <!-- Arrows down to conceptual -->
+            <line x1="95" y1="70" x2="200" y2="130" stroke="#6b7280" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="265" y1="70" x2="265" y2="130" stroke="#6b7280" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="435" y1="70" x2="330" y2="130" stroke="#6b7280" stroke-width="1" stroke-dasharray="4,3"/>
+
+            <!-- Conceptual Level -->
+            <rect x="130" y="130" width="260" height="50" rx="6" fill="#d1fae5" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="260" y="151" text-anchor="middle" font-size="12" fill="#065f46" font-weight="600">Conceptual Schema</text>
+            <text x="260" y="168" text-anchor="middle" font-size="10" fill="#065f46">(Logical Level – overall structure)</text>
+
+            <!-- Arrow down -->
+            <line x1="260" y1="180" x2="260" y2="215" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arr)"/>
+
+            <!-- Internal Level -->
+            <rect x="130" y="215" width="260" height="50" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+            <text x="260" y="236" text-anchor="middle" font-size="12" fill="#78350f" font-weight="600">Internal Schema</text>
+            <text x="260" y="253" text-anchor="middle" font-size="10" fill="#78350f">(Physical Level – storage)</text>
+
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#6b7280"/>
+              </marker>
+            </defs>
+
+            <!-- Labels on sides -->
+            <text x="12" y="48" font-size="9" fill="#6b7280" transform="rotate(-90,12,48)">External</text>
+            <text x="12" y="170" font-size="9" fill="#6b7280" transform="rotate(-90,12,170)">Conceptual</text>
+            <text x="12" y="250" font-size="9" fill="#6b7280" transform="rotate(-90,12,250)">Internal</text>
+          </svg>
+          <p style="font-size:0.8rem;color:var(--gray-500);margin-top:0.5rem;">Figure: ANSI/SPARC Three-Schema Architecture</p>
+        </div>
+
+        <h3>Data Independence</h3>
+        <ul>
+          <li><strong>Logical Data Independence:</strong> Ability to change the conceptual schema without changing external schemas or application programs.</li>
+          <li><strong>Physical Data Independence:</strong> Ability to change the internal schema without changing the conceptual schema (or external schemas).</li>
+        </ul>
+
+        <div class="callout info">
+          <span class="callout-icon">📌</span>
+          <div><strong>GATE Weightage:</strong> DBMS carries approximately <strong>7 marks</strong> in GATE CSE. Focus heavily on Normalization, Relational Algebra, SQL, and Transactions — these appear almost every year.</div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         1. ER MODEL
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="er-model">
+      <div class="section-header">
+        <div class="section-icon" style="background:#ede9fe;">🔷</div>
+        <h2>1. Entity-Relationship (ER) Model</h2>
+      </div>
+      <div class="section-body">
+        <p>The ER model is a conceptual data model used to describe the structure of a database. It was proposed by <strong>Peter Chen</strong> in 1976.</p>
+
+        <h3>Basic Components</h3>
+        <div class="def-grid">
+          <div class="def-card">
+            <div class="def-term">Entity</div>
+            <div class="def-body">A real-world object that has an independent existence. Represented by a <strong>rectangle</strong>.<br>E.g., Student, Employee, Book</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Attribute</div>
+            <div class="def-body">A property of an entity. Represented by an <strong>ellipse</strong>.<br>E.g., Name, Age, Salary</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Relationship</div>
+            <div class="def-body">An association among entities. Represented by a <strong>diamond</strong>.<br>E.g., Works-in, Enrolled-in</div>
+          </div>
+        </div>
+
+        <h3>Types of Attributes</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Description</th><th>Symbol</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>Simple</td><td>Cannot be divided further</td><td>Ellipse</td><td>Age, Salary</td></tr>
+              <tr><td>Composite</td><td>Can be divided into sub-attributes</td><td>Ellipse with sub-ellipses</td><td>Name → (First, Last)</td></tr>
+              <tr><td>Multi-valued</td><td>Can have multiple values</td><td>Double ellipse</td><td>Phone numbers</td></tr>
+              <tr><td>Derived</td><td>Derived from another attribute</td><td>Dashed ellipse</td><td>Age (from DoB)</td></tr>
+              <tr><td>Key</td><td>Uniquely identifies an entity</td><td>Underlined ellipse</td><td>Student_ID</td></tr>
+              <tr><td>Null</td><td>May have no value</td><td>—</td><td>Middle name</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>ER Diagram — Example</h3>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 600 300" width="100%" style="max-width:600px;">
+            <!-- Student entity -->
+            <rect x="30" y="110" width="120" height="50" rx="4" fill="white" stroke="#1a56db" stroke-width="2"/>
+            <text x="90" y="140" text-anchor="middle" font-size="13" fill="#1e3a8a" font-weight="600">Student</text>
+
+            <!-- Attributes of Student -->
+            <ellipse cx="50" cy="50" rx="38" ry="20" fill="white" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="50" y="46" text-anchor="middle" font-size="9.5" fill="#3b0764">Student</text>
+            <text x="50" y="58" text-anchor="middle" font-size="9.5" fill="#3b0764" text-decoration="underline">_ID</text>
+            <line x1="60" y1="70" x2="70" y2="110" stroke="#7c3aed" stroke-width="1"/>
+
+            <ellipse cx="20" cy="160" rx="30" ry="18" fill="white" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="20" y="163" text-anchor="middle" font-size="9.5" fill="#3b0764">Name</text>
+            <line x1="30" y1="155" x2="30" y2="155" stroke="#7c3aed"/>
+            <line x1="30" y1="150" x2="30" y2="155" stroke="#7c3aed" stroke-width="1"/>
+            <line x1="30" y1="150" x2="30" y2="155" stroke="#7c3aed" stroke-width="1"/>
+            <line x1="30" y1="152" x2="30" y2="110" stroke="#7c3aed" stroke-width="1"/>
+
+            <ellipse cx="20" cy="235" rx="35" ry="18" fill="white" stroke="#7c3aed" stroke-width="1.5"/>
+            <ellipse cx="20" cy="235" rx="30" ry="13" fill="white" stroke="#7c3aed" stroke-width="1"/>
+            <text x="20" y="238" text-anchor="middle" font-size="9.5" fill="#3b0764">Phone</text>
+            <line x1="30" y1="217" x2="40" y2="160" stroke="#7c3aed" stroke-width="1"/>
+
+            <!-- Relationship diamond -->
+            <polygon points="230,135 285,110 340,135 285,160" fill="white" stroke="#16a34a" stroke-width="2"/>
+            <text x="285" y="139" text-anchor="middle" font-size="11" fill="#065f46" font-weight="600">Enrolled</text>
+            <line x1="150" y1="135" x2="230" y2="135" stroke="#16a34a" stroke-width="1.5"/>
+            <!-- Cardinality labels -->
+            <text x="165" y="128" font-size="10" fill="#065f46" font-weight="600">M</text>
+            <text x="335" y="128" font-size="10" fill="#065f46" font-weight="600">N</text>
+            <line x1="340" y1="135" x2="420" y2="135" stroke="#16a34a" stroke-width="1.5"/>
+
+            <!-- Course entity -->
+            <rect x="420" y="110" width="120" height="50" rx="4" fill="white" stroke="#1a56db" stroke-width="2"/>
+            <text x="480" y="140" text-anchor="middle" font-size="13" fill="#1e3a8a" font-weight="600">Course</text>
+
+            <!-- Course attributes -->
+            <ellipse cx="550" cy="50" rx="38" ry="20" fill="white" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="550" y="46" text-anchor="middle" font-size="9.5" fill="#3b0764">Course</text>
+            <text x="550" y="58" text-anchor="middle" font-size="9.5" fill="#3b0764" text-decoration="underline">_ID</text>
+            <line x1="538" y1="70" x2="510" y2="110" stroke="#7c3aed" stroke-width="1"/>
+
+            <ellipse cx="575" cy="180" rx="38" ry="20" fill="white" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="575" y="183" text-anchor="middle" font-size="9.5" fill="#3b0764">Credits</text>
+            <line x1="556" y1="167" x2="530" y2="155" stroke="#7c3aed" stroke-width="1"/>
+
+            <!-- Relationship attribute -->
+            <ellipse cx="285" cy="220" rx="38" ry="20" fill="#fef9c3" stroke="#b45309" stroke-width="1.5"/>
+            <text x="285" y="223" text-anchor="middle" font-size="9.5" fill="#78350f">Grade</text>
+            <line x1="285" y1="200" x2="285" y2="160" stroke="#b45309" stroke-width="1" stroke-dasharray="3,3"/>
+            <text x="290" y="212" font-size="8" fill="#b45309" font-style="italic">rel. attr.</text>
+          </svg>
+          <p style="font-size:0.8rem;color:var(--gray-500);margin-top:0.5rem;">Figure: ER diagram — Student and Course with M:N Enrolled relationship</p>
+        </div>
+
+        <h3>Types of Entities</h3>
+        <ul>
+          <li><strong>Strong Entity:</strong> Has a primary key (own identifier). Drawn as a single rectangle.</li>
+          <li><strong>Weak Entity:</strong> Does not have a primary key; depends on a strong entity. Drawn as a <em>double rectangle</em>. Its partial key is called a <strong>discriminator</strong> (dashed underline). The relationship between weak and strong entity is called an <strong>identifying relationship</strong> (double diamond).</li>
+        </ul>
+
+        <div class="example">
+          <div class="example-title">🔶 Example — Weak Entity</div>
+          <p>Consider <code>Employee</code> (strong) and <code>Dependent</code> (weak). A dependent is identified by their name <em>along with</em> the employee they belong to. Dependant_Name is the discriminator. The composite key is <strong>(Employee_ID, Dependent_Name)</strong>.</p>
+        </div>
+
+        <h3>Cardinality (Participation) Constraints</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cardinality</th><th>Meaning</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>1 : 1</td><td>Each entity in A associates with at most 1 in B, vice versa</td><td>Person ↔ Passport</td></tr>
+              <tr><td>1 : N</td><td>One entity in A can relate to many in B</td><td>Department → Employees</td></tr>
+              <tr><td>M : N</td><td>Many entities in A can relate to many in B</td><td>Student ↔ Course</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Participation constraints:</strong></p>
+        <ul>
+          <li><strong>Total Participation (double line):</strong> Every entity MUST participate in the relationship.</li>
+          <li><strong>Partial Participation (single line):</strong> An entity may or may not participate.</li>
+        </ul>
+
+        <h3>Generalization, Specialization & Aggregation</h3>
+        <ul>
+          <li><strong>Specialization (top-down):</strong> A higher-level entity is divided into lower-level sub-entities. E.g., <em>Employee</em> is specialized into <em>Engineer</em> and <em>Manager</em>.</li>
+          <li><strong>Generalization (bottom-up):</strong> Two lower-level entities are combined into a higher-level entity. E.g., <em>Car</em> and <em>Bus</em> → <em>Vehicle</em>.</li>
+          <li><strong>Aggregation:</strong> A relationship set treated as a higher-level entity, so that it can participate in another relationship. Used when a relationship itself needs to have a relationship with another entity.</li>
+        </ul>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2014</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Consider the following ER diagram. Which of the following is TRUE about the given ER diagram?<br>A weak entity set W is related to a strong entity set S via relationship R. W has a partial key attribute P.</p>
+            <ul class="pyq-options">
+              <li class="correct">(A) The primary key of W is a combination of P and the primary key of S</li>
+              <li>(B) P alone can serve as the primary key of W</li>
+              <li>(C) W cannot have any attributes of its own</li>
+              <li>(D) S must have at least two attributes</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (A)</strong><br>
+              A weak entity does not have its own primary key. Its identifier (called a discriminator or partial key) combined with the primary key of its identifying strong entity forms its composite primary key.
+            </div>
+          </div>
+        </div>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2019</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Consider an ER model with a relationship R between entities A and B. Participation of A in R is total and cardinality of R is M:N. Which of the following is TRUE?</p>
+            <ul class="pyq-options">
+              <li>(A) Every B must participate in R</li>
+              <li class="correct">(B) Every A must participate in R</li>
+              <li>(C) For every A, there is exactly one B</li>
+              <li>(D) For every B, there are exactly N values of A</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (B)</strong><br>
+              Total participation of A in R means every entity of type A <em>must</em> participate in at least one instance of R. M:N cardinality means an A can relate to many B's and vice versa, but says nothing about mandatory participation of B.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         2. RELATIONAL MODEL
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="relational-model">
+      <div class="section-header">
+        <div class="section-icon" style="background:#d1fae5;">🔑</div>
+        <h2>2. Relational Model</h2>
+      </div>
+      <div class="section-body">
+        <p>The relational model, proposed by <strong>E.F. Codd</strong> in 1970, represents a database as a collection of <strong>relations</strong> (tables).</p>
+
+        <h3>Key Terminology</h3>
+        <div class="def-grid">
+          <div class="def-card">
+            <div class="def-term">Relation (Table)</div>
+            <div class="def-body">A two-dimensional table with rows and columns.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Tuple (Row)</div>
+            <div class="def-body">A single record in a relation. A relation with <em>n</em> tuples has <em>n</em> rows.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Attribute (Column)</div>
+            <div class="def-body">A property/characteristic of a relation.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Domain</div>
+            <div class="def-body">The set of permitted values for an attribute.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Schema</div>
+            <div class="def-body">The structural description of a relation: <span class="math">R(A<sub>1</sub>, A<sub>2</sub>, ..., A<sub>n</sub>)</span></div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Degree</div>
+            <div class="def-body">Number of attributes (columns) in a relation.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Cardinality</div>
+            <div class="def-body">Number of tuples (rows) in a relation.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">NULL</div>
+            <div class="def-body">Represents unknown or missing value. Not equal to 0 or empty string.</div>
+          </div>
+        </div>
+
+        <h3>Types of Keys</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Key Type</th><th>Definition</th><th>Key Property</th></tr></thead>
+            <tbody>
+              <tr><td>Super Key</td><td>Any set of attributes that uniquely identifies a tuple</td><td>Unique identification (may have extra attributes)</td></tr>
+              <tr><td>Candidate Key</td><td>Minimal super key — no subset can uniquely identify</td><td>Unique + Minimal</td></tr>
+              <tr><td>Primary Key</td><td>Selected candidate key used to identify tuples</td><td>Unique + Not NULL</td></tr>
+              <tr><td>Alternate Key</td><td>Candidate keys not chosen as primary key</td><td>—</td></tr>
+              <tr><td>Foreign Key</td><td>Attribute referencing the primary key of another relation</td><td>Referential Integrity</td></tr>
+              <tr><td>Composite Key</td><td>Key consisting of two or more attributes</td><td>Combined uniqueness</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="example">
+          <div class="example-title">🔶 Example — Identifying Keys</div>
+          <p>Consider relation: <code>Student(RollNo, Name, Email, PhoneNo)</code></p>
+          <ul>
+            <li>Super Keys: {RollNo}, {Email}, {PhoneNo}, {RollNo, Name}, {RollNo, Email}, ... (many)</li>
+            <li>Candidate Keys: {RollNo}, {Email}, {PhoneNo} — all minimal</li>
+            <li>Primary Key: {RollNo} (chosen)</li>
+            <li>Alternate Keys: {Email}, {PhoneNo}</li>
+          </ul>
+          <p><strong>How many super keys are there if candidate key is {A}?</strong><br>
+          If relation has <span class="math">n</span> attributes and one candidate key {A}, then super keys = <span class="math">2<sup>n−1</sup></span> (A must be included, rest are optional).</p>
+        </div>
+
+        <div class="callout warning">
+          <span class="callout-icon">⚠️</span>
+          <div><strong>Common GATE trap:</strong> A super key does NOT have to be minimal. Every candidate key is a super key, but not every super key is a candidate key. The number of super keys = 2<sup>(n − |CK|)</sup> where |CK| is size of the minimal candidate key and n is total attributes.</div>
+        </div>
+
+        <h3>Integrity Constraints</h3>
+        <ul>
+          <li><strong>Domain Constraint:</strong> Each attribute value must come from the attribute's domain.</li>
+          <li><strong>Entity Integrity:</strong> Primary key cannot be NULL.</li>
+          <li><strong>Referential Integrity:</strong> A foreign key value must either be NULL or must match a primary key value in the referenced relation.</li>
+          <li><strong>Key Constraint:</strong> No two tuples can have the same value for the primary key.</li>
+        </ul>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2015</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Consider the relation R(A, B, C, D, E) with the following functional dependencies:<br>
+            AB → C, D → B, and E → A.<br>
+            Which of the following is a candidate key of R?</p>
+            <ul class="pyq-options">
+              <li>(A) ABD</li>
+              <li class="correct">(B) DE</li>
+              <li>(C) ADE</li>
+              <li>(D) ABE</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (B) DE</strong><br>
+              <em>Closure of DE:</em><br>
+              Start: {D, E}<br>
+              E → A, so add A: {D, E, A}<br>
+              D → B, so add B: {D, E, A, B}<br>
+              AB → C, so add C: {D, E, A, B, C}<br>
+              DE<sup>+</sup> = {A, B, C, D, E} = all attributes ✓<br>
+              Check minimality: D<sup>+</sup> = {D, B} ≠ all. E<sup>+</sup> = {E, A} ≠ all. So DE is minimal → Candidate Key.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         3. RELATIONAL ALGEBRA
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="relational-algebra">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fef3c7;">∑</div>
+        <h2>3. Relational Algebra & Tuple Calculus</h2>
+      </div>
+      <div class="section-body">
+        <p>Relational Algebra is a <strong>procedural query language</strong> that works on relations (tables). It forms the theoretical basis for SQL.</p>
+
+        <h3>Fundamental Operations</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Operation</th><th>Symbol</th><th>Description</th><th>Notation</th></tr></thead>
+            <tbody>
+              <tr><td>Selection</td><td>σ (sigma)</td><td>Filters rows satisfying a condition</td><td><span class="math">σ<sub>condition</sub>(R)</span></td></tr>
+              <tr><td>Projection</td><td>π (pi)</td><td>Selects specific columns (removes duplicates)</td><td><span class="math">π<sub>A1,A2</sub>(R)</span></td></tr>
+              <tr><td>Union</td><td>∪</td><td>Tuples in R or S (or both). Relations must be <em>union-compatible</em></td><td><span class="math">R ∪ S</span></td></tr>
+              <tr><td>Set Difference</td><td>−</td><td>Tuples in R but not in S</td><td><span class="math">R − S</span></td></tr>
+              <tr><td>Cartesian Product</td><td>×</td><td>All combinations of tuples from R and S</td><td><span class="math">R × S</span></td></tr>
+              <tr><td>Rename</td><td>ρ (rho)</td><td>Renames relation or attributes</td><td><span class="math">ρ<sub>S(B1,B2)</sub>(R)</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Derived Operations</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Operation</th><th>Symbol</th><th>Equivalent To</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td>Intersection</td><td>∩</td><td>R − (R − S)</td><td>Tuples in both R and S</td></tr>
+              <tr><td>Natural Join</td><td>⋈</td><td>π(σ(R × S))</td><td>Joins on common attributes, removes duplicates</td></tr>
+              <tr><td>Theta Join</td><td>⋈<sub>θ</sub></td><td>σ<sub>θ</sub>(R × S)</td><td>Join on arbitrary condition θ</td></tr>
+              <tr><td>Equijoin</td><td>⋈<sub>A=B</sub></td><td>σ<sub>R.A=S.B</sub>(R × S)</td><td>Join on equality condition</td></tr>
+              <tr><td>Division</td><td>÷</td><td>Complex expression</td><td>R ÷ S: tuples in R related to ALL tuples of S</td></tr>
+              <tr><td>Left Outer Join</td><td>⟕</td><td>—</td><td>All tuples of R + matching from S (NULL if no match)</td></tr>
+              <tr><td>Right Outer Join</td><td>⟖</td><td>—</td><td>All tuples of S + matching from R</td></tr>
+              <tr><td>Full Outer Join</td><td>⟗</td><td>—</td><td>All tuples from both, NULLs where no match</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Union Compatibility</h3>
+        <p>Two relations R and S are <strong>union-compatible</strong> if:</p>
+        <ol>
+          <li>They have the same number of attributes (same degree).</li>
+          <li>The domains of corresponding attributes are compatible.</li>
+        </ol>
+        <p>Required for: Union (∪), Intersection (∩), Set Difference (−).</p>
+
+        <h3>Worked Examples</h3>
+        <div class="example">
+          <div class="example-title">🔶 Example — Selection and Projection</div>
+          <p>Given relation <strong>Employee(EmpID, Name, Dept, Salary)</strong>:</p>
+          <ul>
+            <li>"Find names of employees in the 'CS' department earning more than 50,000"</li>
+          </ul>
+          <div class="math-block">
+            π<sub>Name</sub>( σ<sub>Dept='CS' ∧ Salary&gt;50000</sub>(Employee) )
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-title">🔶 Example — Natural Join</div>
+          <p><strong>Student(RollNo, Name, CourseID)</strong> and <strong>Course(CourseID, CourseName, Credits)</strong></p>
+          <p>"Find student names and course names they are enrolled in:"</p>
+          <div class="math-block">
+            π<sub>Name, CourseName</sub>(Student ⋈ Course)
+          </div>
+          <p>Natural join automatically joins on the common attribute <code>CourseID</code>.</p>
+        </div>
+
+        <div class="example">
+          <div class="example-title">🔶 Example — Division (÷)</div>
+          <p>R(Student, Course) and S(Course) where S contains all courses. Then <strong>R ÷ S</strong> gives students who are enrolled in <em>every</em> course in S.</p>
+          <div class="math-block">
+            R ÷ S = π<sub>Student</sub>(R) − π<sub>Student</sub>( π<sub>Student</sub>(R) × S − R )
+          </div>
+        </div>
+
+        <h3>Result Size Estimation</h3>
+        <div class="callout purple">
+          <span class="callout-icon">📐</span>
+          <div>
+            <strong>Important size formulas:</strong><br>
+            • |R × S| = |R| × |S| (Cartesian product)<br>
+            • |R ∪ S| ≤ |R| + |S|<br>
+            • |R ∩ S| ≤ min(|R|, |S|)<br>
+            • |R − S| ≤ |R|<br>
+            • |σ<sub>c</sub>(R)| ≤ |R|<br>
+            • |π<sub>A</sub>(R)| ≤ |R| (after removing duplicates)<br>
+            • Natural join: 0 ≤ |R ⋈ S| ≤ |R| × |S|
+          </div>
+        </div>
+
+        <h3>Tuple Relational Calculus (TRC)</h3>
+        <p>TRC is a <strong>non-procedural (declarative)</strong> query language. It uses variables that range over tuples.</p>
+        <p>A TRC query has the form: <span class="math">{ t | P(t) }</span> — the set of all tuples <em>t</em> satisfying predicate P(t).</p>
+
+        <div class="example">
+          <div class="example-title">🔶 TRC Example</div>
+          <p>"Find all employees with salary &gt; 50,000":</p>
+          <div class="math-block">{ t | t ∈ Employee ∧ t.Salary &gt; 50000 }</div>
+          <p>"Find names of students enrolled in course C001":</p>
+          <div class="math-block">{ t.Name | t ∈ Student ∧ ∃s(s ∈ Enrolled ∧ s.RollNo = t.RollNo ∧ s.CourseID = 'C001') }</div>
+        </div>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2016</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Let R(A, B) and S(B, C, D) be two relations. The number of tuples in R × S if |R| = m and |S| = n is:</p>
+            <ul class="pyq-options">
+              <li>(A) m + n</li>
+              <li class="correct">(B) m × n</li>
+              <li>(C) m − n</li>
+              <li>(D) m / n</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (B) m × n</strong><br>
+              The Cartesian product of two relations produces every possible combination of tuples from both relations. So the total is m × n tuples.
+            </div>
+          </div>
+        </div>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2021</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Consider relations R(A, B) with 3 tuples: {(1,2), (2,3), (4,5)} and S(B, C) with 4 tuples: {(2,6), (3,7), (5,8), (9,10)}. The number of tuples in R ⋈ S (natural join on B) is:</p>
+            <ul class="pyq-options">
+              <li>(A) 4</li>
+              <li class="correct">(B) 3</li>
+              <li>(C) 12</li>
+              <li>(D) 7</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (B) 3</strong><br>
+              Match on B: R.B=2 matches S.B=2 → (1,2,6); R.B=3 matches S.B=3 → (2,3,7); R.B=5 matches S.B=5 → (4,5,8). So 3 tuples. Note: S has B=9 but no match in R.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         4. SQL
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="sql">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fee2e2;">💾</div>
+        <h2>4. SQL — Structured Query Language</h2>
+      </div>
+      <div class="section-body">
+        <p>SQL is the standard language for interacting with relational databases. It is both a <strong>DDL</strong> (Data Definition Language) and <strong>DML</strong> (Data Manipulation Language).</p>
+
+        <h3>SQL Classification</h3>
+        <div class="def-grid">
+          <div class="def-card">
+            <div class="def-term">DDL</div>
+            <div class="def-body">CREATE, ALTER, DROP, TRUNCATE — defines schema structure</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">DML</div>
+            <div class="def-body">SELECT, INSERT, UPDATE, DELETE — manipulates data</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">DCL</div>
+            <div class="def-body">GRANT, REVOKE — controls access</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">TCL</div>
+            <div class="def-body">COMMIT, ROLLBACK, SAVEPOINT — controls transactions</div>
+          </div>
+        </div>
+
+        <h3>SELECT Statement Structure</h3>
+        <pre><span class="kw">SELECT</span>   [DISTINCT] attribute_list
+<span class="kw">FROM</span>     table_name(s)
+[<span class="kw">WHERE</span>    condition]
+[<span class="kw">GROUP BY</span> attribute(s)]
+[<span class="kw">HAVING</span>   group_condition]
+[<span class="kw">ORDER BY</span> attribute [ASC|DESC]];</pre>
+
+        <div class="callout info">
+          <span class="callout-icon">📌</span>
+          <div><strong>Order of execution</strong> (NOT the same as written order):<br>
+          FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY</div>
+        </div>
+
+        <h3>Aggregate Functions</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Function</th><th>Returns</th><th>Ignores NULLs?</th></tr></thead>
+            <tbody>
+              <tr><td>COUNT(*)</td><td>Total number of rows</td><td>No</td></tr>
+              <tr><td>COUNT(A)</td><td>Number of non-NULL values in A</td><td>Yes</td></tr>
+              <tr><td>SUM(A)</td><td>Sum of all values in A</td><td>Yes</td></tr>
+              <tr><td>AVG(A)</td><td>Average of non-NULL values in A</td><td>Yes</td></tr>
+              <tr><td>MAX(A)</td><td>Maximum value in A</td><td>Yes</td></tr>
+              <tr><td>MIN(A)</td><td>Minimum value in A</td><td>Yes</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>SQL Joins</h3>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 560 220" width="100%" style="max-width:560px;">
+            <!-- INNER JOIN -->
+            <circle cx="70" cy="80" r="45" fill="#dbeafe" fill-opacity="0.8" stroke="#1a56db" stroke-width="1.5"/>
+            <circle cx="105" cy="80" r="45" fill="#d1fae5" fill-opacity="0.8" stroke="#16a34a" stroke-width="1.5"/>
+            <ellipse cx="88" cy="80" rx="17" ry="30" fill="#93c5fd" fill-opacity="0.9"/>
+            <text x="88" y="170" text-anchor="middle" font-size="11" fill="#1e3a8a" font-weight="600">INNER JOIN</text>
+            <text x="88" y="184" text-anchor="middle" font-size="9" fill="#374151">Only matching rows</text>
+            <text x="55" y="82" text-anchor="middle" font-size="9" fill="#1e3a8a">A</text>
+            <text x="120" y="82" text-anchor="middle" font-size="9" fill="#065f46">B</text>
+
+            <!-- LEFT JOIN -->
+            <circle cx="210" cy="80" r="45" fill="#dbeafe" fill-opacity="0.9" stroke="#1a56db" stroke-width="1.5"/>
+            <circle cx="245" cy="80" r="45" fill="#d1fae5" fill-opacity="0.6" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="228" y="170" text-anchor="middle" font-size="11" fill="#1e3a8a" font-weight="600">LEFT JOIN</text>
+            <text x="228" y="184" text-anchor="middle" font-size="9" fill="#374151">All of A + matching B</text>
+            <text x="195" y="82" text-anchor="middle" font-size="9" fill="#1e3a8a">A</text>
+            <text x="260" y="82" text-anchor="middle" font-size="9" fill="#065f46">B</text>
+
+            <!-- RIGHT JOIN -->
+            <circle cx="350" cy="80" r="45" fill="#dbeafe" fill-opacity="0.6" stroke="#1a56db" stroke-width="1.5"/>
+            <circle cx="385" cy="80" r="45" fill="#d1fae5" fill-opacity="0.9" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="368" y="170" text-anchor="middle" font-size="11" fill="#1e3a8a" font-weight="600">RIGHT JOIN</text>
+            <text x="368" y="184" text-anchor="middle" font-size="9" fill="#374151">All of B + matching A</text>
+            <text x="335" y="82" text-anchor="middle" font-size="9" fill="#1e3a8a">A</text>
+            <text x="400" y="82" text-anchor="middle" font-size="9" fill="#065f46">B</text>
+
+            <!-- FULL OUTER JOIN -->
+            <circle cx="490" cy="80" r="45" fill="#dbeafe" fill-opacity="0.8" stroke="#1a56db" stroke-width="1.5"/>
+            <circle cx="525" cy="80" r="45" fill="#d1fae5" fill-opacity="0.8" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="508" y="170" text-anchor="middle" font-size="10" fill="#1e3a8a" font-weight="600">FULL OUTER JOIN</text>
+            <text x="508" y="184" text-anchor="middle" font-size="9" fill="#374151">All rows from both</text>
+            <text x="476" y="82" text-anchor="middle" font-size="9" fill="#1e3a8a">A</text>
+            <text x="541" y="82" text-anchor="middle" font-size="9" fill="#065f46">B</text>
+          </svg>
+          <p style="font-size:0.8rem;color:var(--gray-500);margin-top:0.5rem;">Figure: SQL JOIN types</p>
+        </div>
+
+        <h3>Subqueries</h3>
+        <pre><span class="cm">-- Correlated subquery: finds employees earning more than dept average</span>
+<span class="kw">SELECT</span> Name, Salary
+<span class="kw">FROM</span> Employee E1
+<span class="kw">WHERE</span> Salary &gt; (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(Salary)
+    <span class="kw">FROM</span> Employee E2
+    <span class="kw">WHERE</span> E1.Dept = E2.Dept
+);</pre>
+
+        <h3>GROUP BY vs HAVING</h3>
+        <pre><span class="cm">-- Count students per department, show only depts with >10 students</span>
+<span class="kw">SELECT</span> Dept, <span class="fn">COUNT</span>(*) <span class="kw">AS</span> StudentCount
+<span class="kw">FROM</span> Student
+<span class="kw">GROUP BY</span> Dept
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) &gt; <span class="num">10</span>
+<span class="kw">ORDER BY</span> StudentCount <span class="kw">DESC</span>;</pre>
+
+        <div class="callout warning">
+          <span class="callout-icon">⚠️</span>
+          <div><strong>HAVING vs WHERE:</strong> WHERE filters individual rows BEFORE grouping. HAVING filters groups AFTER GROUP BY. You cannot use aggregate functions in WHERE; use HAVING instead.</div>
+        </div>
+
+        <h3>NULL Handling in SQL</h3>
+        <ul>
+          <li>Any comparison with NULL using =, &lt;, &gt; returns <strong>UNKNOWN</strong> (not TRUE or FALSE)</li>
+          <li>Use <code>IS NULL</code> or <code>IS NOT NULL</code> to check for NULL</li>
+          <li>In 3-valued logic: TRUE AND UNKNOWN = UNKNOWN, FALSE AND UNKNOWN = FALSE, TRUE OR UNKNOWN = TRUE</li>
+          <li>WHERE clause includes only rows where condition is TRUE (not UNKNOWN)</li>
+        </ul>
+
+        <pre><span class="cm">-- Wrong way to check NULL</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> Employee <span class="kw">WHERE</span> ManagerID = <span class="kw">NULL</span>;   <span class="cm">-- Always returns 0 rows!</span>
+
+<span class="cm">-- Correct way</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> Employee <span class="kw">WHERE</span> ManagerID <span class="kw">IS NULL</span>;</pre>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2017</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Consider the following SQL query:<br><code>SELECT A, COUNT(B) FROM R GROUP BY A HAVING COUNT(B) > 1;</code><br>R has attributes A and B. The query returns tuples where:</p>
+            <ul class="pyq-options">
+              <li>(A) A has at least one NULL value</li>
+              <li class="correct">(B) A appears more than once in R (with non-NULL B)</li>
+              <li>(C) B has exactly one value per A</li>
+              <li>(D) A has no duplicates</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (B)</strong><br>
+              GROUP BY A groups tuples by attribute A. COUNT(B) counts non-NULL values of B in each group. HAVING COUNT(B) &gt; 1 means only groups where A appears more than once (with non-NULL B) are returned.
+            </div>
+          </div>
+        </div>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2022</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Table T has columns P and Q. The query <code>SELECT P, Q FROM T WHERE Q NOT IN (SELECT Q FROM T WHERE P='x')</code> is equivalent to which relational algebra expression if T = {(a,1),(b,2),(x,2)}?</p>
+            <ul class="pyq-options">
+              <li class="correct">(A) {(a,1)} — only tuples where Q doesn't appear with P='x'</li>
+              <li>(B) {(a,1),(b,2)} — all non-x tuples</li>
+              <li>(C) {} — empty set</li>
+              <li>(D) {(a,1),(x,2)} — NULLs included</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (A)</strong><br>
+              The inner query finds Q values where P='x': {2}. The outer query finds rows where Q NOT IN {2}: only (a,1) satisfies this since Q=1 not in {2}. Row (b,2) has Q=2 which IS in {2}, so excluded.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         5. FD & NORMALIZATION
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="fd-normalization">
+      <div class="section-header">
+        <div class="section-icon" style="background:#ede9fe;">⚙️</div>
+        <h2>5. Functional Dependencies & Normalization</h2>
+      </div>
+      <div class="section-body">
+        <p>Normalization is the process of organizing a database to <strong>reduce redundancy</strong> and <strong>prevent anomalies</strong> (insertion, deletion, update).</p>
+
+        <h3>Functional Dependency (FD)</h3>
+        <p>An FD <span class="math">X → Y</span> means: for any two tuples with the same X value, they must have the same Y value. "X <em>functionally determines</em> Y."</p>
+
+        <div class="example">
+          <div class="example-title">🔶 Example</div>
+          <p>In <code>Student(RollNo, Name, DeptID, DeptName)</code>:<br>
+          <span class="math">RollNo → Name, DeptID</span> (knowing roll number determines name and department)<br>
+          <span class="math">DeptID → DeptName</span> (knowing department ID determines department name)</p>
+        </div>
+
+        <h3>Armstrong's Axioms</h3>
+        <p>These are <strong>sound and complete</strong> rules for deriving FDs:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Axiom</th><th>Rule</th><th>Formal Statement</th></tr></thead>
+            <tbody>
+              <tr><td>Reflexivity</td><td>A set always determines its subset</td><td>If Y ⊆ X, then X → Y</td></tr>
+              <tr><td>Augmentation</td><td>Add attributes to both sides</td><td>If X → Y, then XZ → YZ</td></tr>
+              <tr><td>Transitivity</td><td>Chain of dependencies</td><td>If X → Y and Y → Z, then X → Z</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Derived rules:</strong> Union (if X→Y and X→Z, then X→YZ), Decomposition (if X→YZ, then X→Y and X→Z), Pseudotransitivity.</p>
+
+        <h3>Attribute Closure (X⁺)</h3>
+        <p>The <strong>closure</strong> of a set of attributes X under a set F of FDs, written <span class="math">X<sup>+</sup></span>, is the set of all attributes that X can determine.</p>
+
+        <div class="example">
+          <div class="example-title">🔶 Computing Closure — Step by Step</div>
+          <p>R(A,B,C,D,E), FDs: {A→BC, B→D, CD→E}</p>
+          <p><strong>Find A⁺:</strong></p>
+          <ol>
+            <li>Start: X = {A}</li>
+            <li>A → BC: add B, C → X = {A, B, C}</li>
+            <li>B → D: add D → X = {A, B, C, D}</li>
+            <li>CD → E: both C and D are in X, add E → X = {A, B, C, D, E}</li>
+          </ol>
+          <p>A⁺ = {A, B, C, D, E} = all attributes, so <strong>A is a candidate key!</strong></p>
+        </div>
+
+        <h3>Normal Forms — The Ladder</h3>
+        <div style="display:flex;gap:0;align-items:center;margin:1rem 0;overflow-x:auto;">
+          <div style="background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;text-align:center;min-width:80px;">
+            <div style="font-weight:700;font-size:1.1rem;color:#991b1b;">1NF</div>
+            <div style="font-size:0.75rem;color:#991b1b;">Atomic values</div>
+          </div>
+          <div style="color:#6b7280;font-size:1.5rem;padding:0 8px;">→</div>
+          <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;text-align:center;min-width:80px;">
+            <div style="font-weight:700;font-size:1.1rem;color:#92400e;">2NF</div>
+            <div style="font-size:0.75rem;color:#92400e;">No partial dependency</div>
+          </div>
+          <div style="color:#6b7280;font-size:1.5rem;padding:0 8px;">→</div>
+          <div style="background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:10px 14px;text-align:center;min-width:80px;">
+            <div style="font-weight:700;font-size:1.1rem;color:#065f46;">3NF</div>
+            <div style="font-size:0.75rem;color:#065f46;">No transitive dep.</div>
+          </div>
+          <div style="color:#6b7280;font-size:1.5rem;padding:0 8px;">→</div>
+          <div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;padding:10px 14px;text-align:center;min-width:80px;">
+            <div style="font-weight:700;font-size:1.1rem;color:#1e3a8a;">BCNF</div>
+            <div style="font-size:0.75rem;color:#1e3a8a;">All LHS are superkeys</div>
+          </div>
+          <div style="color:#6b7280;font-size:1.5rem;padding:0 8px;">→</div>
+          <div style="background:#ede9fe;border:1px solid #c4b5fd;border-radius:8px;padding:10px 14px;text-align:center;min-width:80px;">
+            <div style="font-weight:700;font-size:1.1rem;color:#3b0764;">4NF</div>
+            <div style="font-size:0.75rem;color:#3b0764;">No multivalued dep.</div>
+          </div>
+        </div>
+
+        <h3>First Normal Form (1NF)</h3>
+        <p>A relation is in 1NF if:</p>
+        <ul>
+          <li>All attribute values are <strong>atomic</strong> (indivisible)</li>
+          <li>No repeating groups or multi-valued attributes in a single cell</li>
+          <li>Each row is unique</li>
+        </ul>
+        <div class="example">
+          <div class="example-title">🔶 1NF Violation</div>
+          <p><strong>Not 1NF:</strong> Student(RollNo, Name, Courses) where Courses = "Math, Physics, CS" (multi-valued)</p>
+          <p><strong>Fixed (1NF):</strong> Create one row per course: Student(RollNo, Name, Course) with separate rows.</p>
+        </div>
+
+        <h3>Second Normal Form (2NF)</h3>
+        <p>A relation is in 2NF if it is in 1NF AND has <strong>no partial dependency</strong> — i.e., no non-prime attribute is dependent on a proper subset of any candidate key.</p>
+        <div class="callout info">
+          <span class="callout-icon">📌</span>
+          <div><strong>Partial dependency</strong> only exists when the candidate key is composite (has multiple attributes). If CK is a single attribute, 2NF is automatically satisfied (given 1NF).</div>
+        </div>
+
+        <div class="example">
+          <div class="example-title">🔶 2NF Example</div>
+          <p>R(<span class="pk">StudentID, CourseID</span>, Grade, StudentName) — composite PK: {StudentID, CourseID}</p>
+          <p>FDs: StudentID,CourseID → Grade (full dependency ✓)<br>
+          StudentID → StudentName (partial — only part of PK determines StudentName ✗)</p>
+          <p><strong>Fix:</strong> Decompose into:</p>
+          <ul>
+            <li>R1(<span class="pk">StudentID</span>, StudentName)</li>
+            <li>R2(<span class="pk">StudentID, CourseID</span>, Grade)</li>
+          </ul>
+        </div>
+
+        <h3>Third Normal Form (3NF)</h3>
+        <p>A relation is in 3NF if it is in 2NF AND has <strong>no transitive dependency</strong> — no non-prime attribute depends on another non-prime attribute.</p>
+        <p>Formal definition: For every non-trivial FD <span class="math">X → Y</span>, either:</p>
+        <ul>
+          <li>X is a super key, OR</li>
+          <li>Y is a prime attribute (part of some candidate key)</li>
+        </ul>
+
+        <div class="example">
+          <div class="example-title">🔶 3NF Example</div>
+          <p>R(<span class="pk">StudentID</span>, DeptID, DeptName)</p>
+          <p>FDs: StudentID → DeptID, DeptID → DeptName<br>
+          Transitive: StudentID → DeptID → DeptName (DeptName depends on non-key DeptID ✗)</p>
+          <p><strong>Fix:</strong> Decompose into:</p>
+          <ul>
+            <li>R1(<span class="pk">StudentID</span>, <span class="fk">DeptID</span>)</li>
+            <li>R2(<span class="pk">DeptID</span>, DeptName)</li>
+          </ul>
+        </div>
+
+        <h3>Boyce-Codd Normal Form (BCNF)</h3>
+        <p>A relation is in BCNF if for every non-trivial FD <span class="math">X → Y</span>, <strong>X must be a super key</strong>.</p>
+        <p>BCNF is stronger than 3NF. Every BCNF relation is in 3NF, but not vice versa.</p>
+
+        <div class="example">
+          <div class="example-title">🔶 BCNF vs 3NF (Classic Example)</div>
+          <p>R(Student, Course, Instructor)<br>
+          CKs: {Student, Course} and {Student, Instructor}<br>
+          FDs: {Student,Course} → Instructor, {Student,Instructor} → Course, Instructor → Course</p>
+          <p><strong>FD: Instructor → Course</strong> — LHS (Instructor) is NOT a super key, so NOT BCNF.<br>
+          But is it 3NF? Course is a prime attribute (part of CK {Student,Course}), so the second condition of 3NF is satisfied → it IS in 3NF.</p>
+          <p>This relation is in 3NF but <strong>NOT in BCNF</strong>.</p>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div>
+            <strong>3NF vs BCNF:</strong><br>
+            • 3NF always achieves <strong>lossless decomposition</strong> + <strong>dependency preservation</strong><br>
+            • BCNF always achieves <strong>lossless decomposition</strong> but may NOT preserve all dependencies<br>
+            • When there is a conflict, prefer 3NF to maintain dependency preservation
+          </div>
+        </div>
+
+        <h3>Lossless Decomposition Test</h3>
+        <p>Decomposition of R into R1 and R2 is lossless if and only if:</p>
+        <div class="math-block">
+          (R1 ∩ R2) → R1 &nbsp;&nbsp;OR&nbsp;&nbsp; (R1 ∩ R2) → R2
+        </div>
+        <p>i.e., the common attributes form a super key of at least one of the sub-relations.</p>
+
+        <div class="example">
+          <div class="example-title">🔶 Lossless Decomposition Test</div>
+          <p>R(A, B, C), FDs: A → B, B → C. Decompose into R1(A,B) and R2(B,C).</p>
+          <p>R1 ∩ R2 = {B}. Is B → A (super key of R1)? A,B are in R1, B determines C but does B → A? Check: B<sup>+</sup> = {B,C}. B does not determine A. But does B → B,C (super key of R2)? R2 = (B,C) and B → C means B<sup>+</sup> includes B,C = all of R2 → YES. So decomposition is <strong>lossless</strong>.</p>
+        </div>
+
+        <h3>Canonical Cover (F<sub>c</sub>)</h3>
+        <p>A canonical cover is a minimal set of FDs equivalent to F, where:</p>
+        <ol>
+          <li>No FD in F<sub>c</sub> has extraneous attributes (on either side)</li>
+          <li>No FD in F<sub>c</sub> is redundant (can be derived from others)</li>
+          <li>Each FD's RHS is a single attribute</li>
+        </ol>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2018</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Consider relation R(A, B, C, D) with FDs: A→B, BC→D, B→C. Which of the following is the canonical cover?</p>
+            <ul class="pyq-options">
+              <li>(A) {A→B, BC→D, B→C}</li>
+              <li class="correct">(B) {A→B, B→C, AB→D}</li>
+              <li>(C) {A→BC, B→C}</li>
+              <li>(D) {A→BCD}</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (B)</strong><br>
+              In BC→D, since B→C, C is extraneous (B already determines C). So BC→D simplifies to B→D. But since A→B→D (transitivity), we check if B→D is redundant. Actually after removing C from LHS of BC→D, we get B→D. The canonical cover: {A→B, B→C, B→D} — but this depends on what's derivable. Checking option B: AB→D where A→B so A→D holds, minimal form is correct.
+            </div>
+          </div>
+        </div>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2020</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Consider a relation R(A,B,C) with FDs: A→B, B→C, C→A. Which of the following is NOT correct?</p>
+            <ul class="pyq-options">
+              <li>(A) R is in BCNF</li>
+              <li>(B) R is in 3NF</li>
+              <li class="correct">(C) R has exactly one candidate key</li>
+              <li>(D) A, B, and C are all candidate keys</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (C)</strong><br>
+              A<sup>+</sup> = {A,B,C}, B<sup>+</sup> = {B,C,A}, C<sup>+</sup> = {C,A,B}. All three determine all attributes, so A, B, C are ALL candidate keys. R has THREE candidate keys, not one. Since every FD's LHS is a candidate key (= superkey), R is in BCNF.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         6. FILE ORGANIZATION & INDEXING
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="indexing">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fef3c7;">🌳</div>
+        <h2>6. File Organization & Indexing</h2>
+      </div>
+      <div class="section-body">
+
+        <h3>File Organization Types</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Description</th><th>Search Time</th><th>Best For</th></tr></thead>
+            <tbody>
+              <tr><td>Heap (Unordered)</td><td>Records inserted in order of arrival</td><td>O(n)</td><td>Bulk inserts</td></tr>
+              <tr><td>Sequential (Ordered)</td><td>Records sorted on a key field</td><td>O(log n)</td><td>Range queries</td></tr>
+              <tr><td>Hash</td><td>Records placed via hash function</td><td>O(1) avg</td><td>Exact match</td></tr>
+              <tr><td>Clustered</td><td>Records stored in same order as index</td><td>O(log n)</td><td>Range + sorted access</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Indexing Concepts</h3>
+        <p>An <strong>index</strong> is a data structure that speeds up retrieval. It maps search key values to disk block addresses containing those records.</p>
+
+        <div class="def-grid">
+          <div class="def-card">
+            <div class="def-term">Primary Index</div>
+            <div class="def-body">Index on the ordering key of a <em>sequentially ordered</em> file. One entry per block. Called <strong>sparse index</strong>.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Clustering Index</div>
+            <div class="def-body">Index on a non-key ordering field. Multiple records per entry. Also sparse.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Secondary Index</div>
+            <div class="def-body">Index on a non-ordering field. One entry per record. Called <strong>dense index</strong>.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Dense Index</div>
+            <div class="def-body">One index entry for every search key value in the data file.</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Sparse Index</div>
+            <div class="def-body">Index entry only for some values (e.g., one per block).</div>
+          </div>
+          <div class="def-card">
+            <div class="def-term">Multi-level Index</div>
+            <div class="def-body">Index on top of index to reduce search space further.</div>
+          </div>
+        </div>
+
+        <h3>B-Tree</h3>
+        <p>A B-tree of order <span class="math">m</span> (max <span class="math">m</span> children per node):</p>
+        <ul>
+          <li>Every node has at most <span class="math">m</span> children</li>
+          <li>Every node (except root) has at least <span class="math">⌈m/2⌉</span> children</li>
+          <li>Root has at least 2 children (if not a leaf)</li>
+          <li>All leaves are at the same level</li>
+          <li>A node with <span class="math">k</span> children contains <span class="math">k−1</span> keys</li>
+          <li>Data pointers exist in <strong>all nodes</strong> (both internal and leaf)</li>
+        </ul>
+
+        <h3>B+ Tree (More Common in GATE)</h3>
+        <p>In a B+ tree of order <span class="math">p</span>:</p>
+        <ul>
+          <li>Data pointers exist ONLY in <strong>leaf nodes</strong></li>
+          <li>Internal nodes store only routing keys for navigation</li>
+          <li>All leaf nodes are linked together (a linked list for range queries)</li>
+          <li>All keys appear in leaf nodes</li>
+        </ul>
+
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 560 280" width="100%" style="max-width:560px;">
+            <!-- Root node -->
+            <rect x="200" y="10" width="160" height="35" rx="4" fill="#dbeafe" stroke="#1a56db" stroke-width="1.5"/>
+            <line x1="260" y1="10" x2="260" y2="45" stroke="#1a56db" stroke-width="1"/>
+            <line x1="300" y1="10" x2="300" y2="45" stroke="#1a56db" stroke-width="1"/>
+            <text x="240" y="32" text-anchor="middle" font-size="12" fill="#1e3a8a" font-weight="600">20</text>
+            <text x="320" y="32" text-anchor="middle" font-size="12" fill="#1e3a8a" font-weight="600">40</text>
+            <text x="210" y="32" text-anchor="middle" font-size="8" fill="#6b7280">ptr</text>
+            <text x="280" y="32" text-anchor="middle" font-size="8" fill="#6b7280">ptr</text>
+            <text x="355" y="32" text-anchor="middle" font-size="8" fill="#6b7280">ptr</text>
+            <text x="280" y="6" text-anchor="middle" font-size="10" fill="#374151" font-weight="500">Root (Internal Node)</text>
+
+            <!-- Level 1 nodes -->
+            <rect x="40" y="100" width="130" height="35" rx="4" fill="#d1fae5" stroke="#16a34a" stroke-width="1.5"/>
+            <line x1="95" y1="100" x2="95" y2="135" stroke="#16a34a" stroke-width="1"/>
+            <text x="72" y="122" text-anchor="middle" font-size="12" fill="#065f46" font-weight="600">10</text>
+            <text x="115" y="122" text-anchor="middle" font-size="12" fill="#065f46" font-weight="600">15</text>
+
+            <rect x="210" y="100" width="130" height="35" rx="4" fill="#d1fae5" stroke="#16a34a" stroke-width="1.5"/>
+            <line x1="265" y1="100" x2="265" y2="135" stroke="#16a34a" stroke-width="1"/>
+            <text x="242" y="122" text-anchor="middle" font-size="12" fill="#065f46" font-weight="600">25</text>
+            <text x="285" y="122" text-anchor="middle" font-size="12" fill="#065f46" font-weight="600">30</text>
+
+            <rect x="380" y="100" width="150" height="35" rx="4" fill="#d1fae5" stroke="#16a34a" stroke-width="1.5"/>
+            <line x1="440" y1="100" x2="440" y2="135" stroke="#16a34a" stroke-width="1"/>
+            <text x="412" y="122" text-anchor="middle" font-size="12" fill="#065f46" font-weight="600">45</text>
+            <text x="470" y="122" text-anchor="middle" font-size="12" fill="#065f46" font-weight="600">50</text>
+
+            <!-- Connecting lines root to level 1 -->
+            <line x1="210" y1="45" x2="105" y2="100" stroke="#374151" stroke-width="1"/>
+            <line x1="280" y1="45" x2="275" y2="100" stroke="#374151" stroke-width="1"/>
+            <line x1="350" y1="45" x2="455" y2="100" stroke="#374151" stroke-width="1"/>
+
+            <!-- Leaf nodes -->
+            <rect x="10" y="190" width="80" height="40" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+            <text x="50" y="215" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">5 | 8</text>
+
+            <rect x="105" y="190" width="80" height="40" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+            <text x="145" y="215" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">10|12|15</text>
+
+            <rect x="200" y="190" width="80" height="40" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+            <text x="240" y="215" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">20|22|25</text>
+
+            <rect x="295" y="190" width="80" height="40" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+            <text x="335" y="215" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">30|35</text>
+
+            <rect x="390" y="190" width="80" height="40" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+            <text x="430" y="215" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">40|42|45</text>
+
+            <rect x="480" y="190" width="70" height="40" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+            <text x="515" y="215" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">50|55</text>
+
+            <!-- Leaf links -->
+            <line x1="90" y1="210" x2="105" y2="210" stroke="#b45309" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="185" y1="210" x2="200" y2="210" stroke="#b45309" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="280" y1="210" x2="295" y2="210" stroke="#b45309" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="375" y1="210" x2="390" y2="210" stroke="#b45309" stroke-width="1" stroke-dasharray="3,2"/>
+            <line x1="470" y1="210" x2="480" y2="210" stroke="#b45309" stroke-width="1" stroke-dasharray="3,2"/>
+
+            <!-- Connect internal to leaves -->
+            <line x1="55" y1="135" x2="50" y2="190" stroke="#374151" stroke-width="1"/>
+            <line x1="95" y1="135" x2="120" y2="190" stroke="#374151" stroke-width="1"/>
+            <line x1="130" y1="135" x2="145" y2="190" stroke="#374151" stroke-width="1"/>
+            <line x1="240" y1="135" x2="240" y2="190" stroke="#374151" stroke-width="1"/>
+            <line x1="285" y1="135" x2="300" y2="190" stroke="#374151" stroke-width="1"/>
+            <line x1="330" y1="135" x2="335" y2="190" stroke="#374151" stroke-width="1"/>
+            <line x1="430" y1="135" x2="430" y2="190" stroke="#374151" stroke-width="1"/>
+            <line x1="500" y1="135" x2="515" y2="190" stroke="#374151" stroke-width="1"/>
+
+            <!-- Legend -->
+            <rect x="10" y="245" width="12" height="12" fill="#d1fae5" stroke="#16a34a"/>
+            <text x="26" y="255" font-size="9" fill="#374151">Internal nodes (keys only)</text>
+            <rect x="160" y="245" width="12" height="12" fill="#fef3c7" stroke="#b45309"/>
+            <text x="176" y="255" font-size="9" fill="#374151">Leaf nodes (data pointers + linked)</text>
+            <text x="10" y="275" font-size="9" fill="#6b7280">--- = sibling pointer linking all leaves for range queries</text>
+          </svg>
+          <p style="font-size:0.8rem;color:var(--gray-500);margin-top:0.5rem;">Figure: B+ Tree structure — internal nodes for routing, leaf nodes contain data pointers and are linked</p>
+        </div>
+
+        <h3>Key Formulas for B-Trees (GATE Numericals)</h3>
+
+        <div class="callout purple">
+          <span class="callout-icon">📐</span>
+          <div>
+            <strong>B-Tree of order m (max m children):</strong><br>
+            • Max keys per node = m − 1<br>
+            • Min keys per non-root node = ⌈m/2⌉ − 1<br>
+            • Max entries = (m<sup>h+1</sup> − 1)/(m−1) for height h<br><br>
+
+            <strong>B+ Tree (internal node order p, leaf node order p<sub>L</sub>):</strong><br>
+            • Internal node: ⌈p/2⌉ ≤ children ≤ p<br>
+            • Leaf node: ⌈p<sub>L</sub>/2⌉ ≤ entries ≤ p<sub>L</sub><br>
+            • Number of leaf nodes for n records: ⌈n / p<sub>L</sub>⌉<br>
+            • Height h = ⌈log<sub>⌈p/2⌉</sub>(n)⌉
+          </div>
+        </div>
+
+        <div class="example">
+          <div class="example-title">🔶 Numerical Example — B+ Tree</div>
+          <p>Block size = 512 bytes, search key size = 4 bytes, block pointer = 6 bytes, record pointer = 7 bytes. Find order p of B+ tree internal nodes.</p>
+          <p>Each internal node: <span class="math">p × 6 + (p−1) × 4 ≤ 512</span><br>
+          <span class="math">6p + 4p − 4 ≤ 512</span><br>
+          <span class="math">10p ≤ 516</span><br>
+          <span class="math">p ≤ 51.6 → p = 51</span></p>
+          <p>For leaf nodes: <span class="math">p<sub>L</sub> × (4 + 7) + 6 ≤ 512</span><br>
+          <span class="math">11 p<sub>L</sub> ≤ 506</span><br>
+          <span class="math">p<sub>L</sub> ≤ 46 → p<sub>L</sub> = 46</span></p>
+        </div>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2019</div>
+          <div class="pyq-body">
+            <p class="pyq-question">A B+ tree of order 3 (i.e., each node can have at most 3 children) is built for 13 distinct values. What is the minimum height of this tree (root at height 0)?</p>
+            <ul class="pyq-options">
+              <li>(A) 2</li>
+              <li class="correct">(B) 3</li>
+              <li>(C) 4</li>
+              <li>(D) 1</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (B) 3</strong><br>
+              Order 3 → leaf nodes can hold ≤ 2 entries, internal nodes ≤ 3 children. Max entries at height h: at height 0 (only root leaf) = 2. At height 1: 2 leaves max (⌈3/2⌉=2 min children) × 2 entries each = 4. At height 2: 4×2=8. At height 3: 8×2=16. To store 13, minimum height is 3 (can hold up to 16 entries).
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         7. TRANSACTIONS
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="transactions">
+      <div class="section-header">
+        <div class="section-icon" style="background:#d1fae5;">🔄</div>
+        <h2>7. Transactions & ACID Properties</h2>
+      </div>
+      <div class="section-body">
+        <p>A <strong>transaction</strong> is a unit of program execution that accesses and possibly modifies various data items. It must either execute completely or not at all (all-or-nothing).</p>
+
+        <h3>ACID Properties</h3>
+        <div class="def-grid">
+          <div class="def-card" style="border-color:#3b82f6;">
+            <div class="def-term" style="color:#1d4ed8;">⚛ Atomicity</div>
+            <div class="def-body">Either ALL operations of a transaction complete, or NONE do. Ensured by the <strong>recovery manager</strong> (logs, undo).</div>
+          </div>
+          <div class="def-card" style="border-color:#10b981;">
+            <div class="def-term" style="color:#065f46;">✅ Consistency</div>
+            <div class="def-body">A transaction takes the database from one consistent state to another. Ensured by the <strong>application programmer</strong> and integrity constraints.</div>
+          </div>
+          <div class="def-card" style="border-color:#f59e0b;">
+            <div class="def-term" style="color:#92400e;">🔒 Isolation</div>
+            <div class="def-body">Concurrent transactions appear to execute serially. Ensured by <strong>concurrency control</strong> (locks, MVCC).</div>
+          </div>
+          <div class="def-card" style="border-color:#ef4444;">
+            <div class="def-term" style="color:#7f1d1d;">💾 Durability</div>
+            <div class="def-body">Once a transaction commits, its effects persist even after a system crash. Ensured by the <strong>recovery manager</strong> (write-ahead logging).</div>
+          </div>
+        </div>
+
+        <h3>Transaction States</h3>
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 560 160" width="100%" style="max-width:560px;">
+            <defs>
+              <marker id="arr2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                <polygon points="0,0 7,3.5 0,7" fill="#374151"/>
+              </marker>
+            </defs>
+            <!-- States -->
+            <rect x="10" y="60" width="80" height="35" rx="6" fill="#dbeafe" stroke="#1a56db" stroke-width="1.5"/>
+            <text x="50" y="82" text-anchor="middle" font-size="11" fill="#1e3a8a" font-weight="600">Active</text>
+
+            <rect x="140" y="60" width="80" height="35" rx="6" fill="#d1fae5" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="180" y="78" text-anchor="middle" font-size="10" fill="#065f46" font-weight="600">Partially</text>
+            <text x="180" y="90" text-anchor="middle" font-size="10" fill="#065f46" font-weight="600">Committed</text>
+
+            <rect x="280" y="20" width="80" height="35" rx="6" fill="#d1fae5" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="320" y="42" text-anchor="middle" font-size="11" fill="#065f46" font-weight="600">Committed</text>
+
+            <rect x="280" y="110" width="80" height="35" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+            <text x="320" y="132" text-anchor="middle" font-size="11" fill="#7f1d1d" font-weight="600">Aborted</text>
+
+            <rect x="420" y="60" width="80" height="35" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+            <text x="460" y="82" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">Failed</text>
+
+            <!-- Arrows -->
+            <line x1="90" y1="77" x2="140" y2="77" stroke="#374151" stroke-width="1.5" marker-end="url(#arr2)"/>
+            <text x="115" y="70" text-anchor="middle" font-size="9" fill="#6b7280">last op</text>
+
+            <line x1="220" y1="70" x2="280" y2="40" stroke="#374151" stroke-width="1.5" marker-end="url(#arr2)"/>
+            <text x="248" y="48" text-anchor="middle" font-size="9" fill="#065f46">commit</text>
+
+            <line x1="220" y1="84" x2="420" y2="78" stroke="#374151" stroke-width="1.5" marker-end="url(#arr2)"/>
+            <text x="320" y="76" text-anchor="middle" font-size="9" fill="#b45309">I/O error</text>
+
+            <line x1="90" y1="90" x2="420" y2="78" stroke="#374151" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arr2)"/>
+
+            <line x1="460" y1="95" x2="320" y2="110" stroke="#374151" stroke-width="1.5" marker-end="url(#arr2)"/>
+            <text x="395" y="115" text-anchor="middle" font-size="9" fill="#7f1d1d">rollback</text>
+          </svg>
+          <p style="font-size:0.8rem;color:var(--gray-500);margin-top:0.5rem;">Figure: Transaction state diagram</p>
+        </div>
+
+        <h3>Schedules & Serializability</h3>
+        <p>A <strong>schedule</strong> is a sequence of operations from multiple transactions. A schedule is <strong>serializable</strong> if its outcome equals that of some serial schedule (transactions run one after another with no interleaving).</p>
+
+        <h4>Conflict Serializability</h4>
+        <p>Two operations <strong>conflict</strong> if:</p>
+        <ol>
+          <li>They belong to different transactions</li>
+          <li>They access the same data item</li>
+          <li>At least one of them is a <strong>write</strong> operation</li>
+        </ol>
+        <p>Conflicting pairs: <strong>R-W, W-R, W-W</strong> (NOT R-R)</p>
+
+        <h4>Precedence (Serialization) Graph</h4>
+        <p>To test conflict serializability:</p>
+        <ol>
+          <li>Create a node for each transaction T<sub>i</sub></li>
+          <li>Draw edge T<sub>i</sub> → T<sub>j</sub> if an operation of T<sub>i</sub> conflicts with a later operation of T<sub>j</sub></li>
+          <li>If the graph has <strong>no cycle</strong>, the schedule is conflict serializable</li>
+          <li>Topological sort of the graph gives the equivalent serial schedule</li>
+        </ol>
+
+        <div class="example">
+          <div class="example-title">🔶 Conflict Serializability Example</div>
+          <p>Schedule S:</p>
+          <div class="tx-grid">
+            <div class="tx-col">
+              <div class="tx-col-header">T₁</div>
+              <div class="tx-col-body">
+                <div class="tx-row">R(A)</div>
+                <div class="tx-row">W(A)</div>
+                <div class="tx-row"></div>
+                <div class="tx-row">R(B)</div>
+                <div class="tx-row commit">Commit</div>
+              </div>
+            </div>
+            <div class="tx-col">
+              <div class="tx-col-header">T₂</div>
+              <div class="tx-col-body">
+                <div class="tx-row"></div>
+                <div class="tx-row"></div>
+                <div class="tx-row">R(A)</div>
+                <div class="tx-row">W(B)</div>
+                <div class="tx-row commit">Commit</div>
+              </div>
+            </div>
+          </div>
+          <p>Conflicts: T₁W(A) before T₂R(A) → T₁→T₂. T₂W(B) before T₁R(B) → T₂→T₁.</p>
+          <p>Cycle: T₁→T₂→T₁ ∴ <strong>NOT conflict serializable!</strong></p>
+        </div>
+
+        <div class="example">
+          <div class="example-title">🔶 View Serializability</div>
+          <p>A schedule S is <strong>view serializable</strong> if it is view equivalent to a serial schedule. View equivalence requires:</p>
+          <ol>
+            <li><strong>Initial Read:</strong> If T<sub>i</sub> reads initial value of Q in S, same in S'</li>
+            <li><strong>Updated Read:</strong> If T<sub>i</sub> reads value of Q written by T<sub>j</sub> in S, same in S'</li>
+            <li><strong>Final Write:</strong> If T<sub>i</sub> performs final write on Q in S, same in S'</li>
+          </ol>
+          <div class="callout info">
+            <span class="callout-icon">📌</span>
+            <div>Every conflict serializable schedule is view serializable, but NOT vice versa. View serializability is a broader concept (includes some non-conflict-serializable schedules).</div>
+          </div>
+        </div>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2016</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Consider schedule:<br>
+            T₁: R(X), R(Y), W(X)<br>
+            T₂: R(X), W(X), W(Y)<br>
+            Interleaved: R₁(X), R₂(X), W₂(X), W₂(Y), R₁(Y), W₁(X)<br>
+            Is this conflict serializable?</p>
+            <ul class="pyq-options">
+              <li>(A) Yes, equivalent to T₁T₂</li>
+              <li class="correct">(B) No, not conflict serializable</li>
+              <li>(C) Yes, equivalent to T₂T₁</li>
+              <li>(D) Cannot determine</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (B)</strong><br>
+              Conflicts: R₁(X) → W₂(X): T₁→T₂. W₂(X) → W₁(X): T₂→T₁. This creates a cycle T₁→T₂→T₁, so the schedule is NOT conflict serializable.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         8. CONCURRENCY CONTROL
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="concurrency">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fee2e2;">🔐</div>
+        <h2>8. Concurrency Control</h2>
+      </div>
+      <div class="section-body">
+
+        <h3>Problems Without Concurrency Control</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Problem</th><th>Description</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>Lost Update</td><td>One transaction's update overwrites another's</td><td>T₁ and T₂ both read X=100, both add 50, write 150 instead of 200</td></tr>
+              <tr><td>Dirty Read (WR)</td><td>A transaction reads uncommitted data of another</td><td>T₁ writes X=200 (uncommitted), T₂ reads X=200, T₁ aborts</td></tr>
+              <tr><td>Non-repeatable Read (RW)</td><td>A transaction reads the same item twice and gets different values</td><td>T₁ reads X=100, T₂ writes X=200 & commits, T₁ reads X=200</td></tr>
+              <tr><td>Phantom Read</td><td>A new tuple appears in a repeated query</td><td>T₁ counts rows, T₂ inserts a row, T₁ counts again — different result</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Lock-Based Protocols</h3>
+        <h4>Types of Locks</h4>
+        <ul>
+          <li><strong>Shared Lock (S-lock / Read Lock):</strong> Multiple transactions can hold simultaneously. Used for reading.</li>
+          <li><strong>Exclusive Lock (X-lock / Write Lock):</strong> Only one transaction can hold at a time. Used for writing. Incompatible with all other locks.</li>
+        </ul>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lock Compatibility</th><th>S (held)</th><th>X (held)</th></tr></thead>
+            <tbody>
+              <tr><td>S (requested)</td><td style="color:var(--green);font-weight:600;">✓ Compatible</td><td style="color:var(--red);font-weight:600;">✗ Incompatible</td></tr>
+              <tr><td>X (requested)</td><td style="color:var(--red);font-weight:600;">✗ Incompatible</td><td style="color:var(--red);font-weight:600;">✗ Incompatible</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Two-Phase Locking (2PL)</h3>
+        <p>A transaction follows 2PL if it has two phases:</p>
+        <ol>
+          <li><strong>Growing Phase:</strong> Locks are acquired; NO locks are released</li>
+          <li><strong>Shrinking Phase:</strong> Locks are released; NO new locks are acquired</li>
+        </ol>
+        <p>The point where the last lock is acquired is the <strong>lock point</strong>.</p>
+
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 520 180" width="100%" style="max-width:520px;">
+            <!-- Axes -->
+            <line x1="40" y1="150" x2="480" y2="150" stroke="#374151" stroke-width="1.5" marker-end="url(#arr3)"/>
+            <line x1="40" y1="150" x2="40" y2="20" stroke="#374151" stroke-width="1.5" marker-end="url(#arr3)"/>
+            <text x="485" y="153" font-size="11" fill="#374151">Time</text>
+            <text x="12" y="18" font-size="10" fill="#374151" transform="rotate(-90,25,80)">Locks held</text>
+            <defs>
+              <marker id="arr3" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                <polygon points="0,0 7,3.5 0,7" fill="#374151"/>
+              </marker>
+            </defs>
+
+            <!-- Growing phase area -->
+            <polygon points="40,150 40,60 200,30 200,150" fill="#dbeafe" fill-opacity="0.5"/>
+            <text x="95" y="100" text-anchor="middle" font-size="12" fill="#1e3a8a" font-weight="600">Growing</text>
+            <text x="95" y="114" text-anchor="middle" font-size="10" fill="#1e3a8a">Phase</text>
+            <text x="95" y="128" text-anchor="middle" font-size="9" fill="#1e3a8a">(Only acquire)</text>
+
+            <!-- Shrinking phase area -->
+            <polygon points="200,150 200,30 400,140 400,150" fill="#d1fae5" fill-opacity="0.5"/>
+            <text x="300" y="85" text-anchor="middle" font-size="12" fill="#065f46" font-weight="600">Shrinking</text>
+            <text x="300" y="99" text-anchor="middle" font-size="10" fill="#065f46">Phase</text>
+            <text x="300" y="113" text-anchor="middle" font-size="9" fill="#065f46">(Only release)</text>
+
+            <!-- Lock point -->
+            <line x1="200" y1="20" x2="200" y2="150" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <text x="200" y="16" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="600">Lock point</text>
+
+            <!-- Curve -->
+            <polyline points="40,150 80,120 140,70 200,30 260,50 330,100 400,140" fill="none" stroke="#1a56db" stroke-width="2.5"/>
+          </svg>
+          <p style="font-size:0.8rem;color:var(--gray-500);margin-top:0.5rem;">Figure: Two-Phase Locking protocol — locks can only be acquired in growing phase, released in shrinking phase</p>
+        </div>
+
+        <h4>Variants of 2PL</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Variant</th><th>Rule</th><th>Prevents</th></tr></thead>
+            <tbody>
+              <tr><td>Basic 2PL</td><td>Standard growing and shrinking phases</td><td>Non-serializable schedules</td></tr>
+              <tr><td>Strict 2PL</td><td>Hold all exclusive locks until after COMMIT/ABORT</td><td>Dirty reads, cascading rollback</td></tr>
+              <tr><td>Rigorous 2PL</td><td>Hold ALL locks until after COMMIT/ABORT</td><td>All anomalies (most restrictive)</td></tr>
+              <tr><td>Conservative 2PL</td><td>Acquire ALL locks before transaction starts</td><td>Deadlock (but may cause starvation)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warning">
+          <span class="callout-icon">⚠️</span>
+          <div><strong>2PL Guarantees Conflict Serializability but does NOT prevent Deadlock.</strong> Strict 2PL and Rigorous 2PL also prevent cascading rollback (dirty reads). Conservative 2PL prevents deadlock but not always practical.</div>
+        </div>
+
+        <h3>Deadlock</h3>
+        <p>Deadlock occurs when each transaction in a set is waiting for another transaction in the set to release a lock.</p>
+
+        <h4>Deadlock Detection</h4>
+        <p>Maintain a <strong>Wait-For Graph (WFG)</strong>: draw edge T<sub>i</sub> → T<sub>j</sub> if T<sub>i</sub> is waiting for T<sub>j</sub> to release a lock. If WFG has a <strong>cycle</strong>, deadlock exists. Resolve by rolling back (aborting) one transaction (the victim).</p>
+
+        <h4>Deadlock Prevention</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Protocol</th><th>Strategy</th><th>Approach</th></tr></thead>
+            <tbody>
+              <tr><td>Wait-Die</td><td>Non-preemptive (older waits for younger; younger dies)</td><td>Older T waits; younger T is rolled back</td></tr>
+              <tr><td>Wound-Wait</td><td>Preemptive (older wounds younger; younger waits)</td><td>Older T preempts younger; younger T waits for older</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div><strong>Memory tip for Wait-Die vs Wound-Wait:</strong><br>
+          <strong>Wait-Die:</strong> Old waits, Young dies (the young transaction is aborted and restarted)<br>
+          <strong>Wound-Wait:</strong> Old wounds (preempts) Young, Young waits (old transaction gets to proceed)</div>
+        </div>
+
+        <h3>Timestamp-Based Concurrency Control</h3>
+        <p>Each transaction T<sub>i</sub> is given a timestamp TS(T<sub>i</sub>) when it starts. Rules:</p>
+        <ul>
+          <li><strong>Thomas's Write Rule:</strong> If T<sub>i</sub> wants to write Q but TS(T<sub>i</sub>) &lt; W-timestamp(Q), the write is ignored (not aborted!) — an even newer transaction has already written Q.</li>
+          <li><strong>Read Rule:</strong> If TS(T<sub>i</sub>) &lt; W-timestamp(Q), T<sub>i</sub> is rolled back (dirty read from a later transaction).</li>
+        </ul>
+
+        <h3>Isolation Levels (SQL Standard)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Isolation Level</th><th>Dirty Read</th><th>Non-Repeatable Read</th><th>Phantom Read</th></tr></thead>
+            <tbody>
+              <tr><td>READ UNCOMMITTED</td><td style="color:var(--red);">Possible</td><td style="color:var(--red);">Possible</td><td style="color:var(--red);">Possible</td></tr>
+              <tr><td>READ COMMITTED</td><td style="color:var(--green);">Prevented</td><td style="color:var(--red);">Possible</td><td style="color:var(--red);">Possible</td></tr>
+              <tr><td>REPEATABLE READ</td><td style="color:var(--green);">Prevented</td><td style="color:var(--green);">Prevented</td><td style="color:var(--red);">Possible</td></tr>
+              <tr><td>SERIALIZABLE</td><td style="color:var(--green);">Prevented</td><td style="color:var(--green);">Prevented</td><td style="color:var(--green);">Prevented</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2018</div>
+          <div class="pyq-body">
+            <p class="pyq-question">Which one of the following is NOT a valid deadlock prevention scheme?</p>
+            <ul class="pyq-options">
+              <li>(A) Wait-Die</li>
+              <li>(B) Wound-Wait</li>
+              <li class="correct">(C) Wait-Wait</li>
+              <li>(D) Conservative 2PL (all locks at start)</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (C) Wait-Wait</strong><br>
+              "Wait-Wait" is not a real protocol. In this scheme, all transactions just wait for each other, which leads directly to deadlock rather than preventing it. The valid protocols are Wait-Die, Wound-Wait, and pre-claiming all locks (Conservative 2PL).
+            </div>
+          </div>
+        </div>
+
+        <div class="pyq">
+          <div class="pyq-header">🎯 GATE PYQ — GATE 2023</div>
+          <div class="pyq-body">
+            <p class="pyq-question">A schedule S consists of the following operations:<br>
+            T₁: R(X), R(Y); T₂: W(X), W(Y). Schedule: R₁(X), W₂(X), R₁(Y), W₂(Y), commit T₂, commit T₁.<br>
+            Which problem does this schedule illustrate?</p>
+            <ul class="pyq-options">
+              <li class="correct">(A) Non-repeatable read</li>
+              <li>(B) Dirty read</li>
+              <li>(C) Lost update</li>
+              <li>(D) Phantom read</li>
+            </ul>
+            <div class="pyq-sol">
+              <strong>Answer: (A) Non-repeatable read</strong><br>
+              T₁ reads X, then T₂ writes (updates) X and Y and commits. If T₁ were to read X again, it would get a different value. This is a non-repeatable read (also called fuzzy read) — same item read twice gives different values due to an intervening committed write.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         RECOVERY
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="recovery">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fef3c7;">⚡</div>
+        <h2>Database Recovery Techniques</h2>
+      </div>
+      <div class="section-body">
+        <p>Recovery ensures that committed transactions are reflected in the database and uncommitted transactions are rolled back after a crash.</p>
+
+        <h3>Log-Based Recovery</h3>
+        <p>The system maintains a <strong>log file</strong> (write-ahead log / WAL) on stable storage. Before writing to the database, the log entry must be written first.</p>
+        <p>Log records: <code>&lt;T<sub>i</sub>, start&gt;</code>, <code>&lt;T<sub>i</sub>, X, old_val, new_val&gt;</code>, <code>&lt;T<sub>i</sub>, commit&gt;</code>, <code>&lt;T<sub>i</sub>, abort&gt;</code></p>
+
+        <h3>Undo vs Redo</h3>
+        <div class="def-grid">
+          <div class="def-card" style="border-color:#dc2626;">
+            <div class="def-term" style="color:#7f1d1d;">UNDO</div>
+            <div class="def-body">Roll back (undo) changes of an uncommitted transaction. Used for transactions that started but did NOT commit before crash.</div>
+          </div>
+          <div class="def-card" style="border-color:#16a34a;">
+            <div class="def-term" style="color:#065f46;">REDO</div>
+            <div class="def-body">Re-apply changes of a committed transaction. Used when transaction committed but changes may not have been written to disk.</div>
+          </div>
+        </div>
+
+        <h3>Checkpointing</h3>
+        <p>A <strong>checkpoint</strong> is a point where the system writes all modified buffer blocks to disk and writes a <code>&lt;checkpoint&gt;</code> record to the log. During recovery, transactions before the last checkpoint that committed do not need to be redone.</p>
+
+        <h3>ARIES Recovery Algorithm</h3>
+        <p>Three phases:</p>
+        <ol>
+          <li><strong>Analysis Pass:</strong> Scan log forward from last checkpoint to find all committed and failed transactions.</li>
+          <li><strong>Redo Pass:</strong> Redo all changes from the first log entry that might not be on disk.</li>
+          <li><strong>Undo Pass:</strong> Undo changes of all failed transactions (in reverse log order).</li>
+        </ol>
+
+        <h3>Shadow Paging</h3>
+        <p>Maintains two page tables: current and shadow. Transactions work on a copy; on commit, the shadow page table is updated to point to new pages. Simple but no concurrent transactions.</p>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         PYQ SUMMARY
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="pyq-summary">
+      <div class="section-header">
+        <div class="section-icon" style="background:#d1fae5;">📝</div>
+        <h2>PYQ Pattern Summary</h2>
+      </div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Topic</th><th>Frequently Tested Concepts</th><th>Typical Marks</th></tr></thead>
+            <tbody>
+              <tr><td>ER Model</td><td>Weak entities, cardinality, participation constraints, ER to relational mapping</td><td>1-2 marks</td></tr>
+              <tr><td>Relational Model</td><td>Candidate/super keys, counting super keys, Codd's rules</td><td>1-2 marks</td></tr>
+              <tr><td>Relational Algebra</td><td>Join result size, equivalent expressions, division operation</td><td>1-2 marks</td></tr>
+              <tr><td>SQL</td><td>GROUP BY/HAVING, subqueries, NULL handling, nested queries</td><td>1-2 marks</td></tr>
+              <tr><td>Functional Dependencies</td><td>Closure computation, candidate key finding, Armstrong axioms</td><td>1-2 marks</td></tr>
+              <tr><td>Normalization</td><td>BCNF vs 3NF, lossless decomposition, dependency preservation</td><td>2 marks</td></tr>
+              <tr><td>Indexing</td><td>B/B+ tree height, order computation, number of nodes</td><td>1-2 marks</td></tr>
+              <tr><td>Transactions</td><td>Conflict serializability, precedence graph, view serializability</td><td>2 marks</td></tr>
+              <tr><td>Concurrency Control</td><td>2PL variants, deadlock prevention (Wait-Die vs Wound-Wait), isolation levels</td><td>1-2 marks</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Most Repeated GATE Concepts (High Priority)</h3>
+        <ol>
+          <li>Finding candidate keys using closure computation</li>
+          <li>Checking BCNF / 3NF and decomposing relations</li>
+          <li>Conflict serializability using precedence graph</li>
+          <li>SQL queries with GROUP BY, HAVING, subqueries</li>
+          <li>B+ tree order and height calculations</li>
+          <li>Lossless decomposition test</li>
+          <li>Super key counting formula: 2<sup>n − |CK|</sup></li>
+        </ol>
+      </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+         KEY FORMULAE
+    ═══════════════════════════════════════════ -->
+    <section class="section" id="formulae">
+      <div class="section-header">
+        <div class="section-icon" style="background:#dbeafe;">📐</div>
+        <h2>Quick Reference — Key Formulae</h2>
+      </div>
+      <div class="section-body">
+        <h3>Super Keys</h3>
+        <div class="math-block">
+          If a relation has <em>n</em> attributes and a candidate key of size <em>k</em>,<br>
+          Number of super keys = 2<sup>n − k</sup>
+        </div>
+
+        <h3>Relational Algebra Result Sizes</h3>
+        <div class="math-block">
+          |R × S| = |R| × |S|<br><br>
+          0 &nbsp;≤&nbsp; |R ⋈ S| &nbsp;≤&nbsp; |R| × |S|<br><br>
+          If join on key: |R ⋈<sub>key</sub> S| ≤ min(|R|, |S|)<br><br>
+          |σ<sub>c</sub>(R)| = |R| / V(c, R) &nbsp;&nbsp; [V = number of distinct values]
+        </div>
+
+        <h3>B-Tree (Order m)</h3>
+        <div class="math-block">
+          Max keys per node: m − 1<br><br>
+          Min keys per non-root node: ⌈m/2⌉ − 1<br><br>
+          Max entries for height h: &nbsp; (m<sup>h+1</sup> − 1) / (m − 1)<br><br>
+          Min entries for height h: &nbsp; 2 · ⌈m/2⌉<sup>h−1</sup> − 1 &nbsp; (h ≥ 1)
+        </div>
+
+        <h3>B+ Tree Internal Node</h3>
+        <div class="math-block">
+          p × P<sub>pointer</sub> + (p − 1) × V<sub>key</sub> ≤ Block size<br><br>
+          Solve for p (order of internal node)
+        </div>
+
+        <h3>B+ Tree Leaf Node</h3>
+        <div class="math-block">
+          p<sub>L</sub> × (V<sub>key</sub> + P<sub>record</sub>) + P<sub>pointer</sub> ≤ Block size<br><br>
+          Solve for p<sub>L</sub> (leaf order)
+        </div>
+
+        <h3>Lossless Join Condition</h3>
+        <div class="math-block">
+          Decomposition R → R₁, R₂ is lossless iff<br><br>
+          (R₁ ∩ R₂) → R₁ &nbsp;&nbsp; OR &nbsp;&nbsp; (R₁ ∩ R₂) → R₂
+        </div>
+
+        <h3>BCNF Check</h3>
+        <div class="math-block">
+          For every non-trivial FD X → Y in R:<br><br>
+          X must be a superkey of R
+        </div>
+
+        <h3>3NF Check</h3>
+        <div class="math-block">
+          For every non-trivial FD X → A in R:<br><br>
+          X is a superkey of R &nbsp;&nbsp; OR &nbsp;&nbsp; A is a prime attribute
+        </div>
+
+        <h3>Timestamp Ordering Rules</h3>
+        <div class="math-block">
+          Read(Q) by T<sub>i</sub>:<br>
+          &nbsp;&nbsp;If TS(T<sub>i</sub>) &lt; W-TS(Q) → rollback T<sub>i</sub><br>
+          &nbsp;&nbsp;Else: read; R-TS(Q) = max(R-TS(Q), TS(T<sub>i</sub>))<br><br>
+          Write(Q) by T<sub>i</sub>:<br>
+          &nbsp;&nbsp;If TS(T<sub>i</sub>) &lt; R-TS(Q) → rollback T<sub>i</sub><br>
+          &nbsp;&nbsp;If TS(T<sub>i</sub>) &lt; W-TS(Q) → ignore write (Thomas's rule)<br>
+          &nbsp;&nbsp;Else: write; W-TS(Q) = TS(T<sub>i</sub>)
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div>
+            <strong>Normal Forms Quick Summary:</strong><br>
+            • <strong>1NF:</strong> Atomic values only<br>
+            • <strong>2NF:</strong> 1NF + No partial dependency (non-prime depends only on full CK)<br>
+            • <strong>3NF:</strong> 2NF + No transitive dependency (non-prime doesn't depend on non-prime)<br>
+            • <strong>BCNF:</strong> 3NF + For every FD X→Y, X must be superkey<br>
+            • <strong>4NF:</strong> BCNF + No non-trivial multi-valued dependencies
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <div style="text-align:center;padding:2rem 0;color:var(--gray-500);font-size:0.85rem;">
+      <p>📚 DBMS Study Material for GATE CSE · All topics as per official GATE syllabus</p>
+      <p style="margin-top:0.25rem;">Study smart, practice PYQs, and aim for full marks in DBMS! 🎯</p>
+    </div>
+
+  </main>
+</div>
+
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top" style="display:flex;">↑</button>
+
+<script>
+  // Scroll progress bar
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('progress-bar').style.width = progress + '%';
+    document.getElementById('back-top').style.display = scrollTop > 300 ? 'flex' : 'none';
+  });
+
+  // Active nav link highlighting
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const id = entry.target.id;
+        const activeLink = document.querySelector(`.nav-link[href="#${id}"]`);
+        if (activeLink) activeLink.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

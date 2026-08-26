@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elements of Statistical Learning — Study Guide</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1108;
+    --cream: #fdf6e3;
+    --parchment: #f5e9cc;
+    --gold: #c8922a;
+    --gold-light: #e8b84b;
+    --rust: #b84a2a;
+    --teal: #1e6e7a;
+    --teal-light: #2a9aaa;
+    --muted: #6b5b3e;
+    --border: #d4b896;
+    --code-bg: #2a1f0e;
+    --highlight: #fff3cd;
+    --green: #2d6b4a;
+    --purple: #5b3a8c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── NAVIGATION ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: rgba(26, 17, 8, 0.97);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    border-bottom: 2px solid var(--gold);
+    padding: 0 2rem;
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold-light);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: #c8b89a;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold-light); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 8rem 2rem 4rem;
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,146,42,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,146,42,0.07) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,146,42,0.12) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .hero-content {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold);
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+  .hero-title em {
+    color: var(--gold-light);
+    font-style: italic;
+  }
+  .hero-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    color: #c8b89a;
+    font-style: italic;
+    margin-bottom: 2rem;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+  .hero-badge {
+    background: rgba(200,146,42,0.15);
+    border: 1px solid rgba(200,146,42,0.4);
+    border-radius: 3px;
+    padding: 0.4rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--gold-light);
+    letter-spacing: 0.05em;
+  }
+  .hero-toc {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(200,146,42,0.25);
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+    text-align: left;
+    display: inline-block;
+    min-width: 320px;
+  }
+  .hero-toc-title {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold);
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .hero-toc ol {
+    list-style: none;
+    counter-reset: toc;
+  }
+  .hero-toc li {
+    counter-increment: toc;
+    color: #c8b89a;
+    font-size: 0.9rem;
+    padding: 0.2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .hero-toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--gold);
+    font-size: 0.72rem;
+    opacity: 0.7;
+    min-width: 1.8rem;
+  }
+  .hero-toc a { color: inherit; text-decoration: none; transition: color 0.2s; }
+  .hero-toc a:hover { color: var(--gold-light); }
+  .scroll-cue {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    color: var(--gold);
+    opacity: 0.6;
+    font-size: 1.5rem;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-10px); }
+  }
+
+  /* ── LAYOUT ── */
+  main { max-width: 900px; margin: 0 auto; padding: 4rem 2rem; }
+
+  /* ── CHAPTER HEADERS ── */
+  .chapter-header {
+    margin: 6rem 0 3rem;
+    position: relative;
+    padding-left: 1.5rem;
+    border-left: 4px solid var(--gold);
+  }
+  .chapter-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .chapter-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .chapter-desc {
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.8rem;
+    font-size: 1rem;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 3rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--gold);
+    background: rgba(200,146,42,0.1);
+    border: 1px solid rgba(200,146,42,0.3);
+    border-radius: 3px;
+    padding: 0.1rem 0.5rem;
+    font-weight: 500;
+  }
+  h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--teal);
+    margin: 2rem 0 0.8rem;
+  }
+
+  /* ── PARAGRAPHS ── */
+  p { margin-bottom: 1.2rem; }
+  strong { color: var(--ink); font-weight: 600; }
+  em { color: var(--rust); font-style: italic; }
+
+  /* ── DEFINITION BOXES ── */
+  .def-box {
+    background: linear-gradient(135deg, #fef9ef 0%, #fdf0d5 100%);
+    border: 1.5px solid var(--border);
+    border-left: 5px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 1.2rem 1.5rem;
+    margin: 1.5rem 0;
+    position: relative;
+  }
+  .def-box::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -0.6rem; left: 1rem;
+    background: var(--gold);
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.6rem;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+  .def-box.theorem { border-left-color: var(--teal); }
+  .def-box.theorem::before { background: var(--teal); }
+  .def-box.example { border-left-color: var(--green); }
+  .def-box.example::before { background: var(--green); }
+  .def-box.warning { border-left-color: var(--rust); }
+  .def-box.warning::before { background: var(--rust); }
+  .def-box.key { border-left-color: var(--purple); }
+  .def-box.key::before { background: var(--purple); }
+  .def-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.6rem;
+    color: var(--ink);
+  }
+
+  /* ── MATH DISPLAY ── */
+  .math-block {
+    background: var(--parchment);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.2rem 1.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    text-align: center;
+    font-size: 1.05em;
+    position: relative;
+  }
+  .math-block .eq-label {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .math-inline { font-style: italic; }
+
+  /* ── DIAGRAMS ── */
+  .diagram-wrap {
+    margin: 2rem 0;
+    text-align: center;
+  }
+  .diagram-caption {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 0.8rem;
+  }
+  svg.diagram { max-width: 100%; height: auto; }
+
+  /* ── COMPARISON TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.93rem;
+  }
+  th {
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.7rem 1rem;
+    text-align: left;
+  }
+  td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); }
+  tr:nth-child(even) { background: rgba(200,146,42,0.05); }
+  tr:hover { background: rgba(200,146,42,0.1); }
+
+  /* ── HIGHLIGHT PILLS ── */
+  .pill {
+    display: inline-block;
+    background: rgba(200,146,42,0.15);
+    border: 1px solid rgba(200,146,42,0.4);
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 500;
+    margin: 0 0.2rem;
+  }
+  .pill.blue { background: rgba(30,110,122,0.15); border-color: rgba(30,110,122,0.4); color: var(--teal); }
+  .pill.red { background: rgba(184,74,42,0.15); border-color: rgba(184,74,42,0.4); color: var(--rust); }
+  .pill.green { background: rgba(45,107,74,0.15); border-color: rgba(45,107,74,0.4); color: var(--green); }
+
+  /* ── TWO COL ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  @media(max-width:680px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── CODE ── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--parchment);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.4em;
+    font-size: 0.85em;
+    color: var(--rust);
+  }
+
+  /* ── STEP BOX ── */
+  .steps { list-style: none; counter-reset: step; margin: 1rem 0; }
+  .steps li {
+    counter-increment: step;
+    padding: 0.8rem 0.8rem 0.8rem 3.5rem;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0.8rem;
+    top: 0.85rem;
+    width: 1.8rem; height: 1.8rem;
+    background: var(--gold);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  /* ── QUIZ SECTION ── */
+  #quiz {
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 12px;
+    padding: 3rem;
+    margin: 4rem 0;
+  }
+  .quiz-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--gold-light);
+    margin-bottom: 0.5rem;
+  }
+  .quiz-sub {
+    color: #c8b89a;
+    font-style: italic;
+    margin-bottom: 2.5rem;
+  }
+  .quiz-progress {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 2rem;
+  }
+  .progress-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(200,146,42,0.3);
+    transition: background 0.3s;
+  }
+  .progress-dot.done { background: var(--gold); }
+  .progress-dot.correct { background: #4caf50; }
+  .progress-dot.wrong { background: var(--rust); }
+  .quiz-q {
+    display: none;
+    animation: fadeQ 0.4s ease;
+  }
+  .quiz-q.active { display: block; }
+  @keyframes fadeQ {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+  .q-math {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(200,146,42,0.2);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .options { display: flex; flex-direction: column; gap: 0.8rem; }
+  .option {
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(200,146,42,0.2);
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    color: #c8b89a;
+    font-size: 0.93rem;
+    text-align: left;
+  }
+  .option:hover { border-color: var(--gold); background: rgba(200,146,42,0.1); }
+  .option.selected { border-color: var(--gold); background: rgba(200,146,42,0.15); color: var(--cream); }
+  .option.correct { border-color: #4caf50; background: rgba(76,175,80,0.15); color: #a5d6a7; }
+  .option.wrong { border-color: var(--rust); background: rgba(184,74,42,0.15); color: #ef9a9a; }
+  .option-letter {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    background: rgba(200,146,42,0.2);
+    color: var(--gold);
+    border-radius: 3px;
+    padding: 0.1rem 0.4rem;
+    min-width: 1.4rem;
+    text-align: center;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+  }
+  .q-feedback {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: none;
+    line-height: 1.6;
+  }
+  .q-feedback.show { display: block; }
+  .q-feedback.right { background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3); color: #a5d6a7; }
+  .q-feedback.wrong { background: rgba(184,74,42,0.15); border: 1px solid rgba(184,74,42,0.3); color: #ef9a9a; }
+  .quiz-nav {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: flex-end;
+  }
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .btn-primary { background: var(--gold); color: var(--ink); }
+  .btn-primary:hover { background: var(--gold-light); }
+  .btn-secondary { background: rgba(255,255,255,0.1); color: #c8b89a; }
+  .btn-secondary:hover { background: rgba(255,255,255,0.18); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .score-board {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+    animation: fadeQ 0.5s ease;
+  }
+  .score-board.show { display: block; }
+  .score-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--gold-light);
+    line-height: 1;
+  }
+  .score-label {
+    color: #c8b89a;
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  .score-msg {
+    font-size: 1.1rem;
+    color: var(--cream);
+    margin-bottom: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── KEY INSIGHT ── */
+  .insight {
+    background: linear-gradient(135deg, rgba(91,58,140,0.08) 0%, rgba(91,58,140,0.04) 100%);
+    border-left: 4px solid var(--purple);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--ink);
+    font-size: 0.95rem;
+  }
+  .insight strong { color: var(--purple); }
+
+  /* ── BIAS-VARIANCE VISUAL ── */
+  .bv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .bv-cell {
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+  .bv-hb-hv { background: rgba(184,74,42,0.15); border: 1.5px solid var(--rust); color: var(--rust); }
+  .bv-hb-lv { background: rgba(200,146,42,0.15); border: 1.5px solid var(--gold); color: #a0741a; }
+  .bv-lb-hv { background: rgba(200,146,42,0.15); border: 1.5px solid var(--gold); color: #a0741a; }
+  .bv-lb-lv { background: rgba(45,107,74,0.15); border: 1.5px solid var(--green); color: var(--green); }
+  .bv-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 0.3rem;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: #6b5b3e;
+    text-align: center;
+    padding: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    border-top: 2px solid var(--gold);
+  }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 3rem 0;
+  }
+
+  /* ── EXAMPLE LIST ── */
+  .example-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .example-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .example-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+  }
+  .example-card.reg::before { background: var(--teal); }
+  .example-card.cls::before { background: var(--rust); }
+  .example-card.uns::before { background: var(--purple); }
+  .ec-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .ec-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--ink);
+  }
+  .ec-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* Quick ref box */
+  .quick-ref {
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 2;
+  }
+  .quick-ref .qr-title {
+    color: var(--gold-light);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    opacity: 0.8;
+  }
+  .quick-ref .qr-row {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 0.3rem 0;
+  }
+  .quick-ref .qr-key { color: var(--gold); min-width: 160px; }
+  .quick-ref .qr-val { color: #c8b89a; }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">ESL Study Guide</a>
+    <ul class="nav-links">
+      <li><a href="#ch1">Ch 1</a></li>
+      <li><a href="#ch2">Ch 2</a></li>
+      <li><a href="#leastsq">Least Sq</a></li>
+      <li><a href="#knn">k-NN</a></li>
+      <li><a href="#sdt">Decision Theory</a></li>
+      <li><a href="#cod">Curse of Dim</a></li>
+      <li><a href="#bvt">Bias-Var</a></li>
+      <li><a href="#quiz">Quiz</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Hastie · Tibshirani · Friedman</div>
+    <h1 class="hero-title">The <em>Elements</em> of<br>Statistical Learning</h1>
+    <div class="hero-subtitle">Chapters 1 &amp; 2 — Complete Study Guide</div>
+    <div class="hero-meta">
+      <span class="hero-badge">Introduction</span>
+      <span class="hero-badge">Supervised Learning</span>
+      <span class="hero-badge">Bias-Variance Tradeoff</span>
+      <span class="hero-badge">Curse of Dimensionality</span>
+    </div>
+    <div class="hero-toc">
+      <div class="hero-toc-title">Contents</div>
+      <ol>
+        <li><a href="#ch1">Introduction &amp; Learning Problems</a></li>
+        <li><a href="#vartypes">Variable Types &amp; Terminology</a></li>
+        <li><a href="#leastsq">Linear Models &amp; Least Squares</a></li>
+        <li><a href="#knn">k-Nearest Neighbor Methods</a></li>
+        <li><a href="#sdt">Statistical Decision Theory</a></li>
+        <li><a href="#cod">Curse of Dimensionality</a></li>
+        <li><a href="#models">Statistical Models</a></li>
+        <li><a href="#restricted">Restricted Estimators</a></li>
+        <li><a href="#bvt">Bias–Variance Tradeoff</a></li>
+        <li><a href="#quiz">Practice Quiz (15 Questions)</a></li>
+      </ol>
+    </div>
+  </div>
+  <div class="scroll-cue">↓</div>
+</div>
+
+<main>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  CHAPTER 1                       ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div id="ch1" class="chapter-header reveal">
+  <span class="chapter-num">Chapter 01</span>
+  <h2 class="chapter-title">Introduction</h2>
+  <p class="chapter-desc">The nature of learning from data, and real-world examples that motivate the field.</p>
+</div>
+
+<div class="reveal">
+<p>Statistical learning is the science of building mathematical models that <strong>learn patterns from data</strong> and use those patterns to make predictions or discover structure. It sits at the intersection of statistics, computer science, and applied mathematics.</p>
+
+<div class="def-box" data-label="Core Idea">
+  <div class="def-title">The Learning Setup</div>
+  <p>We have an <strong>outcome measurement</strong> (quantitative or categorical) that we wish to predict from a set of <strong>features (inputs)</strong>. We observe a <em>training set</em> of (input, output) pairs and build a <strong>prediction model (learner)</strong> that generalizes to unseen data.</p>
+</div>
+</div>
+
+<h3 class="section-title reveal"><span class="section-num">1.1</span> Real-World Learning Problems</h3>
+
+<div class="example-grid reveal">
+  <div class="example-card reg">
+    <div class="ec-type">Regression</div>
+    <div class="ec-title">Prostate Cancer (PSA)</div>
+    <div class="ec-desc">Predict log of PSA level from clinical measurements: log cancer volume, prostate weight, age, etc. Outcome is continuous → regression.</div>
+  </div>
+  <div class="example-card cls">
+    <div class="ec-type">Classification</div>
+    <div class="ec-title">Email Spam Detection</div>
+    <div class="ec-desc">4601 emails, 57 word/character frequency features. Classify as <em>spam</em> or <em>email</em>. Two-class classification problem.</div>
+  </div>
+  <div class="example-card cls">
+    <div class="ec-type">Classification</div>
+    <div class="ec-title">Handwritten Digit Recognition</div>
+    <div class="ec-desc">16×16 grayscale images from US postal envelopes. Classify each digit 0–9. Multi-class, low error rate required.</div>
+  </div>
+  <div class="example-card uns">
+    <div class="ec-type">Unsupervised</div>
+    <div class="ec-title">DNA Microarray Analysis</div>
+    <div class="ec-desc">6830 genes × 64 tumor samples. Find which genes/samples cluster together. No labeled outcome → unsupervised learning.</div>
+  </div>
+</div>
+
+<div class="reveal">
+<div class="def-box" data-label="Key Distinction">
+  <div class="def-title">Supervised vs. Unsupervised Learning</div>
+  <p><strong>Supervised Learning:</strong> We observe both inputs <em>X</em> and outputs <em>Y</em> in the training data. The outcome <em>guides</em> the learning.</p>
+  <p><strong>Unsupervised Learning:</strong> We observe only inputs <em>X</em>. The task is to find structure, clusters, or patterns in the data without outcome guidance.</p>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║  CHAPTER 2                       ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<div id="ch2" class="chapter-header reveal">
+  <span class="chapter-num">Chapter 02</span>
+  <h2 class="chapter-title">Overview of Supervised Learning</h2>
+  <p class="chapter-desc">Formal framework, fundamental methods, and the theoretical underpinnings of prediction.</p>
+</div>
+
+<!-- ─── VARIABLE TYPES ─── -->
+<h3 id="vartypes" class="section-title reveal"><span class="section-num">2.2</span> Variable Types &amp; Terminology</h3>
+
+<div class="reveal">
+<p>Understanding the <em>type</em> of inputs and outputs determines which methods are appropriate.</p>
+
+<table>
+  <thead><tr><th>Type</th><th>Also Called</th><th>Example</th><th>Task</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Quantitative Output</strong></td><td>Continuous, Numeric</td><td>Stock price, PSA level</td><td><span class="pill">Regression</span></td></tr>
+    <tr><td><strong>Qualitative Output</strong></td><td>Categorical, Discrete, Factor</td><td>Spam/Email, Digit 0–9</td><td><span class="pill red">Classification</span></td></tr>
+    <tr><td><strong>Ordered Categorical</strong></td><td>Ordinal</td><td>Small/Medium/Large</td><td>Special methods</td></tr>
+  </tbody>
+</table>
+
+<div class="def-box" data-label="Notation">
+  <div class="def-title">Standard Notation (used throughout the book)</div>
+  <ul style="list-style:none; font-size:0.92rem; line-height:2">
+    <li>📌 <code>X</code> — input variable (vector of predictors)</li>
+    <li>📌 <code>Y</code> — quantitative output variable</li>
+    <li>📌 <code>G</code> — qualitative (group) output variable</li>
+    <li>📌 <code>Ŷ</code> or <code>Ĝ</code> — predicted output ("Y-hat")</li>
+    <li>📌 <code>X</code> (bold) — N×p training data matrix</li>
+    <li>📌 <code>xᵢ</code> — ith observed input vector</li>
+    <li>📌 <code>N</code> — number of training observations</li>
+    <li>📌 <code>p</code> — number of input features/predictors</li>
+  </ul>
+</div>
+
+<h4>Encoding Qualitative Variables</h4>
+<p>Qualitative variables must be encoded numerically. The standard approach is <strong>dummy variables</strong>: a K-level variable is represented by a vector of K binary indicators (one-hot encoding), with only one "on" at a time.</p>
+<p>For <strong>two-class problems</strong>, a single binary code suffices: 0/1 or −1/+1.</p>
+</div>
+
+<!-- ─── LEAST SQUARES ─── -->
+<h3 id="leastsq" class="section-title reveal"><span class="section-num">2.3.1</span> Linear Models &amp; Least Squares</h3>
+
+<div class="reveal">
+<div class="def-box" data-label="Definition">
+  <div class="def-title">The Linear Model</div>
+  <p>Given input vector \(X^T = (X_1, X_2, \ldots, X_p)\), the linear prediction model is:</p>
+</div>
+
+<div class="math-block">
+  \[\hat{Y} = \hat{\beta}_0 + \sum_{j=1}^{p} X_j \hat{\beta}_j \quad \text{or in matrix form:} \quad \hat{Y} = X^T \hat{\beta}\]
+  <span class="eq-label">(2.1–2.2)</span>
+</div>
+
+<p>The term \(\hat{\beta}_0\) is the <strong>intercept</strong> (also called the <em>bias</em> in ML). Including the constant 1 as the first component of X absorbs the intercept into the coefficient vector.</p>
+
+<h4>Fitting by Least Squares</h4>
+<p>We choose \(\hat{\beta}\) to minimize the <strong>Residual Sum of Squares (RSS)</strong>:</p>
+
+<div class="math-block">
+  \[\text{RSS}(\beta) = \sum_{i=1}^{N}(y_i - x_i^T \beta)^2 = (\mathbf{y} - \mathbf{X}\beta)^T(\mathbf{y} - \mathbf{X}\beta)\]
+  <span class="eq-label">(2.3–2.4)</span>
+</div>
+
+<p>RSS is a <strong>quadratic function</strong> of \(\beta\), so its minimum always exists. Differentiating and setting to zero gives the <strong>Normal Equations</strong>:</p>
+
+<div class="math-block">
+  \[\mathbf{X}^T(\mathbf{y} - \mathbf{X}\beta) = 0\]
+  <span class="eq-label">(2.5)</span>
+</div>
+
+<p>If \(\mathbf{X}^T\mathbf{X}\) is nonsingular (full rank), the unique solution is:</p>
+
+<div class="math-block" style="background:#fff8ee; border-color:#c8922a; border-width:2px;">
+  \[\boxed{\hat{\beta} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}}\]
+  <span class="eq-label">(2.6)</span>
+</div>
+
+<div class="def-box example" data-label="Solved Example">
+  <div class="def-title">Classifying with Linear Regression (0/1 Coding)</div>
+  <p>Code the two-class output: BLUE = 0, ORANGE = 1. Fit a linear regression. The predicted class is:</p>
+  <div class="math-block" style="margin:0.8rem 0">
+    \[\hat{G} = \begin{cases} \text{ORANGE} & \text{if } \hat{Y} > 0.5 \\ \text{BLUE} & \text{if } \hat{Y} \leq 0.5 \end{cases}\]
+  </div>
+  <p>The <strong>decision boundary</strong> is the set \(\{x : x^T\hat{\beta} = 0.5\}\), which is a <em>hyperplane</em> (a line in 2D).</p>
+  <p><strong>Key insight:</strong> This boundary is linear and smooth but rigid — it may be suboptimal when class boundaries are nonlinear.</p>
+</div>
+
+<div class="insight">
+  <strong>Geometric Interpretation:</strong> The linear model defines a hyperplane in (p+1)-dimensional input-output space. In p-dimensional input space, f(X) = X^Tβ is linear, and its gradient β points in the steepest uphill direction.
+</div>
+</div>
+
+<!-- DIAGRAM: Linear Decision Boundary -->
+<div class="diagram-wrap reveal">
+<svg class="diagram" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg" style="max-width:520px;border:1px solid var(--border);border-radius:8px;background:white;">
+  <!-- Orange region -->
+  <polygon points="280,0 500,0 500,300 150,300" fill="rgba(255,140,0,0.12)"/>
+  <!-- Blue region -->
+  <polygon points="0,0 280,0 150,300 0,300" fill="rgba(30,100,200,0.12)"/>
+  <!-- Decision boundary -->
+  <line x1="280" y1="0" x2="150" y2="300" stroke="#c8922a" stroke-width="2.5" stroke-dasharray="8,4"/>
+  <!-- Blue dots -->
+  <circle cx="60" cy="80" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <circle cx="90" cy="120" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <circle cx="40" cy="160" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <circle cx="130" cy="90" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <circle cx="80" cy="50" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <circle cx="110" cy="200" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <circle cx="50" cy="230" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <circle cx="160" cy="50" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <circle cx="150" cy="150" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <circle cx="70" cy="270" r="5" fill="#3b6fd4" opacity="0.8"/>
+  <!-- Misclassified blue in orange region -->
+  <circle cx="320" cy="140" r="5" fill="#3b6fd4" opacity="0.8" stroke="#c8922a" stroke-width="1.5"/>
+  <circle cx="290" cy="200" r="5" fill="#3b6fd4" opacity="0.8" stroke="#c8922a" stroke-width="1.5"/>
+  <!-- Orange dots -->
+  <circle cx="350" cy="60" r="5" fill="#ff8c00" opacity="0.8"/>
+  <circle cx="400" cy="100" r="5" fill="#ff8c00" opacity="0.8"/>
+  <circle cx="370" cy="170" r="5" fill="#ff8c00" opacity="0.8"/>
+  <circle cx="440" cy="80" r="5" fill="#ff8c00" opacity="0.8"/>
+  <circle cx="420" cy="220" r="5" fill="#ff8c00" opacity="0.8"/>
+  <circle cx="470" cy="150" r="5" fill="#ff8c00" opacity="0.8"/>
+  <circle cx="330" cy="260" r="5" fill="#ff8c00" opacity="0.8"/>
+  <circle cx="460" cy="250" r="5" fill="#ff8c00" opacity="0.8"/>
+  <circle cx="380" cy="40" r="5" fill="#ff8c00" opacity="0.8"/>
+  <circle cx="490" cy="180" r="5" fill="#ff8c00" opacity="0.8"/>
+  <!-- Misclassified orange in blue region -->
+  <circle cx="180" cy="180" r="5" fill="#ff8c00" opacity="0.8" stroke="#c8922a" stroke-width="1.5"/>
+  <circle cx="210" cy="110" r="5" fill="#ff8c00" opacity="0.8" stroke="#c8922a" stroke-width="1.5"/>
+  <!-- Labels -->
+  <text x="100" y="30" font-family="JetBrains Mono,monospace" font-size="11" fill="#3b6fd4" font-weight="600">BLUE region</text>
+  <text x="360" y="30" font-family="JetBrains Mono,monospace" font-size="11" fill="#ff8c00" font-weight="600">ORANGE region</text>
+  <text x="240" y="20" font-family="JetBrains Mono,monospace" font-size="10" fill="#c8922a">x̂ᵀβ = 0.5</text>
+  <!-- arrow -->
+  <line x1="248" y1="24" x2="260" y2="40" stroke="#c8922a" stroke-width="1" marker-end="url(#arr)"/>
+  <defs>
+    <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#c8922a"/>
+    </marker>
+  </defs>
+  <text x="140" y="290" font-family="Source Serif 4,serif" font-size="10" fill="#999" font-style="italic">Linear Decision Boundary (Linear Regression on Binary Response)</text>
+</svg>
+<div class="diagram-caption">Figure: Linear regression decision boundary separating BLUE and ORANGE classes in 2D. Circled points are misclassifications.</div>
+</div>
+
+<!-- ─── k-NN ─── -->
+<h3 id="knn" class="section-title reveal"><span class="section-num">2.3.2</span> k-Nearest Neighbor Methods</h3>
+
+<div class="reveal">
+<p>k-NN is a fundamentally different approach: instead of imposing a global linear structure, it predicts by <strong>averaging nearby training points</strong>.</p>
+
+<div class="def-box" data-label="Definition">
+  <div class="def-title">k-Nearest Neighbor Prediction</div>
+  <div class="math-block" style="margin:0.8rem 0">
+    \[\hat{Y}(x) = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} y_i\]
+    <span class="eq-label">(2.8)</span>
+  </div>
+  <p>where \(\mathcal{N}_k(x)\) is the neighborhood of \(x\) consisting of the <strong>k closest points</strong> in the training set (measured by Euclidean distance).</p>
+  <p><strong>For classification:</strong> assign the majority class among the k nearest neighbors.</p>
+</div>
+
+<div class="def-box example" data-label="Solved Example">
+  <div class="def-title">15-NN vs. 1-NN Classification</div>
+  <p><strong>15-NN:</strong> \(\hat{Y}\) = proportion of ORANGE in the neighborhood. Classify as ORANGE if \(\hat{Y} > 0.5\) (majority vote). Smoother boundary, some bias but lower variance.</p>
+  <p><strong>1-NN:</strong> \(\hat{Y}\) = the output \(y_\ell\) of the closest training point. Creates a <em>Voronoi tessellation</em>. Zero training error always, but high variance on test data!</p>
+  <p><strong>Key insight:</strong> For k-NN, training error ≈ 0 when k=1 but test error can be large → we <em>must</em> use independent test data for model selection.</p>
+</div>
+
+<div class="two-col">
+  <div class="def-box" data-label="Linear Model" style="margin:0">
+    <div class="def-title">Characteristics</div>
+    <ul style="list-style:disc; padding-left:1.2rem; font-size:0.9rem; line-height:1.9">
+      <li>Makes <strong>strong structural assumptions</strong></li>
+      <li>Globally linear decision boundary</li>
+      <li><span class="pill blue">Low Variance</span></li>
+      <li><span class="pill red">High Bias</span> (if wrong)</li>
+      <li>p parameters to estimate</li>
+      <li>Better for Scenario 1 (Gaussian data)</li>
+    </ul>
+  </div>
+  <div class="def-box" data-label="k-NN" style="margin:0">
+    <div class="def-title">Characteristics</div>
+    <ul style="list-style:disc; padding-left:1.2rem; font-size:0.9rem; line-height:1.9">
+      <li>Makes <strong>minimal structural assumptions</strong></li>
+      <li>Flexible, locally adaptive boundary</li>
+      <li><span class="pill red">High Variance</span></li>
+      <li><span class="pill blue">Low Bias</span></li>
+      <li>N/k effective parameters</li>
+      <li>Better for Scenario 2 (mixture of Gaussians)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="def-box warning" data-label="Important">
+  <div class="def-title">Effective Number of Parameters in k-NN</div>
+  <p>Although k-NN seems to have only one parameter (k), its <strong>effective number of parameters is N/k</strong>. As k increases, effective parameters decrease (smoother model). For k=1, effectively N parameters — the model memorizes the training data.</p>
+  <p>We <strong>cannot use training RSS to choose k</strong>, since k=1 always gives RSS=0. Use cross-validation or an independent test set instead.</p>
+</div>
+</div>
+
+<!-- ─── STATISTICAL DECISION THEORY ─── -->
+<h3 id="sdt" class="section-title reveal"><span class="section-num">2.4</span> Statistical Decision Theory</h3>
+
+<div class="reveal">
+<p>This section provides the theoretical foundation for why our methods work — and what they're actually trying to approximate.</p>
+
+<h4>Setup for Quantitative Output</h4>
+<p>Let \(X \in \mathbb{R}^p\) be the input and \(Y \in \mathbb{R}\) the output, with joint distribution \(\Pr(X,Y)\). We want \(f(X)\) to minimize the <strong>Expected Prediction Error (EPE)</strong> under <em>squared error loss</em>:</p>
+
+<div class="math-block">
+  \[\text{EPE}(f) = \mathbb{E}(Y - f(X))^2 = \int [y - f(x)]^2 \Pr(dx, dy)\]
+  <span class="eq-label">(2.9–2.10)</span>
+</div>
+
+<p>Conditioning on X and minimizing pointwise:</p>
+<div class="math-block">
+  \[f(x) = \arg\min_c \mathbb{E}_{Y|X}\left[(Y-c)^2 \mid X=x\right]\]
+  <span class="eq-label">(2.12)</span>
+</div>
+
+<div class="def-box theorem" data-label="Theorem">
+  <div class="def-title">The Regression Function</div>
+  <p>The optimal prediction under squared error loss is the <strong>conditional expectation</strong>:</p>
+  <div class="math-block" style="margin:0.8rem 0; background:rgba(30,110,122,0.06)">
+    \[\boxed{f(x) = \mathbb{E}(Y \mid X = x)}\]
+  </div>
+  <p>This is called the <strong>regression function</strong>. The best prediction of Y at any point X=x is the conditional mean.</p>
+</div>
+
+<h4>How Methods Approximate the Regression Function</h4>
+<table>
+  <thead><tr><th>Method</th><th>What it assumes about f(x)</th><th>How it approximates 𝔼(Y|X=x)</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>k-NN</strong></td>
+      <td>Locally constant</td>
+      <td>\(\hat{f}(x) = \text{Ave}(y_i \mid x_i \in \mathcal{N}_k(x))\)</td>
+    </tr>
+    <tr>
+      <td><strong>Least Squares</strong></td>
+      <td>Globally linear: \(f(x) \approx x^T\beta\)</td>
+      <td>\(\hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}\)</td>
+    </tr>
+    <tr>
+      <td><strong>Additive Models</strong></td>
+      <td>\(f(X) = \sum_j f_j(X_j)\)</td>
+      <td>Fit each coordinate function via k-NN or splines</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="def-box" data-label="Theoretical Result">
+  <div class="def-title">k-NN as Universal Approximator</div>
+  <p>Under mild regularity conditions, as \(N, k \to \infty\) with \(k/N \to 0\):</p>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[\hat{f}(x) \to \mathbb{E}(Y \mid X = x)\]
+  </div>
+  <p><strong>However:</strong> this convergence is ruined in high dimensions — the "curse of dimensionality" makes k-NN neighborhoods far too large to be truly local.</p>
+</div>
+
+<h4>For Qualitative Output (Classification)</h4>
+<p>Use a loss matrix \(L\) where \(L(k, \ell)\) = cost of classifying class \(G_k\) as \(G_\ell\). Minimize EPE pointwise:</p>
+
+<div class="math-block">
+  \[\hat{G}(x) = \arg\min_{g \in \mathcal{G}} \sum_{k=1}^{K} L(G_k, g) \Pr(G_k \mid X = x)\]
+  <span class="eq-label">(2.21)</span>
+</div>
+
+<div class="def-box theorem" data-label="Theorem">
+  <div class="def-title">The Bayes Classifier (Optimal Classifier)</div>
+  <p>With the 0–1 loss function (all misclassifications equal cost), the optimal rule is:</p>
+  <div class="math-block" style="margin:0.8rem 0; background:rgba(30,110,122,0.06)">
+    \[\boxed{\hat{G}(x) = G_k \quad \text{if} \quad \Pr(G_k \mid X = x) = \max_{g \in \mathcal{G}} \Pr(g \mid X = x)}\]
+  </div>
+  <p>Classify to the <strong>most probable class</strong> given X=x. The error rate of the Bayes classifier is called the <strong>Bayes rate</strong> — the irreducible lower bound on classification error.</p>
+</div>
+</div>
+
+<!-- ─── CURSE OF DIMENSIONALITY ─── -->
+<h3 id="cod" class="section-title reveal"><span class="section-num">2.5</span> Local Methods in High Dimensions: The Curse of Dimensionality</h3>
+
+<div class="reveal">
+<div class="def-box warning" data-label="Core Problem">
+  <div class="def-title">The Curse of Dimensionality (Bellman, 1961)</div>
+  <p>As the dimension p of the input space increases, local methods (like k-NN) fail because neighborhoods that are <em>local</em> in volume are <em>not local</em> in any single input variable.</p>
+</div>
+
+<h4>Manifestation 1: Edge Length Explosion</h4>
+<p>For data uniformly distributed in a p-dimensional unit hypercube, to capture a fraction <em>r</em> of observations using a sub-cube, the expected edge length is:</p>
+<div class="math-block">
+  \[e_p(r) = r^{1/p}\]
+</div>
+<p>To capture 10% of data in 10 dimensions: \(e_{10}(0.1) = 0.1^{1/10} = 0.80\) — we need to cover <strong>80% of each variable's range!</strong> Such a neighborhood is not local at all.</p>
+
+<!-- DIAGRAM: Curse of Dimensionality -->
+<div class="diagram-wrap">
+<svg class="diagram" viewBox="0 0 540 260" xmlns="http://www.w3.org/2000/svg" style="max-width:560px;border:1px solid var(--border);border-radius:8px;background:white;">
+  <text x="20" y="24" font-family="JetBrains Mono,monospace" font-size="11" fill="#333" font-weight="600">Edge length needed to capture 10% of data</text>
+  <!-- Axes -->
+  <line x1="50" y1="220" x2="520" y2="220" stroke="#888" stroke-width="1.5"/>
+  <line x1="50" y1="220" x2="50" y2="40" stroke="#888" stroke-width="1.5"/>
+  <!-- Y labels -->
+  <text x="40" y="224" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">0</text>
+  <text x="40" y="178" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">0.2</text>
+  <text x="40" y="133" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">0.5</text>
+  <text x="40" y="88" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">0.8</text>
+  <text x="40" y="55" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">1.0</text>
+  <!-- grid lines -->
+  <line x1="50" y1="178" x2="520" y2="178" stroke="#eee" stroke-width="1"/>
+  <line x1="50" y1="133" x2="520" y2="133" stroke="#eee" stroke-width="1"/>
+  <line x1="50" y1="88" x2="520" y2="88" stroke="#eee" stroke-width="1"/>
+  <!-- X labels: p=1,2,3,5,10 -->
+  <text x="97" y="236" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">p=1</text>
+  <text x="190" y="236" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">p=2</text>
+  <text x="280" y="236" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">p=3</text>
+  <text x="370" y="236" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">p=5</text>
+  <text x="480" y="236" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#666">p=10</text>
+  <!-- r=0.1 curve: e_p(0.1) = 0.1^(1/p) -->
+  <!-- p=1: 0.1, p=2: 0.316, p=3: 0.464, p=5: 0.631, p=10: 0.794 -->
+  <!-- Scale: y = 220 - val*180, x: 97,190,280,370,480 -->
+  <polyline points="97,202 190,163 280,136 370,107 480,77" fill="none" stroke="#c8922a" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- r=0.01 curve: p=1:0.01, p=2:0.1, p=3:0.215, p=5:0.398, p=10:0.631 -->
+  <polyline points="97,218 190,202 280,181 370,148 480,107" fill="none" stroke="#3b6fd4" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6,3"/>
+  <!-- dots -->
+  <circle cx="480" cy="77" r="5" fill="#c8922a"/>
+  <circle cx="480" cy="107" r="5" fill="#3b6fd4"/>
+  <!-- annotations -->
+  <text x="490" y="76" font-family="JetBrains Mono,monospace" font-size="9" fill="#c8922a">r=10%</text>
+  <text x="490" y="107" font-family="JetBrains Mono,monospace" font-size="9" fill="#3b6fd4">r=1%</text>
+  <!-- axis label -->
+  <text x="285" y="252" text-anchor="middle" font-family="Source Serif 4,serif" font-size="10" fill="#555" font-style="italic">Dimension p</text>
+  <text x="18" y="135" text-anchor="middle" font-family="Source Serif 4,serif" font-size="10" fill="#555" font-style="italic" transform="rotate(-90,18,135)">Edge length</text>
+</svg>
+<div class="diagram-caption">Figure: To capture even 10% of data in p=10 dimensions, you need 80% of each variable's range — so the neighborhood is not local.</div>
+</div>
+
+<h4>Manifestation 2: All Points Near the Boundary</h4>
+<p>For N data points in a p-dimensional unit ball, the median distance from the origin to the nearest point is:</p>
+<div class="math-block">
+  \[d(p, N) = \left(1 - \frac{1}{2}^{1/N}\right)^{1/p}\]
+  <span class="eq-label">(2.24)</span>
+</div>
+<p>For N=500, p=10: \(d \approx 0.52\) — most points are <strong>more than halfway to the boundary</strong>! Prediction near boundaries requires extrapolation, not interpolation.</p>
+
+<h4>Manifestation 3: Sparse Sampling</h4>
+<p>Sampling density is proportional to \(N^{1/p}\). If 100 points give dense coverage in 1D, you need \(100^{10} = 10^{20}\) points for the same density in 10D!</p>
+
+<div class="def-box" data-label="Bias-Variance Analysis in High Dimensions">
+  <div class="def-title">MSE Decomposition for 1-NN</div>
+  <p>At a test point \(x_0\), the MSE decomposes as:</p>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[\text{MSE}(x_0) = \underbrace{\text{Var}_\mathcal{T}(\hat{y}_0)}_{\text{Variance}} + \underbrace{[\mathbb{E}_\mathcal{T}(\hat{y}_0) - f(x_0)]^2}_{\text{Bias}^2}\]
+    <span class="eq-label">(2.25)</span>
+  </div>
+  <p>As p increases, the nearest neighbor strays further from \(x_0\) → both <strong>bias and variance increase</strong>. MSE → 1.0 in high dimensions for 1-NN.</p>
+</div>
+
+<h4>How Linear Models Escape the Curse</h4>
+<p>Under the linear model \(Y = X^T\beta + \varepsilon\) with \(\varepsilon \sim N(0,\sigma^2)\):</p>
+<div class="math-block">
+  \[\mathbb{E}_{x_0}\text{EPE}(x_0) \approx \sigma^2 \frac{p}{N} + \sigma^2\]
+  <span class="eq-label">(2.28)</span>
+</div>
+<p>EPE grows only <em>linearly</em> in p (not exponentially!) because the model imposes global structure. Imposing <strong>model assumptions</strong> effectively counters the curse of dimensionality.</p>
+
+<div class="insight">
+  <strong>The fundamental tradeoff:</strong> The more you restrict the class of models (impose assumptions), the less you suffer from the curse of dimensionality — but the greater your risk if those assumptions are wrong. Every method in this book navigates this tradeoff.
+</div>
+</div>
+
+<!-- ─── STATISTICAL MODELS ─── -->
+<h3 id="models" class="section-title reveal"><span class="section-num">2.6</span> Statistical Models &amp; Function Approximation</h3>
+
+<div class="reveal">
+<div class="def-box" data-label="Definition">
+  <div class="def-title">The Additive Error Model</div>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[Y = f(X) + \varepsilon, \quad \mathbb{E}(\varepsilon) = 0, \quad \varepsilon \perp X\]
+    <span class="eq-label">(2.29)</span>
+  </div>
+  <p>This is the standard statistical model for regression. The error \(\varepsilon\) captures unmeasured variables and measurement error. Under this model, \(f(x) = \mathbb{E}(Y|X=x)\).</p>
+</div>
+
+<h4>Function Approximation via Basis Expansions</h4>
+<p>Many models can be written as <strong>linear basis expansions</strong>:</p>
+<div class="math-block">
+  \[f_\theta(x) = \sum_{k=1}^{K} h_k(x)\,\theta_k\]
+  <span class="eq-label">(2.30)</span>
+</div>
+<p>where the basis functions \(h_k\) can be: polynomials, trigonometric functions, splines, or nonlinear transforms like the <strong>sigmoid</strong> used in neural networks:</p>
+<div class="math-block">
+  \[h_k(x) = \sigma(x^T\beta_k) = \frac{1}{1 + e^{-x^T\beta_k}}\]
+  <span class="eq-label">(2.31)</span>
+</div>
+
+<h4>Maximum Likelihood — Generalizing Least Squares</h4>
+<p>For a sample from density \(\Pr_\theta(y)\), the log-likelihood is:</p>
+<div class="math-block">
+  \[L(\theta) = \sum_{i=1}^{N} \log \Pr_\theta(y_i)\]
+  <span class="eq-label">(2.33)</span>
+</div>
+<div class="def-box theorem" data-label="Key Result">
+  <div class="def-title">Equivalence: Least Squares = Maximum Likelihood (Gaussian errors)</div>
+  <p>Under \(Y = f_\theta(X) + \varepsilon\) with \(\varepsilon \sim N(0, \sigma^2)\), the conditional likelihood is \(\Pr(Y|X,\theta) = N(f_\theta(X), \sigma^2)\), and maximizing log-likelihood is <strong>equivalent to minimizing RSS</strong>:</p>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[L(\theta) = -\frac{N}{2}\log(2\pi) - N\log\sigma - \frac{1}{2\sigma^2}\underbrace{\sum_{i=1}^{N}(y_i - f_\theta(x_i))^2}_{\text{RSS}(\theta)}\]
+  </div>
+  <p>The RSS is the only term involving \(\theta\), so minimizing RSS = maximizing likelihood.</p>
+</div>
+</div>
+
+<!-- ─── RESTRICTED ESTIMATORS ─── -->
+<h3 id="restricted" class="section-title reveal"><span class="section-num">2.8</span> Classes of Restricted Estimators</h3>
+
+<div class="reveal">
+<p>To get unique, useful solutions, we must restrict the class of allowable functions f. Three broad classes of restrictions:</p>
+
+<div class="def-box" data-label="Class 1">
+  <div class="def-title">Roughness Penalty (Regularization) Methods</div>
+  <p>Penalize RSS with a roughness penalty J(f):</p>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[\text{PRSS}(f;\lambda) = \text{RSS}(f) + \lambda J(f)\]
+    <span class="eq-label">(2.38)</span>
+  </div>
+  <p>Example — <strong>Cubic Smoothing Spline</strong>:</p>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[\text{PRSS}(f;\lambda) = \sum_{i=1}^{N}(y_i - f(x_i))^2 + \lambda \int [f''(x)]^2 dx\]
+    <span class="eq-label">(2.39)</span>
+  </div>
+  <p>λ=0: any interpolating function works. λ→∞: only linear functions allowed. λ controls the <strong>bias-variance tradeoff</strong>.</p>
+  <p>Bayesian interpretation: J(f) corresponds to the log-prior; PRSS is the log-posterior.</p>
+</div>
+
+<div class="def-box" data-label="Class 2">
+  <div class="def-title">Kernel Methods &amp; Local Regression</div>
+  <p>Specify a kernel function \(K_\lambda(x_0, x)\) that assigns weights to training points based on their distance from a target \(x_0\).</p>
+  <p><strong>Gaussian Kernel:</strong></p>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[K_\lambda(x_0, x) = \frac{1}{\lambda}\exp\left(-\frac{\|x - x_0\|^2}{2\lambda}\right)\]
+    <span class="eq-label">(2.40)</span>
+  </div>
+  <p><strong>Nadaraya-Watson Estimator:</strong></p>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[\hat{f}(x_0) = \frac{\sum_{i=1}^{N} K_\lambda(x_0, x_i)\, y_i}{\sum_{i=1}^{N} K_\lambda(x_0, x_i)}\]
+    <span class="eq-label">(2.41)</span>
+  </div>
+  <p>k-NN can be viewed as a kernel method with kernel \(K_k(x, x_0) = \mathbf{1}(\|x-x_0\| \leq \|x_{(k)} - x_0\|)\).</p>
+</div>
+
+<div class="def-box" data-label="Class 3">
+  <div class="def-title">Basis Functions &amp; Dictionary Methods</div>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[f_\theta(x) = \sum_{m=1}^{M} \theta_m h_m(x)\]
+    <span class="eq-label">(2.43)</span>
+  </div>
+  <p>Examples: polynomial splines, radial basis functions, neural networks. Neural network with one hidden layer:</p>
+  <div class="math-block" style="margin:0.6rem 0">
+    \[f_\theta(x) = \sum_{m=1}^{M} \beta_m \sigma(\alpha_m^T x + b_m)\]
+    <span class="eq-label">(2.45)</span>
+  </div>
+</div>
+</div>
+
+<!-- ─── BIAS-VARIANCE TRADEOFF ─── -->
+<h3 id="bvt" class="section-title reveal"><span class="section-num">2.9</span> Model Selection &amp; The Bias–Variance Tradeoff</h3>
+
+<div class="reveal">
+<p>This is one of the most important concepts in all of statistical learning.</p>
+
+<div class="def-box theorem" data-label="Theorem">
+  <div class="def-title">Bias-Variance Decomposition for k-NN</div>
+  <p>For model \(Y = f(X) + \varepsilon\), \(\mathbb{E}(\varepsilon) = 0\), \(\text{Var}(\varepsilon) = \sigma^2\):</p>
+  <div class="math-block" style="margin:0.8rem 0; background:rgba(30,110,122,0.06)">
+    \[\text{EPE}_k(x_0) = \underbrace{\sigma^2}_{\text{Irreducible Error}} + \underbrace{\left[f(x_0) - \frac{1}{k}\sum_{\ell=1}^{k} f(x_{(\ell)})\right]^2}_{\text{Bias}^2} + \underbrace{\frac{\sigma^2}{k}}_{\text{Variance}}\]
+    <span class="eq-label">(2.47)</span>
+  </div>
+</div>
+
+<table>
+  <thead><tr><th>Term</th><th>Meaning</th><th>Controlled by</th></tr></thead>
+  <tbody>
+    <tr><td>\(\sigma^2\)</td><td><strong>Irreducible error</strong> — variance of new target</td><td>Cannot control — inherent noise</td></tr>
+    <tr><td>Bias²</td><td>Squared difference between true mean and expected estimate</td><td>Increases with k (neighbors farther away)</td></tr>
+    <tr><td>Variance</td><td>Variance of the averaging estimate</td><td>Decreases as 1/k</td></tr>
+  </tbody>
+</table>
+
+<!-- Bias-Variance Grid -->
+<div style="margin:1.5rem 0">
+  <div class="bv-label" style="display:grid;grid-template-columns:80px 1fr 1fr;gap:0.5rem;margin-bottom:0.3rem">
+    <div></div><div class="bv-label" style="text-align:center">High Variance</div><div class="bv-label" style="text-align:center">Low Variance</div>
+  </div>
+  <div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:0.5rem">
+    <div style="display:flex;align-items:center;justify-content:flex-end;padding-right:0.8rem">
+      <span class="bv-label" style="writing-mode:vertical-rl;transform:rotate(180deg)">High Bias</span>
+    </div>
+    <div class="bv-cell bv-hb-hv">Worst Case<br><small style="font-weight:400;font-size:0.75em">Underfitting + Noisy</small></div>
+    <div class="bv-cell bv-hb-lv">Underfitting<br><small style="font-weight:400;font-size:0.75em">Simple, wrong model</small></div>
+    <div style="display:flex;align-items:center;justify-content:flex-end;padding-right:0.8rem">
+      <span class="bv-label" style="writing-mode:vertical-rl;transform:rotate(180deg)">Low Bias</span>
+    </div>
+    <div class="bv-cell bv-lb-hv">Overfitting<br><small style="font-weight:400;font-size:0.75em">Complex, unstable</small></div>
+    <div class="bv-cell bv-lb-lv">✓ Ideal<br><small style="font-weight:400;font-size:0.75em">Balanced model</small></div>
+  </div>
+</div>
+
+<!-- Bias-Variance Diagram -->
+<div class="diagram-wrap">
+<svg class="diagram" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" style="max-width:540px;border:1px solid var(--border);border-radius:8px;background:white;">
+  <text x="20" y="24" font-family="JetBrains Mono,monospace" font-size="11" fill="#333" font-weight="600">Prediction Error vs. Model Complexity</text>
+  <!-- Axes -->
+  <line x1="60" y1="240" x2="500" y2="240" stroke="#888" stroke-width="1.5"/>
+  <line x1="60" y1="240" x2="60" y2="40" stroke="#888" stroke-width="1.5"/>
+  <!-- labels -->
+  <text x="280" y="266" text-anchor="middle" font-family="Source Serif 4,serif" font-size="11" fill="#555" font-style="italic">Model Complexity →</text>
+  <text x="20" y="145" text-anchor="middle" font-family="Source Serif 4,serif" font-size="11" fill="#555" font-style="italic" transform="rotate(-90,20,145)">Error</text>
+  <text x="60" y="256" font-family="JetBrains Mono,monospace" font-size="9" fill="#888">Low</text>
+  <text x="460" y="256" font-family="JetBrains Mono,monospace" font-size="9" fill="#888">High</text>
+  <!-- Test error curve (U-shape) -->
+  <path d="M 70,80 C 130,80 200,95 240,120 C 280,145 300,160 380,195 C 420,210 460,220 490,225" fill="none" stroke="#c8922a" stroke-width="2.5"/>
+  <!-- Training error (monotone decreasing) -->
+  <path d="M 70,100 C 120,100 160,115 200,130 C 250,148 300,160 360,175 C 420,188 460,200 490,210" fill="none" stroke="#3b6fd4" stroke-width="2.5" stroke-dasharray="7,3"/>
+  <!-- Optimal point marker -->
+  <line x1="240" y1="120" x2="240" y2="240" stroke="#888" stroke-width="1" stroke-dasharray="4,3"/>
+  <circle cx="240" cy="120" r="6" fill="#c8922a" opacity="0.9"/>
+  <text x="248" y="118" font-family="JetBrains Mono,monospace" font-size="9" fill="#c8922a">Optimal</text>
+  <!-- Irreducible error line -->
+  <line x1="60" y1="200" x2="500" y2="200" stroke="#888" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+  <text x="65" y="197" font-family="JetBrains Mono,monospace" font-size="8" fill="#888">σ² (irreducible)</text>
+  <!-- Region labels -->
+  <text x="120" y="180" font-family="JetBrains Mono,monospace" font-size="9" fill="#888">← High Bias</text>
+  <text x="350" y="170" font-family="JetBrains Mono,monospace" font-size="9" fill="#888">High Variance →</text>
+  <!-- Legend -->
+  <line x1="300" y1="55" x2="330" y2="55" stroke="#c8922a" stroke-width="2.5"/>
+  <text x="335" y="59" font-family="JetBrains Mono,monospace" font-size="9" fill="#c8922a">Test Error</text>
+  <line x1="300" y1="74" x2="330" y2="74" stroke="#3b6fd4" stroke-width="2.5" stroke-dasharray="7,3"/>
+  <text x="335" y="78" font-family="JetBrains Mono,monospace" font-size="9" fill="#3b6fd4">Training Error</text>
+</svg>
+<div class="diagram-caption">Figure 2.11: Test error shows a characteristic U-shape (decreasing then increasing) while training error monotonically decreases. The optimal model complexity minimizes test error.</div>
+</div>
+
+<div class="def-box warning" data-label="Critical Insight">
+  <div class="def-title">Why Training Error is Misleading</div>
+  <p>Training error <strong>always decreases</strong> as model complexity increases. When model complexity is too high, the model <em>memorizes</em> the training data (overfits) and fails to generalize. Test error increases due to high variance.</p>
+  <p>We <strong>cannot use training RSS</strong> to select smoothing parameters. Methods like <strong>cross-validation</strong> or AIC/BIC (Chapter 7) are required to estimate true test error.</p>
+</div>
+
+<div class="quick-ref">
+  <div class="qr-title">Quick Reference: Summary of Key Concepts</div>
+  <div class="qr-row"><span class="qr-key">Regression function</span><span class="qr-val">f(x) = 𝔼(Y|X=x) — optimal under squared error</span></div>
+  <div class="qr-row"><span class="qr-key">Bayes classifier</span><span class="qr-val">Classify to most probable class — optimal under 0-1 loss</span></div>
+  <div class="qr-row"><span class="qr-key">Least squares solution</span><span class="qr-val">β̂ = (XᵀX)⁻¹Xᵀy</span></div>
+  <div class="qr-row"><span class="qr-key">k-NN effective params</span><span class="qr-val">N/k (large k = simpler model)</span></div>
+  <div class="qr-row"><span class="qr-key">Curse of dimensionality</span><span class="qr-val">Density ∝ N^(1/p) — exponentially hard</span></div>
+  <div class="qr-row"><span class="qr-key">EPE = σ² + Bias² + Var</span><span class="qr-val">Bias ↑ as k ↑; Variance = σ²/k ↓ as k ↑</span></div>
+  <div class="qr-row"><span class="qr-key">Linear EPE in high dim</span><span class="qr-val">EPE ≈ σ²·p/N + σ² (linear, not exponential!)</span></div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════ -->
+<!-- QUIZ                                -->
+<!-- ════════════════════════════════════ -->
+<div id="quiz" class="reveal">
+  <div class="quiz-header">Practice Quiz</div>
+  <div class="quiz-sub">15 questions covering Chapters 1 &amp; 2 — test your understanding</div>
+  <div class="quiz-progress" id="qprogress"></div>
+
+  <!-- Score Board -->
+  <div class="score-board" id="scoreboard">
+    <div class="score-big" id="scorenum">—</div>
+    <div class="score-label">out of 15</div>
+    <div class="score-msg" id="scoremsg"></div>
+    <button class="btn btn-primary" onclick="resetQuiz()">Retake Quiz</button>
+  </div>
+
+  <!-- Q1 -->
+  <div class="quiz-q active" id="q1">
+    <div class="q-num">Question 01 / 15</div>
+    <div class="q-text">Which of the following is the optimal prediction of Y at a point X=x under squared error loss?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,0,0)"><span class="option-letter">A</span> The median of Y given X=x</div>
+      <div class="option" onclick="answer(this,0,1)"><span class="option-letter">B</span> The conditional expectation 𝔼(Y | X=x)</div>
+      <div class="option" onclick="answer(this,0,0)"><span class="option-letter">C</span> The mode of Y given X=x</div>
+      <div class="option" onclick="answer(this,0,0)"><span class="option-letter">D</span> The sample mean of all y values in the training set</div>
+    </div>
+    <div class="q-feedback" id="fb1">✓ <strong>Correct!</strong> The conditional expectation f(x) = 𝔼(Y|X=x) minimizes EPE under squared error loss. (If we used L1 loss instead, the optimal predictor would be the conditional <em>median</em>.)</div>
+    <div class="quiz-nav"><button class="btn btn-primary" onclick="nextQ(1)" id="nb1" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-q" id="q2">
+    <div class="q-num">Question 02 / 15</div>
+    <div class="q-text">What is the closed-form solution for the least squares coefficient vector β̂?</div>
+    <div class="q-math">\[\hat{\beta} = ?\]</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,1,0)"><span class="option-letter">A</span> \((X^T X)^{-1} y\)</div>
+      <div class="option" onclick="answer(this,1,1)"><span class="option-letter">B</span> \((X^T X)^{-1} X^T y\)</div>
+      <div class="option" onclick="answer(this,1,0)"><span class="option-letter">C</span> \(X (X^T X)^{-1} y\)</div>
+      <div class="option" onclick="answer(this,1,0)"><span class="option-letter">D</span> \((X X^T)^{-1} X^T y\)</div>
+    </div>
+    <div class="q-feedback" id="fb2">✓ <strong>Correct!</strong> Setting the derivative of RSS(β) to zero gives the normal equations X^T(y − Xβ) = 0, which yields β̂ = (X^TX)^{−1}X^Ty when X^TX is invertible.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(2)">← Prev</button><button class="btn btn-primary" onclick="nextQ(2)" id="nb2" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-q" id="q3">
+    <div class="q-num">Question 03 / 15</div>
+    <div class="q-text">In k-nearest neighbor regression, what is the effective number of parameters?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,2,0)"><span class="option-letter">A</span> k</div>
+      <div class="option" onclick="answer(this,2,0)"><span class="option-letter">B</span> p (number of predictors)</div>
+      <div class="option" onclick="answer(this,2,1)"><span class="option-letter">C</span> N/k</div>
+      <div class="option" onclick="answer(this,2,0)"><span class="option-letter">D</span> N·k</div>
+    </div>
+    <div class="q-feedback" id="fb3">✓ <strong>Correct!</strong> The effective number of parameters for k-NN is N/k. If neighborhoods were non-overlapping, there would be N/k neighborhoods each fit with one parameter (a mean). Larger k → fewer effective parameters → smoother model.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(3)">← Prev</button><button class="btn btn-primary" onclick="nextQ(3)" id="nb3" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-q" id="q4">
+    <div class="q-num">Question 04 / 15</div>
+    <div class="q-text">The "curse of dimensionality" refers to which of the following?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,3,0)"><span class="option-letter">A</span> The difficulty of visualizing data in more than 3 dimensions</div>
+      <div class="option" onclick="answer(this,3,0)"><span class="option-letter">B</span> The fact that higher-dimensional data requires more storage</div>
+      <div class="option" onclick="answer(this,3,1)"><span class="option-letter">C</span> The exponential growth in sample size needed to maintain the same density as dimension increases, causing local methods to fail</div>
+      <div class="option" onclick="answer(this,3,0)"><span class="option-letter">D</span> The difficulty of computing matrix inverses in high dimensions</div>
+    </div>
+    <div class="q-feedback" id="fb4">✓ <strong>Correct!</strong> The curse of dimensionality means sampling density ∝ N^(1/p). In 10D, if 100 points give dense 1D coverage, you need 100^10 = 10^20 points for equivalent density. Local neighborhoods become global, ruining k-NN and related methods.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(4)">← Prev</button><button class="btn btn-primary" onclick="nextQ(4)" id="nb4" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="quiz-q" id="q5">
+    <div class="q-num">Question 05 / 15</div>
+    <div class="q-text">In the bias-variance decomposition EPE = σ² + Bias² + Variance, what happens to bias and variance as k increases in k-NN?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,4,0)"><span class="option-letter">A</span> Both bias and variance increase</div>
+      <div class="option" onclick="answer(this,4,1)"><span class="option-letter">B</span> Bias increases, variance decreases (σ²/k)</div>
+      <div class="option" onclick="answer(this,4,0)"><span class="option-letter">C</span> Bias decreases, variance increases</div>
+      <div class="option" onclick="answer(this,4,0)"><span class="option-letter">D</span> Both bias and variance decrease</div>
+    </div>
+    <div class="q-feedback" id="fb5">✓ <strong>Correct!</strong> As k increases, we average over more (farther-away) neighbors → farther from truth → Bias². The variance of the average = σ²/k decreases as k grows. This is the classic bias-variance tradeoff!</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(5)">← Prev</button><button class="btn btn-primary" onclick="nextQ(5)" id="nb5" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="quiz-q" id="q6">
+    <div class="q-num">Question 06 / 15</div>
+    <div class="q-text">The Bayes classifier assigns an observation to:</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,5,0)"><span class="option-letter">A</span> The class with the highest prior probability P(G = k)</div>
+      <div class="option" onclick="answer(this,5,1)"><span class="option-letter">B</span> The class with the highest posterior probability P(G = k | X = x)</div>
+      <div class="option" onclick="answer(this,5,0)"><span class="option-letter">C</span> The class whose centroid is nearest to the test point</div>
+      <div class="option" onclick="answer(this,5,0)"><span class="option-letter">D</span> The class with the most training examples</div>
+    </div>
+    <div class="q-feedback" id="fb6">✓ <strong>Correct!</strong> The Bayes classifier assigns to class G_k if Pr(G_k|X=x) is maximum over all classes. It is the theoretically optimal classifier under 0-1 loss. Its error rate (the Bayes rate) is the irreducible minimum.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(6)">← Prev</button><button class="btn btn-primary" onclick="nextQ(6)" id="nb6" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="quiz-q" id="q7">
+    <div class="q-num">Question 07 / 15</div>
+    <div class="q-text">For 1-nearest neighbor classification, what is the training error?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,6,1)"><span class="option-letter">A</span> Always 0</div>
+      <div class="option" onclick="answer(this,6,0)"><span class="option-letter">B</span> Equal to the Bayes error rate</div>
+      <div class="option" onclick="answer(this,6,0)"><span class="option-letter">C</span> Approximately 1/N</div>
+      <div class="option" onclick="answer(this,6,0)"><span class="option-letter">D</span> It depends on the training data distribution</div>
+    </div>
+    <div class="q-feedback" id="fb7">✓ <strong>Correct!</strong> For k=1, every training point is its own nearest neighbor, so it predicts itself perfectly. Training error = 0 always. This is why we cannot use training error to select k — it would always pick k=1!</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(7)">← Prev</button><button class="btn btn-primary" onclick="nextQ(7)" id="nb7" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="quiz-q" id="q8">
+    <div class="q-num">Question 08 / 15</div>
+    <div class="q-text">In a linear model used for binary classification (coding BLUE=0, ORANGE=1), what is the decision boundary?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,7,0)"><span class="option-letter">A</span> The set where Ŷ = 0</div>
+      <div class="option" onclick="answer(this,7,0)"><span class="option-letter">B</span> The set where Ŷ = 1</div>
+      <div class="option" onclick="answer(this,7,1)"><span class="option-letter">C</span> The hyperplane where x^Tβ̂ = 0.5</div>
+      <div class="option" onclick="answer(this,7,0)"><span class="option-letter">D</span> The convex hull of training data</div>
+    </div>
+    <div class="q-feedback" id="fb8">✓ <strong>Correct!</strong> The decision rule is: predict ORANGE if Ŷ > 0.5, BLUE otherwise. The boundary is exactly {x : x^Tβ̂ = 0.5}, which is a hyperplane (linear in the input space).</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(8)">← Prev</button><button class="btn btn-primary" onclick="nextQ(8)" id="nb8" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="quiz-q" id="q9">
+    <div class="q-num">Question 09 / 15</div>
+    <div class="q-text">In a p-dimensional hypercube, what edge length of a sub-cube captures fraction r of the data?</div>
+    <div class="q-math">\[e_p(r) = ?\]</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,8,0)"><span class="option-letter">A</span> \(r \cdot p\)</div>
+      <div class="option" onclick="answer(this,8,1)"><span class="option-letter">B</span> \(r^{1/p}\)</div>
+      <div class="option" onclick="answer(this,8,0)"><span class="option-letter">C</span> \(r^p\)</div>
+      <div class="option" onclick="answer(this,8,0)"><span class="option-letter">D</span> \(\sqrt{r/p}\)</div>
+    </div>
+    <div class="q-feedback" id="fb9">✓ <strong>Correct!</strong> Volume of the sub-cube = e^p = r, so e = r^(1/p). For r=0.1, p=10: e = 0.1^(1/10) ≈ 0.80. We need to cover 80% of each axis to capture just 10% of the data!</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(9)">← Prev</button><button class="btn btn-primary" onclick="nextQ(9)" id="nb9" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="quiz-q" id="q10">
+    <div class="q-num">Question 10 / 15</div>
+    <div class="q-text">Under a correctly specified linear model Y = X^Tβ + ε (ε ~ N(0,σ²)), the expected EPE for large N grows with dimension p as:</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,9,0)"><span class="option-letter">A</span> Exponentially: σ² · e^p</div>
+      <div class="option" onclick="answer(this,9,1)"><span class="option-letter">B</span> Linearly: σ²p/N + σ²</div>
+      <div class="option" onclick="answer(this,9,0)"><span class="option-letter">C</span> Quadratically: σ²p²/N</div>
+      <div class="option" onclick="answer(this,9,0)"><span class="option-letter">D</span> It does not depend on p</div>
+    </div>
+    <div class="q-feedback" id="fb10">✓ <strong>Correct!</strong> EPE ≈ σ²(p/N) + σ². The linear model escapes the curse of dimensionality because its global structure means EPE grows only linearly in p, not exponentially. This is the power of imposing structural assumptions.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(10)">← Prev</button><button class="btn btn-primary" onclick="nextQ(10)" id="nb10" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="quiz-q" id="q11">
+    <div class="q-num">Question 11 / 15</div>
+    <div class="q-text">Which statement about the cubic smoothing spline PRSS(f;λ) = RSS(f) + λ∫[f''(x)]²dx is correct?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,10,0)"><span class="option-letter">A</span> When λ=0, only linear functions f are allowed</div>
+      <div class="option" onclick="answer(this,10,1)"><span class="option-letter">B</span> When λ→∞, only linear functions f are permitted; when λ=0, any interpolating function works</div>
+      <div class="option" onclick="answer(this,10,0)"><span class="option-letter">C</span> λ controls the number of knots in the spline</div>
+      <div class="option" onclick="answer(this,10,0)"><span class="option-letter">D</span> Larger λ leads to more complex models</div>
+    </div>
+    <div class="q-feedback" id="fb11">✓ <strong>Correct!</strong> λ=0: no penalty, any function through the data qualifies (interpolation). λ→∞: the penalty on f'' dominates, forcing f'' = 0 everywhere → only linear functions. λ controls the smoothness — a classic regularization parameter.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(11)">← Prev</button><button class="btn btn-primary" onclick="nextQ(11)" id="nb11" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="quiz-q" id="q12">
+    <div class="q-num">Question 12 / 15</div>
+    <div class="q-text">For the spam detection example, 4601 emails were used with how many feature variables?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,11,0)"><span class="option-letter">A</span> 10</div>
+      <div class="option" onclick="answer(this,11,1)"><span class="option-letter">B</span> 57</div>
+      <div class="option" onclick="answer(this,11,0)"><span class="option-letter">C</span> 100</div>
+      <div class="option" onclick="answer(this,11,0)"><span class="option-letter">D</span> 4601</div>
+    </div>
+    <div class="q-feedback" id="fb12">✓ <strong>Correct!</strong> The spam dataset has 4601 email messages and 57 features (relative frequencies of the most common words and punctuation marks). This is a two-class classification (supervised learning) problem.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(12)">← Prev</button><button class="btn btn-primary" onclick="nextQ(12)" id="nb12" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="quiz-q" id="q13">
+    <div class="q-num">Question 13 / 15</div>
+    <div class="q-text">The Nadaraya-Watson kernel estimator is given by:</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,12,0)"><span class="option-letter">A</span> \(\hat{f}(x_0) = \sum_{i} K_\lambda(x_0,x_i) y_i\)</div>
+      <div class="option" onclick="answer(this,12,1)"><span class="option-letter">B</span> \(\hat{f}(x_0) = \dfrac{\sum_{i} K_\lambda(x_0,x_i)\, y_i}{\sum_{i} K_\lambda(x_0,x_i)}\)</div>
+      <div class="option" onclick="answer(this,12,0)"><span class="option-letter">C</span> \(\hat{f}(x_0) = \dfrac{1}{N}\sum_{i} K_\lambda(x_0,x_i)\)</div>
+      <div class="option" onclick="answer(this,12,0)"><span class="option-letter">D</span> \(\hat{f}(x_0) = \min_i K_\lambda(x_0,x_i) \cdot y_i\)</div>
+    </div>
+    <div class="q-feedback" id="fb13">✓ <strong>Correct!</strong> The Nadaraya-Watson estimator is a kernel-weighted average of y values. The denominator normalizes the kernel weights to sum to 1. Setting the constant function as local model recovers this from the general local regression framework.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(13)">← Prev</button><button class="btn btn-primary" onclick="nextQ(13)" id="nb13" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="quiz-q" id="q14">
+    <div class="q-num">Question 14 / 15</div>
+    <div class="q-text">Least squares estimation of the linear model Y = f_θ(X) + ε with ε ~ N(0,σ²) is equivalent to which statistical principle?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,13,0)"><span class="option-letter">A</span> Method of moments</div>
+      <div class="option" onclick="answer(this,13,0)"><span class="option-letter">B</span> Bayesian MAP estimation with a Laplace prior</div>
+      <div class="option" onclick="answer(this,13,1)"><span class="option-letter">C</span> Maximum likelihood estimation</div>
+      <div class="option" onclick="answer(this,13,0)"><span class="option-letter">D</span> Minimax estimation</div>
+    </div>
+    <div class="q-feedback" id="fb14">✓ <strong>Correct!</strong> Under Gaussian errors, the log-likelihood is L(θ) = -N/2·log(2π) - N·log(σ) - (1/2σ²)·RSS(θ). Maximizing L is equivalent to minimizing RSS. So least squares = MLE for additive Gaussian error models.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(14)">← Prev</button><button class="btn btn-primary" onclick="nextQ(14)" id="nb14" disabled>Next →</button></div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="quiz-q" id="q15">
+    <div class="q-num">Question 15 / 15</div>
+    <div class="q-text">In the bias-variance decomposition EPE_k(x₀) = σ² + Bias² + σ²/k, which term represents the "irreducible error" that cannot be reduced regardless of the model?</div>
+    <div class="options">
+      <div class="option" onclick="answer(this,14,1)"><span class="option-letter">A</span> σ² (the first term)</div>
+      <div class="option" onclick="answer(this,14,0)"><span class="option-letter">B</span> Bias² (the squared bias term)</div>
+      <div class="option" onclick="answer(this,14,0)"><span class="option-letter">C</span> σ²/k (the variance term)</div>
+      <div class="option" onclick="answer(this,14,0)"><span class="option-letter">D</span> Bias² + σ²/k together</div>
+    </div>
+    <div class="q-feedback" id="fb15">✓ <strong>Correct!</strong> σ² is the variance of the new target Y around f(x₀). It represents noise inherent to the data-generating process — even if we knew the true f perfectly, we would still incur this error. Bias² and σ²/k are under our control via model selection.</div>
+    <div class="quiz-nav"><button class="btn btn-secondary" onclick="prevQ(15)">← Prev</button><button class="btn btn-primary" onclick="showScore()" id="nb15" disabled>See Results ✓</button></div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  Study guide based on Hastie, Tibshirani &amp; Friedman — The Elements of Statistical Learning (2nd ed.) &nbsp;·&nbsp; Chapters 1–2
+</footer>
+
+<script>
+  // ── QUIZ LOGIC ──
+  const totalQ = 15;
+  let scores = new Array(totalQ).fill(null); // null=unanswered, true/false
+  let answered = new Array(totalQ).fill(false);
+
+  function buildProgress() {
+    const el = document.getElementById('qprogress');
+    el.innerHTML = '';
+    for (let i = 0; i < totalQ; i++) {
+      const d = document.createElement('div');
+      d.className = 'progress-dot';
+      d.id = 'pd' + (i+1);
+      el.appendChild(d);
+    }
+  }
+  buildProgress();
+
+  function answer(el, qIdx, correct) {
+    if (answered[qIdx]) return;
+    answered[qIdx] = true;
+    const qId = qIdx + 1;
+    const fb = document.getElementById('fb' + qId);
+    const nb = document.getElementById('nb' + qId);
+    const pd = document.getElementById('pd' + qId);
+    const opts = el.parentElement.querySelectorAll('.option');
+
+    // Find correct option
+    opts.forEach((opt, i) => {
+      opt.style.pointerEvents = 'none';
+    });
+
+    if (correct) {
+      el.className = 'option correct';
+      scores[qIdx] = true;
+      fb.className = 'q-feedback right show';
+      fb.innerHTML = '✓ ' + fb.innerHTML.replace(/^✓ /, '');
+      pd.className = 'progress-dot correct';
+    } else {
+      el.className = 'option wrong';
+      scores[qIdx] = false;
+      fb.className = 'q-feedback wrong show';
+      const correctText = fb.innerHTML;
+      fb.innerHTML = '✗ Incorrect. ' + correctText.replace(/^✓ /, '');
+      pd.className = 'progress-dot wrong';
+      // Highlight the correct answer
+      opts.forEach(opt => {
+        if (opt.getAttribute('onclick') && opt.getAttribute('onclick').includes(',1)')) {
+          opt.className = 'option correct';
+        }
+      });
+    }
+    pd.className += ' done';
+    if (nb) nb.disabled = false;
+  }
+
+  function nextQ(current) {
+    document.getElementById('q' + current).classList.remove('active');
+    if (current < totalQ) {
+      document.getElementById('q' + (current + 1)).classList.add('active');
+    }
+    window.scrollTo({ top: document.getElementById('quiz').offsetTop - 70, behavior: 'smooth' });
+  }
+  function prevQ(current) {
+    document.getElementById('q' + current).classList.remove('active');
+    document.getElementById('q' + (current - 1)).classList.add('active');
+    window.scrollTo({ top: document.getElementById('quiz').offsetTop - 70, behavior: 'smooth' });
+  }
+
+  function showScore() {
+    const sc = document.getElementById('scoreboard');
+    for (let i = 1; i <= totalQ; i++) {
+      document.getElementById('q' + i).classList.remove('active');
+    }
+    sc.classList.add('show');
+    const correct = scores.filter(s => s === true).length;
+    document.getElementById('scorenum').textContent = correct;
+    const pct = correct / totalQ;
+    let msg = '';
+    if (pct >= 0.9) msg = '🎓 Outstanding! You have an excellent grasp of statistical learning fundamentals.';
+    else if (pct >= 0.7) msg = '📚 Great work! Review the topics you missed and you\'ll be exam-ready.';
+    else if (pct >= 0.5) msg = '📖 Good start! Revisit the bias-variance tradeoff and curse of dimensionality sections.';
+    else msg = '🔄 Keep studying! Focus on the key theorems and worked examples above.';
+    document.getElementById('scoremsg').textContent = msg;
+    window.scrollTo({ top: document.getElementById('quiz').offsetTop - 70, behavior: 'smooth' });
+  }
+
+  function resetQuiz() {
+    scores = new Array(totalQ).fill(null);
+    answered = new Array(totalQ).fill(false);
+    document.getElementById('scoreboard').classList.remove('show');
+    buildProgress();
+    for (let i = 1; i <= totalQ; i++) {
+      const q = document.getElementById('q' + i);
+      q.classList.remove('active');
+      const fb = document.getElementById('fb' + i);
+      if (fb) fb.className = 'q-feedback';
+      const nb = document.getElementById('nb' + i);
+      if (nb) nb.disabled = true;
+      q.querySelectorAll('.option').forEach(opt => {
+        opt.className = 'option';
+        opt.style.pointerEvents = '';
+      });
+    }
+    document.getElementById('q1').classList.add('active');
+    window.scrollTo({ top: document.getElementById('quiz').offsetTop - 70, behavior: 'smooth' });
+  }
+
+  // ── SCROLL REVEAL ──
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.08 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Re-typeset MathJax after quiz renders
+  document.querySelectorAll('.q-math').forEach(el => {
+    if (window.MathJax) MathJax.typesetPromise([el]);
+  });
+</script>
+</body>
+</html>
