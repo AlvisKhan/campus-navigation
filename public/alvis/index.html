@@ -3,43 +3,455 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alvis Private Workspace</title>
+  <title>Alvis Vault · Private Documents</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body {
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 30, 49, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --tag-bg: rgba(56, 189, 248, 0.12);
+      --tag-border: rgba(56, 189, 248, 0.25);
+      --tag-text: #7dd3fc;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
-      padding: 40px 20px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #0f172a;
-      color: #f8fafc;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 80vh;
+      padding: 40px 20px 80px;
+      position: relative;
+      overflow-x: hidden;
     }
+
+    /* Ambient background glows */
+    .bg-glow-1 {
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(11, 15, 25, 0) 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
     .container {
-      max-width: 600px;
+      width: 100%;
+      max-width: 820px;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 32px;
       text-align: center;
-      background: #1e293b;
-      padding: 32px;
-      border-radius: 16px;
-      border: 1px solid #334155;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: var(--tag-bg);
+      border: 1px solid var(--tag-border);
+      color: var(--tag-text);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
     h1 {
-      color: #38bdf8;
-      margin-top: 0;
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
     }
-    p {
-      color: #94a3b8;
-      line-height: 1.6;
+
+    .subheading {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Search & Stats Bar */
+    .controls-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-input-wrapper {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 16px 12px 42px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(12px);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .files-count {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+    }
+
+    /* Grid of files */
+    .files-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .file-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 22px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      text-decoration: none;
+      color: inherit;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .file-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(30, 41, 67, 0.85);
+      box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45), 0 0 16px var(--accent-glow);
+    }
+
+    .file-card-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .file-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(14, 165, 233, 0.05));
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .file-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .file-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .file-path {
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .file-card-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-action:hover {
+      background: var(--accent);
+      color: #0b0f19;
+      border-color: var(--accent);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--card-bg);
+      border: 1px dashed var(--card-border);
+      border-radius: 16px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0284c7;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
     }
   </style>
 </head>
 <body>
+  <div class="bg-glow-1"></div>
+
   <div class="container">
-    <h1>Alvis Private Space</h1>
-    <p>You can replace this file or add more HTML files here!</p>
+    <header class="header">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        <span>PRIVATE VAULT</span>
+      </div>
+      <h1>Alvis Workspace</h1>
+      <p class="subheading">Auto-indexed personal document library</p>
+    </header>
+
+    <div class="controls-bar">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="search-input" 
+          class="search-input" 
+          placeholder="Filter files by title or filename..." 
+          autocomplete="off"
+        />
+      </div>
+      <div id="files-count" class="files-count">0 FILES</div>
+    </div>
+
+    <div id="files-grid" class="files-grid">
+      <!-- Dynamically populated from files.json -->
+    </div>
+
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <div class="empty-icon">📂</div>
+      <h3>No matching files found</h3>
+      <p>Try searching for a different keyword or upload HTML files to <code>public/alvis/</code>.</p>
+    </div>
   </div>
+
+  <div id="toast" class="toast">Link copied to clipboard!</div>
+
+  <script>
+    let allFiles = [];
+
+    async function loadFiles() {
+      try {
+        const res = await fetch('./files.json?t=' + Date.now());
+        if (!res.ok) throw new Error('files.json not found');
+        allFiles = await res.json();
+      } catch (err) {
+        console.warn('Using fallback file list:', err);
+        // Fallback default list if fetch fails
+        allFiles = [
+          {
+            filename: 'nn12.html',
+            title: 'Neural Networks · Unit I & II Study Guide',
+            sizeFormatted: '79 KB',
+            lastModified: new Date().toISOString()
+          }
+        ];
+      }
+      renderFiles(allFiles);
+    }
+
+    function renderFiles(files) {
+      const grid = document.getElementById('files-grid');
+      const countEl = document.getElementById('files-count');
+      const emptyState = document.getElementById('empty-state');
+
+      countEl.textContent = `${files.length} FILE${files.length === 1 ? '' : 'S'}`;
+
+      if (files.length === 0) {
+        grid.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      grid.innerHTML = files.map(file => {
+        const fileUrl = `./${file.filename}`;
+        const fullUrl = `${window.location.origin}/alvis/${file.filename}`;
+        return `
+          <div class="file-card">
+            <div class="file-card-left" onclick="window.location.href='${fileUrl}'" style="cursor: pointer;">
+              <div class="file-icon">📄</div>
+              <div class="file-info">
+                <div class="file-title" title="${escapeHtml(file.title)}">${escapeHtml(file.title)}</div>
+                <div class="file-meta">
+                  <span class="file-path">${escapeHtml(file.filename)}</span>
+                  ${file.sizeFormatted ? `<span>•</span><span>${file.sizeFormatted}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div class="file-card-right">
+              <button class="btn-action" onclick="copyLink('${fullUrl}', event)">
+                <span>🔗</span> Copy
+              </button>
+              <a class="btn-action" href="${fileUrl}">
+                <span>Open</span> ↗
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function copyLink(url, event) {
+      if (event) event.stopPropagation();
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Link copied to clipboard!');
+      }).catch(() => {
+        showToast('Copied: ' + url);
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (!query) {
+        renderFiles(allFiles);
+        return;
+      }
+      const filtered = allFiles.filter(f => 
+        (f.title && f.title.toLowerCase().includes(query)) ||
+        (f.filename && f.filename.toLowerCase().includes(query))
+      );
+      renderFiles(filtered);
+    });
+
+    loadFiles();
+  </script>
 </body>
 </html>
