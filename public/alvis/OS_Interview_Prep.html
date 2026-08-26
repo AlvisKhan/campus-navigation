@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OS // Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#161a23;
+    --panel:#1d2230;
+    --panel-2:#232a3b;
+    --ink:#e8ebf2;
+    --ink-dim:#9aa3b8;
+    --amber:#e8a23d;
+    --teal:#5fc9b8;
+    --rose:#e2697f;
+    --line:#2c3345;
+    --code-bg:#11151f;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    line-height:1.6;
+  }
+  a{color:var(--teal);}
+
+  /* ---------- HEADER ---------- */
+  .hero{
+    padding:64px 32px 40px;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(ellipse at top left, rgba(232,162,61,0.10), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(95,201,184,0.08), transparent 55%);
+  }
+  .hero-inner{max-width:960px;margin:0 auto;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    color:var(--amber);
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:8px;height:8px;border-radius:50%;
+    background:var(--amber);
+    box-shadow:0 0 10px var(--amber);
+    display:inline-block;
+  }
+  h1{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:clamp(30px,5vw,46px);
+    margin:14px 0 10px;
+    letter-spacing:-0.01em;
+  }
+  h1 span{color:var(--ink-dim);font-weight:400;}
+  .subtitle{color:var(--ink-dim);font-size:16px;max-width:640px;}
+  .meta-row{
+    display:flex;flex-wrap:wrap;gap:10px;
+    margin-top:22px;
+  }
+  .pill{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    padding:6px 12px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    color:var(--ink-dim);
+    background:var(--panel);
+  }
+
+  /* ---------- LAYOUT ---------- */
+  .layout{
+    max-width:1180px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:230px 1fr;
+    gap:36px;
+    padding:36px 32px 100px;
+  }
+  @media (max-width:880px){
+    .layout{grid-template-columns:1fr;}
+    nav.toc{position:static !important; order:2;}
+  }
+
+  nav.toc{
+    position:sticky;
+    top:20px;
+    align-self:start;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+  }
+  nav.toc .toc-title{
+    color:var(--ink-dim);
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    font-size:11px;
+    margin-bottom:10px;
+  }
+  nav.toc a{
+    display:block;
+    color:var(--ink-dim);
+    text-decoration:none;
+    padding:6px 0 6px 12px;
+    border-left:2px solid var(--line);
+    transition:all .15s ease;
+  }
+  nav.toc a:hover{color:var(--amber);border-left-color:var(--amber);}
+
+  main{min-width:0;}
+
+  /* ---------- SECTION ---------- */
+  section.topic{
+    margin-bottom:54px;
+    scroll-margin-top:20px;
+  }
+  .topic-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:14px;
+  }
+  .topic-num{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--amber);
+    font-size:13px;
+  }
+  .topic-head h2{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:22px;
+    margin:0;
+  }
+  .topic-desc{
+    color:var(--ink-dim);
+    font-size:14.5px;
+    margin:10px 0 22px;
+    max-width:720px;
+  }
+
+  /* ---------- Q&A CARD ---------- */
+  details.qa{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  details.qa[open]{border-color:#3a4256;}
+  details.qa summary{
+    list-style:none;
+    cursor:pointer;
+    padding:16px 20px;
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    font-weight:600;
+    font-size:15px;
+  }
+  details.qa summary::-webkit-details-marker{display:none;}
+  .q-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--bg);
+    background:var(--teal);
+    padding:3px 7px;
+    border-radius:4px;
+    white-space:nowrap;
+    margin-top:2px;
+    font-weight:700;
+  }
+  .q-tag.hard{background:var(--rose);}
+  .q-tag.mid{background:var(--amber);}
+  summary .chev{
+    margin-left:auto;
+    color:var(--ink-dim);
+    font-family:'IBM Plex Mono',monospace;
+    transition:transform .2s ease;
+  }
+  details.qa[open] summary .chev{transform:rotate(45deg);}
+  .qa-body{
+    padding:0 20px 20px 20px;
+    color:var(--ink);
+    font-size:14.5px;
+    border-top:1px solid var(--line);
+    margin-top:2px;
+    padding-top:14px;
+  }
+  .qa-body p{margin:0 0 10px;}
+  .qa-body ul{margin:8px 0;padding-left:20px;}
+  .qa-body li{margin-bottom:5px;}
+  .qa-body table{
+    border-collapse:collapse;
+    width:100%;
+    margin:12px 0;
+    font-size:13.5px;
+  }
+  .qa-body th,.qa-body td{
+    border:1px solid var(--line);
+    padding:8px 10px;
+    text-align:left;
+  }
+  .qa-body th{
+    background:var(--panel-2);
+    color:var(--amber);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+  }
+  .key-line{
+    border-left:3px solid var(--amber);
+    background:rgba(232,162,61,0.08);
+    padding:10px 14px;
+    border-radius:0 6px 6px 0;
+    margin:10px 0;
+    font-size:14px;
+  }
+  .key-line b{color:var(--amber);}
+
+  /* ---------- CODE BLOCK ---------- */
+  .code-window{
+    background:var(--code-bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    margin:14px 0;
+    overflow:hidden;
+  }
+  .code-bar{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:9px 12px;
+    background:#0c0f17;
+    border-bottom:1px solid var(--line);
+  }
+  .code-bar .dot{width:9px;height:9px;border-radius:50%;}
+  .dot.r{background:#e2697f;}
+  .dot.y{background:#e8a23d;}
+  .dot.g{background:#5fc9b8;}
+  .code-lang{
+    margin-left:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-dim);
+    letter-spacing:0.05em;
+  }
+  pre{
+    margin:0;
+    padding:16px 18px;
+    overflow-x:auto;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    line-height:1.55;
+    color:#cfe8e0;
+  }
+  .cm{color:#6b7488;}
+  .kw{color:var(--rose);}
+  .fn{color:var(--amber);}
+  .tp{color:var(--teal);}
+
+  /* ---------- RAPID FIRE ---------- */
+  .rapid-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:12px;
+  }
+  .rapid-item{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--teal);
+    padding:12px 14px;
+    border-radius:0 8px 8px 0;
+    font-size:13.5px;
+  }
+  .rapid-item b{color:var(--teal);display:block;font-family:'IBM Plex Mono',monospace;font-size:12px;margin-bottom:3px;}
+
+  /* ---------- PLAN ---------- */
+  .plan{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:22px 24px;
+  }
+  .plan-row{
+    display:flex;
+    gap:16px;
+    padding:10px 0;
+    border-bottom:1px dashed var(--line);
+    align-items:baseline;
+  }
+  .plan-row:last-child{border-bottom:none;}
+  .plan-time{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--amber);
+    font-size:13px;
+    min-width:70px;
+  }
+
+  footer{
+    text-align:center;
+    padding:30px;
+    color:var(--ink-dim);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    border-top:1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">infosys placement track</div>
+    <h1>Operating Systems <span>// interview Q&A</span></h1>
+    <p class="subtitle">Every question worded the way an interviewer actually asks it, answered the way you should actually answer it — with working code for the classic sync problems. Skim once, then use as flashcards.</p>
+    <div class="meta-row">
+      <span class="pill">9 sections</span>
+      <span class="pill">45+ questions</span>
+      <span class="pill">C code included</span>
+      <span class="pill">~60 min read</span>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="toc">
+    <div class="toc-title">Jump to</div>
+    <a href="#s1">01 · OS Basics</a>
+    <a href="#s2">02 · Process Mgmt</a>
+    <a href="#s3">03 · CPU Scheduling</a>
+    <a href="#s4">04 · Synchronization</a>
+    <a href="#s5">05 · Deadlocks</a>
+    <a href="#s6">06 · Memory Mgmt</a>
+    <a href="#s7">07 · File Systems</a>
+    <a href="#s8">08 · Misc Differences</a>
+    <a href="#s9">09 · Rapid Fire</a>
+    <a href="#s10">10 · Revision Plan</a>
+  </nav>
+
+  <main>
+
+    <!-- ============ SECTION 1 ============ -->
+    <section class="topic" id="s1">
+      <div class="topic-head"><span class="topic-num">01</span><h2>OS Basics</h2></div>
+      <p class="topic-desc">Warm-up questions. Interviewers use these to gauge whether you understand fundamentals before going deeper.</p>
+
+      <details class="qa" open>
+        <summary><span class="q-tag">easy</span> What is an Operating System, in your own words?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>It's the system software that sits between the hardware and the applications. It manages the CPU, memory, storage, and I/O devices, and gives programs a consistent way to use them through system calls.</p>
+          <div class="key-line"><b>One-liner to lead with:</b> "An OS is a resource manager and an abstraction layer — it hides hardware complexity from applications and users."</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">easy</span> What are the main functions of an OS?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <ul>
+            <li><b>Process management</b> — creating, scheduling, terminating processes</li>
+            <li><b>Memory management</b> — allocation, paging, virtual memory</li>
+            <li><b>File management</b> — organizing, storing, retrieving files</li>
+            <li><b>I/O / device management</b> — talking to hardware via drivers</li>
+            <li><b>Security & protection</b> — access control between users/processes</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> Differentiate multiprogramming, multitasking, and multiprocessing.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <table>
+            <tr><th>Term</th><th>Meaning</th></tr>
+            <tr><td>Multiprogramming</td><td>Multiple programs kept in memory so the CPU always has something to run when one is waiting on I/O</td></tr>
+            <tr><td>Multitasking</td><td>Multiple tasks appear to run simultaneously on a single CPU via fast time-sharing</td></tr>
+            <tr><td>Multiprocessing</td><td>Multiple CPUs actually execute processes in parallel, truly simultaneously</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">easy</span> Name the types of Operating Systems.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>Batch OS, Time-sharing OS, Distributed OS, Network OS, Real-Time OS (RTOS — hard/soft real-time), and Multiprocessing OS. If asked for an example of RTOS, mention embedded systems like pacemakers or flight control software.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============ SECTION 2 ============ -->
+    <section class="topic" id="s2">
+      <div class="topic-head"><span class="topic-num">02</span><h2>Process Management</h2></div>
+      <p class="topic-desc">This is asked in almost every OS round. Know process states and PCB by heart.</p>
+
+      <details class="qa" open>
+        <summary><span class="q-tag">easy</span> What's the difference between a process, a program, and a thread?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p><b>Program</b> is passive — just code sitting on disk. <b>Process</b> is that program loaded into memory and being executed — it has its own address space, PCB, and resources. <b>Thread</b> is the smallest unit of execution within a process — multiple threads of the same process share code and data but have their own stack, registers, and program counter.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> Explain the process states with a diagram in words.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p><b>New → Ready → Running → Waiting/Blocked → Terminated</b></p>
+          <ul>
+            <li>New: process being created</li>
+            <li>Ready: waiting to be assigned the CPU</li>
+            <li>Running: instructions being executed</li>
+            <li>Waiting: blocked on I/O or an event</li>
+            <li>Terminated: finished execution</li>
+          </ul>
+          <p>A running process can go back to Ready (preempted) or to Waiting (needs I/O), and from Waiting it returns to Ready once the event completes — never straight back to Running.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What information does a PCB (Process Control Block) hold?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>Process ID, process state, program counter, CPU registers, CPU scheduling info (priority), memory management info (base/limit registers, page tables), accounting info, and I/O status (open file list, allocated devices). It's created at process creation and destroyed at termination.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What is a context switch, and why is it "pure overhead"?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>It's the act of saving the CPU state (registers, PC) of the currently running process into its PCB, then loading the saved state of the next process to run. It's called overhead because the CPU does zero useful computation during the switch itself — the time spent switching is time not spent running any process.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">hard</span> Why are threads called "lightweight" compared to processes?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>Creating a process means allocating a fresh address space, file descriptors, and other OS resources — expensive. Threads within the same process share all of that (code, data, heap, open files); only the stack, registers, and program counter are separate per thread. So creating/switching threads costs far less than creating/switching processes.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">hard</span> What are zombie and orphan processes?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p><b>Zombie:</b> a process that has finished executing but its entry still exists in the process table because the parent hasn't yet called <code>wait()</code> to read its exit status.</p>
+          <p><b>Orphan:</b> a process whose parent terminated before it did — it gets adopted by the <code>init</code> (or root) process, which then reaps it on completion.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============ SECTION 3 ============ -->
+    <section class="topic" id="s3">
+      <div class="topic-head"><span class="topic-num">03</span><h2>CPU Scheduling</h2></div>
+      <p class="topic-desc">Know all algorithm names, and be ready to solve a small Gantt-chart numerical if asked.</p>
+
+      <details class="qa" open>
+        <summary><span class="q-tag">easy</span> Why does an OS need CPU scheduling at all?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>To maximize CPU utilization and throughput while keeping response/waiting time low, by deciding which ready process gets the CPU next whenever it's free.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> List the main CPU scheduling algorithms and one line on each.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <table>
+            <tr><th>Algorithm</th><th>Idea</th><th>Catch</th></tr>
+            <tr><td>FCFS</td><td>First come, first served</td><td>Convoy effect — short jobs stuck behind long ones</td></tr>
+            <tr><td>SJF</td><td>Shortest job runs first</td><td>Optimal avg wait time, but can starve long jobs</td></tr>
+            <tr><td>Priority</td><td>Highest priority runs first</td><td>Starvation risk — fixed by aging</td></tr>
+            <tr><td>Round Robin</td><td>Fixed time quantum, cyclic order</td><td>Fair, ideal for time-sharing; quantum size is critical</td></tr>
+            <tr><td>Multilevel Queue</td><td>Separate queues per process type (fg/bg)</td><td>Used in real OS schedulers</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What's the difference between preemptive and non-preemptive scheduling?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p><b>Preemptive:</b> the OS can forcibly take the CPU away from a running process (e.g. Round Robin, Priority with preemption). <b>Non-preemptive:</b> once a process gets the CPU, it keeps it until it finishes or voluntarily blocks (e.g. FCFS, non-preemptive SJF).</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What is starvation, and how does aging fix it?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p><b>Starvation:</b> a low-priority process waits indefinitely because higher-priority processes keep arriving and jumping ahead of it. <b>Aging:</b> the fix — gradually increase the priority of a process the longer it waits, so it's eventually guaranteed to run.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">hard</span> Quick numerical: 3 processes with burst times 6, 8, 7 arrive together. Find average waiting time using SJF.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>Order by shortest burst first: P1(6) → P3(7) → P2(8).</p>
+          <ul>
+            <li>P1 waits 0</li>
+            <li>P3 waits 6</li>
+            <li>P2 waits 6+7 = 13</li>
+          </ul>
+          <p>Average waiting time = (0 + 6 + 13) / 3 = <b>6.33</b></p>
+          <div class="key-line">Practice 2-3 of these — Infosys often gives a tiny Gantt chart numerical as a written or verbal problem.</div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============ SECTION 4 ============ -->
+    <section class="topic" id="s4">
+      <div class="topic-head"><span class="topic-num">04</span><h2>Process Synchronization</h2></div>
+      <p class="topic-desc">This is where code questions show up. Know semaphore syntax and the producer-consumer pattern cold.</p>
+
+      <details class="qa" open>
+        <summary><span class="q-tag">mid</span> What is a race condition?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>A situation where two or more processes/threads access shared data concurrently, and the final result depends on the unpredictable order/timing of execution — leading to inconsistent or wrong output.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What are the 3 requirements of a solution to the critical section problem?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <ol>
+            <li><b>Mutual Exclusion</b> — only one process in the critical section at a time</li>
+            <li><b>Progress</b> — if no process is in the CS, one of the waiting ones must be allowed in without indefinite delay</li>
+            <li><b>Bounded Waiting</b> — there's a limit on how many times other processes can enter before a waiting process gets its turn</li>
+          </ol>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What's the difference between a mutex and a semaphore?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <table>
+            <tr><th>Mutex</th><th>Semaphore</th></tr>
+            <tr><td>Binary locking mechanism (locked/unlocked)</td><td>Can be binary or counting (integer value)</td></tr>
+            <tr><td>Owned by the thread that locked it</td><td>No concept of ownership</td></tr>
+            <tr><td>Purely for mutual exclusion</td><td>Can also be used for signaling between threads, or controlling access to N resources</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">hard</span> Write the wait() and signal() semaphore operations and explain them.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p><code>wait()</code> (also called P) decrements the semaphore; if it goes negative, the process blocks. <code>signal()</code> (also called V) increments the semaphore and wakes a waiting process if any.</p>
+          <div class="code-window">
+            <div class="code-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-lang">pseudocode</span></div>
+<pre><span class="kw">wait</span>(Semaphore S) {
+    <span class="kw">while</span> (S <= 0)
+        ; <span class="cm">// busy wait / block process</span>
+    S = S - 1;
+}
+
+<span class="kw">signal</span>(Semaphore S) {
+    S = S + 1;
+}</pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">hard</span> Code: Solve the Producer-Consumer problem using semaphores (C-style pseudocode).<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>Classic pattern: <code>empty</code> counts free slots, <code>full</code> counts filled slots, <code>mutex</code> protects the buffer itself.</p>
+          <div class="code-window">
+            <div class="code-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-lang">c</span></div>
+<pre><span class="tp">semaphore</span> mutex = 1;   <span class="cm">// binary: protects buffer</span>
+<span class="tp">semaphore</span> empty = N;   <span class="cm">// counts empty slots</span>
+<span class="tp">semaphore</span> full  = 0;   <span class="cm">// counts filled slots</span>
+
+<span class="fn">producer</span>() {
+    <span class="kw">while</span> (true) {
+        item = produce_item();
+        <span class="fn">wait</span>(empty);      <span class="cm">// wait for a free slot</span>
+        <span class="fn">wait</span>(mutex);      <span class="cm">// lock buffer</span>
+        insert_item(item);
+        <span class="fn">signal</span>(mutex);    <span class="cm">// unlock buffer</span>
+        <span class="fn">signal</span>(full);     <span class="cm">// one more filled slot</span>
+    }
+}
+
+<span class="fn">consumer</span>() {
+    <span class="kw">while</span> (true) {
+        <span class="fn">wait</span>(full);       <span class="cm">// wait for a filled slot</span>
+        <span class="fn">wait</span>(mutex);      <span class="cm">// lock buffer</span>
+        item = remove_item();
+        <span class="fn">signal</span>(mutex);    <span class="cm">// unlock buffer</span>
+        <span class="fn">signal</span>(empty);    <span class="cm">// one more empty slot</span>
+        consume_item(item);
+    }
+}</pre>
+          </div>
+          <div class="key-line"><b>Interview tip:</b> If asked "why two semaphores plus a mutex," explain: <code>empty</code>/<code>full</code> handle capacity synchronization, <code>mutex</code> handles mutual exclusion on the buffer itself — mixing the two up is the #1 mistake candidates make.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">hard</span> Code: Readers-Writers problem — readers preference version.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>Multiple readers can read simultaneously; a writer needs exclusive access.</p>
+          <div class="code-window">
+            <div class="code-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="code-lang">c</span></div>
+<pre><span class="tp">int</span> read_count = 0;
+<span class="tp">semaphore</span> mutex = 1;    <span class="cm">// protects read_count</span>
+<span class="tp">semaphore</span> wrt   = 1;    <span class="cm">// exclusive access for writer</span>
+
+<span class="fn">writer</span>() {
+    <span class="fn">wait</span>(wrt);
+    write_to_resource();
+    <span class="fn">signal</span>(wrt);
+}
+
+<span class="fn">reader</span>() {
+    <span class="fn">wait</span>(mutex);
+    read_count++;
+    <span class="kw">if</span> (read_count == 1)
+        <span class="fn">wait</span>(wrt);     <span class="cm">// first reader locks out writers</span>
+    <span class="fn">signal</span>(mutex);
+
+    read_the_resource();
+
+    <span class="fn">wait</span>(mutex);
+    read_count--;
+    <span class="kw">if</span> (read_count == 0)
+        <span class="fn">signal</span>(wrt);   <span class="cm">// last reader lets writers in</span>
+    <span class="fn">signal</span>(mutex);
+}</pre>
+          </div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What is the Dining Philosophers problem used to illustrate?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>Five philosophers sit around a table with one fork between each pair — need two forks to eat. If every philosopher picks up their left fork at once, all wait forever for the right fork: a live illustration of <b>deadlock</b> (and, with bad fixes, starvation). Common solution: allow at most 4 philosophers to try picking up forks simultaneously, or impose an ordering (pick up lower-numbered fork first).</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============ SECTION 5 ============ -->
+    <section class="topic" id="s5">
+      <div class="topic-head"><span class="topic-num">05</span><h2>Deadlocks</h2></div>
+      <p class="topic-desc">Know the 4 conditions by name — this is asked almost every single time.</p>
+
+      <details class="qa" open>
+        <summary><span class="q-tag">mid</span> What are the 4 necessary conditions for deadlock (Coffman conditions)?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <ol>
+            <li><b>Mutual Exclusion</b> — at least one resource held in a non-shareable mode</li>
+            <li><b>Hold and Wait</b> — a process holds one resource while waiting for another</li>
+            <li><b>No Preemption</b> — a resource can't be forcibly taken away</li>
+            <li><b>Circular Wait</b> — a closed chain of processes, each waiting for a resource held by the next</li>
+          </ol>
+          <div class="key-line">All 4 must hold <b>simultaneously</b> for deadlock — breaking even one prevents it. This is the basis of every prevention technique.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> How do you handle deadlocks in an OS — name the strategies.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <ul>
+            <li><b>Prevention</b> — design the system so one of the 4 conditions can never hold</li>
+            <li><b>Avoidance</b> — allow requests only if the resulting state is "safe" (Banker's Algorithm)</li>
+            <li><b>Detection & Recovery</b> — let deadlocks happen, detect via resource-allocation graph, then kill/preempt a process</li>
+            <li><b>Ignore it</b> (Ostrich algorithm) — what most general-purpose OS like Linux/Windows actually do, since deadlocks are rare in practice</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">hard</span> Explain the Banker's Algorithm in simple terms.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>It's a deadlock-<b>avoidance</b> algorithm. Before granting a resource request, the OS pretends to grant it and checks: "if I do this, is there still some order in which every process can finish with the resources available?" If yes, the state is <b>safe</b> and the request is granted; if no, the process must wait. It needs to know the maximum resources each process might ever request in advance.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> Real-world tip: how would you avoid deadlock in your own code (e.g. with multiple locks)?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>Good practical answer: always acquire multiple locks in a fixed global order, use lock timeouts, avoid nested locking where possible, and prefer higher-level concurrency primitives over raw locks. This is a common follow-up after the theory question — mention it even if not asked.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============ SECTION 6 ============ -->
+    <section class="topic" id="s6">
+      <div class="topic-head"><span class="topic-num">06</span><h2>Memory Management</h2></div>
+      <p class="topic-desc">Paging vs segmentation and virtual memory come up constantly — know the trade-offs, not just definitions.</p>
+
+      <details class="qa" open>
+        <summary><span class="q-tag">easy</span> What's the difference between logical and physical addresses?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p><b>Logical (virtual) address</b> — generated by the CPU during program execution. <b>Physical address</b> — the actual location in RAM. The <b>MMU (Memory Management Unit)</b> translates logical to physical at runtime.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> Explain paging vs segmentation.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <table>
+            <tr><th>Paging</th><th>Segmentation</th></tr>
+            <tr><td>Fixed-size blocks (pages/frames)</td><td>Variable-size logical blocks (code, stack, heap)</td></tr>
+            <tr><td>No external fragmentation</td><td>External fragmentation possible</td></tr>
+            <tr><td>Internal fragmentation possible</td><td>No internal fragmentation</td></tr>
+            <tr><td>Invisible to the programmer</td><td>Matches how a programmer thinks about a program</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What is virtual memory and why do we need it?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>A technique that lets a process execute even if it isn't fully loaded in physical memory — it uses disk space (the swap area) to simulate extra RAM, bringing pages in on demand. This lets programs larger than physical RAM run, and lets multiple programs share memory safely and efficiently.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What is a page fault?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>It occurs when a process accesses a page that isn't currently in physical memory. The OS traps this, fetches the required page from disk into a free frame, updates the page table, and resumes the process.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">hard</span> Name the page replacement algorithms and explain Belady's Anomaly.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <ul>
+            <li><b>FIFO</b> — replace the oldest loaded page</li>
+            <li><b>LRU</b> — replace the page unused for the longest time</li>
+            <li><b>Optimal</b> — replace the page that won't be needed for the longest time in the future (theoretical benchmark, not implementable in practice)</li>
+          </ul>
+          <div class="key-line"><b>Belady's Anomaly:</b> with FIFO, increasing the number of available frames can, counter-intuitively, <b>increase</b> the number of page faults instead of decreasing them.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What is thrashing, and how do you fix it?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>Thrashing is when the system spends more time swapping pages in and out than actually executing processes — usually caused by too many processes competing for too little physical memory (over-multiprogramming). Fix: reduce the degree of multiprogramming, or use the working-set model to allocate enough frames per process.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">easy</span> Internal vs external fragmentation — and how do you fix external fragmentation?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p><b>Internal:</b> allocated memory block is slightly bigger than requested — wasted space is trapped inside the block. <b>External:</b> total free memory is enough, but it's scattered in small non-contiguous chunks, so a large request can't be satisfied. Fixed via <b>compaction</b> — shifting memory contents to merge free space into one large block.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============ SECTION 7 ============ -->
+    <section class="topic" id="s7">
+      <div class="topic-head"><span class="topic-num">07</span><h2>File Systems & I/O</h2></div>
+      <p class="topic-desc">Lower frequency than sections 2-6, but still shows up — know the allocation methods and disk scheduling names.</p>
+
+      <details class="qa" open>
+        <summary><span class="q-tag">mid</span> What are the file allocation methods on disk?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <table>
+            <tr><th>Method</th><th>Trade-off</th></tr>
+            <tr><td>Contiguous</td><td>Fast sequential/random access, but suffers external fragmentation and fixed growth limits</td></tr>
+            <tr><td>Linked</td><td>No external fragmentation, but slow random access (must traverse the chain)</td></tr>
+            <tr><td>Indexed</td><td>Good random access via an index block of pointers, but extra storage for the index itself</td></tr>
+          </table>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> Name the disk scheduling algorithms.<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p>FCFS, SSTF (Shortest Seek Time First), SCAN (elevator algorithm — sweeps end to end), C-SCAN (circular SCAN), LOOK and C-LOOK (like SCAN but only goes as far as the last request, not the disk end). All aim to minimize total seek time/head movement.</p>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">easy</span> What is spooling?<span class="chev">+</span></summary>
+        <div class="qa-body">
+          <p><b>S</b>imultaneous <b>P</b>eripheral <b>O</b>perations <b>On</b>-<b>L</b>ine — output meant for a slow device (like a printer) is buffered on disk first, so the CPU isn't blocked waiting for the slow device and can move on to other work.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ============ SECTION 8 ============ -->
+    <section class="topic" id="s8">
+      <div class="topic-head"><span class="topic-num">08</span><h2>Common "Differentiate Between" Questions</h2></div>
+      <p class="topic-desc">Infosys interviewers love this format. Answer with 2-3 crisp points, not paragraphs.</p>
+
+      <details class="qa" open>
+        <summary><span class="q-tag">mid</span> Kernel mode vs User mode?<span class="chev">+</span></summary>
+        <div class="qa-body"><p><b>Kernel mode:</b> unrestricted access to hardware, can execute privileged instructions. <b>User mode:</b> restricted — applications run here and must request OS services via <b>system calls</b> to do anything privileged (like file I/O).</p></div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">mid</span> What is a system call? Give examples.<span class="chev">+</span></summary>
+        <div class="qa-body"><p>The programmatic interface through which a user program requests a service from the OS kernel. Examples: <code>fork()</code> (create process), <code>exec()</code> (run a program), <code>read()</code>/<code>write()</code> (I/O), <code>wait()</code> (wait for child).</p></div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">hard</span> Monolithic kernel vs Microkernel?<span class="chev">+</span></summary>
+        <div class="qa-body"><p><b>Monolithic:</b> all OS services (file system, drivers, scheduler) run in kernel space — fast because there's no context switch between services, but less modular (e.g. Linux). <b>Microkernel:</b> only the bare minimum (IPC, basic scheduling, memory) runs in kernel space; everything else runs in user space as separate services — more modular and secure, but more IPC overhead (e.g. MINIX, QNX).</p></div>
+      </details>
+
+      <details class="qa">
+        <summary><span class="q-tag">easy</span> Swapping vs Paging?<span class="chev">+</span></summary>
+        <div class="qa-body"><p><b>Swapping</b> moves an entire process between RAM and disk. <b>Paging</b> moves individual fixed-size pages of a process — much more granular and efficient.</p></div>
+      </details>
+    </section>
+
+    <!-- ============ SECTION 9 ============ -->
+    <section class="topic" id="s9">
+      <div class="topic-head"><span class="topic-num">09</span><h2>Rapid Fire</h2></div>
+      <p class="topic-desc">Read this section right before you walk in. No explanations, just triggers.</p>
+
+      <div class="rapid-grid">
+        <div class="rapid-item"><b>MEMORY HIERARCHY</b>Registers &gt; Cache &gt; RAM &gt; Disk (fastest to slowest)</div>
+        <div class="rapid-item"><b>OS GOALS</b>Convenience + efficiency + ability to evolve</div>
+        <div class="rapid-item"><b>PCB LIFECYCLE</b>Created at process creation, destroyed at termination</div>
+        <div class="rapid-item"><b>DEADLOCK RULE</b>Needs all 4 Coffman conditions at once</div>
+        <div class="rapid-item"><b>VIRTUAL MEMORY</b>Lets programs bigger than RAM actually run</div>
+        <div class="rapid-item"><b>BELADY'S ANOMALY</b>More frames ≠ fewer page faults, under FIFO</div>
+        <div class="rapid-item"><b>MUTEX</b>Binary + has ownership</div>
+        <div class="rapid-item"><b>SEMAPHORE</b>Can be counting + no ownership</div>
+        <div class="rapid-item"><b>STARVATION FIX</b>Aging — priority increases the longer you wait</div>
+        <div class="rapid-item"><b>THRASHING FIX</b>Reduce multiprogramming degree / working-set model</div>
+        <div class="rapid-item"><b>COMPACTION</b>Fixes external fragmentation by merging free blocks</div>
+        <div class="rapid-item"><b>SPOOLING</b>Buffers output for slow devices, unblocks CPU</div>
+      </div>
+    </section>
+
+    <!-- ============ SECTION 10 ============ -->
+    <section class="topic" id="s10">
+      <div class="topic-head"><span class="topic-num">10</span><h2>60-Minute Revision Plan</h2></div>
+      <p class="topic-desc">If your interview is today, follow this order.</p>
+
+      <div class="plan">
+        <div class="plan-row"><span class="plan-time">0–15m</span><span>Sections 02 & 04 — Process Management + Synchronization. Re-derive the semaphore code from memory, don't just re-read it.</span></div>
+        <div class="plan-row"><span class="plan-time">15–30m</span><span>Section 05 — Deadlocks. Memorize the 4 Coffman conditions and one line on Banker's Algorithm.</span></div>
+        <div class="plan-row"><span class="plan-time">30–45m</span><span>Section 06 — Memory Management. Paging vs segmentation, virtual memory, thrashing.</span></div>
+        <div class="plan-row"><span class="plan-time">45–55m</span><span>Sections 03, 07, 08 — scheduling algorithms + file systems + the differentiate-between questions.</span></div>
+        <div class="plan-row"><span class="plan-time">55–60m</span><span>Section 09 Rapid Fire — one final skim right before you go in.</span></div>
+      </div>
+
+      <div class="key-line" style="margin-top:20px;">
+        <b>Delivery tip:</b> Lead every answer with a one-line definition, then expand. For "differentiate between X and Y" questions, structure your spoken answer as "there are 2-3 key differences" and list them — it reads as organized thinking, which matters as much as the content itself.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>compiled for infosys os interview prep · good luck</footer>
+
+</body>
+</html>
