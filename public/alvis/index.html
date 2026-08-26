@@ -393,7 +393,7 @@
         const fullUrl = `${window.location.origin}/alvis/${file.filename}`;
         return `
           <div class="file-card">
-            <a class="file-card-left" href="${fileUrl}">
+            <a class="file-card-left" href="${fileUrl}" target="_blank" rel="noopener noreferrer">
               <div class="file-icon">📄</div>
               <div class="file-info">
                 <div class="file-title" title="${escapeHtml(file.title)}">${escapeHtml(file.title)}</div>
@@ -407,7 +407,7 @@
               <button class="btn-action" onclick="copyLink('${fullUrl}', event)">
                 <span>🔗</span> Copy
               </button>
-              <a class="btn-action" href="${fileUrl}">
+              <a class="btn-action" href="${fileUrl}" target="_blank" rel="noopener noreferrer">
                 <span>Open</span> ↗
               </a>
             </div>
