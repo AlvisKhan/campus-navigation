@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Greedy Algorithms — Interview Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0D1117;
+  --bg-elev:#151B24;
+  --bg-elev-2:#1C2430;
+  --line:rgba(237,234,224,0.09);
+  --line-strong:rgba(237,234,224,0.16);
+  --gold:#E3B14E;
+  --gold-deep:#B8842E;
+  --gold-soft:rgba(227,177,78,0.14);
+  --emerald:#3FB68B;
+  --emerald-soft:rgba(63,182,139,0.14);
+  --coral:#E2574C;
+  --coral-soft:rgba(226,87,76,0.14);
+  --ink:#F4F1E8;
+  --muted:#8E97A5;
+  --muted-2:#5C6472;
+  --radius:14px;
+  --shadow: 0 20px 50px -20px rgba(0,0,0,0.6);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  margin:0 0 0.4em 0;
+  letter-spacing:-0.01em;
+}
+p{margin:0 0 1em 0;color:var(--ink);}
+a{color:var(--gold);}
+::selection{background:var(--gold);color:#1a1408;}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px;}
+
+/* ---------- progress bar ---------- */
+#progressBar{
+  position:fixed;top:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg,var(--gold-deep),var(--gold));
+  z-index:9999;transition:width 0.1s linear;
+}
+
+/* ---------- top nav ---------- */
+.topnav{
+  position:sticky;top:0;z-index:1000;
+  background:rgba(13,17,23,0.86);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:10px 16px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.topnav::-webkit-scrollbar{display:none;}
+.topnav .brand{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  color:var(--gold);
+  font-size:15px;
+  white-space:nowrap;
+  padding-right:14px;
+  margin-right:8px;
+  border-right:1px solid var(--line);
+  display:flex;align-items:center;gap:6px;
+}
+.topnav .brand svg{width:16px;height:16px;flex-shrink:0;}
+.pill{
+  white-space:nowrap;
+  padding:7px 13px;
+  border-radius:999px;
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid transparent;
+  cursor:pointer;
+  transition:all 0.2s ease;
+  font-family:'Inter',sans-serif;
+}
+.pill:hover{color:var(--ink);border-color:var(--line-strong);}
+.pill.active{
+  color:#1a1408;
+  background:var(--gold);
+  font-weight:600;
+}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;
+  min-height:88vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:80px 20px 60px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(227,177,78,0.10), transparent 55%),
+    var(--bg);
+}
+.hero::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:radial-gradient(rgba(237,234,224,0.06) 1px, transparent 1px);
+  background-size:26px 26px;
+  mask-image:radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:26px;height:1px;background:var(--gold-deep);}
+.hero h1{
+  font-size:clamp(2.4rem,7vw,4.6rem);
+  line-height:1.02;
+  max-width:16ch;
+  margin-bottom:0.3em;
+}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero p.sub{
+  font-size:clamp(1rem,2vw,1.2rem);
+  color:var(--muted);
+  max-width:46ch;
+  margin-bottom:36px;
+}
+.hero-cta{
+  display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+}
+.btn{
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  padding:13px 24px;
+  border-radius:999px;
+  border:1px solid var(--line-strong);
+  background:transparent;
+  color:var(--ink);
+  cursor:pointer;
+  transition:all 0.2s ease;
+  min-height:44px;
+}
+.btn.primary{background:var(--gold);color:#1a1408;border-color:var(--gold);}
+.btn.primary:hover{background:#f0c26a;transform:translateY(-1px);}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn:disabled{opacity:0.35;cursor:not-allowed;transform:none !important;}
+.btn.secondary:hover{color:var(--ink);border-color:var(--line-strong);}
+
+/* coin stack visual */
+.coin-stage{
+  position:relative;
+  width:min(420px,80vw);
+  height:150px;
+  margin:0 auto 10px;
+}
+.coin{
+  position:absolute;
+  left:50%;
+  width:64px;height:64px;
+  border-radius:50%;
+  background:radial-gradient(circle at 32% 28%, #fbe4a4, var(--gold) 55%, var(--gold-deep) 100%);
+  box-shadow:0 8px 18px -6px rgba(0,0,0,0.55), inset 0 -4px 6px rgba(0,0,0,0.25), inset 0 3px 4px rgba(255,255,255,0.4);
+  transform:translateX(-50%) translateY(-140px);
+  animation:coinDrop 2.2s cubic-bezier(.36,1.55,.5,1) forwards;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-weight:700;color:#7a5715;font-size:20px;
+}
+.coin::after{
+  content:'';position:absolute;inset:5px;border-radius:50%;border:1.5px dashed rgba(122,87,21,0.35);
+}
+.coin.c1{bottom:0px;   animation-delay:0.1s;}
+.coin.c2{bottom:26px;  animation-delay:0.5s; width:58px;height:58px;}
+.coin.c3{bottom:50px;  animation-delay:0.9s; width:52px;height:52px;}
+.coin.c4{bottom:70px;  animation-delay:1.3s; width:46px;height:46px;}
+@keyframes coinDrop{
+  0%{transform:translateX(-50%) translateY(-160px) rotate(-8deg);opacity:0;}
+  60%{opacity:1;}
+  100%{transform:translateX(-50%) translateY(0) rotate(0deg);opacity:1;}
+}
+
+/* ---------- layout ---------- */
+main{max-width:1120px;margin:0 auto;padding:0 20px;}
+section{padding:90px 0;border-bottom:1px solid var(--line);}
+section:last-of-type{border-bottom:none;}
+.section-head{max-width:680px;margin-bottom:44px;}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:12px;
+}
+.section-head h2{font-size:clamp(1.7rem,4vw,2.5rem);}
+.section-head p{color:var(--muted);font-size:1.02rem;max-width:60ch;}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease, transform 0.7s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+/* concept grid */
+.concept-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;}
+.concept-analogy{
+  background:var(--bg-elev);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:26px;
+}
+.concept-analogy .row{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;}
+.concept-analogy .row:last-child{margin-bottom:0;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);margin-top:8px;flex-shrink:0;}
+.concept-analogy strong{color:var(--gold);}
+
+.defcard{
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;margin-bottom:14px;
+}
+.defcard h4{font-size:1.05rem;color:var(--ink);display:flex;gap:10px;align-items:center;}
+.defcard h4 .tag{
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);
+  border:1px solid var(--gold-deep);border-radius:5px;padding:2px 6px;
+}
+.defcard p{color:var(--muted);font-size:0.94rem;margin:0;}
+
+/* decision table */
+.vs-wrap{display:grid;grid-template-columns:1fr;gap:2px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+.vs-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;background:var(--bg-elev);}
+.vs-row.head{background:var(--bg-elev-2);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+.vs-row > div{padding:16px 18px;font-size:0.92rem;}
+.vs-row.head > div{padding:12px 18px;}
+.vs-row > div:first-child{color:var(--ink);font-weight:600;font-family:'Inter';}
+.vs-row:not(.head) > div:nth-child(2){color:var(--emerald);}
+.vs-row:not(.head) > div:nth-child(3){color:var(--coral);}
+
+.exchange-box{
+  margin-top:28px;background:var(--gold-soft);border:1px solid rgba(227,177,78,0.35);
+  border-radius:var(--radius);padding:22px 24px;
+}
+.exchange-box .eyebrow{margin-bottom:8px;}
+.exchange-box p{color:var(--ink);opacity:0.9;font-size:0.95rem;margin:0;}
+
+/* pattern checklist */
+.pattern-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.pattern-card{
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;transition:border-color 0.25s ease, transform 0.25s ease;
+}
+.pattern-card:hover{border-color:var(--gold-deep);transform:translateY(-3px);}
+.pattern-card .num{
+  font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:12px;margin-bottom:10px;display:block;
+}
+.pattern-card h4{font-size:1rem;margin-bottom:6px;}
+.pattern-card p{font-size:0.88rem;color:var(--muted);margin:0;}
+
+/* problem deep-dive */
+.problem{padding:90px 0;border-bottom:1px solid var(--line);}
+.problem-header{display:flex;align-items:baseline;gap:16px;margin-bottom:10px;flex-wrap:wrap;}
+.problem-index{font-family:'JetBrains Mono',monospace;color:var(--gold-deep);font-size:14px;}
+.problem-header h2{font-size:clamp(1.6rem,3.6vw,2.2rem);margin:0;}
+.badge{
+  font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 10px;border-radius:999px;
+  border:1px solid var(--line-strong);color:var(--muted);
+}
+.badge.time{color:var(--emerald);border-color:rgba(63,182,139,0.35);}
+.statement{color:var(--muted);max-width:66ch;margin-bottom:36px;font-size:1rem;}
+
+.workbench{
+  display:grid;grid-template-columns:1.15fr 0.85fr;gap:24px;
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:16px;
+  padding:26px;margin-bottom:26px;
+}
+.viz-panel{min-height:260px;display:flex;flex-direction:column;}
+.viz-panel svg{width:100%;height:auto;overflow:visible;}
+.viz-controls{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap;}
+.viz-controls .btn{padding:10px 18px;font-size:13px;}
+.step-counter{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-left:auto;}
+
+.explain-panel{
+  background:var(--bg-elev-2);border:1px solid var(--line);border-radius:12px;padding:18px 20px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.explain-log{
+  font-size:0.88rem;color:var(--muted);
+  max-height:220px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:8px;
+  padding-right:4px;
+}
+.explain-log::-webkit-scrollbar{width:5px;}
+.explain-log::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:4px;}
+.log-line{
+  display:flex;gap:8px;padding:8px 10px;border-radius:8px;background:var(--bg-elev);
+  border-left:2px solid var(--muted-2);animation:fadeIn 0.35s ease;
+  font-size:0.85rem;line-height:1.4;
+}
+.log-line.accept{border-left-color:var(--emerald);color:var(--ink);}
+.log-line.reject{border-left-color:var(--coral);color:var(--ink);}
+.log-line.info{border-left-color:var(--gold);}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
+.metric-row{display:flex;gap:10px;flex-wrap:wrap;}
+.metric{
+  flex:1;min-width:100px;background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;
+}
+.metric .label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);}
+.metric .value{font-family:'Fraunces',serif;font-size:1.5rem;color:var(--gold);font-weight:600;}
+
+/* code block */
+.code-block{
+  background:#0A0E13;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+}
+.code-block .code-head{
+  display:flex;align-items:center;gap:8px;padding:10px 16px;
+  border-bottom:1px solid var(--line);background:var(--bg-elev-2);
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);
+}
+.code-dots{display:flex;gap:5px;margin-right:6px;}
+.code-dots span{width:8px;height:8px;border-radius:50%;background:var(--line-strong);}
+.code-block pre{margin:0;padding:18px 20px;overflow-x:auto;}
+.code-block code{
+  font-family:'JetBrains Mono',monospace;font-size:12.6px;line-height:1.65;color:#c7cdd6;white-space:pre;
+}
+.tok-kw{color:#E3B14E;}
+.tok-type{color:#7FB6E8;}
+.tok-string{color:#8FCB8B;}
+.tok-comment{color:#5C6472;font-style:italic;}
+.tok-number{color:#E29B5C;}
+.tok-func{color:#D9A5E0;}
+
+.tip{
+  display:flex;gap:12px;background:var(--emerald-soft);border:1px solid rgba(63,182,139,0.3);
+  border-radius:12px;padding:16px 18px;margin-top:20px;font-size:0.9rem;
+}
+.tip .icon{color:var(--emerald);flex-shrink:0;font-size:16px;}
+.tip.warn{background:var(--coral-soft);border-color:rgba(226,87,76,0.3);}
+.tip.warn .icon{color:var(--coral);}
+
+/* coin change specific */
+.toggle-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.toggle-btn{
+  padding:9px 16px;border-radius:10px;border:1px solid var(--line-strong);background:var(--bg-elev-2);
+  color:var(--muted);font-size:12.5px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all 0.2s ease;
+}
+.toggle-btn.active{border-color:var(--gold);color:var(--gold);background:var(--gold-soft);}
+.verdict{
+  margin-top:16px;padding:14px 16px;border-radius:10px;font-size:0.88rem;
+  display:flex;gap:10px;align-items:flex-start;
+}
+.verdict.ok{background:var(--emerald-soft);border:1px solid rgba(63,182,139,0.35);color:var(--ink);}
+.verdict.bad{background:var(--coral-soft);border:1px solid rgba(226,87,76,0.35);color:var(--ink);}
+
+/* reference table */
+.ref-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);}
+table.ref-table{width:100%;border-collapse:collapse;min-width:640px;}
+table.ref-table th{
+  text-align:left;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--muted);background:var(--bg-elev-2);padding:14px 18px;border-bottom:1px solid var(--line);
+}
+table.ref-table td{padding:14px 18px;border-bottom:1px solid var(--line);font-size:0.9rem;color:var(--ink);}
+table.ref-table tr:last-child td{border-bottom:none;}
+table.ref-table tr:hover td{background:rgba(227,177,78,0.04);}
+.difficulty{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 9px;border-radius:999px;}
+.difficulty.easy{color:var(--emerald);border:1px solid rgba(63,182,139,0.35);}
+.difficulty.medium{color:var(--gold);border:1px solid rgba(227,177,78,0.35);}
+.difficulty.hard{color:var(--coral);border:1px solid rgba(226,87,76,0.35);}
+
+/* cheatsheet */
+.cheat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.cheat-card{
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;
+}
+.cheat-card h4{font-size:1rem;color:var(--gold);margin-bottom:10px;}
+.cheat-card ul{margin:0;padding-left:18px;color:var(--muted);font-size:0.9rem;}
+.cheat-card li{margin-bottom:6px;}
+.cheat-card li::marker{color:var(--gold-deep);}
+
+footer{
+  padding:50px 20px 70px;text-align:center;color:var(--muted-2);font-size:0.85rem;
+  font-family:'JetBrains Mono',monospace;
+}
+footer .coin-mini{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--gold);vertical-align:middle;margin:0 4px;}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .concept-grid{grid-template-columns:1fr;}
+  .workbench{grid-template-columns:1fr;}
+  .pattern-grid{grid-template-columns:1fr 1fr;}
+  .cheat-grid{grid-template-columns:1fr;}
+  .vs-row{grid-template-columns:1fr;}
+  .vs-row > div:first-child{background:var(--bg-elev-2);font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;color:var(--gold);padding-bottom:6px;}
+}
+@media (max-width:600px){
+  section, .problem{padding:60px 0;}
+  .pattern-grid{grid-template-columns:1fr;}
+  .hero{min-height:76vh;padding:70px 16px 40px;}
+  .metric-row{flex-direction:row;}
+  main{padding:0 16px;}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important;}
+}
+</style>
+</head>
+<body>
+
+<div id="progressBar"></div>
+
+<nav class="topnav" id="topnav">
+  <span class="brand"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#E3B14E"/></svg>Greedy</span>
+  <button class="pill" data-target="concept">Concept</button>
+  <button class="pill" data-target="decision">Does it work?</button>
+  <button class="pill" data-target="patterns">Patterns</button>
+  <button class="pill" data-target="activity">Activity Selection</button>
+  <button class="pill" data-target="knapsack">Knapsack</button>
+  <button class="pill" data-target="huffman">Huffman</button>
+  <button class="pill" data-target="coinchange">Coin Change</button>
+  <button class="pill" data-target="jobseq">Job Sequencing</button>
+  <button class="pill" data-target="reference">Problem Bank</button>
+  <button class="pill" data-target="cheatsheet">Cheat Sheet</button>
+</nav>
+
+<header class="hero" id="hero">
+  <div class="coin-stage" aria-hidden="true">
+    <div class="coin c4">¢</div>
+    <div class="coin c3">¢</div>
+    <div class="coin c2">¢</div>
+    <div class="coin c1">¢</div>
+  </div>
+  <div class="hero-eyebrow">Interview Field Guide</div>
+  <h1>Take the best coin <em>right now</em> — worry about the rest later.</h1>
+  <p class="sub">A hands-on, visual walkthrough of greedy algorithms: when the locally best choice actually leads to a globally optimal answer, when it doesn't, and how to spot the difference in an interview.</p>
+  <div class="hero-cta">
+    <button class="btn primary" onclick="document.getElementById('concept').scrollIntoView({behavior:'smooth'})">Start learning</button>
+    <button class="btn secondary" onclick="document.getElementById('reference').scrollIntoView({behavior:'smooth'})">Jump to problem bank</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- CONCEPT -->
+  <section id="concept">
+    <div class="section-head reveal">
+      <div class="eyebrow">01 — The Idea</div>
+      <h2>What actually makes an algorithm "greedy"?</h2>
+      <p>At every step, a greedy algorithm makes the choice that looks best <em>right now</em> — without reconsidering it later — and hopes that a sequence of good local choices adds up to a good global result. It never backtracks.</p>
+    </div>
+    <div class="concept-grid reveal">
+      <div class="concept-analogy">
+        <div class="row"><span class="dot"></span><div><strong>Making change</strong> — you owe someone 67¢. You grab the biggest coin that still fits (a quarter), then the next biggest, and so on. You never once reconsider an earlier coin.</div></div>
+        <div class="row"><span class="dot"></span><div><strong>Packing a bag by value density</strong> — you grab the item worth the most per kilogram first, and keep going until you run out of room.</div></div>
+        <div class="row"><span class="dot"></span><div><strong>Scheduling</strong> — of all the meetings still available, you always book the one that frees your calendar up soonest.</div></div>
+      </div>
+      <div>
+        <div class="defcard">
+          <h4><span class="tag">1</span> Greedy-choice property</h4>
+          <p>A globally optimal solution can be reached by choosing the locally optimal option at each step — you never have to look back and undo a choice.</p>
+        </div>
+        <div class="defcard">
+          <h4><span class="tag">2</span> Optimal substructure</h4>
+          <p>An optimal solution to the full problem contains optimal solutions to its subproblems. (Greedy shares this property with Dynamic Programming.)</p>
+        </div>
+        <div class="defcard">
+          <h4><span class="tag">3</span> No backtracking</h4>
+          <p>This is what makes greedy fast — usually O(n log n), dominated by a sort — but it's also exactly why it fails on problems that don't have property #1.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECISION -->
+  <section id="decision">
+    <div class="section-head reveal">
+      <div class="eyebrow">02 — The Interview Question Behind The Question</div>
+      <h2>Greedy, or dynamic programming?</h2>
+      <p>This is the real decision an interviewer is testing. Both need optimal substructure — the split is the greedy-choice property.</p>
+    </div>
+    <div class="vs-wrap reveal">
+      <div class="vs-row head"><div>Signal</div><div>Greedy tends to work</div><div>You probably need DP</div></div>
+      <div class="vs-row"><div>Choice reversibility</div><div>A choice, once made, is never revisited</div><div>An early choice might need to be undone later</div></div>
+      <div class="vs-row"><div>Subproblem overlap</div><div>Each step shrinks to one clean remaining subproblem</div><div>Subproblems overlap and get recomputed</div></div>
+      <div class="vs-row"><div>Proof style</div><div>Exchange argument holds (swap in the greedy choice, solution doesn't get worse)</div><div>You can build a counterexample where greedy loses to another order</div></div>
+      <div class="vs-row"><div>Typical complexity</div><div>O(n log n) — sort, then one linear pass</div><div>O(n·k) or O(n²) — a table of subproblem answers</div></div>
+      <div class="vs-row"><div>Classic tell</div><div>"Maximum non-overlapping…", "minimum coins (canonical)…", "assign / schedule to minimize/maximize…"</div><div>"Count the ways…", "minimum over all combinations…", denominations not guaranteed canonical</div></div>
+    </div>
+    <div class="exchange-box reveal">
+      <div class="eyebrow">The exchange argument, in one breath</div>
+      <p>To prove greedy is correct, take <em>any</em> optimal solution that disagrees with the greedy choice at step 1, and show you can swap the greedy choice into it without making it worse. If that swap always works, greedy is provably optimal — that's the proof interviewers actually want to hear, even in one sentence.</p>
+    </div>
+  </section>
+
+  <!-- PATTERNS -->
+  <section id="patterns">
+    <div class="section-head reveal">
+      <div class="eyebrow">03 — Pattern Recognition</div>
+      <h2>Six shapes greedy problems come in</h2>
+      <p>Most interview greedy problems reduce to one of these. Recognize the shape, recall the sort key.</p>
+    </div>
+    <div class="pattern-grid reveal">
+      <div class="pattern-card"><span class="num">01</span><h4>Interval scheduling</h4><p>Sort by end time. Take an interval if it starts after the last one you took ends.</p></div>
+      <div class="pattern-card"><span class="num">02</span><h4>Ratio maximization</h4><p>Sort by value-per-unit-cost. Take the highest ratio first until you're out of budget.</p></div>
+      <div class="pattern-card"><span class="num">03</span><h4>Merging by frequency</h4><p>Repeatedly combine the two smallest weights first (priority queue). Huffman coding, connecting ropes.</p></div>
+      <div class="pattern-card"><span class="num">04</span><h4>Deadline / slot assignment</h4><p>Sort by value descending, place each item in the latest free slot it still qualifies for.</p></div>
+      <div class="pattern-card"><span class="num">05</span><h4>Two-pointer trade-off</h4><p>Sort ascending and descending together — pairing smallest-with-largest. Boat capacity, candy distribution.</p></div>
+      <div class="pattern-card"><span class="num">06</span><h4>Running feasibility</h4><p>Track a running resource (fuel, balance) left-to-right; greedily refuel/reset only when it goes negative.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ PROBLEM 1: ACTIVITY SELECTION ============ -->
+  <section class="problem" id="activity">
+    <div class="reveal">
+      <div class="problem-header">
+        <span class="problem-index">Pattern 01</span>
+        <h2>Activity Selection</h2>
+        <span class="badge time">O(n log n)</span>
+        <span class="badge">Interval Scheduling</span>
+      </div>
+      <p class="statement">Given n activities with start and finish times, select the maximum number of activities that don't overlap. <strong style="color:var(--ink)">Greedy rule: sort by finish time, always take the next activity that starts after the current one finishes.</strong></p>
+
+      <div class="workbench">
+        <div class="viz-panel">
+          <svg id="actSvg" viewBox="0 0 760 380" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="viz-controls">
+            <button class="btn secondary" id="actReset">Reset</button>
+            <button class="btn primary" id="actNext">Next activity →</button>
+            <span class="step-counter" id="actCounter">0 / 11 processed</span>
+          </div>
+        </div>
+        <div class="explain-panel">
+          <div class="metric-row">
+            <div class="metric"><div class="label">Selected</div><div class="value" id="actSelected">0</div></div>
+            <div class="metric"><div class="label">Rejected</div><div class="value" id="actRejected">0</div></div>
+            <div class="metric"><div class="label">Last finish</div><div class="value" id="actLastFinish">—</div></div>
+          </div>
+          <div class="explain-log" id="actLog">
+            <div class="log-line info">Sorted by finish time. Click <strong>Next activity</strong> to walk through the greedy pass.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-head"><span class="code-dots"><span></span><span></span><span></span></span>activity_selection.cpp</div>
+        <pre><code class="cpp-code" data-code="activity"></code></pre>
+      </div>
+      <div class="tip"><span class="icon">✓</span><div><strong>Why sort by finish, not start or duration?</strong> Finishing earliest always leaves the most room for future activities — that's the exchange argument: any optimal solution can be rewritten to start with the earliest-finishing activity without losing anything.</div></div>
+    </div>
+  </section>
+
+  <!-- ============ PROBLEM 2: FRACTIONAL KNAPSACK ============ -->
+  <section class="problem" id="knapsack">
+    <div class="reveal">
+      <div class="problem-header">
+        <span class="problem-index">Pattern 02</span>
+        <h2>Fractional Knapsack</h2>
+        <span class="badge time">O(n log n)</span>
+        <span class="badge">Ratio Maximization</span>
+      </div>
+      <p class="statement">Given items with weight and value, and a knapsack of capacity W, maximize total value — items can be split into fractions. <strong style="color:var(--ink)">Greedy rule: sort by value/weight ratio descending, take as much of the best ratio as will fit.</strong> (Note: the <em>0/1</em> version, where items can't be split, needs DP instead — this is the classic trap.)</p>
+
+      <div class="workbench">
+        <div class="viz-panel">
+          <svg id="kpSvg" viewBox="0 0 760 300" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="viz-controls">
+            <button class="btn secondary" id="kpReset">Reset</button>
+            <button class="btn primary" id="kpNext">Add next item →</button>
+            <span class="step-counter" id="kpCounter">Capacity used: 0 / 50</span>
+          </div>
+        </div>
+        <div class="explain-panel">
+          <div class="metric-row">
+            <div class="metric"><div class="label">Value so far</div><div class="value" id="kpValue">0.0</div></div>
+            <div class="metric"><div class="label">Capacity left</div><div class="value" id="kpCap">50</div></div>
+          </div>
+          <div class="explain-log" id="kpLog">
+            <div class="log-line info">Items sorted by ratio: Item 1 (6/kg), Item 2 (5/kg), Item 3 (4/kg).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-head"><span class="code-dots"><span></span><span></span><span></span></span>fractional_knapsack.cpp</div>
+        <pre><code class="cpp-code" data-code="knapsack"></code></pre>
+      </div>
+      <div class="tip"><span class="icon">✓</span><div>Because fractions are allowed, taking the highest-ratio item first can never be beaten — any swap that reduces how much of it you take strictly lowers total value. That's why fractional knapsack is greedy-safe while 0/1 knapsack is not.</div></div>
+    </div>
+  </section>
+
+  <!-- ============ PROBLEM 3: HUFFMAN CODING ============ -->
+  <section class="problem" id="huffman">
+    <div class="reveal">
+      <div class="problem-header">
+        <span class="problem-index">Pattern 03</span>
+        <h2>Huffman Coding</h2>
+        <span class="badge time">O(n log n)</span>
+        <span class="badge">Merge by Frequency</span>
+      </div>
+      <p class="statement">Build a prefix-free binary code that minimizes total encoded length, given character frequencies. <strong style="color:var(--ink)">Greedy rule: repeatedly pull the two lowest-frequency nodes from a min-heap and merge them into a new parent node.</strong></p>
+
+      <div class="workbench">
+        <div class="viz-panel">
+          <svg id="hufSvg" viewBox="0 0 760 320" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="viz-controls">
+            <button class="btn secondary" id="hufReset">Reset</button>
+            <button class="btn primary" id="hufNext">Merge two smallest →</button>
+            <span class="step-counter" id="hufCounter">0 / 5 merges</span>
+          </div>
+        </div>
+        <div class="explain-panel">
+          <div class="metric-row">
+            <div class="metric"><div class="label">Nodes left</div><div class="value" id="hufNodes">6</div></div>
+            <div class="metric"><div class="label">Tree cost so far</div><div class="value" id="hufCost">0</div></div>
+          </div>
+          <div class="explain-log" id="hufLog">
+            <div class="log-line info">Leaves: a:5, b:9, c:12, d:13, e:16, f:45 — classic CLRS example.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="hufCodeTable" style="display:none;margin-bottom:22px;">
+        <div class="ref-table-wrap">
+          <table class="ref-table">
+            <thead><tr><th>Char</th><th>Frequency</th><th>Code</th><th>Bits used</th></tr></thead>
+            <tbody id="hufCodeBody"></tbody>
+          </table>
+        </div>
+        <div class="tip" style="margin-top:16px;"><span class="icon">✓</span><div>Fixed-length encoding would need <strong>3 bits × 100 = 300 bits</strong>. Huffman's variable-length code (frequent letters get shorter codes) totals only <strong id="hufSavings">224 bits</strong> — roughly 25% smaller, with zero ambiguity because no code is a prefix of another.</div></div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-head"><span class="code-dots"><span></span><span></span><span></span></span>huffman_coding.cpp</div>
+        <pre><code class="cpp-code" data-code="huffman"></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROBLEM 4: COIN CHANGE ============ -->
+  <section class="problem" id="coinchange">
+    <div class="reveal">
+      <div class="problem-header">
+        <span class="problem-index">Pattern 04</span>
+        <h2>Coin Change — where greedy can break</h2>
+        <span class="badge time">O(amount)</span>
+        <span class="badge">Interview trap</span>
+      </div>
+      <p class="statement">Make change for a target amount using the fewest coins. <strong style="color:var(--ink)">Greedy rule: always take the largest coin that still fits.</strong> This only gives the optimal answer for <em>canonical</em> coin systems (like most real currencies) — it can silently fail otherwise, which is exactly why interviewers love this question.</p>
+
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="ccUS">US coins {25, 10, 5, 1} — target 63</button>
+        <button class="toggle-btn" id="ccBad">Denominations {4, 3, 1} — target 6</button>
+      </div>
+
+      <div class="workbench">
+        <div class="viz-panel">
+          <svg id="ccSvg" viewBox="0 0 760 220" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="viz-controls">
+            <button class="btn secondary" id="ccReset">Reset</button>
+            <button class="btn primary" id="ccNext">Take next coin →</button>
+            <span class="step-counter" id="ccCounter">Remaining: 63</span>
+          </div>
+        </div>
+        <div class="explain-panel">
+          <div class="metric-row">
+            <div class="metric"><div class="label">Coins used</div><div class="value" id="ccCount">0</div></div>
+            <div class="metric"><div class="label">Optimal count</div><div class="value" id="ccOptimal">6</div></div>
+          </div>
+          <div class="explain-log" id="ccLog">
+            <div class="log-line info">Target 63 with {25,10,5,1}. Watch the greedy picks.</div>
+          </div>
+          <div class="verdict ok" id="ccVerdict">✓ Greedy matches optimal here — this coin system is canonical.</div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-head"><span class="code-dots"><span></span><span></span><span></span></span>coin_change_greedy.cpp</div>
+        <pre><code class="cpp-code" data-code="coinchange"></code></pre>
+      </div>
+      <div class="tip warn"><span class="icon">⚠</span><div><strong>Interview move:</strong> if the problem doesn't explicitly guarantee a canonical coin system, say so out loud, give the {4,3,1} counterexample, and fall back to O(amount × coins) DP for a guaranteed-optimal answer.</div></div>
+    </div>
+  </section>
+
+  <!-- ============ PROBLEM 5: JOB SEQUENCING ============ -->
+  <section class="problem" id="jobseq">
+    <div class="reveal">
+      <div class="problem-header">
+        <span class="problem-index">Pattern 04</span>
+        <h2>Job Sequencing with Deadlines</h2>
+        <span class="badge time">O(n²) / O(n log n) w/ DSU</span>
+        <span class="badge">Slot Assignment</span>
+      </div>
+      <p class="statement">Each job takes one unit of time, has a deadline, and earns a profit if completed by that deadline. Maximize total profit. <strong style="color:var(--ink)">Greedy rule: sort jobs by profit descending, schedule each one in the latest free slot at or before its deadline.</strong></p>
+
+      <div class="workbench">
+        <div class="viz-panel">
+          <svg id="jsSvg" viewBox="0 0 760 260" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="viz-controls">
+            <button class="btn secondary" id="jsReset">Reset</button>
+            <button class="btn primary" id="jsNext">Process next job →</button>
+            <span class="step-counter" id="jsCounter">0 / 5 jobs</span>
+          </div>
+        </div>
+        <div class="explain-panel">
+          <div class="metric-row">
+            <div class="metric"><div class="label">Total profit</div><div class="value" id="jsProfit">0</div></div>
+            <div class="metric"><div class="label">Slots filled</div><div class="value" id="jsSlots">0 / 3</div></div>
+          </div>
+          <div class="explain-log" id="jsLog">
+            <div class="log-line info">Jobs sorted by profit: J1(100,d2), J3(27,d2), J4(25,d1), J2(19,d1), J5(15,d3).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-head"><span class="code-dots"><span></span><span></span><span></span></span>job_sequencing.cpp</div>
+        <pre><code class="cpp-code" data-code="jobseq"></code></pre>
+      </div>
+      <div class="tip"><span class="icon">✓</span><div>Placing each job as <em>late</em> as possible (not the first free slot) is the key trick — it preserves early slots for jobs with tighter deadlines that haven't been processed yet.</div></div>
+    </div>
+  </section>
+
+  <!-- REFERENCE -->
+  <section id="reference">
+    <div class="section-head reveal">
+      <div class="eyebrow">04 — Problem Bank</div>
+      <h2>Greedy problems that show up in interviews</h2>
+      <p>Sorted roughly by how often they appear. Sort key is the part worth memorizing.</p>
+    </div>
+    <div class="ref-table-wrap reveal">
+      <table class="ref-table">
+        <thead><tr><th>Problem</th><th>Greedy sort key</th><th>Difficulty</th><th>Complexity</th></tr></thead>
+        <tbody>
+          <tr><td>Merge Intervals</td><td>Sort by start time</td><td><span class="difficulty medium">Medium</span></td><td>O(n log n)</td></tr>
+          <tr><td>Non-overlapping Intervals</td><td>Sort by end time</td><td><span class="difficulty medium">Medium</span></td><td>O(n log n)</td></tr>
+          <tr><td>Minimum Platforms / Meeting Rooms II</td><td>Sort starts & ends separately, two-pointer</td><td><span class="difficulty medium">Medium</span></td><td>O(n log n)</td></tr>
+          <tr><td>Jump Game II</td><td>Track farthest reachable index greedily</td><td><span class="difficulty medium">Medium</span></td><td>O(n)</td></tr>
+          <tr><td>Gas Station</td><td>Running tank total, reset start on deficit</td><td><span class="difficulty medium">Medium</span></td><td>O(n)</td></tr>
+          <tr><td>Task Scheduler</td><td>Max-heap by remaining frequency</td><td><span class="difficulty medium">Medium</span></td><td>O(n log k)</td></tr>
+          <tr><td>Assign Cookies</td><td>Sort both arrays, two-pointer match</td><td><span class="difficulty easy">Easy</span></td><td>O(n log n)</td></tr>
+          <tr><td>Candy Distribution</td><td>Two passes, left-to-right then right-to-left</td><td><span class="difficulty hard">Hard</span></td><td>O(n)</td></tr>
+          <tr><td>Boats to Save People</td><td>Sort weights, two-pointer pair heaviest+lightest</td><td><span class="difficulty medium">Medium</span></td><td>O(n log n)</td></tr>
+          <tr><td>Huffman Coding</td><td>Min-heap, merge two smallest</td><td><span class="difficulty hard">Hard</span></td><td>O(n log n)</td></tr>
+          <tr><td>Minimum Spanning Tree (Kruskal's / Prim's)</td><td>Sort edges by weight / grow from cut</td><td><span class="difficulty hard">Hard</span></td><td>O(E log V)</td></tr>
+          <tr><td>Dijkstra's Shortest Path</td><td>Always expand the closest unvisited node</td><td><span class="difficulty hard">Hard</span></td><td>O(E log V)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CHEATSHEET -->
+  <section id="cheatsheet">
+    <div class="section-head reveal">
+      <div class="eyebrow">05 — Before You Walk In</div>
+      <h2>The 60-second cheat sheet</h2>
+    </div>
+    <div class="cheat-grid reveal">
+      <div class="cheat-card">
+        <h4>How to recognize a greedy problem</h4>
+        <ul>
+          <li>Words like "maximum non-overlapping", "minimum number of…", "earliest / latest"</li>
+          <li>A natural sort key jumps out (finish time, ratio, deadline, profit)</li>
+          <li>Each decision, once made, never needs to be revisited</li>
+        </ul>
+      </div>
+      <div class="cheat-card">
+        <h4>How to justify it out loud</h4>
+        <ul>
+          <li>State the greedy rule in one sentence</li>
+          <li>Give the exchange-argument intuition (swap greedy choice into any optimal solution)</li>
+          <li>Name the complexity — usually dominated by the initial sort</li>
+        </ul>
+      </div>
+      <div class="cheat-card">
+        <h4>Red flags that greedy will fail</h4>
+        <ul>
+          <li>Items can't be split (0/1 constraint) but you were about to sort by ratio</li>
+          <li>Coin/denomination set isn't stated as canonical</li>
+          <li>You can construct a counterexample where reordering beats greedy</li>
+        </ul>
+      </div>
+      <div class="cheat-card">
+        <h4>Fallback when greedy doesn't hold</h4>
+        <ul>
+          <li>Dynamic programming — define the subproblem, find the recurrence</li>
+          <li>Check optimal substructure still holds even if greedy-choice doesn't</li>
+          <li>Say this explicitly — recognizing the failure is the point being tested</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Greedy Algorithms Field Guide<span class="coin-mini"></span>built for interview prep — walk through every visualizer at least twice.
+</footer>
+
+<script>
+/* ============================================================
+   SCROLL PROGRESS + NAV SCROLLSPY + REVEAL
+   ============================================================ */
+(function(){
+  const bar = document.getElementById('progressBar');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    bar.style.width = scrolled + '%';
+  }, {passive:true});
+
+  const pills = Array.from(document.querySelectorAll('.pill'));
+  pills.forEach(p => p.addEventListener('click', () => {
+    const el = document.getElementById(p.dataset.target);
+    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }));
+  const targets = pills.map(p => document.getElementById(p.dataset.target)).filter(Boolean);
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        const id = en.target.id;
+        pills.forEach(p => p.classList.toggle('active', p.dataset.target === id));
+      }
+    });
+  }, {rootMargin:'-40% 0px -50% 0px'});
+  targets.forEach(t => spy.observe(t));
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const ro = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); ro.unobserve(en.target); } });
+  }, {threshold:0.12});
+  revealEls.forEach(el => ro.observe(el));
+})();
+
+/* ============================================================
+   C++ SYNTAX HIGHLIGHTING (lightweight)
+   ============================================================ */
+function highlightCpp(src){
+  let s = src.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const keywords = ['struct','bool','int','double','float','void','auto','return','if','else','for','while','break','continue',
+    'using','namespace','std','vector','pair','priority_queue','sort','push','pop','top','size','min','max','rbegin','rend',
+    'begin','end','new','nullptr','char','long','const','static','template','typename','operator','class','public','private','string'];
+  const kwRe = new RegExp('\\b(' + keywords.join('|') + ')\\b','g');
+  s = s.replace(kwRe, '<span class=\'tok-kw\'>$1</span>');
+  s = s.replace(/\b(\d+\.?\d*)\b/g, '<span class=\'tok-number\'>$1</span>');
+  s = s.replace(/(".*?")/g, '<span class=\'tok-string\'>$1</span>');
+  s = s.replace(/(\/\/.*$)/gm, '<span class=\'tok-comment\'>$1</span>');
+  return s;
+}
+
+const CODE = {
+activity:
+`// Activity Selection — O(n log n)
+struct Activity { int start, finish; };
+
+bool cmp(Activity a, Activity b) {
+    return a.finish < b.finish;
+}
+
+vector<Activity> selectActivities(vector<Activity>& acts) {
+    sort(acts.begin(), acts.end(), cmp);
+    vector<Activity> result;
+    int lastFinish = -1;
+
+    for (auto& a : acts) {
+        if (a.start >= lastFinish) {
+            result.push_back(a);
+            lastFinish = a.finish;
+        }
+    }
+    return result;
+}`,
+
+knapsack:
+`// Fractional Knapsack — O(n log n)
+struct Item { int weight, value; };
+
+bool cmp(Item a, Item b) {
+    double r1 = (double)a.value / a.weight;
+    double r2 = (double)b.value / b.weight;
+    return r1 > r2;
+}
+
+double knapsack(vector<Item>& items, int capacity) {
+    sort(items.begin(), items.end(), cmp);
+    double totalValue = 0.0;
+
+    for (auto& it : items) {
+        if (capacity >= it.weight) {
+            capacity -= it.weight;
+            totalValue += it.value;
+        } else {
+            totalValue += it.value * ((double)capacity / it.weight);
+            break;
+        }
+    }
+    return totalValue;
+}`,
+
+huffman:
+`// Huffman Coding — O(n log n)
+struct Node {
+    char ch; int freq;
+    Node *left, *right;
+};
+
+struct Compare {
+    bool operator()(Node* a, Node* b) {
+        return a->freq > b->freq;
+    }
+};
+
+Node* buildHuffmanTree(vector<pair<char,int>>& freqs) {
+    priority_queue<Node*, vector<Node*>, Compare> pq;
+
+    for (auto& f : freqs)
+        pq.push(new Node{f.first, f.second, nullptr, nullptr});
+
+    while (pq.size() > 1) {
+        Node* left = pq.top(); pq.pop();
+        Node* right = pq.top(); pq.pop();
+        Node* merged = new Node{'\\0', left->freq + right->freq, left, right};
+        pq.push(merged);
+    }
+    return pq.top();
+}`,
+
+coinchange:
+`// Greedy Coin Change — only optimal for canonical systems
+int coinChangeGreedy(vector<int>& coins, int amount) {
+    sort(coins.rbegin(), coins.rend());
+    int count = 0;
+
+    for (int c : coins) {
+        while (amount >= c) {
+            amount -= c;
+            count++;
+        }
+    }
+    // amount == 0  ->  success
+    // for non-canonical coin sets this can be SUB-OPTIMAL
+    return (amount == 0) ? count : -1;
+}`,
+
+jobseq:
+`// Job Sequencing with Deadlines — O(n^2), or O(n log n) with DSU
+struct Job { int id, deadline, profit; };
+
+bool cmp(Job a, Job b) {
+    return a.profit > b.profit;
+}
+
+int jobSequencing(vector<Job>& jobs, int maxDeadline) {
+    sort(jobs.begin(), jobs.end(), cmp);
+    vector<int> slot(maxDeadline + 1, -1);
+    int totalProfit = 0;
+
+    for (auto& j : jobs) {
+        for (int t = min(maxDeadline, j.deadline); t > 0; t--) {
+            if (slot[t] == -1) {
+                slot[t] = j.id;
+                totalProfit += j.profit;
+                break;
+            }
+        }
+    }
+    return totalProfit;
+}`
+};
+
+document.querySelectorAll('.cpp-code').forEach(el => {
+  const key = el.dataset.code;
+  el.innerHTML = highlightCpp(CODE[key]);
+});
+
+/* helper: svg element creator */
+function svgEl(tag, attrs){
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function logLine(container, text, cls){
+  const d = document.createElement('div');
+  d.className = 'log-line' + (cls ? (' ' + cls) : '');
+  d.textContent = text;
+  container.appendChild(d);
+  container.scrollTop = container.scrollHeight;
+}
+function clearLog(container, initialText){
+  container.innerHTML = '';
+  if (initialText) logLine(container, initialText, 'info');
+}
+
+/* ============================================================
+   VISUALIZER 1 — ACTIVITY SELECTION
+   ============================================================ */
+(function(){
+  const raw = [
+    {l:'A',s:1,f:4},{l:'B',s:3,f:5},{l:'C',s:0,f:6},{l:'D',s:5,f:7},
+    {l:'E',s:3,f:9},{l:'F',s:5,f:9},{l:'G',s:6,f:10},{l:'H',s:8,f:11},
+    {l:'I',s:8,f:12},{l:'J',s:2,f:14},{l:'K',s:12,f:16}
+  ];
+  const acts = raw.slice().sort((a,b)=>a.f-b.f);
+  const svg = document.getElementById('actSvg');
+  const maxT = 16, rowH = 30, top = 14, left = 46, w = 660;
+  const xScale = t => left + (t/maxT)*w;
+
+  let idx = 0, lastFinish = -1, selected = 0, rejected = 0;
+
+  function axis(){
+    for (let t=0;t<=maxT;t+=2){
+      const x = xScale(t);
+      svg.appendChild(svgEl('line',{x1:x,y1:top-6,x2:x,y2:top+11*rowH+2,stroke:'rgba(237,234,224,0.06)','stroke-width':1}));
+      const txt = svgEl('text',{x:x,y:top+11*rowH+20,fill:'#5C6472','font-size':10,'font-family':'JetBrains Mono, monospace','text-anchor':'middle'});
+      txt.textContent = t;
+      svg.appendChild(txt);
+    }
+  }
+
+  function render(){
+    svg.innerHTML = '';
+    axis();
+    acts.forEach((a,i)=>{
+      const y = top + i*rowH;
+      const x1 = xScale(a.s), x2 = xScale(a.f);
+      let fill = 'rgba(237,234,224,0.12)', stroke='rgba(237,234,224,0.2)';
+      if (i < idx) {
+        if (a.taken) { fill='rgba(63,182,139,0.28)'; stroke='#3FB68B'; }
+        else { fill='rgba(226,87,76,0.22)'; stroke='#E2574C'; }
+      }
+      if (i === idx) { stroke = '#E3B14E'; }
+      const rect = svgEl('rect',{x:x1,y:y,width:Math.max(x2-x1,4),height:18,rx:5,fill:fill,stroke:stroke,'stroke-width':i===idx?2:1.3});
+      svg.appendChild(rect);
+      const label = svgEl('text',{x:x1+6,y:y+13,fill:'#F4F1E8','font-size':10.5,'font-family':'JetBrains Mono, monospace','font-weight':600});
+      label.textContent = a.l;
+      svg.appendChild(label);
+    });
+  }
+  render();
+
+  document.getElementById('actNext').addEventListener('click', ()=>{
+    if (idx >= acts.length) return;
+    const a = acts[idx];
+    const log = document.getElementById('actLog');
+    if (a.s >= lastFinish) {
+      a.taken = true; lastFinish = a.f; selected++;
+      logLine(log, `Activity ${a.l} [${a.s},${a.f}] starts at ${a.s} ≥ last finish ${idx===0?'(-)':''} → ACCEPT`, 'accept');
+    } else {
+      a.taken = false; rejected++;
+      logLine(log, `Activity ${a.l} [${a.s},${a.f}] starts at ${a.s} < last finish ${lastFinish} → reject (overlaps)`, 'reject');
+    }
+    idx++;
+    document.getElementById('actSelected').textContent = selected;
+    document.getElementById('actRejected').textContent = rejected;
+    document.getElementById('actLastFinish').textContent = lastFinish;
+    document.getElementById('actCounter').textContent = idx + ' / ' + acts.length + ' processed';
+    document.getElementById('actNext').disabled = idx >= acts.length;
+    if (idx >= acts.length) logLine(log, `Done — ${selected} non-overlapping activities selected (optimal).`, 'info');
+    render();
+  });
+  document.getElementById('actReset').addEventListener('click', ()=>{
+    idx=0; lastFinish=-1; selected=0; rejected=0;
+    acts.forEach(a=>delete a.taken);
+    document.getElementById('actSelected').textContent='0';
+    document.getElementById('actRejected').textContent='0';
+    document.getElementById('actLastFinish').textContent='—';
+    document.getElementById('actCounter').textContent='0 / '+acts.length+' processed';
+    document.getElementById('actNext').disabled=false;
+    clearLog(document.getElementById('actLog'), 'Sorted by finish time. Click Next activity to walk through the greedy pass.');
+    render();
+  });
+})();
+
+/* ============================================================
+   VISUALIZER 2 — FRACTIONAL KNAPSACK
+   ============================================================ */
+(function(){
+  const items = [
+    {name:'Item 1', w:10, v:60, color:'#3FB68B'},
+    {name:'Item 2', w:20, v:100, color:'#E3B14E'},
+    {name:'Item 3', w:30, v:120, color:'#E2574C'}
+  ];
+  const CAP = 50;
+  const svg = document.getElementById('kpSvg');
+  let idx = 0, used = 0, value = 0;
+
+  function drawSack(){
+    svg.innerHTML='';
+    const bx=40, by=60, bw=680, bh=60;
+    svg.appendChild(svgEl('rect',{x:bx,y:by,width:bw,height:bh,rx:10,fill:'rgba(237,234,224,0.05)',stroke:'rgba(237,234,224,0.25)','stroke-width':1.5}));
+    let cursor = 0;
+    items.forEach((it,i)=>{
+      const takenW = it.taken || 0;
+      if (takenW > 0){
+        const segW = (takenW/CAP)*bw;
+        const rect = svgEl('rect',{x:bx+cursor,y:by,width:segW,height:bh,fill:it.color,opacity:i===idx-1?0.95:0.8});
+        svg.appendChild(rect);
+        if (segW > 26){
+          const txt = svgEl('text',{x:bx+cursor+segW/2,y:by+bh/2+5,fill:'#0D1117','font-size':11,'font-weight':700,'text-anchor':'middle','font-family':'Inter, sans-serif'});
+          txt.textContent = it.name.replace('Item ','I');
+          svg.appendChild(txt);
+        }
+        cursor += segW;
+      }
+    });
+    // capacity markers
+    const label = svgEl('text',{x:bx,y:by-14,fill:'#8E97A5','font-size':11,'font-family':'JetBrains Mono, monospace'});
+    label.textContent = `0 kg`;
+    svg.appendChild(label);
+    const label2 = svgEl('text',{x:bx+bw,y:by-14,fill:'#8E97A5','font-size':11,'text-anchor':'end','font-family':'JetBrains Mono, monospace'});
+    label2.textContent = `${CAP} kg capacity`;
+    svg.appendChild(label2);
+
+    // item legend / stack cards
+    items.forEach((it,i)=>{
+      const cx = 60 + i*230, cy = 170;
+      const cardFill = i < idx ? 'rgba(237,234,224,0.06)' : 'rgba(237,234,224,0.03)';
+      const stroke = i===idx ? '#E3B14E' : 'rgba(237,234,224,0.14)';
+      svg.appendChild(svgEl('rect',{x:cx,y:cy,width:200,height:90,rx:10,fill:cardFill,stroke:stroke,'stroke-width':i===idx?2:1}));
+      const t1 = svgEl('text',{x:cx+16,y:cy+26,fill:it.color,'font-size':13,'font-weight':700,'font-family':'Fraunces, serif'});
+      t1.textContent = it.name;
+      svg.appendChild(t1);
+      const t2 = svgEl('text',{x:cx+16,y:cy+48,fill:'#8E97A5','font-size':11,'font-family':'JetBrains Mono, monospace'});
+      t2.textContent = `w=${it.w}kg  v=${it.v}  ratio=${(it.v/it.w).toFixed(1)}`;
+      svg.appendChild(t2);
+      const t3 = svgEl('text',{x:cx+16,y:cy+70,fill:'#F4F1E8','font-size':11.5,'font-family':'JetBrains Mono, monospace'});
+      t3.textContent = it.taken ? (it.taken===it.w ? `taken fully (${it.taken}kg)` : `taken ${it.taken.toFixed(1)}kg (partial)`) : 'not yet taken';
+      svg.appendChild(t3);
+    });
+  }
+  drawSack();
+
+  document.getElementById('kpNext').addEventListener('click', ()=>{
+    if (idx >= items.length) return;
+    const it = items[idx];
+    const log = document.getElementById('kpLog');
+    const remaining = CAP - used;
+    if (remaining <= 0) { idx = items.length; return; }
+    if (it.w <= remaining) {
+      it.taken = it.w; used += it.w; value += it.v;
+      logLine(log, `${it.name}: fits fully (${it.w}kg) → take all of it, +${it.v} value`, 'accept');
+    } else {
+      it.taken = remaining; value += it.v * (remaining/it.w); used = CAP;
+      logLine(log, `${it.name}: only ${remaining}kg of room left → take ${remaining}/${it.w} of it, +${(it.v*(remaining/it.w)).toFixed(1)} value`, 'accept');
+    }
+    idx++;
+    document.getElementById('kpValue').textContent = value.toFixed(1);
+    document.getElementById('kpCap').textContent = (CAP-used);
+    document.getElementById('kpCounter').textContent = `Capacity used: ${used} / ${CAP}`;
+    document.getElementById('kpNext').disabled = idx >= items.length || used >= CAP;
+    if (idx >= items.length) logLine(log, `Knapsack full — maximum value achieved: ${value.toFixed(1)}`, 'info');
+    drawSack();
+  });
+  document.getElementById('kpReset').addEventListener('click', ()=>{
+    idx=0; used=0; value=0;
+    items.forEach(it=>delete it.taken);
+    document.getElementById('kpValue').textContent='0.0';
+    document.getElementById('kpCap').textContent=CAP;
+    document.getElementById('kpCounter').textContent=`Capacity used: 0 / ${CAP}`;
+    document.getElementById('kpNext').disabled=false;
+    clearLog(document.getElementById('kpLog'), 'Items sorted by ratio: Item 1 (6/kg), Item 2 (5/kg), Item 3 (4/kg).');
+    drawSack();
+  });
+})();
+
+/* ============================================================
+   VISUALIZER 3 — HUFFMAN CODING
+   ============================================================ */
+(function(){
+  let nodes = [
+    {id:'a', freq:5}, {id:'b', freq:9}, {id:'c', freq:12},
+    {id:'d', freq:13}, {id:'e', freq:16}, {id:'f', freq:45}
+  ].map(n=>({...n, x:0, y:0, isLeaf:true}));
+
+  const svg = document.getElementById('hufSvg');
+  const merges = [];
+  let step = 0, treeCost = 0;
+
+  function layout(list){
+    const n = list.length;
+    const spacing = 700/(n+1);
+    list.forEach((node,i)=>{ node.x = 30 + spacing*(i+1); node.y = 250; });
+  }
+  layout(nodes);
+
+  function render(){
+    svg.innerHTML = '';
+    // draw edges for completed merges
+    merges.slice(0, step).forEach(m=>{
+      [m.left, m.right].forEach(child=>{
+        svg.appendChild(svgEl('line',{x1:m.x,y1:m.y,x2:child.x,y2:child.y,stroke:'rgba(227,177,78,0.45)','stroke-width':2}));
+      });
+    });
+    const current = merges[step];
+    const drawList = current ? current.beforeList : nodes;
+    drawList.forEach(node=>{
+      const isMerging = current && (node===current.a || node===current.b);
+      const r = node.isLeaf ? 20 : 22;
+      const fill = isMerging ? '#E3B14E' : (node.isLeaf ? '#1C2430' : '#26313F');
+      const stroke = isMerging ? '#E3B14E' : 'rgba(237,234,224,0.25)';
+      svg.appendChild(svgEl('circle',{cx:node.x,cy:node.y,r:r,fill:fill,stroke:stroke,'stroke-width':1.6}));
+      const t = svgEl('text',{x:node.x,y:node.y+4,'text-anchor':'middle',fill:isMerging?'#1a1408':'#F4F1E8','font-size':11,'font-weight':700,'font-family':'JetBrains Mono, monospace'});
+      t.textContent = node.isLeaf ? node.id : '';
+      svg.appendChild(t);
+      const ft = svgEl('text',{x:node.x,y:node.y+r+15,'text-anchor':'middle',fill:'#8E97A5','font-size':10.5,'font-family':'JetBrains Mono, monospace'});
+      ft.textContent = node.freq;
+      svg.appendChild(ft);
+    });
+    // completed merged nodes above (from finished steps), draw parent circles too
+    merges.slice(0, step).forEach(m=>{
+      if (!m.drawnParent){
+        svg.appendChild(svgEl('circle',{cx:m.x,cy:m.y,r:22,fill:'#26313F',stroke:'rgba(237,234,224,0.25)','stroke-width':1.6}));
+        const ft = svgEl('text',{x:m.x,y:m.y+38,'text-anchor':'middle',fill:'#8E97A5','font-size':10.5,'font-family':'JetBrains Mono, monospace'});
+        ft.textContent = m.freq;
+        svg.appendChild(ft);
+      }
+    });
+  }
+  render();
+
+  function computeMerge(){
+    // clone current working list
+    let list = step === 0 ? nodes.slice() : merges[step-1].afterList.slice();
+    layout(list);
+    list = list.slice().sort((a,b)=>a.freq-b.freq);
+    const a = list[0], b = list[1];
+    const rest = list.filter(n=>n!==a && n!==b);
+    const parent = {id:null, freq:a.freq+b.freq, isLeaf:false, left:a, right:b};
+    const afterList = rest.concat([parent]);
+    layout(afterList);
+    // position 'a','b' at their pre-merge spots (use current step layout), parent at avg x, y raised
+    const beforeList = list.slice(); // sorted, but we want visual continuity -> use previous positions
+    // Assign x,y using previous list positions (already set via layout(list) above on 'list')
+    parent.x = (a.x + b.x)/2;
+    parent.y = a.y - 60;
+    return {a, b, left:a, right:b, x:parent.x, y:parent.y, freq:parent.freq, node:parent, beforeList:list, afterList};
+  }
+
+  document.getElementById('hufNext').addEventListener('click', ()=>{
+    if (step >= 5) return;
+    const m = computeMerge();
+    merges.push(m);
+    const log = document.getElementById('hufLog');
+    logLine(log, `Merge smallest two: ${m.a.isLeaf?m.a.id:'node'}(${m.a.freq}) + ${m.b.isLeaf?m.b.id:'node'}(${m.b.freq}) → new node (${m.freq})`, 'accept');
+    treeCost += m.freq;
+    step++;
+    document.getElementById('hufNodes').textContent = 6 - step;
+    document.getElementById('hufCost').textContent = treeCost;
+    document.getElementById('hufCounter').textContent = step + ' / 5 merges';
+    document.getElementById('hufNext').disabled = step >= 5;
+    if (step >= 5) {
+      logLine(log, "Tree complete — one root node remains. Reading root-to-leaf paths gives each character's code.", 'info');
+      showCodeTable();
+    }
+    render();
+  });
+  document.getElementById('hufReset').addEventListener('click', ()=>{
+    step = 0; treeCost = 0; merges.length = 0;
+    layout(nodes);
+    document.getElementById('hufNodes').textContent = '6';
+    document.getElementById('hufCost').textContent = '0';
+    document.getElementById('hufCounter').textContent = '0 / 5 merges';
+    document.getElementById('hufNext').disabled = false;
+    document.getElementById('hufCodeTable').style.display = 'none';
+    clearLog(document.getElementById('hufLog'), 'Leaves: a:5, b:9, c:12, d:13, e:16, f:45 — classic CLRS example.');
+    render();
+  });
+
+  function showCodeTable(){
+    const codes = {f:'0', c:'100', d:'101', a:'1100', b:'1101', e:'111'};
+    const freqs = {a:5,b:9,c:12,d:13,e:16,f:45};
+    const body = document.getElementById('hufCodeBody');
+    body.innerHTML='';
+    let totalBits = 0;
+    Object.keys(freqs).forEach(ch=>{
+      const bits = freqs[ch]*codes[ch].length;
+      totalBits += bits;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td style="font-family:'JetBrains Mono',monospace;color:var(--gold)">${ch}</td><td>${freqs[ch]}</td><td style="font-family:'JetBrains Mono',monospace">${codes[ch]}</td><td>${bits}</td>`;
+      body.appendChild(tr);
+    });
+    document.getElementById('hufSavings').textContent = totalBits + ' bits';
+    document.getElementById('hufCodeTable').style.display = 'block';
+  }
+})();
+
+/* ============================================================
+   VISUALIZER 4 — COIN CHANGE (greedy vs optimal)
+   ============================================================ */
+(function(){
+  const systems = {
+    US: {coins:[25,10,5,1], target:63, optimal:6, canonical:true, label:'US coins {25,10,5,1}'},
+    BAD: {coins:[4,3,1], target:6, optimal:2, canonical:false, label:'Denominations {4,3,1}'}
+  };
+  let current = 'US';
+  let remaining = systems.US.target;
+  let picks = [];
+  const svg = document.getElementById('ccSvg');
+
+  function render(){
+    svg.innerHTML='';
+    const startX = 40, y = 90, gap = 56;
+    picks.forEach((c,i)=>{
+      const cx = startX + i*gap + 26;
+      svg.appendChild(svgEl('circle',{cx:cx,cy:y,r:24,fill:'#E3B14E',stroke:'#B8842E','stroke-width':2}));
+      const t = svgEl('text',{x:cx,y:y+5,'text-anchor':'middle',fill:'#1a1408','font-size':13,'font-weight':700,'font-family':'Fraunces, serif'});
+      t.textContent = c;
+      svg.appendChild(t);
+    });
+    const rt = svgEl('text',{x:40,y:170,fill:'#8E97A5','font-size':13,'font-family':'JetBrains Mono, monospace'});
+    rt.textContent = `remaining amount: ${remaining}`;
+    svg.appendChild(rt);
+  }
+  render();
+
+  function setSystem(key){
+    current = key;
+    remaining = systems[key].target;
+    picks = [];
+    document.getElementById('ccUS').classList.toggle('active', key==='US');
+    document.getElementById('ccBad').classList.toggle('active', key==='BAD');
+    document.getElementById('ccCount').textContent = '0';
+    document.getElementById('ccOptimal').textContent = systems[key].optimal;
+    document.getElementById('ccCounter').textContent = `Remaining: ${remaining}`;
+    document.getElementById('ccNext').disabled = false;
+    clearLog(document.getElementById('ccLog'), `Target ${remaining} with ${systems[key].label}. Watch the greedy picks.`);
+    const verdict = document.getElementById('ccVerdict');
+    verdict.className = 'verdict ' + (systems[key].canonical ? 'ok' : 'bad');
+    verdict.textContent = systems[key].canonical
+      ? '✓ Greedy will match optimal here — this coin system is canonical.'
+      : '⚠ Watch closely: greedy will use more coins than the true optimal on this system.';
+    render();
+  }
+
+  document.getElementById('ccNext').addEventListener('click', ()=>{
+    const coins = systems[current].coins;
+    if (remaining <= 0) return;
+    const c = coins.find(v=>v<=remaining);
+    if (!c) return;
+    remaining -= c;
+    picks.push(c);
+    const log = document.getElementById('ccLog');
+    logLine(log, `Take a ${c}-coin → remaining ${remaining}`, 'accept');
+    document.getElementById('ccCount').textContent = picks.length;
+    document.getElementById('ccCounter').textContent = `Remaining: ${remaining}`;
+    document.getElementById('ccNext').disabled = remaining <= 0;
+    if (remaining <= 0){
+      const opt = systems[current].optimal;
+      if (picks.length > opt){
+        logLine(log, `Done — greedy used ${picks.length} coins, but the optimal is ${opt}. Greedy is SUB-OPTIMAL on this coin set.`, 'reject');
+      } else {
+        logLine(log, `Done — greedy used ${picks.length} coins, matching the optimal.`, 'info');
+      }
+    }
+    render();
+  });
+  document.getElementById('ccReset').addEventListener('click', ()=> setSystem(current));
+  document.getElementById('ccUS').addEventListener('click', ()=> setSystem('US'));
+  document.getElementById('ccBad').addEventListener('click', ()=> setSystem('BAD'));
+})();
+
+/* ============================================================
+   VISUALIZER 5 — JOB SEQUENCING
+   ============================================================ */
+(function(){
+  const jobs = [
+    {id:'J1', deadline:2, profit:100},
+    {id:'J3', deadline:2, profit:27},
+    {id:'J4', deadline:1, profit:25},
+    {id:'J2', deadline:1, profit:19},
+    {id:'J5', deadline:3, profit:15}
+  ];
+  const maxDeadline = 3;
+  let slot = new Array(maxDeadline+1).fill(null);
+  let idx = 0, totalProfit = 0, filled = 0;
+  const svg = document.getElementById('jsSvg');
+
+  function render(){
+    svg.innerHTML = '';
+    const slotW = 160, gap = 20, startX = 100, y = 40;
+    for (let t=1;t<=maxDeadline;t++){
+      const x = startX + (t-1)*(slotW+gap);
+      const occupied = slot[t];
+      svg.appendChild(svgEl('rect',{x:x,y:y,width:slotW,height:70,rx:10,fill:occupied?'rgba(63,182,139,0.16)':'rgba(237,234,224,0.04)',stroke:occupied?'#3FB68B':'rgba(237,234,224,0.2)','stroke-width':1.6}));
+      const lbl = svgEl('text',{x:x+slotW/2,y:y-10,'text-anchor':'middle',fill:'#8E97A5','font-size':11,'font-family':'JetBrains Mono, monospace'});
+      lbl.textContent = `slot ${t} (deadline ≤ ${t})`;
+      svg.appendChild(lbl);
+      if (occupied){
+        const t1 = svgEl('text',{x:x+slotW/2,y:y+34,'text-anchor':'middle',fill:'#F4F1E8','font-size':16,'font-weight':700,'font-family':'Fraunces, serif'});
+        t1.textContent = occupied.id;
+        svg.appendChild(t1);
+        const t2 = svgEl('text',{x:x+slotW/2,y:y+54,'text-anchor':'middle',fill:'#3FB68B','font-size':11,'font-family':'JetBrains Mono, monospace'});
+        t2.textContent = `profit ${occupied.profit}`;
+        svg.appendChild(t2);
+      }
+    }
+    // job queue below
+    jobs.forEach((j,i)=>{
+      const x = 40 + i*140, jy = 180;
+      const state = j.status;
+      let fill = 'rgba(237,234,224,0.05)', stroke='rgba(237,234,224,0.18)', txtColor='#F4F1E8';
+      if (state==='placed'){ fill='rgba(63,182,139,0.14)'; stroke='#3FB68B'; }
+      if (state==='rejected'){ fill='rgba(226,87,76,0.14)'; stroke='#E2574C'; }
+      if (i===idx){ stroke='#E3B14E'; }
+      svg.appendChild(svgEl('rect',{x:x,y:jy,width:120,height:56,rx:8,fill:fill,stroke:stroke,'stroke-width':i===idx?2:1.3}));
+      const t1 = svgEl('text',{x:x+60,y:jy+22,'text-anchor':'middle',fill:txtColor,'font-size':12.5,'font-weight':700,'font-family':'Fraunces, serif'});
+      t1.textContent = `${j.id}`;
+      svg.appendChild(t1);
+      const t2 = svgEl('text',{x:x+60,y:jy+40,'text-anchor':'middle',fill:'#8E97A5','font-size':10,'font-family':'JetBrains Mono, monospace'});
+      t2.textContent = `p=${j.profit} d=${j.deadline}`;
+      svg.appendChild(t2);
+    });
+  }
+  render();
+
+  document.getElementById('jsNext').addEventListener('click', ()=>{
+    if (idx >= jobs.length) return;
+    const j = jobs[idx];
+    const log = document.getElementById('jsLog');
+    let placedAt = -1;
+    for (let t = Math.min(maxDeadline, j.deadline); t > 0; t--){
+      if (!slot[t]) { placedAt = t; break; }
+    }
+    if (placedAt > 0){
+      slot[placedAt] = j; j.status='placed'; totalProfit += j.profit; filled++;
+      logLine(log, `${j.id} (deadline ${j.deadline}, profit ${j.profit}) → placed in slot ${placedAt}`, 'accept');
+    } else {
+      j.status='rejected';
+      logLine(log, `${j.id} (deadline ${j.deadline}, profit ${j.profit}) → no free slot ≤ deadline, rejected`, 'reject');
+    }
+    idx++;
+    document.getElementById('jsProfit').textContent = totalProfit;
+    document.getElementById('jsSlots').textContent = `${filled} / ${maxDeadline}`;
+    document.getElementById('jsCounter').textContent = `${idx} / ${jobs.length} jobs`;
+    document.getElementById('jsNext').disabled = idx >= jobs.length;
+    if (idx >= jobs.length) logLine(log, `Done — total profit ${totalProfit} from ${filled} scheduled jobs.`, 'info');
+    render();
+  });
+  document.getElementById('jsReset').addEventListener('click', ()=>{
+    idx=0; totalProfit=0; filled=0; slot = new Array(maxDeadline+1).fill(null);
+    jobs.forEach(j=>delete j.status);
+    document.getElementById('jsProfit').textContent='0';
+    document.getElementById('jsSlots').textContent=`0 / ${maxDeadline}`;
+    document.getElementById('jsCounter').textContent=`0 / ${jobs.length} jobs`;
+    document.getElementById('jsNext').disabled=false;
+    clearLog(document.getElementById('jsLog'), 'Jobs sorted by profit: J1(100,d2), J3(27,d2), J4(25,d1), J2(19,d1), J5(15,d3).');
+    render();
+  });
+})();
+</script>
+</body>
+</html>
