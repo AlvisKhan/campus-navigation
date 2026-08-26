@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stack & Queue — C++ Masterclass</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --stack-color: #ff6b35;
+    --stack-glow: rgba(255,107,53,0.3);
+    --queue-color: #00d4aa;
+    --queue-glow: rgba(0,212,170,0.3);
+    --accent: #7c5cfc;
+    --accent-glow: rgba(124,92,252,0.3);
+    --text: #e8e8f0;
+    --text-muted: #7a7a9a;
+    --code-bg: #080810;
+    --success: #4ade80;
+    --warning: #facc15;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999;
+    opacity: 0.35;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex; align-items: center; gap: 2rem;
+  }
+
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    margin-right: auto;
+  }
+
+  .nav-links { display: flex; gap: 1.5rem; }
+
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.stack { color: var(--stack-color); }
+  .nav-links a.queue { color: var(--queue-color); }
+
+  /* ── PROGRESS BAR ── */
+  #progress-bar {
+    position: fixed; top: 60px; left: 0; height: 2px;
+    background: linear-gradient(90deg, var(--stack-color), var(--accent), var(--queue-color));
+    z-index: 101;
+    transition: width 0.1s;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 50%, rgba(255,107,53,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(0,212,170,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(124,92,252,0.05) 0%, transparent 60%);
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.35rem 1rem;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.8s ease both;
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.8s 0.1s ease both;
+  }
+
+  .hero h1 .s { color: var(--stack-color); text-shadow: 0 0 40px var(--stack-glow); }
+  .hero h1 .q { color: var(--queue-color); text-shadow: 0 0 40px var(--queue-glow); }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    animation: fadeInUp 0.8s 0.2s ease both;
+  }
+
+  .hero-cta {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    animation: fadeInUp 0.8s 0.3s ease both;
+  }
+
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    border: none; cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .btn-stack {
+    background: var(--stack-color);
+    color: #000;
+    font-weight: 700;
+  }
+  .btn-stack:hover { box-shadow: 0 0 30px var(--stack-glow); transform: translateY(-2px); }
+
+  .btn-queue {
+    background: transparent;
+    color: var(--queue-color);
+    border: 1px solid var(--queue-color);
+  }
+  .btn-queue:hover { background: var(--queue-color); color: #000; transform: translateY(-2px); }
+
+  /* ── FLOATING VISUAL ── */
+  .hero-visual {
+    margin-top: 4rem;
+    display: flex; gap: 4rem; align-items: flex-end; justify-content: center;
+    animation: fadeInUp 0.8s 0.4s ease both;
+  }
+
+  .mini-stack, .mini-queue {
+    display: flex; flex-direction: column; gap: 4px;
+    align-items: center;
+  }
+
+  .mini-stack { flex-direction: column-reverse; }
+
+  .mini-stack-label, .mini-queue-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .mini-stack-label { color: var(--stack-color); }
+  .mini-queue-label { color: var(--queue-color); }
+
+  .s-block {
+    width: 80px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-left: 3px solid var(--stack-color);
+    background: rgba(255,107,53,0.08);
+    color: var(--stack-color);
+    animation: slideIn 0.5s ease both;
+  }
+
+  .q-block {
+    width: 60px; height: 50px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-bottom: 3px solid var(--queue-color);
+    background: rgba(0,212,170,0.08);
+    color: var(--queue-color);
+  }
+
+  /* ── SECTION BASE ── */
+  section {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+
+  .section-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+    line-height: 1.05;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  p strong { color: var(--text); font-weight: 700; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0;
+  }
+
+  /* ── CONCEPT CARD ── */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+  }
+
+  .concept-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .concept-card:hover { transform: translateY(-3px); }
+  .concept-card.stack-card { border-top: 3px solid var(--stack-color); }
+  .concept-card.queue-card { border-top: 3px solid var(--queue-color); }
+
+  .concept-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .concept-card.stack-card::before { background: radial-gradient(ellipse at top, var(--stack-glow), transparent 70%); }
+  .concept-card.queue-card::before { background: radial-gradient(ellipse at top, var(--queue-glow), transparent 70%); }
+  .concept-card:hover::before { opacity: 1; }
+
+  .card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-size: 0.75rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .stack-card .card-title { color: var(--stack-color); }
+  .queue-card .card-title { color: var(--queue-color); }
+
+  /* ── CODE BLOCK ── */
+  .code-wrap {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    margin: 1.5rem 0;
+    position: relative;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .code-lang {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .code-dots { display: flex; gap: 6px; }
+  .code-dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .code-dots span:nth-child(1) { background: #ff5f56; }
+  .code-dots span:nth-child(2) { background: #ffbd2e; }
+  .code-dots span:nth-child(3) { background: #27c93f; }
+
+  pre {
+    padding: 1.5rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: #c9d1d9;
+  }
+
+  /* Syntax highlighting */
+  .kw { color: #ff79c6; }
+  .ty { color: #8be9fd; }
+  .fn { color: #50fa7b; }
+  .st { color: #f1fa8c; }
+  .cm { color: #6272a4; font-style: italic; }
+  .nu { color: #bd93f9; }
+  .op { color: #ff79c6; }
+  .va { color: #f8f8f2; }
+  .inc { color: #ff6b35; }
+
+  /* ── INTERACTIVE VISUALIZER ── */
+  .visualizer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .viz-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .viz-title::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--border);
+  }
+
+  .viz-controls {
+    display: flex; gap: 0.75rem; flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    align-items: center;
+  }
+
+  .viz-input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.6rem 0.9rem;
+    width: 90px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .viz-input:focus { border-color: var(--accent); }
+
+  .viz-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    padding: 0.6rem 1.1rem;
+    border: none; cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+  .viz-btn.push, .viz-btn.enq {
+    background: var(--stack-color); color: #000; font-weight: 700;
+  }
+  .viz-btn.enq { background: var(--queue-color); }
+  .viz-btn.pop, .viz-btn.deq {
+    background: transparent; color: var(--text); border: 1px solid var(--border);
+  }
+  .viz-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .viz-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+  .stack-viz {
+    display: flex; flex-direction: column-reverse;
+    gap: 4px;
+    min-height: 180px;
+    align-items: flex-start;
+    position: relative;
+    padding: 1rem;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+  }
+
+  .stack-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    width: 200px; height: 36px;
+    padding: 0 1rem;
+    background: rgba(255,107,53,0.12);
+    border-left: 3px solid var(--stack-color);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--stack-color);
+    animation: stackPush 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    transition: all 0.2s;
+  }
+
+  .stack-item.popping {
+    animation: stackPop 0.25s ease-in forwards;
+  }
+
+  .stack-top-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--stack-color);
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    margin-left: auto;
+    text-transform: uppercase;
+  }
+
+  .queue-viz {
+    display: flex;
+    gap: 4px;
+    min-height: 80px;
+    align-items: center;
+    padding: 1rem;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .queue-item {
+    display: flex; align-items: center; justify-content: center;
+    min-width: 60px; height: 56px;
+    padding: 0 0.75rem;
+    background: rgba(0,212,170,0.12);
+    border-bottom: 3px solid var(--queue-color);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--queue-color);
+    animation: queueIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .queue-item.dequeuing {
+    animation: queueOut 0.25s ease-in forwards;
+  }
+  .queue-front-label, .queue-rear-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--queue-color);
+    position: absolute;
+    bottom: -18px;
+    opacity: 0.7;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .viz-log {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: var(--code-bg);
+    border-left: 2px solid var(--border);
+    min-height: 36px;
+  }
+  .viz-log .log-ok { color: var(--success); }
+  .viz-log .log-err { color: var(--stack-color); }
+
+  .empty-msg {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+    align-self: center;
+    margin: auto;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid;
+    background: var(--surface);
+    margin: 1.5rem 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+  }
+  .info-box.stack { border-color: var(--stack-color); background: rgba(255,107,53,0.05); }
+  .info-box.queue { border-color: var(--queue-color); background: rgba(0,212,170,0.05); }
+  .info-box.note { border-color: var(--accent); background: rgba(124,92,252,0.05); }
+  .info-box.warn { border-color: var(--warning); background: rgba(250,204,21,0.05); }
+
+  .info-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .info-box.stack .info-label { color: var(--stack-color); }
+  .info-box.queue .info-label { color: var(--queue-color); }
+  .info-box.note .info-label { color: var(--accent); }
+  .info-box.warn .info-label { color: var(--warning); }
+
+  /* ── OPERATIONS TABLE ── */
+  .ops-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+  }
+  .ops-table th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .ops-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(42,42,58,0.5);
+    color: var(--text-muted);
+  }
+  .ops-table tr:hover td { background: var(--surface); }
+  .ops-table .op-name { color: var(--text); font-weight: 700; }
+  .ops-table .stack-op { color: var(--stack-color); }
+  .ops-table .queue-op { color: var(--queue-color); }
+  .ops-table .o1 { color: var(--success); font-weight: 700; }
+
+  /* ── REAL WORLD EXAMPLES ── */
+  .rw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .rw-card {
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .rw-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .rw-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+  .rw-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .rw-sub { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted); line-height: 1.6; }
+  .rw-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.5rem;
+    margin-top: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .rw-tag.s { background: rgba(255,107,53,0.15); color: var(--stack-color); }
+  .rw-tag.q { background: rgba(0,212,170,0.15); color: var(--queue-color); }
+
+  /* ── QUIZ ── */
+  .quiz-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+
+  .quiz-q {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: flex; flex-direction: column; gap: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .quiz-opt {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.75rem 1rem;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .quiz-opt:hover:not(.answered) { border-color: var(--accent); color: var(--text); background: var(--surface2); }
+  .quiz-opt.correct { border-color: var(--success); background: rgba(74,222,128,0.1); color: var(--success); }
+  .quiz-opt.wrong { border-color: var(--stack-color); background: rgba(255,107,53,0.1); color: var(--stack-color); }
+
+  .quiz-opt-key {
+    font-size: 0.65rem;
+    width: 20px; height: 20px;
+    border: 1px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .quiz-feedback {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    padding: 1rem;
+    display: none;
+    border-left: 2px solid;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { border-color: var(--success); color: var(--success); background: rgba(74,222,128,0.05); }
+  .quiz-feedback.wrong { border-color: var(--stack-color); color: var(--text-muted); background: rgba(255,107,53,0.05); }
+
+  /* ── CHEATSHEET ── */
+  .cheat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  @media (max-width: 600px) { .cheat-grid { grid-template-columns: 1fr; } }
+
+  .cheat-card {
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .cheat-card h4 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .cheat-card.s h4 { color: var(--stack-color); }
+  .cheat-card.q h4 { color: var(--queue-color); }
+
+  .cheat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(42,42,58,0.4);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+  }
+  .cheat-row:last-child { border: none; }
+  .cheat-op { color: var(--text); }
+  .cheat-code { color: var(--text-muted); font-size: 0.7rem; }
+  .cheat-tc { font-size: 0.7rem; padding: 0.15rem 0.4rem; }
+  .cheat-tc.o1 { color: var(--success); border: 1px solid rgba(74,222,128,0.3); }
+
+  /* ── ALGO SECTION ── */
+  .algo-steps {
+    display: flex; flex-direction: column; gap: 1rem;
+    margin: 1.5rem 0;
+    counter-reset: step;
+  }
+
+  .algo-step {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 1.1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    position: relative;
+    counter-increment: step;
+    transition: border-color 0.2s;
+  }
+  .algo-step:hover { border-color: var(--accent); }
+
+  .algo-step::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 700;
+    min-width: 28px;
+    padding-top: 0.1rem;
+  }
+
+  .algo-step-content { flex: 1; }
+  .algo-step-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .algo-step p { font-size: 0.8rem; margin: 0; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes stackPush {
+    from { opacity: 0; transform: translateY(-20px) scaleX(0.8); }
+    to { opacity: 1; transform: translateY(0) scaleX(1); }
+  }
+
+  @keyframes stackPop {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(-40px); }
+  }
+
+  @keyframes queueIn {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes queueOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(-30px) scale(0.8); }
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── CHAPTER HEADER ── */
+  .chapter-header {
+    padding: 4rem 2rem 2rem;
+    max-width: 1000px; margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ch-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .chapter-header h2 { margin-bottom: 0.5rem; }
+  .chapter-header p { margin: 0; }
+
+  /* Tab system for different implementations */
+  .tab-nav {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.75rem 1.25rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── COMPLEXITY BADGE ── */
+  .complexity-row {
+    display: flex; gap: 0.75rem; flex-wrap: wrap;
+    margin: 1rem 0;
+  }
+  .complexity-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .complexity-badge span { color: var(--success); font-weight: 700; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(24px); transition: all 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 700px) {
+    .nav-links { display: none; }
+    .hero-visual { gap: 2rem; }
+    .cheat-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ds.masterclass</div>
+  <div class="nav-links">
+    <a href="#stack" class="stack">Stack</a>
+    <a href="#queue" class="queue">Queue</a>
+    <a href="#applications">Applications</a>
+    <a href="#patterns">Patterns</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#cheatsheet">Cheatsheet</a>
+  </div>
+</nav>
+
+<div id="progress-bar" style="width:0%"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-tag">C++ Data Structures — Interactive Masterclass</div>
+  <h1>
+    <span class="s">Stack</span><br>
+    & <span class="q">Queue</span>
+  </h1>
+  <p class="hero-sub">
+    From zero to solving interview questions.<br>
+    Every concept. Every operation. Every trick.
+  </p>
+  <div class="hero-cta">
+    <a href="#stack" class="btn btn-stack">Start with Stack →</a>
+    <a href="#queue" class="btn btn-queue">Jump to Queue</a>
+  </div>
+
+  <div class="hero-visual">
+    <div class="mini-stack">
+      <div class="s-block" style="animation-delay:0.5s">42</div>
+      <div class="s-block" style="animation-delay:0.6s">17</div>
+      <div class="s-block" style="animation-delay:0.7s">99</div>
+      <div class="s-block" style="animation-delay:0.8s">5</div>
+      <div class="mini-stack-label">↑ TOP (LIFO)</div>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;">vs</div>
+    </div>
+    <div>
+      <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px;">
+        <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--text-muted);">FRONT →</div>
+        <div class="q-block" style="animation-delay:0.5s">A</div>
+        <div class="q-block" style="animation-delay:0.6s">B</div>
+        <div class="q-block" style="animation-delay:0.7s">C</div>
+        <div class="q-block" style="animation-delay:0.8s">D</div>
+        <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--text-muted);">→ REAR</div>
+      </div>
+      <div class="mini-queue-label">FIFO — First In First Out</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CHAPTER 1: STACK ═══════════════════ -->
+<div id="stack">
+
+<div class="chapter-header reveal">
+  <div class="ch-num">Chapter 01 / Stack</div>
+  <h2><span style="color:var(--stack-color)">Stack</span> — LIFO Discipline</h2>
+  <p>The most elegant data structure. Last thing in, first thing out — like a stack of plates.</p>
+</div>
+
+<section class="reveal">
+  <div class="section-tag">01.01 — Concept</div>
+  <h3>What is a Stack?</h3>
+  <p>A <strong>Stack</strong> is a linear data structure that follows the <strong>LIFO</strong> (Last In, First Out) principle. Think of it as a pile of books — you always add or remove from the <em>top</em>. You can never take from the middle or bottom without removing everything above it first.</p>
+
+  <div class="info-box stack">
+    <div class="info-label">Key Insight</div>
+    Only the <strong>top</strong> of the stack is accessible at any time. This restriction is what makes stacks powerful — they enforce order by design.
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card stack-card">
+      <div class="card-icon">📚</div>
+      <div class="card-title">Real-world analogy</div>
+      <h3 style="font-size:1rem;margin-bottom:0.5rem;">Stack of plates</h3>
+      <p style="font-size:0.8rem;">You put a plate on top. You take a plate from the top. You never pull from the middle. The last plate you placed is the first you'll pick up.</p>
+    </div>
+    <div class="concept-card stack-card">
+      <div class="card-icon">↩️</div>
+      <div class="card-title">Classic Example</div>
+      <h3 style="font-size:1rem;margin-bottom:0.5rem;">Browser History</h3>
+      <p style="font-size:0.8rem;">Every page you visit is <em>pushed</em> onto a stack. When you click Back, the current page is <em>popped</em> off, revealing the previous one.</p>
+    </div>
+    <div class="concept-card stack-card">
+      <div class="card-icon">⚙️</div>
+      <div class="card-title">CS Core</div>
+      <h3 style="font-size:1rem;margin-bottom:0.5rem;">Function Call Stack</h3>
+      <p style="font-size:0.8rem;">Your CPU uses a stack for function calls. When foo() calls bar(), bar is pushed. When bar() returns, it's popped and foo() resumes.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="reveal">
+  <div class="section-tag">01.02 — Operations</div>
+  <h3>Core Stack Operations</h3>
+
+  <table class="ops-table">
+    <thead>
+      <tr>
+        <th>Operation</th>
+        <th>STL Method</th>
+        <th>What it does</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="op-name stack-op">push(x)</td>
+        <td><code>s.push(x)</code></td>
+        <td>Add element x to the top</td>
+        <td class="o1">O(1)</td>
+      </tr>
+      <tr>
+        <td class="op-name stack-op">pop()</td>
+        <td><code>s.pop()</code></td>
+        <td>Remove the top element (no return value!)</td>
+        <td class="o1">O(1)</td>
+      </tr>
+      <tr>
+        <td class="op-name stack-op">top()</td>
+        <td><code>s.top()</code></td>
+        <td>Access the top element without removing</td>
+        <td class="o1">O(1)</td>
+      </tr>
+      <tr>
+        <td class="op-name stack-op">empty()</td>
+        <td><code>s.empty()</code></td>
+        <td>Returns true if stack is empty</td>
+        <td class="o1">O(1)</td>
+      </tr>
+      <tr>
+        <td class="op-name stack-op">size()</td>
+        <td><code>s.size()</code></td>
+        <td>Returns number of elements</td>
+        <td class="o1">O(1)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box warn">
+    <div class="info-label">⚠️ Common Mistake</div>
+    <strong>pop()</strong> in C++ STL does NOT return the value — it just removes it. Always call <strong>top()</strong> first to get the value, then pop() to remove it.
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="reveal">
+  <div class="section-tag">01.03 — Implementation</div>
+  <h3>Stack in C++ — Three Ways</h3>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab(this, 'stl-stack')">STL stack&lt;&gt;</button>
+    <button class="tab-btn" onclick="switchTab(this, 'arr-stack')">Array-based</button>
+    <button class="tab-btn" onclick="switchTab(this, 'll-stack')">Linked List</button>
+  </div>
+
+  <div class="tab-pane active" id="stl-stack">
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <div class="code-lang">C++ · STL Stack</div>
+      </div>
+      <pre><span class="inc">#include &lt;iostream&gt;</span>
+<span class="inc">#include &lt;stack&gt;</span>
+<span class="kw">using namespace</span> <span class="va">std</span>;
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="va">stack</span>&lt;<span class="ty">int</span>&gt; <span class="va">s</span>;
+
+    <span class="cm">// push: add to top</span>
+    <span class="va">s</span>.<span class="fn">push</span>(<span class="nu">10</span>);
+    <span class="va">s</span>.<span class="fn">push</span>(<span class="nu">20</span>);
+    <span class="va">s</span>.<span class="fn">push</span>(<span class="nu">30</span>);
+    <span class="cm">// Stack: bottom [10, 20, 30] top</span>
+
+    <span class="va">cout</span> &lt;&lt; <span class="st">"Top: "</span> &lt;&lt; <span class="va">s</span>.<span class="fn">top</span>() &lt;&lt; <span class="va">endl</span>; <span class="cm">// 30</span>
+    <span class="va">cout</span> &lt;&lt; <span class="st">"Size: "</span> &lt;&lt; <span class="va">s</span>.<span class="fn">size</span>() &lt;&lt; <span class="va">endl</span>; <span class="cm">// 3</span>
+
+    <span class="cm">// ALWAYS check before pop!</span>
+    <span class="kw">if</span> (!<span class="va">s</span>.<span class="fn">empty</span>()) {
+        <span class="ty">int</span> <span class="va">val</span> = <span class="va">s</span>.<span class="fn">top</span>(); <span class="cm">// get value FIRST</span>
+        <span class="va">s</span>.<span class="fn">pop</span>();            <span class="cm">// then remove</span>
+        <span class="va">cout</span> &lt;&lt; <span class="st">"Popped: "</span> &lt;&lt; <span class="va">val</span> &lt;&lt; <span class="va">endl</span>; <span class="cm">// 30</span>
+    }
+
+    <span class="cm">// Drain the stack</span>
+    <span class="kw">while</span> (!<span class="va">s</span>.<span class="fn">empty</span>()) {
+        <span class="va">cout</span> &lt;&lt; <span class="va">s</span>.<span class="fn">top</span>() &lt;&lt; <span class="st">" "</span>;
+        <span class="va">s</span>.<span class="fn">pop</span>();
+    }
+    <span class="cm">// Output: 20 10</span>
+    <span class="kw">return</span> <span class="nu">0</span>;
+}</pre>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="arr-stack">
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <div class="code-lang">C++ · Array Implementation</div>
+      </div>
+      <pre><span class="inc">#include &lt;iostream&gt;</span>
+<span class="kw">using namespace</span> <span class="va">std</span>;
+
+<span class="kw">class</span> <span class="ty">Stack</span> {
+    <span class="ty">int</span> <span class="va">arr</span>[<span class="nu">1000</span>];
+    <span class="ty">int</span> <span class="va">topIdx</span> = -<span class="nu">1</span>;  <span class="cm">// -1 means empty</span>
+
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">push</span>(<span class="ty">int</span> <span class="va">x</span>) {
+        <span class="kw">if</span> (<span class="va">topIdx</span> == <span class="nu">999</span>) { <span class="va">cout</span> &lt;&lt; <span class="st">"Stack Overflow!\n"</span>; <span class="kw">return</span>; }
+        <span class="va">arr</span>[++<span class="va">topIdx</span>] = <span class="va">x</span>;
+    }
+
+    <span class="ty">void</span> <span class="fn">pop</span>() {
+        <span class="kw">if</span> (<span class="fn">empty</span>()) { <span class="va">cout</span> &lt;&lt; <span class="st">"Stack Underflow!\n"</span>; <span class="kw">return</span>; }
+        <span class="va">topIdx</span>--;
+    }
+
+    <span class="ty">int</span> <span class="fn">top</span>() { <span class="kw">return</span> <span class="va">arr</span>[<span class="va">topIdx</span>]; }
+
+    <span class="ty">bool</span> <span class="fn">empty</span>() { <span class="kw">return</span> <span class="va">topIdx</span> == -<span class="nu">1</span>; }
+
+    <span class="ty">int</span> <span class="fn">size</span>() { <span class="kw">return</span> <span class="va">topIdx</span> + <span class="nu">1</span>; }
+};
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="ty">Stack</span> <span class="va">s</span>;
+    <span class="va">s</span>.<span class="fn">push</span>(<span class="nu">5</span>); <span class="va">s</span>.<span class="fn">push</span>(<span class="nu">10</span>); <span class="va">s</span>.<span class="fn">push</span>(<span class="nu">15</span>);
+    <span class="va">cout</span> &lt;&lt; <span class="va">s</span>.<span class="fn">top</span>() &lt;&lt; <span class="va">endl</span>; <span class="cm">// 15</span>
+    <span class="va">s</span>.<span class="fn">pop</span>();
+    <span class="va">cout</span> &lt;&lt; <span class="va">s</span>.<span class="fn">top</span>() &lt;&lt; <span class="va">endl</span>; <span class="cm">// 10</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="ll-stack">
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <div class="code-lang">C++ · Linked List Implementation</div>
+      </div>
+      <pre><span class="inc">#include &lt;iostream&gt;</span>
+<span class="kw">using namespace</span> <span class="va">std</span>;
+
+<span class="kw">struct</span> <span class="ty">Node</span> {
+    <span class="ty">int</span> <span class="va">data</span>;
+    <span class="ty">Node</span>* <span class="va">next</span>;
+    <span class="fn">Node</span>(<span class="ty">int</span> <span class="va">val</span>) : <span class="fn">data</span>(<span class="va">val</span>), <span class="fn">next</span>(<span class="kw">nullptr</span>) {}
+};
+
+<span class="kw">class</span> <span class="ty">Stack</span> {
+    <span class="ty">Node</span>* <span class="va">topNode</span> = <span class="kw">nullptr</span>;
+    <span class="ty">int</span> <span class="va">sz</span> = <span class="nu">0</span>;
+
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">push</span>(<span class="ty">int</span> <span class="va">x</span>) {
+        <span class="ty">Node</span>* <span class="va">newNode</span> = <span class="kw">new</span> <span class="fn">Node</span>(<span class="va">x</span>);
+        <span class="va">newNode</span>-&gt;<span class="va">next</span> = <span class="va">topNode</span>;  <span class="cm">// point to old top</span>
+        <span class="va">topNode</span> = <span class="va">newNode</span>;        <span class="cm">// update top</span>
+        <span class="va">sz</span>++;
+    }
+
+    <span class="ty">void</span> <span class="fn">pop</span>() {
+        <span class="kw">if</span> (<span class="fn">empty</span>()) <span class="kw">return</span>;
+        <span class="ty">Node</span>* <span class="va">tmp</span> = <span class="va">topNode</span>;
+        <span class="va">topNode</span> = <span class="va">topNode</span>-&gt;<span class="va">next</span>;
+        <span class="kw">delete</span> <span class="va">tmp</span>;  <span class="cm">// free memory!</span>
+        <span class="va">sz</span>--;
+    }
+
+    <span class="ty">int</span> <span class="fn">top</span>() { <span class="kw">return</span> <span class="va">topNode</span>-&gt;<span class="va">data</span>; }
+    <span class="ty">bool</span> <span class="fn">empty</span>() { <span class="kw">return</span> <span class="va">topNode</span> == <span class="kw">nullptr</span>; }
+    <span class="ty">int</span> <span class="fn">size</span>() { <span class="kw">return</span> <span class="va">sz</span>; }
+};</pre>
+    </div>
+  </div>
+</section>
+
+<!-- STACK INTERACTIVE -->
+<section class="reveal">
+  <div class="section-tag">01.04 — Interactive</div>
+  <h3>Try it yourself — Stack Simulator</h3>
+  <p>Push elements onto the stack and pop them off. Watch the LIFO order in action!</p>
+
+  <div class="visualizer">
+    <div class="viz-title">Stack Visualizer</div>
+    <div class="viz-controls">
+      <input type="number" class="viz-input" id="stack-input" placeholder="value" min="-999" max="999">
+      <button class="viz-btn push" onclick="stackPush()">Push</button>
+      <button class="viz-btn pop" id="stack-pop-btn" onclick="stackPop()">Pop</button>
+      <button class="viz-btn pop" id="stack-top-btn" onclick="stackPeek()">Peek Top</button>
+      <button class="viz-btn pop" onclick="stackClear()">Clear</button>
+      <span style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-left:auto;">
+        Size: <span id="stack-size" style="color:var(--stack-color);font-weight:700;">0</span>
+      </span>
+    </div>
+    <div class="stack-viz" id="stack-viz">
+      <div class="empty-msg" id="stack-empty-msg">Stack is empty — push something!</div>
+    </div>
+    <div class="viz-log" id="stack-log">Waiting for operation...</div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CHAPTER 2: QUEUE ═══════════════════ -->
+<div id="queue">
+<div class="divider" style="margin-top:2rem"></div>
+
+<div class="chapter-header reveal">
+  <div class="ch-num">Chapter 02 / Queue</div>
+  <h2><span style="color:var(--queue-color)">Queue</span> — FIFO Discipline</h2>
+  <p>Fair by design. The first one in is the first one served — just like a real-world line.</p>
+</div>
+
+<section class="reveal">
+  <div class="section-tag">02.01 — Concept</div>
+  <h3>What is a Queue?</h3>
+  <p>A <strong>Queue</strong> is a linear data structure that follows the <strong>FIFO</strong> (First In, First Out) principle. Elements are added at the <strong>rear</strong> (back) and removed from the <strong>front</strong>. Think of a checkout line at a supermarket — the first person who joined the line is the first to be served.</p>
+
+  <div class="info-box queue">
+    <div class="info-label">Key Insight</div>
+    A queue has <strong>two access points</strong>: the front (for removal) and the rear (for insertion). This ensures fairness — elements are processed in the exact order they arrived.
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card queue-card">
+      <div class="card-icon">🏦</div>
+      <div class="card-title">Real-world analogy</div>
+      <h3 style="font-size:1rem;margin-bottom:0.5rem;">Bank Queue</h3>
+      <p style="font-size:0.8rem;">People join at the back. The cashier serves from the front. Nobody can cut the line — this is FIFO.</p>
+    </div>
+    <div class="concept-card queue-card">
+      <div class="card-icon">🖨️</div>
+      <div class="card-title">Classic Example</div>
+      <h3 style="font-size:1rem;margin-bottom:0.5rem;">Print Spooler</h3>
+      <p style="font-size:0.8rem;">Documents sent to a printer queue up and are printed in the order they were sent.</p>
+    </div>
+    <div class="concept-card queue-card">
+      <div class="card-icon">🌐</div>
+      <div class="card-title">CS Core</div>
+      <h3 style="font-size:1rem;margin-bottom:0.5rem;">BFS Graph Traversal</h3>
+      <p style="font-size:0.8rem;">Breadth-First Search uses a queue to explore nodes level by level — an essential algorithm for shortest paths.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="reveal">
+  <div class="section-tag">02.02 — Operations</div>
+  <h3>Core Queue Operations</h3>
+
+  <table class="ops-table">
+    <thead>
+      <tr>
+        <th>Operation</th>
+        <th>STL Method</th>
+        <th>What it does</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="op-name queue-op">enqueue / push</td>
+        <td><code>q.push(x)</code></td>
+        <td>Add element x to the rear</td>
+        <td class="o1">O(1)</td>
+      </tr>
+      <tr>
+        <td class="op-name queue-op">dequeue / pop</td>
+        <td><code>q.pop()</code></td>
+        <td>Remove element from the front</td>
+        <td class="o1">O(1)</td>
+      </tr>
+      <tr>
+        <td class="op-name queue-op">front()</td>
+        <td><code>q.front()</code></td>
+        <td>Access the front element (no removal)</td>
+        <td class="o1">O(1)</td>
+      </tr>
+      <tr>
+        <td class="op-name queue-op">back()</td>
+        <td><code>q.back()</code></td>
+        <td>Access the rear element (no removal)</td>
+        <td class="o1">O(1)</td>
+      </tr>
+      <tr>
+        <td class="op-name queue-op">empty()</td>
+        <td><code>q.empty()</code></td>
+        <td>Returns true if queue is empty</td>
+        <td class="o1">O(1)</td>
+      </tr>
+      <tr>
+        <td class="op-name queue-op">size()</td>
+        <td><code>q.size()</code></td>
+        <td>Returns number of elements</td>
+        <td class="o1">O(1)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box note">
+    <div class="info-label">💡 Bonus: deque and priority_queue</div>
+    C++ also offers <strong>deque&lt;T&gt;</strong> (double-ended queue — push/pop from both ends) and <strong>priority_queue&lt;T&gt;</strong> (max-heap by default — largest element always at top). Mastering all three makes you unstoppable.
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="reveal">
+  <div class="section-tag">02.03 — Implementation</div>
+  <h3>Queue in C++ — Three Ways</h3>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab(this, 'stl-queue')">STL queue&lt;&gt;</button>
+    <button class="tab-btn" onclick="switchTab(this, 'circ-queue')">Circular Array</button>
+    <button class="tab-btn" onclick="switchTab(this, 'deq-queue')">deque & priority</button>
+  </div>
+
+  <div class="tab-pane active" id="stl-queue">
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <div class="code-lang">C++ · STL Queue</div>
+      </div>
+      <pre><span class="inc">#include &lt;iostream&gt;</span>
+<span class="inc">#include &lt;queue&gt;</span>
+<span class="kw">using namespace</span> <span class="va">std</span>;
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="va">queue</span>&lt;<span class="ty">int</span>&gt; <span class="va">q</span>;
+
+    <span class="cm">// push: enqueue at rear</span>
+    <span class="va">q</span>.<span class="fn">push</span>(<span class="nu">1</span>);
+    <span class="va">q</span>.<span class="fn">push</span>(<span class="nu">2</span>);
+    <span class="va">q</span>.<span class="fn">push</span>(<span class="nu">3</span>);
+    <span class="cm">// Queue: front [1, 2, 3] rear</span>
+
+    <span class="va">cout</span> &lt;&lt; <span class="st">"Front: "</span> &lt;&lt; <span class="va">q</span>.<span class="fn">front</span>() &lt;&lt; <span class="va">endl</span>; <span class="cm">// 1</span>
+    <span class="va">cout</span> &lt;&lt; <span class="st">"Back:  "</span> &lt;&lt; <span class="va">q</span>.<span class="fn">back</span>()  &lt;&lt; <span class="va">endl</span>; <span class="cm">// 3</span>
+
+    <span class="cm">// pop: dequeue from front</span>
+    <span class="va">q</span>.<span class="fn">pop</span>();
+    <span class="va">cout</span> &lt;&lt; <span class="st">"After pop, front: "</span> &lt;&lt; <span class="va">q</span>.<span class="fn">front</span>() &lt;&lt; <span class="va">endl</span>; <span class="cm">// 2</span>
+
+    <span class="cm">// Drain the queue</span>
+    <span class="kw">while</span> (!<span class="va">q</span>.<span class="fn">empty</span>()) {
+        <span class="va">cout</span> &lt;&lt; <span class="va">q</span>.<span class="fn">front</span>() &lt;&lt; <span class="st">" "</span>;
+        <span class="va">q</span>.<span class="fn">pop</span>();
+    }
+    <span class="cm">// Output: 2 3</span>
+    <span class="kw">return</span> <span class="nu">0</span>;
+}</pre>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="circ-queue">
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <div class="code-lang">C++ · Circular Array Queue</div>
+      </div>
+      <pre><span class="cm">// Circular array avoids wasted space after dequeue!</span>
+<span class="kw">class</span> <span class="ty">CircularQueue</span> {
+    <span class="ty">int</span> <span class="va">arr</span>[<span class="nu">1000</span>];
+    <span class="ty">int</span> <span class="va">front</span> = <span class="nu">0</span>, <span class="va">rear</span> = <span class="nu">0</span>, <span class="va">sz</span> = <span class="nu">0</span>;
+    <span class="ty">const</span> <span class="ty">int</span> <span class="va">CAP</span> = <span class="nu">1000</span>;
+
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">push</span>(<span class="ty">int</span> <span class="va">x</span>) {
+        <span class="kw">if</span> (<span class="va">sz</span> == <span class="va">CAP</span>) { <span class="va">cout</span> &lt;&lt; <span class="st">"Full!\n"</span>; <span class="kw">return</span>; }
+        <span class="va">arr</span>[<span class="va">rear</span>] = <span class="va">x</span>;
+        <span class="va">rear</span> = (<span class="va">rear</span> + <span class="nu">1</span>) % <span class="va">CAP</span>;  <span class="cm">// wrap around!</span>
+        <span class="va">sz</span>++;
+    }
+
+    <span class="ty">void</span> <span class="fn">pop</span>() {
+        <span class="kw">if</span> (<span class="fn">empty</span>()) { <span class="va">cout</span> &lt;&lt; <span class="st">"Empty!\n"</span>; <span class="kw">return</span>; }
+        <span class="va">front</span> = (<span class="va">front</span> + <span class="nu">1</span>) % <span class="va">CAP</span>;  <span class="cm">// wrap around!</span>
+        <span class="va">sz</span>--;
+    }
+
+    <span class="ty">int</span>  <span class="fn">front_val</span>() { <span class="kw">return</span> <span class="va">arr</span>[<span class="va">front</span>]; }
+    <span class="ty">bool</span> <span class="fn">empty</span>()     { <span class="kw">return</span> <span class="va">sz</span> == <span class="nu">0</span>; }
+    <span class="ty">int</span>  <span class="fn">size</span>()      { <span class="kw">return</span> <span class="va">sz</span>; }
+};
+
+<span class="cm">// Why circular? A naive array wastes space after pop().
+// Circular array reuses dequeued slots by wrapping rear and
+// front with modulo — space-efficient O(1) operations!</span></pre>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="deq-queue">
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <div class="code-lang">C++ · deque & priority_queue</div>
+      </div>
+      <pre><span class="inc">#include &lt;deque&gt;</span>
+<span class="inc">#include &lt;queue&gt;</span>
+
+<span class="cm">// ── deque: double-ended queue ──────────────────────────</span>
+<span class="va">deque</span>&lt;<span class="ty">int</span>&gt; <span class="va">dq</span>;
+<span class="va">dq</span>.<span class="fn">push_back</span>(<span class="nu">10</span>);   <span class="cm">// add rear</span>
+<span class="va">dq</span>.<span class="fn">push_front</span>(<span class="nu">5</span>);   <span class="cm">// add front  → [5, 10]</span>
+<span class="va">dq</span>.<span class="fn">pop_front</span>();      <span class="cm">// remove front → [10]</span>
+<span class="va">dq</span>.<span class="fn">pop_back</span>();       <span class="cm">// remove rear  → []</span>
+<span class="cm">// Key use: sliding window maximum!</span>
+
+<span class="cm">// ── priority_queue (MAX heap by default) ──────────────</span>
+<span class="va">priority_queue</span>&lt;<span class="ty">int</span>&gt; <span class="va">pq</span>;
+<span class="va">pq</span>.<span class="fn">push</span>(<span class="nu">3</span>); <span class="va">pq</span>.<span class="fn">push</span>(<span class="nu">1</span>); <span class="va">pq</span>.<span class="fn">push</span>(<span class="nu">7</span>); <span class="va">pq</span>.<span class="fn">push</span>(<span class="nu">2</span>);
+<span class="va">cout</span> &lt;&lt; <span class="va">pq</span>.<span class="fn">top</span>(); <span class="cm">// 7 (always the maximum!)</span>
+
+<span class="cm">// ── MIN heap: negate values or use comparator ─────────</span>
+<span class="va">priority_queue</span>&lt;<span class="ty">int</span>, <span class="va">vector</span>&lt;<span class="ty">int</span>&gt;, <span class="va">greater</span>&lt;<span class="ty">int</span>&gt;&gt; <span class="va">minHeap</span>;
+<span class="va">minHeap</span>.<span class="fn">push</span>(<span class="nu">3</span>); <span class="va">minHeap</span>.<span class="fn">push</span>(<span class="nu">1</span>); <span class="va">minHeap</span>.<span class="fn">push</span>(<span class="nu">7</span>);
+<span class="va">cout</span> &lt;&lt; <span class="va">minHeap</span>.<span class="fn">top</span>(); <span class="cm">// 1 (minimum!)</span>
+<span class="cm">// Use for: Dijkstra, K smallest/largest elements, merge K sorted</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- QUEUE INTERACTIVE -->
+<section class="reveal">
+  <div class="section-tag">02.04 — Interactive</div>
+  <h3>Try it yourself — Queue Simulator</h3>
+  <p>Enqueue elements into the queue and dequeue them. See FIFO in action!</p>
+
+  <div class="visualizer">
+    <div class="viz-title">Queue Visualizer</div>
+    <div class="viz-controls">
+      <input type="number" class="viz-input" id="queue-input" placeholder="value" min="-999" max="999">
+      <button class="viz-btn enq" onclick="queueEnq()">Enqueue</button>
+      <button class="viz-btn deq" id="queue-deq-btn" onclick="queueDeq()">Dequeue</button>
+      <button class="viz-btn deq" onclick="queuePeek()">Peek Front</button>
+      <button class="viz-btn deq" onclick="queueClear()">Clear</button>
+      <span style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-left:auto;">
+        Size: <span id="queue-size" style="color:var(--queue-color);font-weight:700;">0</span>
+      </span>
+    </div>
+    <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--text-muted);margin-bottom:0.5rem;display:flex;justify-content:space-between;">
+      <span style="color:var(--queue-color)">← DEQUEUE from FRONT</span>
+      <span style="color:var(--queue-color)">ENQUEUE at REAR →</span>
+    </div>
+    <div class="queue-viz" id="queue-viz">
+      <div class="empty-msg" id="queue-empty-msg">Queue is empty — enqueue something!</div>
+    </div>
+    <div class="viz-log" id="queue-log">Waiting for operation...</div>
+  </div>
+</section>
+</div>
+
+<!-- ═══════════════════ CHAPTER 3: APPLICATIONS ═══════════════════ -->
+<div id="applications">
+<div class="divider"></div>
+
+<div class="chapter-header reveal">
+  <div class="ch-num">Chapter 03 / Applications</div>
+  <h2>Real-World <span style="color:var(--accent)">Applications</span></h2>
+  <p>Where do stacks and queues actually show up? Everywhere. Here's what you must know for interviews.</p>
+</div>
+
+<section class="reveal">
+  <div class="rw-grid">
+    <div class="rw-card">
+      <div class="rw-icon">🔢</div>
+      <div class="rw-title">Balanced Parentheses</div>
+      <div class="rw-sub">Check if brackets are balanced using a stack. Push on open, pop and match on close.</div>
+      <div class="rw-tag s">Stack</div>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon">🔢</div>
+      <div class="rw-title">Infix → Postfix</div>
+      <div class="rw-sub">Convert expressions using operator precedence with a stack (Shunting Yard algorithm).</div>
+      <div class="rw-tag s">Stack</div>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon">↩️</div>
+      <div class="rw-title">Undo/Redo</div>
+      <div class="rw-sub">Text editors use two stacks — one for undo, one for redo operations.</div>
+      <div class="rw-tag s">Stack</div>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon">📊</div>
+      <div class="rw-title">Next Greater Element</div>
+      <div class="rw-sub">Classic monotonic stack pattern — find the next element greater than each one.</div>
+      <div class="rw-tag s">Stack</div>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon">🌳</div>
+      <div class="rw-title">BFS (Graph/Tree)</div>
+      <div class="rw-sub">Level-order traversal, shortest path in unweighted graphs — all use a queue.</div>
+      <div class="rw-tag q">Queue</div>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon">🖥️</div>
+      <div class="rw-title">CPU Scheduling</div>
+      <div class="rw-sub">Round-robin scheduling uses a circular queue to manage processes fairly.</div>
+      <div class="rw-tag q">Queue</div>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon">📡</div>
+      <div class="rw-title">Network Buffers</div>
+      <div class="rw-sub">Packets queue up and are processed in arrival order — classic FIFO behavior.</div>
+      <div class="rw-tag q">Queue</div>
+    </div>
+    <div class="rw-card">
+      <div class="rw-icon">🪟</div>
+      <div class="rw-title">Sliding Window Max</div>
+      <div class="rw-sub">Deque-based monotonic queue for finding the max in every sliding window — O(n)!</div>
+      <div class="rw-tag q">deque</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CHAPTER 4: PATTERNS ═══════════════════ -->
+<div id="patterns">
+<div class="divider"></div>
+<div class="chapter-header reveal">
+  <div class="ch-num">Chapter 04 / Patterns</div>
+  <h2>Must-Know <span style="color:var(--accent)">Patterns</span></h2>
+  <p>These are the canonical algorithmic patterns that appear again and again in interviews.</p>
+</div>
+
+<section class="reveal">
+  <div class="section-tag">04.01 — Stack Pattern</div>
+  <h3>Balanced Parentheses — The Classic</h3>
+  <p>Given a string of brackets, determine if it's valid. This is the #1 stack interview problem. Every bracket that opens must be closed in the correct order.</p>
+
+  <div class="algo-steps">
+    <div class="algo-step">
+      <div class="algo-step-content">
+        <div class="algo-step-title">Scan left to right</div>
+        <p>Iterate through each character in the string one by one.</p>
+      </div>
+    </div>
+    <div class="algo-step">
+      <div class="algo-step-content">
+        <div class="algo-step-title">Push opening brackets</div>
+        <p>If char is <code>(</code>, <code>[</code>, or <code>{</code> — push it onto the stack.</p>
+      </div>
+    </div>
+    <div class="algo-step">
+      <div class="algo-step-content">
+        <div class="algo-step-title">Pop and match closing brackets</div>
+        <p>If char is a closing bracket, check if stack is non-empty and top matches. If not → invalid!</p>
+      </div>
+    </div>
+    <div class="algo-step">
+      <div class="algo-step-content">
+        <div class="algo-step-title">Final check</div>
+        <p>After scanning, if the stack is empty → valid. Non-empty means unclosed brackets → invalid.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <div class="code-dots"><span></span><span></span><span></span></div>
+      <div class="code-lang">C++ · Balanced Parentheses</div>
+    </div>
+    <pre><span class="inc">#include &lt;stack&gt;</span>
+<span class="inc">#include &lt;string&gt;</span>
+<span class="kw">using namespace</span> <span class="va">std</span>;
+
+<span class="ty">bool</span> <span class="fn">isValid</span>(<span class="ty">string</span> <span class="va">s</span>) {
+    <span class="va">stack</span>&lt;<span class="ty">char</span>&gt; <span class="va">st</span>;
+
+    <span class="kw">for</span> (<span class="ty">char</span> <span class="va">c</span> : <span class="va">s</span>) {
+        <span class="kw">if</span> (<span class="va">c</span> == <span class="st">'('</span> || <span class="va">c</span> == <span class="st">'['</span> || <span class="va">c</span> == <span class="st">'{'</span>) {
+            <span class="va">st</span>.<span class="fn">push</span>(<span class="va">c</span>);  <span class="cm">// push opener</span>
+        } <span class="kw">else</span> {
+            <span class="cm">// closing bracket — must match top</span>
+            <span class="kw">if</span> (<span class="va">st</span>.<span class="fn">empty</span>()) <span class="kw">return false</span>;
+            <span class="ty">char</span> <span class="va">top</span> = <span class="va">st</span>.<span class="fn">top</span>(); <span class="va">st</span>.<span class="fn">pop</span>();
+            <span class="kw">if</span> (<span class="va">c</span> == <span class="st">')'</span> &amp;&amp; <span class="va">top</span> != <span class="st">'('</span>) <span class="kw">return false</span>;
+            <span class="kw">if</span> (<span class="va">c</span> == <span class="st">']'</span> &amp;&amp; <span class="va">top</span> != <span class="st">'['</span>) <span class="kw">return false</span>;
+            <span class="kw">if</span> (<span class="va">c</span> == <span class="st">'}'</span> &amp;&amp; <span class="va">top</span> != <span class="st">'{'</span>) <span class="kw">return false</span>;
+        }
+    }
+    <span class="kw">return</span> <span class="va">st</span>.<span class="fn">empty</span>(); <span class="cm">// valid only if no unclosed brackets</span>
+}
+
+<span class="cm">// isValid("({[]})") → true
+// isValid("([)]")   → false
+// isValid("{[]")    → false</span></pre>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="section-tag">04.02 — Stack Pattern</div>
+  <h3>Next Greater Element — Monotonic Stack</h3>
+  <p>For each element, find the next element to its right that is greater. Brute force is O(n²). Monotonic stack solves it in <strong>O(n)</strong>.</p>
+
+  <div class="info-box stack">
+    <div class="info-label">Core Idea</div>
+    Maintain a stack that is always <strong>decreasing</strong> from bottom to top. When a larger element arrives, it becomes the "next greater" for everything smaller that's been waiting on the stack.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <div class="code-dots"><span></span><span></span><span></span></div>
+      <div class="code-lang">C++ · Next Greater Element — O(n)</div>
+    </div>
+    <pre><span class="inc">#include &lt;vector&gt;</span>
+<span class="inc">#include &lt;stack&gt;</span>
+<span class="kw">using namespace</span> <span class="va">std</span>;
+
+<span class="va">vector</span>&lt;<span class="ty">int</span>&gt; <span class="fn">nextGreater</span>(<span class="va">vector</span>&lt;<span class="ty">int</span>&gt;&amp; <span class="va">nums</span>) {
+    <span class="ty">int</span> <span class="va">n</span> = <span class="va">nums</span>.<span class="fn">size</span>();
+    <span class="va">vector</span>&lt;<span class="ty">int</span>&gt; <span class="va">result</span>(<span class="va">n</span>, -<span class="nu">1</span>); <span class="cm">// default: no greater element</span>
+    <span class="va">stack</span>&lt;<span class="ty">int</span>&gt; <span class="va">st</span>; <span class="cm">// stores indices</span>
+
+    <span class="kw">for</span> (<span class="ty">int</span> <span class="va">i</span> = <span class="nu">0</span>; <span class="va">i</span> &lt; <span class="va">n</span>; <span class="va">i</span>++) {
+        <span class="cm">// pop while current element is greater than stack top</span>
+        <span class="kw">while</span> (!<span class="va">st</span>.<span class="fn">empty</span>() &amp;&amp; <span class="va">nums</span>[<span class="va">i</span>] &gt; <span class="va">nums</span>[<span class="va">st</span>.<span class="fn">top</span>()]) {
+            <span class="va">result</span>[<span class="va">st</span>.<span class="fn">top</span>()] = <span class="va">nums</span>[<span class="va">i</span>]; <span class="cm">// found next greater!</span>
+            <span class="va">st</span>.<span class="fn">pop</span>();
+        }
+        <span class="va">st</span>.<span class="fn">push</span>(<span class="va">i</span>);
+    }
+    <span class="cm">// remaining in stack have no next greater → stay -1</span>
+    <span class="kw">return</span> <span class="va">result</span>;
+}
+
+<span class="cm">// Input:  [2, 1, 5, 3, 6]
+// Output: [5, 5, 6, 6, -1]
+// Trace:
+//   i=0: push 0.  stack=[0]
+//   i=1: push 1.  stack=[0,1]
+//   i=2: nums[2]=5 > nums[1]=1 → result[1]=5, pop
+//         nums[2]=5 > nums[0]=2 → result[0]=5, pop
+//         push 2.  stack=[2]
+//   i=3: 3 < 5, push 3.  stack=[2,3]
+//   i=4: nums[4]=6 > nums[3]=3 → result[3]=6, pop
+//         nums[4]=6 > nums[2]=5 → result[2]=6, pop
+//         push 4.  stack=[4]</span></pre>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="section-tag">04.03 — Queue Pattern</div>
+  <h3>BFS — Level Order Traversal</h3>
+  <p>Breadth-First Search is the definitive queue algorithm. Use it for shortest paths in unweighted graphs, level-by-level tree traversal, and reachability problems.</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <div class="code-dots"><span></span><span></span><span></span></div>
+      <div class="code-lang">C++ · BFS — Binary Tree Level Order</div>
+    </div>
+    <pre><span class="inc">#include &lt;queue&gt;</span>
+<span class="inc">#include &lt;vector&gt;</span>
+<span class="kw">using namespace</span> <span class="va">std</span>;
+
+<span class="kw">struct</span> <span class="ty">TreeNode</span> {
+    <span class="ty">int</span> <span class="va">val</span>;
+    <span class="ty">TreeNode</span> *<span class="va">left</span>, *<span class="va">right</span>;
+    <span class="fn">TreeNode</span>(<span class="ty">int</span> <span class="va">x</span>) : <span class="fn">val</span>(<span class="va">x</span>), <span class="fn">left</span>(<span class="kw">nullptr</span>), <span class="fn">right</span>(<span class="kw">nullptr</span>) {}
+};
+
+<span class="va">vector</span>&lt;<span class="va">vector</span>&lt;<span class="ty">int</span>&gt;&gt; <span class="fn">levelOrder</span>(<span class="ty">TreeNode</span>* <span class="va">root</span>) {
+    <span class="va">vector</span>&lt;<span class="va">vector</span>&lt;<span class="ty">int</span>&gt;&gt; <span class="va">result</span>;
+    <span class="kw">if</span> (!<span class="va">root</span>) <span class="kw">return</span> <span class="va">result</span>;
+
+    <span class="va">queue</span>&lt;<span class="ty">TreeNode</span>*&gt; <span class="va">q</span>;
+    <span class="va">q</span>.<span class="fn">push</span>(<span class="va">root</span>);
+
+    <span class="kw">while</span> (!<span class="va">q</span>.<span class="fn">empty</span>()) {
+        <span class="ty">int</span> <span class="va">levelSize</span> = <span class="va">q</span>.<span class="fn">size</span>(); <span class="cm">// nodes at current level</span>
+        <span class="va">vector</span>&lt;<span class="ty">int</span>&gt; <span class="va">level</span>;
+
+        <span class="kw">for</span> (<span class="ty">int</span> <span class="va">i</span> = <span class="nu">0</span>; <span class="va">i</span> &lt; <span class="va">levelSize</span>; <span class="va">i</span>++) {
+            <span class="ty">TreeNode</span>* <span class="va">node</span> = <span class="va">q</span>.<span class="fn">front</span>(); <span class="va">q</span>.<span class="fn">pop</span>();
+            <span class="va">level</span>.<span class="fn">push_back</span>(<span class="va">node</span>-&gt;<span class="va">val</span>);
+
+            <span class="kw">if</span> (<span class="va">node</span>-&gt;<span class="va">left</span>)  <span class="va">q</span>.<span class="fn">push</span>(<span class="va">node</span>-&gt;<span class="va">left</span>);
+            <span class="kw">if</span> (<span class="va">node</span>-&gt;<span class="va">right</span>) <span class="va">q</span>.<span class="fn">push</span>(<span class="va">node</span>-&gt;<span class="va">right</span>);
+        }
+        <span class="va">result</span>.<span class="fn">push_back</span>(<span class="va">level</span>);
+    }
+    <span class="kw">return</span> <span class="va">result</span>;
+}
+<span class="cm">// Key pattern: snapshot levelSize BEFORE the inner loop
+// This separates one level from the next!</span></pre>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="section-tag">04.04 — Tricky Pattern</div>
+  <h3>Implement Queue using Two Stacks</h3>
+  <p>A classic interview question that tests your deep understanding of both structures. The trick: two reversals cancel out — a stack reverses order; reversing twice restores FIFO.</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <div class="code-dots"><span></span><span></span><span></span></div>
+      <div class="code-lang">C++ · Queue using 2 Stacks (Amortized O(1))</div>
+    </div>
+    <pre><span class="inc">#include &lt;stack&gt;</span>
+<span class="kw">using namespace</span> <span class="va">std</span>;
+
+<span class="kw">class</span> <span class="ty">MyQueue</span> {
+    <span class="va">stack</span>&lt;<span class="ty">int</span>&gt; <span class="va">inbox</span>;   <span class="cm">// for push</span>
+    <span class="va">stack</span>&lt;<span class="ty">int</span>&gt; <span class="va">outbox</span>;  <span class="cm">// for pop/front</span>
+
+    <span class="ty">void</span> <span class="fn">transfer</span>() {
+        <span class="cm">// move all from inbox → outbox (reverses order)</span>
+        <span class="kw">if</span> (<span class="va">outbox</span>.<span class="fn">empty</span>()) {
+            <span class="kw">while</span> (!<span class="va">inbox</span>.<span class="fn">empty</span>()) {
+                <span class="va">outbox</span>.<span class="fn">push</span>(<span class="va">inbox</span>.<span class="fn">top</span>());
+                <span class="va">inbox</span>.<span class="fn">pop</span>();
+            }
+        }
+    }
+
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">push</span>(<span class="ty">int</span> <span class="va">x</span>) {
+        <span class="va">inbox</span>.<span class="fn">push</span>(<span class="va">x</span>); <span class="cm">// always push to inbox</span>
+    }
+
+    <span class="ty">int</span> <span class="fn">pop</span>() {
+        <span class="fn">transfer</span>();           <span class="cm">// lazy transfer</span>
+        <span class="ty">int</span> <span class="va">val</span> = <span class="va">outbox</span>.<span class="fn">top</span>();
+        <span class="va">outbox</span>.<span class="fn">pop</span>();
+        <span class="kw">return</span> <span class="va">val</span>;
+    }
+
+    <span class="ty">int</span> <span class="fn">front</span>() {
+        <span class="fn">transfer</span>();
+        <span class="kw">return</span> <span class="va">outbox</span>.<span class="fn">top</span>();
+    }
+
+    <span class="ty">bool</span> <span class="fn">empty</span>() {
+        <span class="kw">return</span> <span class="va">inbox</span>.<span class="fn">empty</span>() &amp;&amp; <span class="va">outbox</span>.<span class="fn">empty</span>();
+    }
+};
+
+<span class="cm">// Why amortized O(1)?
+// Each element is pushed once (O(1)) and
+// transferred at most once (O(1)).
+// Across N operations: total work = O(N) → avg O(1) per op.</span></pre>
+  </div>
+
+  <div class="info-box note">
+    <div class="info-label">Bonus: Implement Stack using Two Queues</div>
+    The reverse problem: use two queues to mimic a stack. Push to queue2, then move everything from queue1 to queue2, then swap. Push is O(n), pop is O(1).
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="section-tag">04.05 — Advanced Pattern</div>
+  <h3>Min Stack — O(1) getMin()</h3>
+  <p>Design a stack that supports push, pop, top, and retrieving the minimum element in constant time. The trick: maintain a parallel stack tracking minimums.</p>
+
+  <div class="code-wrap">
+    <div class="code-header">
+      <div class="code-dots"><span></span><span></span><span></span></div>
+      <div class="code-lang">C++ · Min Stack</div>
+    </div>
+    <pre><span class="kw">class</span> <span class="ty">MinStack</span> {
+    <span class="va">stack</span>&lt;<span class="ty">int</span>&gt; <span class="va">main_s</span>;  <span class="cm">// normal stack</span>
+    <span class="va">stack</span>&lt;<span class="ty">int</span>&gt; <span class="va">min_s</span>;   <span class="cm">// tracks minimums</span>
+
+<span class="kw">public</span>:
+    <span class="ty">void</span> <span class="fn">push</span>(<span class="ty">int</span> <span class="va">val</span>) {
+        <span class="va">main_s</span>.<span class="fn">push</span>(<span class="va">val</span>);
+        <span class="cm">// push to min_s if it's the new minimum (or min_s empty)</span>
+        <span class="kw">if</span> (<span class="va">min_s</span>.<span class="fn">empty</span>() || <span class="va">val</span> &lt;= <span class="va">min_s</span>.<span class="fn">top</span>()) {
+            <span class="va">min_s</span>.<span class="fn">push</span>(<span class="va">val</span>);
+        }
+    }
+
+    <span class="ty">void</span> <span class="fn">pop</span>() {
+        <span class="kw">if</span> (<span class="va">main_s</span>.<span class="fn">top</span>() == <span class="va">min_s</span>.<span class="fn">top</span>()) {
+            <span class="va">min_s</span>.<span class="fn">pop</span>(); <span class="cm">// remove from min_s only if it was minimum</span>
+        }
+        <span class="va">main_s</span>.<span class="fn">pop</span>();
+    }
+
+    <span class="ty">int</span> <span class="fn">top</span>()    { <span class="kw">return</span> <span class="va">main_s</span>.<span class="fn">top</span>(); }
+    <span class="ty">int</span> <span class="fn">getMin</span>() { <span class="kw">return</span> <span class="va">min_s</span>.<span class="fn">top</span>(); } <span class="cm">// O(1)!</span>
+};
+
+<span class="cm">// push(5), push(3), push(7), push(2)
+// main_s: [5, 3, 7, 2]
+// min_s:  [5, 3,    2]  ← only new minimums tracked
+// getMin() → 2 in O(1)!</span></pre>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- ═══════════════════ CHAPTER 5: QUIZ ═══════════════════ -->
+<div id="quiz">
+<div class="divider"></div>
+<div class="chapter-header reveal">
+  <div class="ch-num">Chapter 05 / Quiz</div>
+  <h2>Test Your <span style="color:var(--accent)">Knowledge</span></h2>
+  <p>Can you answer these without scrolling back? Be honest with yourself!</p>
+</div>
+
+<section class="reveal">
+
+  <!-- Q1 -->
+  <div class="quiz-box" style="margin-bottom:1.5rem">
+    <div class="quiz-q">Q1. After executing the following: <code>stack&lt;int&gt; s; s.push(1); s.push(2); s.push(3); s.pop(); cout &lt;&lt; s.top();</code> — what is the output?</div>
+    <div class="quiz-options" id="q1-opts">
+      <button class="quiz-opt" onclick="answer(this,'q1','A')"><span class="quiz-opt-key">A</span> 1</button>
+      <button class="quiz-opt" onclick="answer(this,'q1','B')"><span class="quiz-opt-key">B</span> 2</button>
+      <button class="quiz-opt" onclick="answer(this,'q1','C')"><span class="quiz-opt-key">C</span> 3</button>
+      <button class="quiz-opt" onclick="answer(this,'q1','D')"><span class="quiz-opt-key">D</span> Undefined behaviour</button>
+    </div>
+    <div class="quiz-feedback" id="q1-fb"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-box" style="margin-bottom:1.5rem">
+    <div class="quiz-q">Q2. In the "Queue using Two Stacks" implementation, why is the time complexity said to be <em>amortized</em> O(1) rather than O(1)?</div>
+    <div class="quiz-options" id="q2-opts">
+      <button class="quiz-opt" onclick="answer(this,'q2','A')"><span class="quiz-opt-key">A</span> Because each element can be transferred at most once, so over N ops total work is O(N)</button>
+      <button class="quiz-opt" onclick="answer(this,'q2','B')"><span class="quiz-opt-key">B</span> Because the stacks use dynamic memory allocation</button>
+      <button class="quiz-opt" onclick="answer(this,'q2','C')"><span class="quiz-opt-key">C</span> Because pop() individually takes O(n) in the worst case</button>
+      <button class="quiz-opt" onclick="answer(this,'q2','D')"><span class="quiz-opt-key">D</span> Both A and C are correct</button>
+    </div>
+    <div class="quiz-feedback" id="q2-fb"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-box" style="margin-bottom:1.5rem">
+    <div class="quiz-q">Q3. Which data structure is best for finding the <strong>shortest path</strong> in an <em>unweighted</em> graph?</div>
+    <div class="quiz-options" id="q3-opts">
+      <button class="quiz-opt" onclick="answer(this,'q3','A')"><span class="quiz-opt-key">A</span> Stack (DFS)</button>
+      <button class="quiz-opt" onclick="answer(this,'q3','B')"><span class="quiz-opt-key">B</span> Queue (BFS)</button>
+      <button class="quiz-opt" onclick="answer(this,'q3','C')"><span class="quiz-opt-key">C</span> Priority Queue (Dijkstra)</button>
+      <button class="quiz-opt" onclick="answer(this,'q3','D')"><span class="quiz-opt-key">D</span> Deque</button>
+    </div>
+    <div class="quiz-feedback" id="q3-fb"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="quiz-box" style="margin-bottom:1.5rem">
+    <div class="quiz-q">Q4. What will <code>isValid("({[]})")</code> return using the balanced parentheses algorithm?</div>
+    <div class="quiz-options" id="q4-opts">
+      <button class="quiz-opt" onclick="answer(this,'q4','A')"><span class="quiz-opt-key">A</span> false — the brackets don't match</button>
+      <button class="quiz-opt" onclick="answer(this,'q4','B')"><span class="quiz-opt-key">B</span> true — correctly nested</button>
+      <button class="quiz-opt" onclick="answer(this,'q4','C')"><span class="quiz-opt-key">C</span> Depends on implementation</button>
+      <button class="quiz-opt" onclick="answer(this,'q4','D')"><span class="quiz-opt-key">D</span> Compilation error</button>
+    </div>
+    <div class="quiz-feedback" id="q4-fb"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="quiz-box">
+    <div class="quiz-q">Q5. In the Min Stack, why do we push to <code>min_s</code> only when the new value is <code>&lt;=</code> the current min (not just <code>&lt;</code>)?</div>
+    <div class="quiz-options" id="q5-opts">
+      <button class="quiz-opt" onclick="answer(this,'q5','A')"><span class="quiz-opt-key">A</span> Typo — it should be strictly less than</button>
+      <button class="quiz-opt" onclick="answer(this,'q5','B')"><span class="quiz-opt-key">B</span> To handle duplicate minimum values correctly — when we pop one, the other must still be tracked</button>
+      <button class="quiz-opt" onclick="answer(this,'q5','C')"><span class="quiz-opt-key">C</span> To avoid stack overflow</button>
+      <button class="quiz-opt" onclick="answer(this,'q5','D')"><span class="quiz-opt-key">D</span> It doesn't matter — both work identically</button>
+    </div>
+    <div class="quiz-feedback" id="q5-fb"></div>
+  </div>
+
+</section>
+</div>
+
+<!-- ═══════════════════ CHAPTER 6: CHEATSHEET ═══════════════════ -->
+<div id="cheatsheet">
+<div class="divider"></div>
+<div class="chapter-header reveal">
+  <div class="ch-num">Chapter 06 / Cheatsheet</div>
+  <h2>Quick <span style="color:var(--accent)">Reference</span></h2>
+  <p>Screenshot this. Pin it. Know it by heart.</p>
+</div>
+
+<section class="reveal">
+  <div class="cheat-grid">
+    <div class="cheat-card s">
+      <h4>Stack&lt;T&gt; — STL Reference</h4>
+      <div class="cheat-row">
+        <span class="cheat-op">push(x)</span>
+        <span class="cheat-code">s.push(x)</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-op">pop()</span>
+        <span class="cheat-code">s.pop()</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-op">top()</span>
+        <span class="cheat-code">s.top()</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-op">empty()</span>
+        <span class="cheat-code">s.empty()</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-op">size()</span>
+        <span class="cheat-code">s.size()</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+    </div>
+
+    <div class="cheat-card q">
+      <h4>Queue&lt;T&gt; — STL Reference</h4>
+      <div class="cheat-row">
+        <span class="cheat-op">enqueue</span>
+        <span class="cheat-code">q.push(x)</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-op">dequeue</span>
+        <span class="cheat-code">q.pop()</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-op">front()</span>
+        <span class="cheat-code">q.front()</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-op">back()</span>
+        <span class="cheat-code">q.back()</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+      <div class="cheat-row">
+        <span class="cheat-op">empty()</span>
+        <span class="cheat-code">q.empty()</span>
+        <span class="cheat-tc o1">O(1)</span>
+      </div>
+    </div>
+
+    <div class="cheat-card s">
+      <h4>Stack — When to use</h4>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Balanced brackets</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Expression evaluation</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Monotonic stack (NGE)</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ DFS (iterative)</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Undo / function calls</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Min/Max stack tracking</span>
+      </div>
+    </div>
+
+    <div class="cheat-card q">
+      <h4>Queue — When to use</h4>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ BFS traversal</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Shortest path (unweighted)</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Level-order traversal</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Sliding window (deque)</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Task scheduling</span>
+      </div>
+      <div class="cheat-row" style="border:none;padding:0.3rem 0;">
+        <span class="cheat-op" style="font-size:0.72rem">✓ Priority queue / heaps</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box note" style="margin-top:2rem">
+    <div class="info-label">🎯 Golden Rules to Never Forget</div>
+    1. Always check <strong>empty()</strong> before calling top() / front() / pop() — calling on empty = undefined behaviour.<br>
+    2. STL pop() does NOT return a value — call top()/front() first!<br>
+    3. Monotonic stack → maintain sorted order → solve NGE, histogram, trapping rain water.<br>
+    4. BFS = Queue. DFS = Stack (explicit or call stack).<br>
+    5. deque = both push_front/back + pop_front/back — perfect for sliding window problems.
+  </div>
+</section>
+</div>
+
+<footer>
+  <div style="margin-bottom:0.5rem;font-size:1rem;">🔥</div>
+  Stack & Queue Masterclass · C++ Edition<br>
+  <span style="color:var(--accent)">Every operation is O(1). Every interview question is now yours.</span>
+</footer>
+
+<script>
+// ── PROGRESS BAR ──
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const scrolled = doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100;
+  document.getElementById('progress-bar').style.width = scrolled + '%';
+});
+
+// ── SCROLL REVEAL ──
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.08 });
+revealEls.forEach(el => observer.observe(el));
+
+// ── TABS ──
+function switchTab(btn, paneId) {
+  const nav = btn.parentElement;
+  const section = nav.parentElement;
+  nav.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  section.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById(paneId).classList.add('active');
+}
+
+// ── STACK SIMULATOR ──
+let stackData = [];
+
+function updateStackViz() {
+  const viz = document.getElementById('stack-viz');
+  const emptyMsg = document.getElementById('stack-empty-msg');
+  const sizeEl = document.getElementById('stack-size');
+  sizeEl.textContent = stackData.length;
+  const existingItems = viz.querySelectorAll('.stack-item');
+  existingItems.forEach(i => i.remove());
+
+  if (stackData.length === 0) {
+    emptyMsg.style.display = '';
+    document.getElementById('stack-pop-btn').disabled = true;
+    document.getElementById('stack-top-btn').disabled = true;
+  } else {
+    emptyMsg.style.display = 'none';
+    document.getElementById('stack-pop-btn').disabled = false;
+    document.getElementById('stack-top-btn').disabled = false;
+    stackData.forEach((val, i) => {
+      const el = document.createElement('div');
+      el.className = 'stack-item';
+      el.innerHTML = val + (i === stackData.length - 1 ? '<span class="stack-top-label">← TOP</span>' : '');
+      viz.appendChild(el);
+    });
+  }
+}
+
+function stackLog(msg, type = 'ok') {
+  const log = document.getElementById('stack-log');
+  log.innerHTML = `<span class="log-${type}">${msg}</span>`;
+}
+
+function stackPush() {
+  const input = document.getElementById('stack-input');
+  const val = input.value.trim();
+  if (val === '') { stackLog('Enter a value first!', 'err'); return; }
+  if (stackData.length >= 8) { stackLog('Stack is full (max 8 for demo)!', 'err'); return; }
+  stackData.push(parseInt(val));
+  updateStackViz();
+  stackLog(`push(${val}) — added ${val} to top. Size: ${stackData.length}`, 'ok');
+  input.value = '';
+  input.focus();
+}
+
+function stackPop() {
+  if (stackData.length === 0) { stackLog('Cannot pop — stack is empty! (Underflow)', 'err'); return; }
+  const val = stackData[stackData.length - 1];
+  const viz = document.getElementById('stack-viz');
+  const items = viz.querySelectorAll('.stack-item');
+  const topItem = items[items.length - 1];
+  topItem.classList.add('popping');
+  setTimeout(() => {
+    stackData.pop();
+    updateStackViz();
+    stackLog(`pop() — removed ${val} from top. Size: ${stackData.length}`, 'ok');
+  }, 220);
+}
+
+function stackPeek() {
+  if (stackData.length === 0) { stackLog('Stack is empty — nothing to peek!', 'err'); return; }
+  stackLog(`top() = ${stackData[stackData.length - 1]}`, 'ok');
+}
+
+function stackClear() {
+  stackData = [];
+  updateStackViz();
+  stackLog('Stack cleared.', 'ok');
+}
+
+document.getElementById('stack-input').addEventListener('keydown', e => { if (e.key === 'Enter') stackPush(); });
+updateStackViz();
+
+// ── QUEUE SIMULATOR ──
+let queueData = [];
+
+function updateQueueViz() {
+  const viz = document.getElementById('queue-viz');
+  const emptyMsg = document.getElementById('queue-empty-msg');
+  const sizeEl = document.getElementById('queue-size');
+  sizeEl.textContent = queueData.length;
+  const existingItems = viz.querySelectorAll('.queue-item');
+  existingItems.forEach(i => i.remove());
+
+  if (queueData.length === 0) {
+    emptyMsg.style.display = '';
+    document.getElementById('queue-deq-btn').disabled = true;
+  } else {
+    emptyMsg.style.display = 'none';
+    document.getElementById('queue-deq-btn').disabled = false;
+    queueData.forEach((val, i) => {
+      const el = document.createElement('div');
+      el.className = 'queue-item';
+      el.textContent = val;
+      if (i === 0) {
+        const lbl = document.createElement('span');
+        lbl.className = 'queue-front-label';
+        lbl.textContent = 'front';
+        el.appendChild(lbl);
+      }
+      if (i === queueData.length - 1 && queueData.length > 1) {
+        const lbl = document.createElement('span');
+        lbl.className = 'queue-rear-label';
+        lbl.textContent = 'rear';
+        el.appendChild(lbl);
+      }
+      viz.appendChild(el);
+    });
+  }
+}
+
+function queueLog(msg, type = 'ok') {
+  document.getElementById('queue-log').innerHTML = `<span class="log-${type}">${msg}</span>`;
+}
+
+function queueEnq() {
+  const input = document.getElementById('queue-input');
+  const val = input.value.trim();
+  if (val === '') { queueLog('Enter a value first!', 'err'); return; }
+  if (queueData.length >= 8) { queueLog('Queue is full (max 8 for demo)!', 'err'); return; }
+  queueData.push(parseInt(val));
+  updateQueueViz();
+  queueLog(`push(${val}) — enqueued ${val} at rear. Size: ${queueData.length}`, 'ok');
+  input.value = '';
+  input.focus();
+}
+
+function queueDeq() {
+  if (queueData.length === 0) { queueLog('Cannot dequeue — queue is empty!', 'err'); return; }
+  const val = queueData[0];
+  const viz = document.getElementById('queue-viz');
+  const frontItem = viz.querySelector('.queue-item');
+  if (frontItem) frontItem.classList.add('dequeuing');
+  setTimeout(() => {
+    queueData.shift();
+    updateQueueViz();
+    queueLog(`pop() — dequeued ${val} from front. Size: ${queueData.length}`, 'ok');
+  }, 220);
+}
+
+function queuePeek() {
+  if (queueData.length === 0) { queueLog('Queue is empty — nothing to peek!', 'err'); return; }
+  queueLog(`front() = ${queueData[0]}`, 'ok');
+}
+
+function queueClear() {
+  queueData = [];
+  updateQueueViz();
+  queueLog('Queue cleared.', 'ok');
+}
+
+document.getElementById('queue-input').addEventListener('keydown', e => { if (e.key === 'Enter') queueEnq(); });
+updateQueueViz();
+
+// ── QUIZ ──
+const answers = {
+  q1: { correct: 'B', feedback: { correct: '✓ Correct! 3 is pushed last, then popped. top() then returns 2 (LIFO). push(1)→push(2)→push(3)→pop() removes 3 → top() = 2.', wrong: '✗ Not quite. Remember LIFO! push(1), push(2), push(3) → pop removes the TOP (3) → now top is 2.' }},
+  q2: { correct: 'D', feedback: { correct: '✓ Correct! Each pop() CAN take O(n) in the worst case (when all elements transfer), but each element transfers at most once across all operations, making the average O(1).', wrong: '✗ Both A and C are right! A individual pop can be O(n) (worst case), but amortized over N ops each element transfers once → O(N) total → O(1) average.' }},
+  q3: { correct: 'B', feedback: { correct: '✓ Correct! BFS (Queue) guarantees the shortest path in unweighted graphs because it explores level by level — all paths of length k before length k+1.', wrong: '✗ For unweighted graphs, BFS with a Queue is optimal. DFS might find A path, not THE shortest. Dijkstra works for weighted graphs (overkill here).' }},
+  q4: { correct: 'B', feedback: { correct: '✓ Correct! "({[]})" is properly nested — open outer, open middle, open inner, close inner, close middle, close outer. Stack will be empty at end → true.', wrong: '✗ Actually it returns true. The brackets are properly nested: ( contains { contains [] }, which correctly closes in reverse order.' }},
+  q5: { correct: 'B', feedback: { correct: '✓ Correct! Consider: push(1), push(1). min_s: [1, 1]. Pop one 1 — we pop from min_s, leaving [1]. getMin() correctly returns 1. With strictly <, the second 1 would not be tracked, and getMin() would fail!', wrong: '✗ The answer is B. Duplicates! If min_s only tracks strictly smaller values and you push the same minimum twice, popping once removes it from min_s — but the other copy in main_s should still show as minimum.' }}
+};
+
+function answer(btn, qId, choice) {
+  const opts = document.getElementById(qId + '-opts');
+  if (opts.classList.contains('answered')) return;
+  opts.classList.add('answered');
+  const correct = answers[qId].correct;
+  const isCorrect = choice === correct;
+  opts.querySelectorAll('.quiz-opt').forEach(b => {
+    b.style.cursor = 'default';
+    const bChoice = b.textContent.trim()[0];
+    if (bChoice === correct) b.classList.add('correct');
+  });
+  if (!isCorrect) btn.classList.add('wrong');
+  const fb = document.getElementById(qId + '-fb');
+  fb.className = 'quiz-feedback show ' + (isCorrect ? 'correct' : 'wrong');
+  fb.textContent = answers[qId].feedback[isCorrect ? 'correct' : 'wrong'];
+}
+</script>
+
+</body>
+</html>
