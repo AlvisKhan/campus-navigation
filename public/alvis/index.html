@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Private Vault · Archives</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,7 +10,7 @@
   <style>
     :root {
       --bg: #0b0f19;
-      --card-bg: rgba(22, 30, 49, 0.7);
+      --card-bg: rgba(22, 30, 49, 0.75);
       --card-border: rgba(255, 255, 255, 0.08);
       --accent: #38bdf8;
       --accent-glow: rgba(56, 189, 248, 0.25);
@@ -35,20 +35,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 48px 20px 80px;
+      padding: 32px 16px 80px;
       position: relative;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Ambient background glows */
+    /* Ambient background glow */
     .bg-glow-1 {
       position: fixed;
-      top: -100px;
+      top: -120px;
       left: 50%;
       transform: translateX(-50%);
-      width: 600px;
+      width: min(600px, 100vw);
       height: 400px;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(11, 15, 25, 0) 70%);
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.14) 0%, rgba(11, 15, 25, 0) 70%);
       z-index: -1;
       pointer-events: none;
     }
@@ -60,7 +61,7 @@
 
     /* Header */
     .header {
-      margin-bottom: 32px;
+      margin-bottom: 24px;
       text-align: center;
     }
 
@@ -68,21 +69,21 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 9999px;
       background: var(--tag-bg);
       border: 1px solid var(--tag-border);
       color: var(--tag-text);
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 700;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .badge-dot {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: #38bdf8;
       box-shadow: 0 0 8px #38bdf8;
@@ -95,34 +96,35 @@
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: clamp(1.85rem, 5vw, 2.5rem);
       font-weight: 800;
       letter-spacing: -0.03em;
       background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+      line-height: 1.2;
     }
 
     .subheading {
       color: var(--text-muted);
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       letter-spacing: 0.04em;
     }
 
     /* Search & Stats Bar */
     .controls-bar {
       display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      align-items: center;
-      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+      align-items: stretch;
+      width: 100%;
     }
 
     .search-input-wrapper {
       flex: 1;
-      min-width: 240px;
       position: relative;
+      min-width: 0;
     }
 
     .search-input {
@@ -130,12 +132,13 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 12px 16px 12px 42px;
+      padding: 12px 14px 12px 38px;
       color: var(--text);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       outline: none;
       transition: all 0.2s ease;
       backdrop-filter: blur(12px);
+      -webkit-appearance: none;
     }
 
     .search-input:focus {
@@ -145,30 +148,47 @@
 
     .search-icon {
       position: absolute;
-      left: 14px;
+      left: 12px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-muted);
-      font-size: 1rem;
+      font-size: 0.95rem;
       pointer-events: none;
     }
 
     .files-count {
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       font-family: 'JetBrains Mono', monospace;
-      padding: 6px 12px;
+      padding: 0 12px;
       background: rgba(255, 255, 255, 0.04);
-      border-radius: 8px;
+      border-radius: 12px;
       border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    /* Filter Chips */
+    /* Filter Chips Ribbon */
+    .filter-chips-container {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      margin-bottom: 16px;
+      padding-bottom: 4px;
+    }
+
+    .filter-chips-container::-webkit-scrollbar {
+      display: none;
+    }
+
     .filter-chips {
       display: flex;
       gap: 8px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+      width: max-content;
     }
 
     .filter-chip {
@@ -177,13 +197,14 @@
       color: var(--text-muted);
       padding: 6px 12px;
       border-radius: 8px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s ease;
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      white-space: nowrap;
     }
 
     .filter-chip:hover, .filter-chip.active {
@@ -197,35 +218,39 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      width: 100%;
     }
 
     .file-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 16px 20px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      text-decoration: none;
-      color: inherit;
       backdrop-filter: blur(12px);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
+      overflow: hidden;
     }
 
     .file-card:hover {
       transform: translateY(-2px);
       border-color: rgba(56, 189, 248, 0.4);
       background: rgba(30, 41, 67, 0.85);
-      box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45), 0 0 16px var(--accent-glow);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 16px var(--accent-glow);
+    }
+
+    /* Desktop Layout */
+    .file-card-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 18px;
     }
 
     .file-card-left {
       display: flex;
-      align-items: center;
-      gap: 16px;
+      align-items: flex-start;
+      gap: 14px;
       min-width: 0;
       flex: 1;
       text-decoration: none;
@@ -233,16 +258,17 @@
     }
 
     .file-icon-box {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       flex-shrink: 0;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--card-border);
+      margin-top: 2px;
     }
 
     .file-info {
@@ -251,31 +277,32 @@
     }
 
     .file-title {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
       color: #ffffff;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      margin-bottom: 6px;
+      line-height: 1.35;
+      word-break: break-word;
     }
 
     .file-meta {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
       font-family: 'JetBrains Mono', monospace;
       flex-wrap: wrap;
+      line-height: 1.4;
     }
 
     .ext-badge {
       font-weight: 700;
       padding: 2px 6px;
       border-radius: 4px;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       letter-spacing: 0.04em;
+      flex-shrink: 0;
     }
 
     /* Format colors */
@@ -291,12 +318,13 @@
 
     .file-path {
       color: var(--text-muted);
+      word-break: break-all;
     }
 
     .file-card-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-shrink: 0;
     }
 
@@ -304,16 +332,17 @@
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--card-border);
       color: var(--text);
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 0.85rem;
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       transition: all 0.15s ease;
       text-decoration: none;
+      white-space: nowrap;
     }
 
     .btn-action:hover {
@@ -322,9 +351,64 @@
       border-color: var(--accent);
     }
 
+    .btn-action-primary {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.3);
+      color: #7dd3fc;
+    }
+
+    /* Mobile Responsive Optimizations */
+    @media (max-width: 640px) {
+      body {
+        padding: 24px 12px 60px;
+      }
+
+      .file-card-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 14px;
+      }
+
+      .file-card-left {
+        gap: 12px;
+      }
+
+      .file-icon-box {
+        width: 38px;
+        height: 38px;
+        font-size: 1.15rem;
+      }
+
+      .file-title {
+        font-size: 0.95rem;
+        margin-bottom: 5px;
+      }
+
+      .file-meta {
+        font-size: 0.72rem;
+        gap: 6px;
+      }
+
+      .file-card-right {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      .btn-action {
+        justify-content: center;
+        padding: 9px 10px;
+        font-size: 0.8rem;
+      }
+    }
+
     .empty-state {
       text-align: center;
-      padding: 60px 20px;
+      padding: 50px 20px;
       background: var(--card-bg);
       border: 1px dashed var(--card-border);
       border-radius: 16px;
@@ -332,24 +416,25 @@
     }
 
     .empty-icon {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
     }
 
     .toast {
       position: fixed;
-      bottom: 24px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
       background: #0284c7;
       color: #ffffff;
-      padding: 10px 20px;
+      padding: 10px 18px;
       border-radius: 9999px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 100;
+      white-space: nowrap;
     }
 
     .toast.show {
@@ -377,22 +462,24 @@
           type="text" 
           id="search-input" 
           class="search-input" 
-          placeholder="Search by title, filename, or format..." 
+          placeholder="Search by title, name, or type..." 
           autocomplete="off"
         />
       </div>
       <div id="files-count" class="files-count">0 FILES</div>
     </div>
 
-    <!-- Category Filter Chips -->
-    <div id="filter-chips" class="filter-chips">
-      <button class="filter-chip active" data-filter="all">All Documents</button>
-      <button class="filter-chip" data-filter="pdf">📕 PDF</button>
-      <button class="filter-chip" data-filter="word">📘 Word</button>
-      <button class="filter-chip" data-filter="presentation">📙 PPT</button>
-      <button class="filter-chip" data-filter="spreadsheet">📊 Excel</button>
-      <button class="filter-chip" data-filter="web">📄 HTML</button>
-      <button class="filter-chip" data-filter="document">📝 Text</button>
+    <!-- Category Filter Chips Ribbon -->
+    <div class="filter-chips-container">
+      <div id="filter-chips" class="filter-chips">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="web">📄 HTML</button>
+        <button class="filter-chip" data-filter="pdf">📕 PDF</button>
+        <button class="filter-chip" data-filter="word">📘 Word</button>
+        <button class="filter-chip" data-filter="presentation">📙 PPT</button>
+        <button class="filter-chip" data-filter="spreadsheet">📊 Excel</button>
+        <button class="filter-chip" data-filter="document">📝 Text</button>
+      </div>
     </div>
 
     <div id="files-grid" class="files-grid">
@@ -401,8 +488,8 @@
 
     <div id="empty-state" class="empty-state" style="display: none;">
       <div class="empty-icon">📂</div>
-      <h3>No matching files found</h3>
-      <p>Try searching for a different keyword or upload files to <code>public/alvis/</code>.</p>
+      <h3 style="margin-bottom: 6px; color: #fff; font-size: 1.1rem;">No matching documents</h3>
+      <p style="font-size: 0.88rem;">Try a different search query or filter.</p>
     </div>
   </div>
 
@@ -421,13 +508,12 @@
         console.warn('Using fallback file list:', err);
         allFiles = [
           {
-            filename: 'nn12.html',
-            title: 'Neural Networks · Unit I & II Study Guide',
+            filename: 'sql-interview-prep.html',
+            title: 'sql://interview_prep',
             extension: 'HTML',
             category: 'web',
             icon: '📄',
-            sizeFormatted: '77 KB',
-            lastModified: new Date().toISOString()
+            sizeFormatted: '71 KB'
           }
         ];
       }
@@ -481,24 +567,26 @@
 
         return `
           <div class="file-card">
-            <a class="file-card-left" href="${fileUrl}" target="_blank" rel="noopener noreferrer">
-              <div class="file-icon-box">${icon}</div>
-              <div class="file-info">
-                <div class="file-title" title="${escapeHtml(file.title)}">${escapeHtml(file.title)}</div>
-                <div class="file-meta">
-                  <span class="ext-badge ${extClass}">${ext}</span>
-                  <span class="file-path">${escapeHtml(file.filename)}</span>
-                  ${file.sizeFormatted ? `<span>•</span><span>${file.sizeFormatted}</span>` : ''}
+            <div class="file-card-inner">
+              <a class="file-card-left" href="${fileUrl}" target="_blank" rel="noopener noreferrer">
+                <div class="file-icon-box">${icon}</div>
+                <div class="file-info">
+                  <div class="file-title">${escapeHtml(file.title)}</div>
+                  <div class="file-meta">
+                    <span class="ext-badge ${extClass}">${ext}</span>
+                    <span class="file-path">${escapeHtml(file.filename)}</span>
+                    ${file.sizeFormatted ? `<span>•</span><span>${file.sizeFormatted}</span>` : ''}
+                  </div>
                 </div>
-              </div>
-            </a>
-            <div class="file-card-right">
-              <button class="btn-action" onclick="copyLink('${fullUrl}', event)">
-                <span>🔗</span> Copy
-              </button>
-              <a class="btn-action" href="${fileUrl}" target="_blank" rel="noopener noreferrer">
-                <span>Open</span> ↗
               </a>
+              <div class="file-card-right">
+                <button class="btn-action" onclick="copyLink('${fullUrl}', event)" title="Copy direct URL">
+                  <span>🔗</span> Copy
+                </button>
+                <a class="btn-action btn-action-primary" href="${fileUrl}" target="_blank" rel="noopener noreferrer" title="Open in new tab">
+                  <span>Open</span> ↗
+                </a>
+              </div>
             </div>
           </div>
         `;
