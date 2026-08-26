@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Networks · Unit I & II Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560;9..144,680&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f2efe6;
+  --paper-dim:#e9e4d5;
+  --panel:#fffdf8;
+  --ink:#17223a;
+  --ink-soft:#4a5670;
+  --ink-faint:#7c869c;
+  --line:#d9d2bd;
+  --axon:#1c8a82;
+  --axon-dark:#0f5f59;
+  --spark:#d98a2b;
+  --spark-soft:#f4e2c0;
+  --danger:#b8503a;
+  --code-bg:#101a2e;
+  --code-ink:#dfe8ff;
+  --radius:10px;
+  --maxw:1180px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Source Sans 3', sans-serif;
+  font-size:16.5px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:'Fraunces', serif;
+  color:var(--ink);
+  line-height:1.15;
+  margin:0 0 .4em 0;
+}
+a{color:var(--axon-dark);}
+p{margin:.6em 0;}
+code, .mono{font-family:'IBM Plex Mono', monospace;}
+::selection{background:var(--spark-soft);}
+
+/* ---------- Layout shell ---------- */
+.shell{
+  display:grid;
+  grid-template-columns:270px 1fr;
+  max-width:var(--maxw);
+  margin:0 auto;
+}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr;}
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  position:sticky;
+  top:0;
+  align-self:start;
+  height:100vh;
+  overflow-y:auto;
+  padding:22px 16px 40px 8px;
+  border-right:1px solid var(--line);
+  scrollbar-width:thin;
+}
+@media (max-width:900px){
+  .sidebar{position:relative;height:auto;border-right:none;border-bottom:1px solid var(--line);}
+}
+.brand{
+  font-family:'Fraunces',serif;
+  font-weight:680;
+  font-size:1.15rem;
+  padding:4px 10px 14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:10px;
+}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--spark);display:inline-block;box-shadow:0 0 0 3px var(--spark-soft);}
+.navgroup{margin:16px 0 6px;padding:0 10px;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;}
+.navlist{list-style:none;margin:0;padding:0;}
+.navlist li a{
+  display:block;
+  padding:6px 10px;
+  margin:1px 0;
+  border-radius:7px;
+  color:var(--ink-soft);
+  text-decoration:none;
+  font-size:.92rem;
+  border-left:2px solid transparent;
+}
+.navlist li a:hover{background:var(--paper-dim);color:var(--ink);}
+.navlist li a.active{color:var(--axon-dark);background:var(--spark-soft);border-left:2px solid var(--spark);font-weight:600;}
+
+/* ---------- Main ---------- */
+main{padding:0 28px 80px;min-width:0;}
+@media (max-width:600px){main{padding:0 14px 60px;}}
+
+/* Hero */
+.hero{
+  padding:52px 0 30px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:34px;
+}
+.hero .eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.78rem;
+  color:var(--axon-dark);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.hero h1{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:680;max-width:14ch;}
+.hero p.lede{max-width:56ch;color:var(--ink-soft);font-size:1.05rem;}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;}
+@media (max-width:760px){.hero-grid{grid-template-columns:1fr;}}
+.hero-figure{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:10px;
+  text-align:center;
+}
+.hero-figure figcaption{font-size:.82rem;color:var(--ink-faint);margin-top:6px;}
+.hero-hint{font-size:.8rem;color:var(--ink-faint);margin-top:4px;}
+
+/* Unit banner */
+.unit-banner{
+  display:flex;align-items:baseline;gap:14px;
+  margin:60px 0 18px;
+  padding-bottom:10px;
+  border-bottom:2px solid var(--ink);
+}
+.unit-banner .num{font-family:'IBM Plex Mono',monospace;color:var(--spark);font-weight:600;font-size:1rem;}
+.unit-banner h2{font-size:1.6rem;margin:0;}
+.unit-banner .tag{margin-left:auto;font-size:.78rem;color:var(--ink-faint);font-family:'IBM Plex Mono',monospace;}
+
+/* Topic section */
+.topic{
+  margin:44px 0;
+  padding-top:8px;
+  scroll-margin-top:14px;
+}
+.topic .topic-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.topic .topic-num{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.78rem;
+  color:#fff;
+  background:var(--ink);
+  border-radius:5px;
+  padding:2px 7px;
+}
+.topic h3{font-size:1.35rem;margin:0;}
+.topic .kicker{color:var(--ink-faint);font-size:.85rem;margin:2px 0 14px;font-style:italic;}
+
+.two-col{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:start;}
+@media (max-width:800px){.two-col{grid-template-columns:1fr;}}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px;
+}
+.figure figcaption{font-size:.8rem;color:var(--ink-faint);text-align:center;margin-top:6px;}
+svg text{font-family:'IBM Plex Mono',monospace;}
+
+/* Callouts */
+.callout{
+  border-radius:var(--radius);
+  padding:14px 16px;
+  margin:16px 0;
+  border:1px solid var(--line);
+  border-left:4px solid var(--axon);
+  background:#eef6f4;
+}
+.callout.exam{border-left-color:var(--spark);background:var(--spark-soft);}
+.callout.exam .lbl{font-weight:700;color:#8a5a13;font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:4px;}
+.callout.tip .lbl{font-weight:700;color:var(--axon-dark);font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:4px;}
+.callout.warn{border-left-color:var(--danger);background:#fbeae5;}
+.callout.warn .lbl{font-weight:700;color:var(--danger);font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:4px;}
+.callout p{margin:.3em 0;}
+
+/* Formula box */
+.formula{
+  font-family:'IBM Plex Mono',monospace;
+  background:var(--code-bg);
+  color:var(--code-ink);
+  padding:14px 16px;
+  border-radius:8px;
+  overflow-x:auto;
+  font-size:.92rem;
+  margin:12px 0;
+}
+.formula .c{color:#8fb8ff;}
+.formula .g{color:#8fe0b8;}
+
+/* tables */
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem;}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);}
+th{font-family:'IBM Plex Mono',monospace;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);border-bottom:2px solid var(--ink);}
+tr:hover td{background:var(--paper-dim);}
+
+/* details / accordion */
+details{
+  border:1px solid var(--line);
+  border-radius:8px;
+  margin:10px 0;
+  background:var(--panel);
+  padding:0;
+}
+details summary{
+  cursor:pointer;
+  padding:11px 14px;
+  font-weight:600;
+  list-style:none;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+details summary::-webkit-details-marker{display:none;}
+details summary::before{
+  content:"+";
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--spark);
+  font-weight:700;
+  width:16px;
+}
+details[open] summary::before{content:"–";}
+details .body{padding:0 14px 14px;color:var(--ink-soft);}
+
+/* buttons */
+.btn{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.82rem;
+  border:1px solid var(--ink);
+  background:var(--panel);
+  color:var(--ink);
+  padding:7px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:background .15s, color .15s;
+}
+.btn:hover{background:var(--ink);color:#fff;}
+.btn.active{background:var(--axon);border-color:var(--axon);color:#fff;}
+.btn.primary{background:var(--axon);border-color:var(--axon-dark);color:#fff;}
+.btn.primary:hover{background:var(--axon-dark);}
+.btn.ghost{background:transparent;}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+
+/* interactive widgets */
+.widget{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--panel);
+  padding:16px;
+  margin:18px 0;
+}
+.widget .wtitle{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.74rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--axon-dark);
+  margin-bottom:10px;
+}
+canvas{max-width:100%;background:var(--paper);border-radius:8px;border:1px solid var(--line);touch-action:none;}
+.stat-row{display:flex;gap:18px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:.85rem;margin-top:10px;color:var(--ink-soft);}
+.stat-row b{color:var(--ink);}
+
+/* quiz */
+.quiz-q{margin:16px 0;padding-bottom:14px;border-bottom:1px dashed var(--line);}
+.quiz-q:last-child{border-bottom:none;}
+.quiz-q p.qtext{font-weight:600;margin-bottom:8px;}
+.quiz-opt{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;}
+.quiz-opt:hover{background:var(--paper-dim);}
+.quiz-opt input{margin-top:4px;}
+.quiz-feedback{font-size:.85rem;margin-top:6px;padding:8px 10px;border-radius:6px;display:none;}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.correct{background:#e3f3ea;color:#1e6b3d;}
+.quiz-feedback.wrong{background:#fbeae5;color:var(--danger);}
+.quiz-score{font-family:'IBM Plex Mono',monospace;font-weight:600;margin-top:10px;}
+
+/* footer */
+footer{
+  margin-top:70px;
+  padding:26px 0 10px;
+  border-top:1px solid var(--line);
+  color:var(--ink-faint);
+  font-size:.85rem;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+
+/* misc svg helpers */
+.lbl-text{fill:var(--ink-soft);font-size:11px;}
+.hl{fill:var(--spark);}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ============ SIDEBAR ============ -->
+  <nav class="sidebar" id="sidebar">
+    <div class="brand"><span class="dot"></span>NeuroNotes</div>
+
+    <div class="navgroup">Start</div>
+    <ul class="navlist">
+      <li><a href="#hero">Overview</a></li>
+    </ul>
+
+    <div class="navgroup">Unit I — Introduction</div>
+    <ul class="navlist">
+      <li><a href="#u1-bio">Biological neuron</a></li>
+      <li><a href="#u1-compute">Computational units</a></li>
+      <li><a href="#u1-mcp">McCulloch–Pitts &amp; thresholding</a></li>
+      <li><a href="#u1-perceptron">Linear perceptron</a></li>
+      <li><a href="#u1-pla">Perceptron learning algorithm</a></li>
+      <li><a href="#u1-linsep">Linear separability</a></li>
+      <li><a href="#u1-converge">Convergence theorem</a></li>
+      <li><a href="#u1-arch">Network architectures</a></li>
+      <li><a href="#u1-actfn">Activation functions</a></li>
+      <li><a href="#u1-rules">Basic learning rules</a></li>
+      <li><a href="#u1-quiz">Unit I quiz</a></li>
+    </ul>
+
+    <div class="navgroup">Unit II — Feedforward Nets</div>
+    <ul class="navlist">
+      <li><a href="#u2-mlp">Multilayer neural network</a></li>
+      <li><a href="#u2-gd">Gradient descent</a></li>
+      <li><a href="#u2-bp">Backpropagation</a></li>
+      <li><a href="#u2-erm">Empirical risk minimization</a></li>
+      <li><a href="#u2-reg">Regularization</a></li>
+      <li><a href="#u2-rbf">Radial basis function network</a></li>
+      <li><a href="#u2-quiz">Unit II quiz</a></li>
+    </ul>
+
+    <div class="navgroup">Exam Prep</div>
+    <ul class="navlist">
+      <li><a href="#exam-cheat">Formula cheat-sheet</a></li>
+      <li><a href="#exam-qa">Likely Q&amp;A bank</a></li>
+    </ul>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+
+    <section class="hero" id="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Unit I &amp; II · Study Guide</div>
+          <h1>Neural Networks, from a single spark to a full network.</h1>
+          <p class="lede">Everything from the biological neuron to backpropagation and RBF networks — with diagrams, an activation‑function explorer, a live perceptron trainer, and quizzes so you can actually check what stuck.</p>
+          <p class="hero-hint">Click the neuron on the right to make it fire →</p>
+        </div>
+        <figure class="hero-figure">
+          <svg id="heroNeuron" viewBox="0 0 360 240" width="100%" height="220" style="cursor:pointer;">
+            <!-- dendrites -->
+            <g stroke="#8a94ab" stroke-width="2" fill="none">
+              <path d="M40 60 Q70 70 95 95"/>
+              <path d="M30 100 Q65 100 95 105"/>
+              <path d="M40 150 Q70 130 95 115"/>
+              <path d="M55 185 Q80 150 100 125"/>
+            </g>
+            <!-- soma -->
+            <circle id="soma" cx="120" cy="110" r="30" fill="#eef6f4" stroke="#1c8a82" stroke-width="2.5"/>
+            <text x="120" y="115" text-anchor="middle" class="lbl-text" fill="#0f5f59" font-weight="600">soma</text>
+            <!-- axon -->
+            <path d="M150 108 L250 90" stroke="#8a94ab" stroke-width="3" fill="none"/>
+            <circle id="pulse" cx="150" cy="108" r="5" fill="#d98a2b" opacity="0"/>
+            <!-- axon terminal / synapse -->
+            <g stroke="#8a94ab" stroke-width="2" fill="none">
+              <path d="M250 90 L280 70"/>
+              <path d="M250 90 L285 92"/>
+              <path d="M250 90 L278 112"/>
+            </g>
+            <circle cx="282" cy="68" r="4" fill="#b8b0e6"/>
+            <circle cx="287" cy="92" r="4" fill="#b8b0e6"/>
+            <circle cx="280" cy="114" r="4" fill="#b8b0e6"/>
+            <text x="55" y="45" class="lbl-text">dendrites</text>
+            <text x="255" y="55" class="lbl-text">axon terminals</text>
+            <text x="160" y="80" class="lbl-text">axon</text>
+          </svg>
+          <figcaption>Biological neuron — click to fire an impulse from soma to synapse.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         UNIT I
+    ====================================================================== -->
+    <div class="unit-banner"><span class="num">UNIT I</span><h2>Introduction</h2><span class="tag">10 topics</span></div>
+
+    <!-- 1. Biological neuron -->
+    <div class="topic" id="u1-bio">
+      <div class="topic-head"><span class="topic-num">1.1</span><h3>Biological Neuron</h3></div>
+      <p class="kicker">The biological blueprint every artificial neuron copies.</p>
+      <div class="two-col">
+        <div>
+          <p>A biological neuron has four functional parts: <b>dendrites</b> collect incoming electrochemical signals from other neurons; the <b>soma</b> (cell body) integrates (sums) these signals; the <b>axon</b> carries the signal away once a firing threshold is crossed; and the <b>synapse</b> is the junction where the axon terminal meets the next neuron's dendrite, releasing neurotransmitters that either excite or inhibit the receiving neuron.</p>
+          <p>Two ideas from this biology carry straight into artificial neurons:</p>
+          <ul>
+            <li><b>Weighted summation</b> — synapses have different strengths, so not all inputs count equally.</li>
+            <li><b>All-or-none firing</b> — a neuron only fires (sends a spike) once its integrated input crosses a threshold — the seed of the activation function.</li>
+          </ul>
+          <div class="callout tip"><span class="lbl">Map it</span>
+            <p>Dendrites → inputs x₁…xₙ &nbsp;|&nbsp; Synaptic strength → weights w₁…wₙ &nbsp;|&nbsp; Soma summation → Σwᵢxᵢ + b &nbsp;|&nbsp; Firing threshold → activation function &nbsp;|&nbsp; Axon output → y</p>
+          </div>
+        </div>
+        <div class="panel figure">
+          <svg viewBox="0 0 300 200" width="100%">
+            <text x="150" y="18" text-anchor="middle" font-weight="700" font-size="12" fill="#17223a">Biological ↔ Artificial</text>
+            <rect x="10" y="35" width="120" height="140" rx="8" fill="#eef6f4" stroke="#1c8a82"/>
+            <text x="70" y="52" text-anchor="middle" class="lbl-text" font-weight="700">Biological</text>
+            <text x="20" y="75" class="lbl-text">Dendrites</text>
+            <text x="20" y="95" class="lbl-text">Soma</text>
+            <text x="20" y="115" class="lbl-text">Threshold</text>
+            <text x="20" y="135" class="lbl-text">Axon</text>
+            <text x="20" y="155" class="lbl-text">Synapse</text>
+            <rect x="170" y="35" width="120" height="140" rx="8" fill="#fdf3e3" stroke="#d98a2b"/>
+            <text x="230" y="52" text-anchor="middle" class="lbl-text" font-weight="700">Artificial</text>
+            <text x="180" y="75" class="lbl-text">Inputs xᵢ</text>
+            <text x="180" y="95" class="lbl-text">Σ wᵢxᵢ+b</text>
+            <text x="180" y="115" class="lbl-text">Activation f</text>
+            <text x="180" y="135" class="lbl-text">Output y</text>
+            <text x="180" y="155" class="lbl-text">Weight wᵢ</text>
+            <g stroke="#c8bfa4" stroke-dasharray="3 3">
+              <line x1="130" y1="70" x2="170" y2="70"/>
+              <line x1="130" y1="90" x2="170" y2="90"/>
+              <line x1="130" y1="110" x2="170" y2="110"/>
+              <line x1="130" y1="130" x2="170" y2="130"/>
+              <line x1="130" y1="150" x2="170" y2="150"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Computational units -->
+    <div class="topic" id="u1-compute">
+      <div class="topic-head"><span class="topic-num">1.2</span><h3>Idea of Computational Units</h3></div>
+      <p class="kicker">A neuron is just a small function.</p>
+      <p>A <b>computational unit</b> (artificial neuron) is a mathematical function that takes a vector of inputs, combines them, and produces an output. Every unit does two things, always in this order:</p>
+      <ol>
+        <li><b>Aggregation</b> — compute a net input, usually a weighted sum: <span class="mono">net = Σ wᵢxᵢ + b</span></li>
+        <li><b>Activation</b> — squash/transform the net input through a (usually nonlinear) function: <span class="mono">y = f(net)</span></li>
+      </ol>
+      <div class="formula">y = f( <span class="c">Σᵢ wᵢxᵢ</span> + <span class="g">b</span> )&nbsp;&nbsp;<span style="color:#9fb0cf">// w: weights, b: bias, f: activation</span></div>
+      <div class="callout exam"><span class="lbl">Exam point</span><p>Stacking many computational units in layers, each feeding the next, is literally what "neural network" means — a network of these small functions. Everything in Unit II builds on this one equation.</p></div>
+    </div>
+
+    <!-- 3. McCulloch-Pitts -->
+    <div class="topic" id="u1-mcp">
+      <div class="topic-head"><span class="topic-num">1.3</span><h3>McCulloch–Pitts Unit &amp; Thresholding Logic</h3></div>
+      <p class="kicker">1943 — the first mathematical model of a neuron.</p>
+      <div class="two-col">
+        <div>
+          <p>The <b>McCulloch–Pitts (M-P) neuron</b> takes <i>binary</i> inputs (0/1), and produces a binary output using a fixed threshold θ. Inputs can be <b>excitatory</b> (positive weight, encourages firing) or <b>inhibitory</b> (a single active inhibitory input forces the output to 0, regardless of everything else).</p>
+          <div class="formula">y = 1 if (Σ xᵢ ≥ θ) and no inhibitory input is active<br>y = 0 otherwise</div>
+          <p>With the right threshold θ, an M-P unit can implement basic logic gates:</p>
+          <table>
+            <tr><th>Gate</th><th>Inputs</th><th>Weights</th><th>θ</th></tr>
+            <tr><td>AND</td><td>x₁, x₂</td><td>1, 1</td><td>2</td></tr>
+            <tr><td>OR</td><td>x₁, x₂</td><td>1, 1</td><td>1</td></tr>
+            <tr><td>NOT</td><td>x₁ (inhibitory)</td><td>−1</td><td>0</td></tr>
+          </table>
+          <div class="callout warn"><span class="lbl">Limitation</span><p>M-P units have <b>fixed, hand-set weights and threshold</b> — there is no learning rule. They also only accept binary inputs. This is exactly the gap the Perceptron closes.</p></div>
+        </div>
+        <div class="panel figure">
+          <svg viewBox="0 0 260 220" width="100%">
+            <text x="130" y="16" text-anchor="middle" font-size="12" font-weight="700">M-P unit (AND gate, θ=2)</text>
+            <circle cx="30" cy="60" r="4" fill="#1c8a82"/><text x="10" y="55" class="lbl-text">x₁=1</text>
+            <circle cx="30" cy="140" r="4" fill="#1c8a82"/><text x="10" y="160" class="lbl-text">x₂=1</text>
+            <line x1="35" y1="60" x2="120" y2="95" stroke="#4a5670" stroke-width="2"/>
+            <line x1="35" y1="140" x2="120" y2="105" stroke="#4a5670" stroke-width="2"/>
+            <text x="65" y="70" class="lbl-text">w=1</text>
+            <text x="65" y="140" class="lbl-text">w=1</text>
+            <circle cx="140" cy="100" r="30" fill="#fdf3e3" stroke="#d98a2b" stroke-width="2.5"/>
+            <text x="140" y="96" text-anchor="middle" class="lbl-text" font-weight="700">Σ=2</text>
+            <text x="140" y="111" text-anchor="middle" class="lbl-text">θ=2</text>
+            <line x1="170" y1="100" x2="225" y2="100" stroke="#4a5670" stroke-width="2"/>
+            <text x="235" y="104" class="lbl-text" font-weight="700">y=1</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Linear perceptron -->
+    <div class="topic" id="u1-perceptron">
+      <div class="topic-head"><span class="topic-num">1.4</span><h3>Linear Perceptron</h3></div>
+      <p class="kicker">Rosenblatt, 1958 — the first neuron that could learn.</p>
+      <div class="two-col">
+        <div>
+          <p>The perceptron generalizes the M-P unit: inputs and weights are now <b>real-valued</b>, and the weights (and bias) are <b>learned from data</b> instead of hand-set. It computes a weighted sum and passes it through a hard threshold (step / sign) activation.</p>
+          <div class="formula">net = <span class="c">w</span>·<span class="c">x</span> + b&nbsp;&nbsp;=&nbsp;&nbsp; w₁x₁+w₂x₂+⋯+wₙxₙ+b<br>y = 1 if net ≥ 0, else 0 &nbsp;&nbsp;<span style="color:#9fb0cf">// step activation</span></div>
+          <p>Geometrically, <span class="mono">w·x + b = 0</span> is a <b>hyperplane</b> (a line in 2‑D) that splits the input space into the two output classes — the perceptron is a <b>linear classifier</b>.</p>
+        </div>
+        <div class="panel figure">
+          <svg viewBox="0 0 300 200" width="100%">
+            <circle cx="20" cy="40" r="4" fill="#1c8a82"/><text x="4" y="35" class="lbl-text">x₁</text>
+            <circle cx="20" cy="90" r="4" fill="#1c8a82"/><text x="4" y="85" class="lbl-text">x₂</text>
+            <circle cx="20" cy="140" r="4" fill="#1c8a82"/><text x="4" y="135" class="lbl-text">xₙ</text>
+            <circle cx="20" cy="180" r="4" fill="#d98a2b"/><text x="0" y="178" class="lbl-text">+1(bias)</text>
+            <line x1="24" y1="40" x2="120" y2="100" stroke="#4a5670" stroke-width="1.6"/>
+            <line x1="24" y1="90" x2="120" y2="100" stroke="#4a5670" stroke-width="1.6"/>
+            <line x1="24" y1="140" x2="120" y2="100" stroke="#4a5670" stroke-width="1.6"/>
+            <line x1="24" y1="180" x2="120" y2="100" stroke="#d98a2b" stroke-width="1.6"/>
+            <text x="55" y="55" class="lbl-text">w₁</text><text x="55" y="90" class="lbl-text">w₂</text><text x="55" y="130" class="lbl-text">wₙ</text>
+            <circle cx="140" cy="100" r="26" fill="#eef6f4" stroke="#1c8a82" stroke-width="2.5"/>
+            <text x="140" y="97" text-anchor="middle" class="lbl-text">Σ</text>
+            <text x="140" y="111" text-anchor="middle" class="lbl-text">step</text>
+            <line x1="166" y1="100" x2="230" y2="100" stroke="#4a5670" stroke-width="2"/>
+            <text x="240" y="104" class="lbl-text" font-weight="700">y</text>
+            <path d="M180 140 Q140 175 100 140" stroke="#b8503a" stroke-dasharray="3 3" fill="none"/>
+            <text x="90" y="188" class="lbl-text" fill="#b8503a">error feeds back to update w, b</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. PLA -->
+    <div class="topic" id="u1-pla">
+      <div class="topic-head"><span class="topic-num">1.5</span><h3>Perceptron Learning Algorithm (PLA)</h3></div>
+      <p class="kicker">How the weights actually get learned.</p>
+      <p>For every training example (x, t) where t is the true label (0/1 or −1/+1), compare the predicted output y to the target t and nudge the weights toward reducing the error.</p>
+      <div class="formula">
+        1&nbsp; initialize w, b (often to 0 or small random values)<br>
+        2&nbsp; <span class="c">for</span> each training sample (x, t):<br>
+        &nbsp;&nbsp;&nbsp; y = step(w·x + b)<br>
+        &nbsp;&nbsp;&nbsp; w ← w + η (t − y) x&nbsp;&nbsp;<span style="color:#9fb0cf">// η = learning rate</span><br>
+        &nbsp;&nbsp;&nbsp; b ← b + η (t − y)<br>
+        3&nbsp; repeat step 2 over the dataset until no errors (or max epochs)
+      </div>
+      <p>Only misclassified points cause an update — if <span class="mono">t = y</span>, <span class="mono">(t−y)=0</span> and nothing changes. The rule pushes the hyperplane <i>toward</i> misclassified positive points and <i>away</i> from misclassified negative points.</p>
+
+      <div class="widget">
+        <div class="wtitle">Interactive · Perceptron Playground</div>
+        <p style="margin-top:0">Click the canvas to drop points (choose a class below first), then hit <b>Train</b> to watch the perceptron learning algorithm find a separating line, epoch by epoch.</p>
+        <div class="btnrow">
+          <button class="btn active" id="classA" data-class="1">● Class A (add)</button>
+          <button class="btn" id="classB" data-class="0">○ Class B (add)</button>
+          <button class="btn primary" id="ppTrain">▶ Train</button>
+          <button class="btn ghost" id="ppReset">Reset points</button>
+          <button class="btn ghost" id="ppXOR">Load XOR demo</button>
+        </div>
+        <canvas id="ppCanvas" width="560" height="380"></canvas>
+        <div class="stat-row">
+          <span>Epoch: <b id="ppEpoch">0</b></span>
+          <span>Errors this epoch: <b id="ppErrors">–</b></span>
+          <span>w = (<b id="ppW">0.00, 0.00</b>)</span>
+          <span>b = <b id="ppB">0.00</b></span>
+          <span id="ppStatus" style="color:#1c8a82;font-weight:600;">Add points to begin</span>
+        </div>
+      </div>
+
+      <div class="callout tip"><span class="lbl">Exam point</span><p>PLA update rule is often asked verbatim: <span class="mono">w ← w + η(t−y)x</span>. Know that it updates <i>only on misclassification</i>, and that η only scales step size — it doesn't affect whether convergence happens for linearly separable data.</p></div>
+    </div>
+
+    <!-- 6. Linear separability -->
+    <div class="topic" id="u1-linsep">
+      <div class="topic-head"><span class="topic-num">1.6</span><h3>Linear Separability</h3></div>
+      <p class="kicker">The one condition a perceptron truly needs.</p>
+      <p>A dataset with two classes is <b>linearly separable</b> if a single straight line (or hyperplane in higher dimensions) can separate all points of one class from all points of the other. AND and OR are linearly separable; <b>XOR is not</b> — no straight line can separate its 0s from its 1s.</p>
+      <div class="two-col">
+        <div class="panel figure">
+          <svg viewBox="0 0 260 160" width="100%">
+            <text x="130" y="16" text-anchor="middle" font-size="12" font-weight="700">OR — linearly separable</text>
+            <line x1="20" y1="140" x2="20" y2="20" stroke="#c8bfa4"/><line x1="20" y1="140" x2="240" y2="140" stroke="#c8bfa4"/>
+            <circle cx="40" cy="120" r="6" fill="#b8503a"/>
+            <circle cx="40" cy="40" r="6" fill="#1c8a82"/>
+            <circle cx="200" cy="120" r="6" fill="#1c8a82"/>
+            <circle cx="200" cy="40" r="6" fill="#1c8a82"/>
+            <line x1="15" y1="95" x2="140" y2="15" stroke="#d98a2b" stroke-width="2" stroke-dasharray="5 3"/>
+            <text x="45" y="150" class="lbl-text">0,0=0  others=1</text>
+          </svg>
+        </div>
+        <div class="panel figure">
+          <svg viewBox="0 0 260 160" width="100%">
+            <text x="130" y="16" text-anchor="middle" font-size="12" font-weight="700">XOR — not separable</text>
+            <line x1="20" y1="140" x2="20" y2="20" stroke="#c8bfa4"/><line x1="20" y1="140" x2="240" y2="140" stroke="#c8bfa4"/>
+            <circle cx="40" cy="120" r="6" fill="#b8503a"/>
+            <circle cx="40" cy="40" r="6" fill="#1c8a82"/>
+            <circle cx="200" cy="120" r="6" fill="#1c8a82"/>
+            <circle cx="200" cy="40" r="6" fill="#b8503a"/>
+            <path d="M15 80 Q130 30 245 80" stroke="#8a94ab" stroke-width="2" stroke-dasharray="4 3" fill="none"/>
+            <text x="20" y="98" class="lbl-text" fill="#b8503a">no single line works</text>
+          </svg>
+        </div>
+      </div>
+      <div class="callout warn"><span class="lbl">Classic exam question</span><p>"Why can't a single perceptron learn XOR?" — because XOR's positive and negative classes cannot be separated by any single hyperplane. This is resolved by adding a <b>hidden layer</b> (Unit II, Multilayer Networks), which can combine multiple linear boundaries into a nonlinear one.</p></div>
+      <p>Try the <b>Load XOR demo</b> button in the Playground above — watch the perceptron keep oscillating and never converge, since no line can fit those four points.</p>
+    </div>
+
+    <!-- 7. Convergence theorem -->
+    <div class="topic" id="u1-converge">
+      <div class="topic-head"><span class="topic-num">1.7</span><h3>Convergence Theorem for PLA</h3></div>
+      <p class="kicker">The guarantee behind the algorithm.</p>
+      <div class="callout tip"><span class="lbl">Theorem (statement)</span><p>If a training dataset is linearly separable, the Perceptron Learning Algorithm is guaranteed to find a separating hyperplane (zero training errors) in a <b>finite number of updates</b>, regardless of the initial weights.</p></div>
+      <p>A commonly quoted bound: if the data lies within a ball of radius <span class="mono">R</span> and there exists a separating hyperplane with margin <span class="mono">γ</span> (the smallest distance from any point to the boundary), then the number of mistakes the PLA makes is at most:</p>
+      <div class="formula">mistakes ≤ (R / γ)²</div>
+      <table>
+        <tr><th>Condition</th><th>Consequence</th></tr>
+        <tr><td>Data is linearly separable</td><td>PLA converges in finite steps</td></tr>
+        <tr><td>Data is <i>not</i> linearly separable (e.g. XOR)</td><td>PLA never converges — weights oscillate forever</td></tr>
+        <tr><td>Larger margin γ</td><td>Fewer updates needed to converge</td></tr>
+      </table>
+      <div class="callout exam"><span class="lbl">Exam point</span><p>Remember two things word-for-word: (1) the theorem's <i>condition</i> is linear separability, and (2) its <i>conclusion</i> is convergence in a finite number of steps — it says nothing about speed or which particular separating hyperplane you'll end up with (there can be many).</p></div>
+    </div>
+
+    <!-- 8. Architectures -->
+    <div class="topic" id="u1-arch">
+      <div class="topic-head"><span class="topic-num">1.8</span><h3>Types of Network Architecture</h3></div>
+      <p class="kicker">How units are wired together.</p>
+      <div class="two-col">
+        <div>
+          <table>
+            <tr><th>Architecture</th><th>Connectivity</th><th>Example use</th></tr>
+            <tr><td>Single-layer feedforward</td><td>Inputs connect directly to output layer, no hidden layer</td><td>Perceptron</td></tr>
+            <tr><td>Multilayer feedforward</td><td>One or more hidden layers; signals flow input → hidden → output only</td><td>MLP</td></tr>
+            <tr><td>Recurrent network</td><td>Contains feedback loops — output/hidden state feeds back as input</td><td>Sequence/time-series models</td></tr>
+          </table>
+          <div class="callout tip"><span class="lbl">Tip</span><p>"Feedforward" = no cycles, signal only moves forward. "Recurrent" = has at least one cycle, giving the network memory of previous states.</p></div>
+        </div>
+        <div class="panel figure">
+          <svg viewBox="0 0 300 260" width="100%">
+            <text x="150" y="16" text-anchor="middle" font-size="11" font-weight="700">Single-layer</text>
+            <circle cx="40" cy="40" r="6" fill="#1c8a82"/><circle cx="40" cy="60" r="6" fill="#1c8a82"/>
+            <circle cx="110" cy="50" r="7" fill="#d98a2b"/>
+            <line x1="46" y1="40" x2="103" y2="48" stroke="#8a94ab"/><line x1="46" y1="60" x2="103" y2="52" stroke="#8a94ab"/>
+
+            <text x="150" y="105" text-anchor="middle" font-size="11" font-weight="700">Multilayer feedforward</text>
+            <g>
+              <circle cx="20" cy="120" r="5" fill="#1c8a82"/><circle cx="20" cy="140" r="5" fill="#1c8a82"/><circle cx="20" cy="160" r="5" fill="#1c8a82"/>
+              <circle cx="90" cy="115" r="5" fill="#4a5670"/><circle cx="90" cy="140" r="5" fill="#4a5670"/><circle cx="90" cy="165" r="5" fill="#4a5670"/>
+              <circle cx="160" cy="140" r="6" fill="#d98a2b"/>
+              <g stroke="#c8bfa4">
+                <line x1="25" y1="120" x2="85" y2="115"/><line x1="25" y1="120" x2="85" y2="140"/><line x1="25" y1="120" x2="85" y2="165"/>
+                <line x1="25" y1="140" x2="85" y2="115"/><line x1="25" y1="140" x2="85" y2="140"/><line x1="25" y1="140" x2="85" y2="165"/>
+                <line x1="25" y1="160" x2="85" y2="115"/><line x1="25" y1="160" x2="85" y2="140"/><line x1="25" y1="160" x2="85" y2="165"/>
+                <line x1="95" y1="115" x2="154" y2="138"/><line x1="95" y1="140" x2="154" y2="140"/><line x1="95" y1="165" x2="154" y2="142"/>
+              </g>
+            </g>
+
+            <text x="150" y="205" text-anchor="middle" font-size="11" font-weight="700">Recurrent</text>
+            <circle cx="70" cy="230" r="6" fill="#1c8a82"/>
+            <circle cx="150" cy="230" r="7" fill="#d98a2b"/>
+            <circle cx="230" cy="230" r="6" fill="#4a5670"/>
+            <line x1="76" y1="230" x2="143" y2="230" stroke="#8a94ab"/>
+            <line x1="157" y1="230" x2="224" y2="230" stroke="#8a94ab"/>
+            <path d="M150 223 Q150 195 190 210 Q210 218 190 232" stroke="#b8503a" fill="none" marker-end="url(#arrow)"/>
+            <defs><marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#b8503a"/></marker></defs>
+            <text x="195" y="200" class="lbl-text" fill="#b8503a">feedback</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. Activation functions -->
+    <div class="topic" id="u1-actfn">
+      <div class="topic-head"><span class="topic-num">1.9</span><h3>Activation Functions</h3></div>
+      <p class="kicker">Where the network gets its nonlinearity.</p>
+      <p>Without a nonlinear activation function, stacking layers would collapse into one big linear function (a multilayer network without nonlinearity is mathematically equivalent to a single-layer one). Activation functions introduce the nonlinearity that lets networks approximate complex functions.</p>
+
+      <div class="widget">
+        <div class="wtitle">Interactive · Activation Function Explorer</div>
+        <div class="btnrow" id="actButtons">
+          <button class="btn active" data-fn="step">Step</button>
+          <button class="btn" data-fn="sigmoid">Sigmoid</button>
+          <button class="btn" data-fn="tanh">Tanh</button>
+          <button class="btn" data-fn="relu">ReLU</button>
+          <button class="btn" data-fn="lrelu">Leaky ReLU</button>
+        </div>
+        <canvas id="actCanvas" width="560" height="300"></canvas>
+        <p style="margin-bottom:0;"><b id="actFormula" class="mono"></b></p>
+        <p style="margin-top:4px;color:var(--ink-faint);font-size:.88rem;" id="actNote"></p>
+      </div>
+
+      <table>
+        <tr><th>Function</th><th>Formula</th><th>Range</th><th>Notes</th></tr>
+        <tr><td>Step / Sign</td><td class="mono">1 if x≥0 else 0</td><td>{0,1}</td><td>Used in M-P unit &amp; perceptron; not differentiable at 0 — unusable with backprop</td></tr>
+        <tr><td>Sigmoid</td><td class="mono">1/(1+e⁻ˣ)</td><td>(0,1)</td><td>Smooth, interpretable as probability; suffers vanishing gradient at extremes</td></tr>
+        <tr><td>Tanh</td><td class="mono">(eˣ−e⁻ˣ)/(eˣ+e⁻ˣ)</td><td>(−1,1)</td><td>Zero-centered version of sigmoid, still can vanish</td></tr>
+        <tr><td>ReLU</td><td class="mono">max(0,x)</td><td>[0,∞)</td><td>Fast, avoids vanishing gradient for x&gt;0; can "die" for x&lt;0</td></tr>
+        <tr><td>Leaky ReLU</td><td class="mono">x if x&gt;0 else αx</td><td>(−∞,∞)</td><td>Fixes dying-ReLU with small slope α (e.g. 0.01) for x&lt;0</td></tr>
+        <tr><td>Softmax</td><td class="mono">eˣⁱ/Σⱼeˣʲ</td><td>(0,1), sums to 1</td><td>Used in output layer for multi-class classification</td></tr>
+      </table>
+      <div class="callout exam"><span class="lbl">Exam point</span><p>Backpropagation needs the activation function to be <b>differentiable</b>. That's precisely why step/sign (used in the classic perceptron) cannot be used inside a backprop-trained multilayer network — sigmoid, tanh, and ReLU are the practical choices.</p></div>
+    </div>
+
+    <!-- 10. Learning rules -->
+    <div class="topic" id="u1-rules">
+      <div class="topic-head"><span class="topic-num">1.10</span><h3>Basic Learning Rules</h3></div>
+      <p class="kicker">Different recipes for updating weights.</p>
+      <table>
+        <tr><th>Rule</th><th>Update</th><th>Idea</th></tr>
+        <tr><td>Hebbian rule</td><td class="mono">Δw = η·x·y</td><td>"Neurons that fire together, wire together" — strengthen weight when input and output are both active</td></tr>
+        <tr><td>Perceptron rule</td><td class="mono">Δw = η(t−y)x</td><td>Update only on misclassification (see PLA above)</td></tr>
+        <tr><td>Delta rule (Widrow–Hoff / LMS)</td><td class="mono">Δw = η(t−y)x</td><td>Same form as perceptron rule but derived from minimizing squared error via gradient descent — y here is the raw linear output, not thresholded, and works with continuous outputs</td></tr>
+        <tr><td>Correlation rule</td><td class="mono">Δw = η·xᵢtᵢ</td><td>Special case of Hebbian learning used for pattern association / associative memories</td></tr>
+        <tr><td>Competitive / winner-take-all</td><td>only the "winning" neuron updates</td><td>Neurons compete for the right to respond; used in unsupervised clustering nets</td></tr>
+      </table>
+      <div class="callout tip"><span class="lbl">Don't mix these up</span><p>Perceptron rule and Delta rule <i>look</i> identical algebraically, but the Perceptron rule comes from a mistake-driven heuristic on a thresholded output, while the Delta rule is derived by taking the gradient of the squared-error cost with respect to weights — it's the direct ancestor of gradient descent and backpropagation in Unit II.</p></div>
+    </div>
+
+    <!-- Unit I quiz -->
+    <div class="topic" id="u1-quiz">
+      <div class="topic-head"><span class="topic-num">✓</span><h3>Unit I Self-check Quiz</h3></div>
+      <div class="widget" id="quiz1"></div>
+    </div>
+
+    <!-- =====================================================================
+         UNIT II
+    ====================================================================== -->
+    <div class="unit-banner"><span class="num">UNIT II</span><h2>Feedforward Networks</h2><span class="tag">6 topics</span></div>
+
+    <!-- 1. MLP -->
+    <div class="topic" id="u2-mlp">
+      <div class="topic-head"><span class="topic-num">2.1</span><h3>Multilayer Neural Network</h3></div>
+      <p class="kicker">Stacking perceptrons to escape linear separability.</p>
+      <div class="two-col">
+        <div>
+          <p>A <b>Multilayer Perceptron (MLP)</b> has an input layer, one or more <b>hidden layers</b>, and an output layer, with every neuron in one layer connected to every neuron in the next (fully connected / dense). Each hidden neuron computes <span class="mono">f(w·x+b)</span> with a nonlinear activation, and the outputs of one layer become the inputs of the next.</p>
+          <p>Because hidden layers combine multiple linear boundaries, an MLP can represent non‑linearly separable functions like XOR, and — per the <b>Universal Approximation Theorem</b> — a network with a single hidden layer of sufficient width can approximate any continuous function to arbitrary accuracy.</p>
+        </div>
+        <div class="panel figure">
+          <svg viewBox="0 0 260 200" width="100%">
+            <text x="130" y="16" text-anchor="middle" font-size="11" font-weight="700">Input → Hidden → Output</text>
+            <circle cx="30" cy="50" r="6" fill="#1c8a82"/><circle cx="30" cy="100" r="6" fill="#1c8a82"/><circle cx="30" cy="150" r="6" fill="#1c8a82"/>
+            <circle cx="120" cy="40" r="6" fill="#4a5670"/><circle cx="120" cy="80" r="6" fill="#4a5670"/><circle cx="120" cy="120" r="6" fill="#4a5670"/><circle cx="120" cy="160" r="6" fill="#4a5670"/>
+            <circle cx="210" cy="75" r="6" fill="#d98a2b"/><circle cx="210" cy="125" r="6" fill="#d98a2b"/>
+            <g stroke="#d9d2bd">
+              <line x1="35" y1="50" x2="115" y2="40"/><line x1="35" y1="50" x2="115" y2="80"/><line x1="35" y1="50" x2="115" y2="120"/><line x1="35" y1="50" x2="115" y2="160"/>
+              <line x1="35" y1="100" x2="115" y2="40"/><line x1="35" y1="100" x2="115" y2="80"/><line x1="35" y1="100" x2="115" y2="120"/><line x1="35" y1="100" x2="115" y2="160"/>
+              <line x1="35" y1="150" x2="115" y2="40"/><line x1="35" y1="150" x2="115" y2="80"/><line x1="35" y1="150" x2="115" y2="120"/><line x1="35" y1="150" x2="115" y2="160"/>
+              <line x1="125" y1="40" x2="205" y2="75"/><line x1="125" y1="80" x2="205" y2="75"/><line x1="125" y1="120" x2="205" y2="75"/><line x1="125" y1="160" x2="205" y2="75"/>
+              <line x1="125" y1="40" x2="205" y2="125"/><line x1="125" y1="80" x2="205" y2="125"/><line x1="125" y1="120" x2="205" y2="125"/><line x1="125" y1="160" x2="205" y2="125"/>
+            </g>
+            <text x="30" y="180" text-anchor="middle" class="lbl-text">input</text>
+            <text x="120" y="180" text-anchor="middle" class="lbl-text">hidden</text>
+            <text x="210" y="150" text-anchor="middle" class="lbl-text">output</text>
+          </svg>
+        </div>
+      </div>
+      <div class="callout exam"><span class="lbl">Exam point</span><p>Number of hidden layers/neurons is a design choice (hyperparameter), not something the training algorithm decides. More hidden units → more capacity → more risk of overfitting (see Regularization below).</p></div>
+    </div>
+
+    <!-- 2. Gradient descent -->
+    <div class="topic" id="u2-gd">
+      <div class="topic-head"><span class="topic-num">2.2</span><h3>Gradient Descent Learning</h3></div>
+      <p class="kicker">Rolling downhill on the error surface.</p>
+      <p>Define a cost/loss function <span class="mono">J(w)</span> measuring how wrong the network's predictions are (e.g. mean squared error). Gradient descent updates weights in the direction that <i>decreases</i> J fastest — the negative gradient.</p>
+      <div class="formula">w ← w − η ∇J(w)&nbsp;&nbsp;<span style="color:#9fb0cf">// η = learning rate (step size)</span></div>
+      <table>
+        <tr><th>Variant</th><th>Gradient computed over</th><th>Trade-off</th></tr>
+        <tr><td>Batch GD</td><td>entire training set per update</td><td>Stable, accurate gradient; slow per update, needs lots of memory</td></tr>
+        <tr><td>Stochastic GD (SGD)</td><td>one random sample per update</td><td>Fast, noisy updates; noise can help escape local minima</td></tr>
+        <tr><td>Mini-batch GD</td><td>small batch (e.g. 32–256) per update</td><td>Practical middle ground — most commonly used</td></tr>
+      </table>
+      <div class="callout tip"><span class="lbl">Tip</span><p>Learning rate η is critical: too small → painfully slow convergence; too large → overshoots minima or diverges. It is the single most tuned hyperparameter in gradient-based learning.</p></div>
+    </div>
+
+    <!-- 3. Backprop -->
+    <div class="topic" id="u2-bp">
+      <div class="topic-head"><span class="topic-num">2.3</span><h3>Backpropagation</h3></div>
+      <p class="kicker">The chain rule, applied layer by layer.</p>
+      <p>Backpropagation is the algorithm that efficiently computes ∇J for <i>every</i> weight in a multilayer network, using the chain rule of calculus, so gradient descent can be applied. It has two passes:</p>
+      <ol>
+        <li><b>Forward pass</b> — push an input through the network layer by layer, compute the output, and the loss J against the true target.</li>
+        <li><b>Backward pass</b> — starting from the output layer, propagate the error backward, computing <span class="mono">∂J/∂w</span> for each weight via the chain rule, then update every weight with gradient descent.</li>
+      </ol>
+      <div class="formula">
+        Output layer: δᵒ = (y − t) · f′(netᵒ)<br>
+        Hidden layer: δʰ = (Σₖ δᵒₖ wₖ) · f′(netʰ)&nbsp;&nbsp;<span style="color:#9fb0cf">// error passed backward through weights</span><br>
+        Weight update: Δwᵢⱼ = −η · δⱼ · xᵢ
+      </div>
+      <div class="panel figure" style="margin:16px 0;">
+        <svg viewBox="0 0 340 140" width="100%">
+          <text x="170" y="14" text-anchor="middle" font-size="11" font-weight="700">Forward pass →      ← Backward pass</text>
+          <circle cx="30" cy="70" r="10" fill="#1c8a82"/>
+          <circle cx="130" cy="70" r="10" fill="#4a5670"/>
+          <circle cx="230" cy="70" r="10" fill="#d98a2b"/>
+          <text x="290" y="74" class="lbl-text">loss J</text>
+          <line x1="40" y1="66" x2="120" y2="66" stroke="#1c8a82" stroke-width="2" marker-end="url(#arrowF)"/>
+          <line x1="140" y1="66" x2="220" y2="66" stroke="#1c8a82" stroke-width="2" marker-end="url(#arrowF)"/>
+          <line x1="220" y1="82" x2="140" y2="82" stroke="#b8503a" stroke-width="2" marker-end="url(#arrowB)"/>
+          <line x1="120" y1="82" x2="40" y2="82" stroke="#b8503a" stroke-width="2" marker-end="url(#arrowB)"/>
+          <defs>
+            <marker id="arrowF" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#1c8a82"/></marker>
+            <marker id="arrowB" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#b8503a"/></marker>
+          </defs>
+          <text x="30" y="100" text-anchor="middle" class="lbl-text">input</text>
+          <text x="130" y="100" text-anchor="middle" class="lbl-text">hidden</text>
+          <text x="230" y="100" text-anchor="middle" class="lbl-text">output</text>
+        </svg>
+      </div>
+      <div class="callout exam"><span class="lbl">Exam point (frequently asked derivation)</span><p>Be ready to derive δ for a single hidden unit using the chain rule: error at output → multiplied by the output activation's derivative → propagated back through the connecting weight → multiplied by the hidden unit's own activation derivative. This "local gradient × derivative × weight" pattern repeats for every layer going backward — that's the essence of the algorithm.</p></div>
+    </div>
+
+    <!-- 4. ERM -->
+    <div class="topic" id="u2-erm">
+      <div class="topic-head"><span class="topic-num">2.4</span><h3>Empirical Risk Minimization (ERM)</h3></div>
+      <p class="kicker">Why we minimize training error at all.</p>
+      <p>The <b>true risk</b> is the expected loss over the entire (unknown) data distribution — what we actually care about. Since we can't access that distribution directly, we minimize the <b>empirical risk</b>: the average loss over the finite training set we do have.</p>
+      <div class="formula">
+        True risk: R(f) = E<sub>(x,y)~D</sub>[ L(f(x), y) ]&nbsp;&nbsp;<span style="color:#9fb0cf">// unknown, can't compute directly</span><br>
+        Empirical risk: R̂(f) = (1/N) Σᵢ L(f(xᵢ), yᵢ)&nbsp;&nbsp;<span style="color:#9fb0cf">// computable over N training samples</span>
+      </div>
+      <p>ERM is the principle of choosing the model f that minimizes R̂(f). Backpropagation + gradient descent is precisely the machinery used to carry out ERM for neural networks.</p>
+      <div class="callout warn"><span class="lbl">The catch</span><p>Minimizing empirical risk too aggressively causes <b>overfitting</b> — the model memorizes training data (low training error) but fails to generalize to new data (high true risk). This gap is why regularization exists.</p></div>
+    </div>
+
+    <!-- 5. Regularization -->
+    <div class="topic" id="u2-reg">
+      <div class="topic-head"><span class="topic-num">2.5</span><h3>Regularization</h3></div>
+      <p class="kicker">Keeping the model honest about generalizing.</p>
+      <table>
+        <tr><th>Method</th><th>Mechanism</th><th>Formula / idea</th></tr>
+        <tr><td>L2 (weight decay)</td><td>Penalizes large weights, encourages small, spread-out weights</td><td class="mono">J' = J + λΣwᵢ²</td></tr>
+        <tr><td>L1</td><td>Penalizes absolute weight magnitude, encourages sparsity (many weights → 0)</td><td class="mono">J' = J + λΣ|wᵢ|</td></tr>
+        <tr><td>Dropout</td><td>Randomly "drops" (zeroes) a fraction of neurons during each training step</td><td>forces redundancy, prevents co-adaptation</td></tr>
+        <tr><td>Early stopping</td><td>Stop training once validation error starts rising, even if training error keeps falling</td><td>directly targets the overfitting point</td></tr>
+      </table>
+      <div class="formula">J'(w) = J(w) + λ·R(w)&nbsp;&nbsp;<span style="color:#9fb0cf">// λ = regularization strength, R(w) = penalty term</span></div>
+      <div class="callout tip"><span class="lbl">Tip</span><p>λ trades off bias and variance: λ=0 gives plain ERM (risk of overfitting/high variance); very large λ forces weights toward 0 (risk of underfitting/high bias). Tuning λ on a validation set is standard exam-and-practice knowledge.</p></div>
+    </div>
+
+    <!-- 6. RBF -->
+    <div class="topic" id="u2-rbf">
+      <div class="topic-head"><span class="topic-num">2.6</span><h3>Radial Basis Function Neural Network</h3></div>
+      <p class="kicker">Local "bumps" instead of global lines.</p>
+      <div class="two-col">
+        <div>
+          <p>An <b>RBF network</b> has three layers: an input layer, a single hidden layer of <b>radial basis (Gaussian) neurons</b>, and a linear output layer. Each hidden neuron measures how close the input is to its own "center" cⱼ, using a radially symmetric function — typically a Gaussian:</p>
+          <div class="formula">φⱼ(x) = exp( −‖x − cⱼ‖² / 2σⱼ² )<br>y = Σⱼ wⱼ φⱼ(x)&nbsp;&nbsp;<span style="color:#9fb0cf">// output layer is just a weighted sum</span></div>
+          <p>Training an RBF network is typically done in <b>two stages</b>:</p>
+          <ol>
+            <li><b>Unsupervised</b> — choose the centers cⱼ (e.g. via k-means clustering on the input data) and widths σⱼ.</li>
+            <li><b>Supervised</b> — with centers fixed, the output layer weights wⱼ are learned by a simple linear method (e.g. least squares / gradient descent), since the output is linear in these weights.</li>
+          </ol>
+        </div>
+        <div class="panel figure">
+          <svg viewBox="0 0 260 200" width="100%">
+            <text x="130" y="16" text-anchor="middle" font-size="11" font-weight="700">RBF network</text>
+            <circle cx="30" cy="60" r="6" fill="#1c8a82"/><circle cx="30" cy="140" r="6" fill="#1c8a82"/>
+            <g>
+              <circle cx="120" cy="40" r="14" fill="none" stroke="#4a5670" stroke-width="1.6"/>
+              <circle cx="120" cy="100" r="14" fill="none" stroke="#4a5670" stroke-width="1.6"/>
+              <circle cx="120" cy="160" r="14" fill="none" stroke="#4a5670" stroke-width="1.6"/>
+              <path d="M112 40 Q116 30 120 40 Q124 30 128 40" stroke="#4a5670" fill="none" stroke-width="1.3"/>
+              <path d="M112 100 Q116 90 120 100 Q124 90 128 100" stroke="#4a5670" fill="none" stroke-width="1.3"/>
+              <path d="M112 160 Q116 150 120 160 Q124 150 128 160" stroke="#4a5670" fill="none" stroke-width="1.3"/>
+            </g>
+            <circle cx="210" cy="100" r="8" fill="#d98a2b"/>
+            <g stroke="#d9d2bd">
+              <line x1="36" y1="60" x2="106" y2="40"/><line x1="36" y1="60" x2="106" y2="100"/><line x1="36" y1="60" x2="106" y2="160"/>
+              <line x1="36" y1="140" x2="106" y2="40"/><line x1="36" y1="140" x2="106" y2="100"/><line x1="36" y1="140" x2="106" y2="160"/>
+              <line x1="134" y1="40" x2="202" y2="97"/><line x1="134" y1="100" x2="202" y2="100"/><line x1="134" y1="160" x2="202" y2="103"/>
+            </g>
+            <text x="30" y="180" text-anchor="middle" class="lbl-text">input</text>
+            <text x="120" y="180" text-anchor="middle" class="lbl-text">RBF (Gaussian)</text>
+            <text x="210" y="120" text-anchor="middle" class="lbl-text">linear out</text>
+          </svg>
+        </div>
+      </div>
+      <table>
+        <tr><th></th><th>MLP</th><th>RBF Network</th></tr>
+        <tr><td>Hidden activation</td><td>Global (sigmoid/tanh/ReLU span the whole input space)</td><td>Local (Gaussian activates only near its center)</td></tr>
+        <tr><td>Decision boundary</td><td>Formed from combinations of hyperplanes</td><td>Formed from combinations of localized "bumps"</td></tr>
+        <tr><td>Training</td><td>End-to-end backpropagation</td><td>Two-stage: unsupervised centers + supervised output weights</td></tr>
+        <tr><td>Typical layers</td><td>Many hidden layers possible</td><td>Exactly one hidden layer</td></tr>
+      </table>
+      <div class="callout exam"><span class="lbl">Exam point</span><p>The key contrast question is almost guaranteed: "Differentiate MLP and RBF network." Anchor your answer on <i>global vs. local</i> activation and the <i>single-stage vs. two-stage</i> training difference shown above.</p></div>
+    </div>
+
+    <!-- Unit II quiz -->
+    <div class="topic" id="u2-quiz">
+      <div class="topic-head"><span class="topic-num">✓</span><h3>Unit II Self-check Quiz</h3></div>
+      <div class="widget" id="quiz2"></div>
+    </div>
+
+    <!-- =====================================================================
+         EXAM PREP
+    ====================================================================== -->
+    <div class="unit-banner"><span class="num">EXAM PREP</span><h2>Cheat-sheet &amp; Question Bank</h2><span class="tag">last-minute revision</span></div>
+
+    <div class="topic" id="exam-cheat">
+      <div class="topic-head"><h3>Formula Cheat-sheet</h3></div>
+      <div class="formula">
+        Neuron output:        y = f(Σ wᵢxᵢ + b)<br>
+        M-P thresholding:     y = 1 if Σxᵢ ≥ θ (no active inhibitor) else 0<br>
+        Perceptron rule:      w ← w + η(t−y)x<br>
+        Delta / LMS rule:     w ← w + η(t−y)x&nbsp;&nbsp;(y = linear output)<br>
+        Hebbian rule:         Δw = η·x·y<br>
+        Convergence bound:    mistakes ≤ (R/γ)²<br>
+        Sigmoid:              f(x) = 1/(1+e⁻ˣ)<br>
+        Tanh:                 f(x) = (eˣ−e⁻ˣ)/(eˣ+e⁻ˣ)<br>
+        ReLU:                 f(x) = max(0, x)<br>
+        Gradient descent:     w ← w − η∇J(w)<br>
+        Backprop (output):    δᵒ = (y−t)·f′(net)<br>
+        Backprop (hidden):    δʰ = (Σ δᵒw)·f′(net)<br>
+        Empirical risk:       R̂(f) = (1/N)Σ L(f(xᵢ),yᵢ)<br>
+        L2 regularized loss:  J' = J + λΣwᵢ²<br>
+        RBF hidden unit:      φ(x) = exp(−‖x−c‖² / 2σ²)
+      </div>
+    </div>
+
+    <div class="topic" id="exam-qa">
+      <div class="topic-head"><h3>Likely Exam Questions &amp; Model Answers</h3></div>
+
+      <details>
+        <summary>Why can't a single-layer perceptron solve the XOR problem?</summary>
+        <div class="body">XOR's positive class {(0,1),(1,0)} and negative class {(0,0),(1,1)} cannot be separated by any single straight line — XOR is not linearly separable. A perceptron computes one hyperplane decision boundary, so it structurally cannot represent XOR. This is solved by adding a hidden layer (MLP), where two hyperplanes can be combined nonlinearly.</div>
+      </details>
+
+      <details>
+        <summary>State and explain the Perceptron Convergence Theorem.</summary>
+        <div class="body">If a dataset is linearly separable, the Perceptron Learning Algorithm is guaranteed to converge — i.e., find a set of weights that correctly classifies every training point — in a finite number of updates, for any initial weights and any (fixed, positive) learning rate. If the data is not linearly separable, the algorithm never converges. A common bound on the number of mistakes is (R/γ)², where R is the radius bounding the data and γ is the margin of the best separating hyperplane.</div>
+      </details>
+
+      <details>
+        <summary>Differentiate between the Perceptron learning rule and the Delta (LMS) rule.</summary>
+        <div class="body">Both have the algebraic form w ← w + η(t−y)x, but they come from different derivations. The Perceptron rule is a mistake-driven heuristic applied to a thresholded (step-function) output — it only makes sense for binary classification and has no defined gradient. The Delta rule is derived by taking the gradient of the mean-squared-error cost function with respect to the weights (i.e., it is gradient descent on a continuous, linear output) — it generalizes naturally to continuous outputs and is the direct precursor to backpropagation.</div>
+      </details>
+
+      <details>
+        <summary>Explain the forward and backward pass in backpropagation.</summary>
+        <div class="body">Forward pass: an input is propagated through the network layer by layer using y = f(w·x+b) at each neuron, producing a final output that is compared to the target using a loss function J. Backward pass: starting at the output layer, the error signal δ is computed (δᵒ = (y−t)f′(net)); this is propagated backward through the weights to every hidden layer (δʰ = (Σ δᵒw)f′(net)) using the chain rule; then every weight is updated via gradient descent, Δw = −η·δ·x. This lets a single pass compute exact gradients for every weight in the network in time proportional to the network size.</div>
+      </details>
+
+      <details>
+        <summary>What is Empirical Risk Minimization, and how does it relate to overfitting?</summary>
+        <div class="body">True risk is the expected loss over the true (unknown) data distribution. Since it can't be computed directly, ERM instead minimizes the empirical risk — the average loss over the available training samples — as a proxy. When a model is complex enough to fit training data very closely, empirical risk can be driven near zero while true risk (performance on unseen data) stays high; this gap is overfitting. Regularization narrows this gap by discouraging the model from fitting noise in the training set.</div>
+      </details>
+
+      <details>
+        <summary>Compare L1 and L2 regularization.</summary>
+        <div class="body">Both add a penalty term λ·R(w) to the loss to discourage large weights. L2 (weight decay) penalizes the sum of squared weights (λΣwᵢ²), which shrinks weights smoothly toward — but rarely exactly to — zero, spreading influence across many weights. L1 penalizes the sum of absolute weights (λΣ|wᵢ|), which tends to push many weights to exactly zero, producing sparse models useful for implicit feature selection.</div>
+      </details>
+
+      <details>
+        <summary>Differentiate an MLP from an RBF Network.</summary>
+        <div class="body">An MLP uses global activation functions (sigmoid/tanh/ReLU) at each hidden unit — a single hidden unit's response spans the whole input space — and is trained end-to-end with backpropagation, potentially across many hidden layers. An RBF network uses local Gaussian activation functions where a hidden unit responds strongly only near its own center, has exactly one hidden layer, and is typically trained in two stages: centers/widths chosen by an unsupervised method (e.g. k-means), then output weights fit by a simple supervised (often linear) method.</div>
+      </details>
+
+      <details>
+        <summary>Why must the activation function be differentiable for backpropagation to work?</summary>
+        <div class="body">Backpropagation computes weight gradients via the chain rule, which requires taking f′(net) at every neuron. A non-differentiable function like the step/sign activation has a derivative of 0 almost everywhere (and is undefined at the threshold), so the chain rule would give exactly zero gradient signal — no learning could occur. Sigmoid, tanh, and ReLU (differentiable, or sub-differentiable at one point) all provide a useful gradient almost everywhere.</div>
+      </details>
+
+    </div>
+
+    <footer>
+      <span>NeuroNotes · Unit I &amp; II Study Guide</span>
+      <span>Built for exam revision — diagrams, interactive demos, and a self-check quiz for every unit.</span>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   Scrollspy for sidebar nav
+============================================================ */
+(function(){
+  const links = Array.from(document.querySelectorAll('.navlist a'));
+  const map = new Map();
+  links.forEach(a=>{
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if(el) map.set(el, a);
+  });
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      const link = map.get(en.target);
+      if(!link) return;
+      if(en.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, {rootMargin:"-15% 0px -70% 0px"});
+  map.forEach((link, el)=>obs.observe(el));
+})();
+
+/* ============================================================
+   Hero neuron - click to fire
+============================================================ */
+(function(){
+  const svg = document.getElementById('heroNeuron');
+  const soma = document.getElementById('soma');
+  const pulse = document.getElementById('pulse');
+  let firing = false;
+  svg.addEventListener('click', ()=>{
+    if(firing) return;
+    firing = true;
+    soma.setAttribute('fill', '#cdeee9');
+    let t0 = null;
+    const dur = 700;
+    function step(ts){
+      if(!t0) t0 = ts;
+      const p = Math.min((ts-t0)/dur, 1);
+      const x = 150 + p*100;
+      pulse.setAttribute('cx', x);
+      pulse.setAttribute('opacity', p<0.05 ? p*20 : (p>0.9 ? (1-p)*10 : 1));
+      if(p<1){ requestAnimationFrame(step); }
+      else{
+        pulse.setAttribute('opacity',0);
+        soma.setAttribute('fill', '#eef6f4');
+        firing = false;
+      }
+    }
+    requestAnimationFrame(step);
+  });
+})();
+
+/* ============================================================
+   Activation function explorer
+============================================================ */
+(function(){
+  const canvas = document.getElementById('actCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const fnFormula = {
+    step:"f(x) = 1 if x ≥ 0, else 0", sigmoid:"f(x) = 1 / (1 + e^-x)",
+    tanh:"f(x) = (e^x − e^-x) / (e^x + e^-x)", relu:"f(x) = max(0, x)",
+    lrelu:"f(x) = x if x>0, else 0.05x"
+  };
+  const fnNote = {
+    step:"Not differentiable — cannot be used with backpropagation.",
+    sigmoid:"Smooth S-curve, output in (0,1); gradients vanish for large |x|.",
+    tanh:"Zero-centered S-curve, output in (-1,1); still can vanish.",
+    relu:"Piecewise linear; cheap to compute; can 'die' for negative inputs.",
+    lrelu:"Small negative slope keeps a gradient alive for x<0."
+  };
+  const fns = {
+    step: x => x>=0?1:0,
+    sigmoid: x => 1/(1+Math.exp(-x)),
+    tanh: x => Math.tanh(x),
+    relu: x => Math.max(0,x),
+    lrelu: x => x>0? x : 0.05*x
+  };
+  function draw(name){
+    ctx.clearRect(0,0,W,H);
+    // grid
+    ctx.strokeStyle = "#d9d2bd"; ctx.lineWidth=1;
+    for(let gx=0; gx<=W; gx+=W/10){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke(); }
+    for(let gy=0; gy<=H; gy+=H/8){ ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke(); }
+    // axes
+    const originX = W/2, originY = H/2;
+    ctx.strokeStyle = "#7c869c"; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0, originY); ctx.lineTo(W, originY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, H); ctx.stroke();
+    ctx.fillStyle="#7c869c"; ctx.font="11px 'IBM Plex Mono'";
+    ctx.fillText("x", W-14, originY-8); ctx.fillText("f(x)", originX+8, 14);
+    // scale: x from -6..6 mapped to width, y from -1.5..1.5 (or 0..1.5 for relu-ish) mapped to height
+    const xScale = W/12; // px per unit x, domain -6..6
+    let yMin=-1.5, yMax=1.5;
+    if(name==='relu'||name==='lrelu'){ yMin=-1; yMax=4; }
+    const yScale = H/(yMax-yMin);
+    function toPx(x,y){ return [originX + x*xScale, H - ( (y-yMin) * (H/(yMax-yMin)) ) ]; }
+    // recompute origin placement matches yMin..yMax
+    ctx.clearRect(0,0,W,H);
+    for(let gx=0; gx<=W; gx+=W/12){ ctx.strokeStyle="#e3ddc9"; ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke(); }
+    for(let gy=0; gy<=H; gy+=H/10){ ctx.strokeStyle="#e3ddc9"; ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke(); }
+    const zeroY = H - ((0-yMin)*(H/(yMax-yMin)));
+    ctx.strokeStyle = "#7c869c"; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(0, zeroY); ctx.lineTo(W, zeroY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(originX, 0); ctx.lineTo(originX, H); ctx.stroke();
+    // curve
+    ctx.strokeStyle = "#d98a2b"; ctx.lineWidth = 3; ctx.beginPath();
+    let started = false;
+    for(let px=0; px<=W; px++){
+      const x = (px - originX)/xScale;
+      let y = fns[name](x);
+      const py = H - ((y-yMin)*(H/(yMax-yMin)));
+      if(name==='step'){
+        // draw as segments to show discontinuity
+        if(!started){ ctx.moveTo(px,py); started=true; } else { ctx.lineTo(px, py); }
+      } else {
+        if(!started){ ctx.moveTo(px,py); started=true; } else { ctx.lineTo(px,py); }
+      }
+    }
+    ctx.stroke();
+    document.getElementById('actFormula').textContent = fnFormula[name];
+    document.getElementById('actNote').textContent = fnNote[name];
+  }
+  draw('step');
+  document.querySelectorAll('#actButtons .btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('#actButtons .btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      draw(btn.dataset.fn);
+    });
+  });
+})();
+
+/* ============================================================
+   Perceptron playground
+============================================================ */
+(function(){
+  const canvas = document.getElementById('ppCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  let points = []; // {x,y,label} in data coords -1..1
+  let w = [0,0], b = 0;
+  let curClass = 1;
+  let training = false;
+  let epoch = 0;
+
+  function toCanvas(x,y){ return [ (x+1)/2*W, H - (y+1)/2*H ]; }
+  function toData(px,py){ return [ (px/W)*2-1, ((H-py)/H)*2-1 ]; }
+
+  function render(){
+    ctx.clearRect(0,0,W,H);
+    // grid
+    ctx.strokeStyle="#e3ddc9";
+    for(let i=0;i<=10;i++){
+      ctx.beginPath(); ctx.moveTo(i*W/10,0); ctx.lineTo(i*W/10,H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,i*H/10); ctx.lineTo(W,i*H/10); ctx.stroke();
+    }
+    ctx.strokeStyle="#7c869c"; ctx.lineWidth=1.5;
+    const [ox,oy] = toCanvas(0,0);
+    ctx.beginPath(); ctx.moveTo(0,oy); ctx.lineTo(W,oy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ox,0); ctx.lineTo(ox,H); ctx.stroke();
+
+    // decision boundary: w1*x + w2*y + b = 0  => y = -(w1*x+b)/w2
+    if(w[1] !== 0){
+      ctx.strokeStyle = "#d98a2b"; ctx.lineWidth = 3; ctx.beginPath();
+      let first = true;
+      for(let px=0; px<=W; px+=4){
+        const [dx] = toData(px,0);
+        const dy = -(w[0]*dx + b)/w[1];
+        const [cx, cy] = toCanvas(dx, dy);
+        if(first){ ctx.moveTo(cx,cy); first=false; } else { ctx.lineTo(cx,cy); }
+      }
+      ctx.stroke();
+    } else if (w[0] !== 0){
+      ctx.strokeStyle="#d98a2b"; ctx.lineWidth=3;
+      const dx = -b/w[0];
+      const [cx1,cy1] = toCanvas(dx,-1); const [cx2,cy2]=toCanvas(dx,1);
+      ctx.beginPath(); ctx.moveTo(cx1,cy1); ctx.lineTo(cx2,cy2); ctx.stroke();
+    }
+
+    // points
+    points.forEach(p=>{
+      const [cx,cy] = toCanvas(p.x,p.y);
+      ctx.beginPath();
+      ctx.arc(cx,cy,7,0,Math.PI*2);
+      ctx.fillStyle = p.label===1 ? "#1c8a82" : "#b8503a";
+      ctx.fill();
+      ctx.lineWidth=1.5; ctx.strokeStyle="#fffdf8"; ctx.stroke();
+    });
+  }
+  render();
+
+  canvas.addEventListener('click', (e)=>{
+    if(training) return;
+    const rect = canvas.getBoundingClientRect();
+    const px = (e.clientX-rect.left)*(W/rect.width);
+    const py = (e.clientY-rect.top)*(H/rect.height);
+    const [dx,dy] = toData(px,py);
+    points.push({x:dx,y:dy,label:curClass});
+    document.getElementById('ppStatus').textContent = points.length+" point(s) — ready to train";
+    render();
+  });
+
+  document.getElementById('classA').addEventListener('click', ()=>{
+    curClass=1;
+    document.getElementById('classA').classList.add('active');
+    document.getElementById('classB').classList.remove('active');
+  });
+  document.getElementById('classB').addEventListener('click', ()=>{
+    curClass=0;
+    document.getElementById('classB').classList.add('active');
+    document.getElementById('classA').classList.remove('active');
+  });
+  document.getElementById('ppReset').addEventListener('click', ()=>{
+    points=[]; w=[0,0]; b=0; epoch=0; training=false;
+    document.getElementById('ppEpoch').textContent='0';
+    document.getElementById('ppErrors').textContent='–';
+    document.getElementById('ppW').textContent='0.00, 0.00';
+    document.getElementById('ppB').textContent='0.00';
+    document.getElementById('ppStatus').textContent='Add points to begin';
+    render();
+  });
+  document.getElementById('ppXOR').addEventListener('click', ()=>{
+    points = [
+      {x:-0.6,y:-0.6,label:0},{x:0.6,y:0.6,label:0},
+      {x:-0.6,y:0.6,label:1},{x:0.6,y:-0.6,label:1}
+    ];
+    w=[0,0]; b=0; epoch=0;
+    document.getElementById('ppStatus').textContent='XOR loaded — this is NOT linearly separable';
+    render();
+  });
+
+  function step(x,y){
+    const net = w[0]*x + w[1]*y + b;
+    return net>=0 ? 1 : 0;
+  }
+
+  document.getElementById('ppTrain').addEventListener('click', ()=>{
+    if(points.length<2 || training) return;
+    training = true;
+    const eta = 0.2;
+    const maxEpochs = 60;
+    function runEpoch(){
+      let errors = 0;
+      points.forEach(p=>{
+        const y = step(p.x, p.y);
+        const err = p.label - y;
+        if(err !== 0){
+          w[0] += eta*err*p.x;
+          w[1] += eta*err*p.y;
+          b += eta*err;
+          errors++;
+        }
+      });
+      epoch++;
+      document.getElementById('ppEpoch').textContent = epoch;
+      document.getElementById('ppErrors').textContent = errors;
+      document.getElementById('ppW').textContent = w[0].toFixed(2)+', '+w[1].toFixed(2);
+      document.getElementById('ppB').textContent = b.toFixed(2);
+      render();
+      if(errors===0){
+        document.getElementById('ppStatus').textContent = 'Converged! Zero errors.';
+        training = false;
+        return;
+      }
+      if(epoch>=maxEpochs){
+        document.getElementById('ppStatus').textContent = 'Stopped at max epochs — likely not linearly separable.';
+        training = false;
+        return;
+      }
+      document.getElementById('ppStatus').textContent = 'Training… epoch '+epoch;
+      setTimeout(runEpoch, 120);
+    }
+    runEpoch();
+  });
+})();
+
+/* ============================================================
+   Quiz engine
+============================================================ */
+(function(){
+  const quiz1data = [
+    {q:"What does a McCulloch–Pitts neuron require that a biological neuron doesn't need for this course's purposes?",
+     opts:["A learning rule to set its weights","Real-valued (continuous) inputs","A recurrent connection","A softmax output"],
+     correct:0,
+     exp:"M-P units have fixed, hand-designed weights and threshold — there is no learning algorithm, unlike the perceptron."},
+    {q:"In the Perceptron Learning Algorithm, when does a weight update occur?",
+     opts:["On every training example, always","Only when the predicted output differs from the target","Only at the end of an epoch","Only for the bias term"],
+     correct:1,
+     exp:"Δw = η(t−y)x is zero whenever t=y, so updates only happen on misclassified examples."},
+    {q:"Which of these is NOT linearly separable?",
+     opts:["AND","OR","XOR","NOT"],
+     correct:2,
+     exp:"XOR's classes cannot be divided by a single straight line — this is the classic example of non-linear separability."},
+    {q:"The Perceptron Convergence Theorem guarantees convergence provided that:",
+     opts:["The learning rate is very small","The data is linearly separable","The network has at least one hidden layer","The activation is sigmoid"],
+     correct:1,
+     exp:"Linear separability of the training data is the theorem's sole condition for guaranteed convergence in finite steps."},
+    {q:"Which activation function is unusable in a backpropagation-trained network because it isn't differentiable?",
+     opts:["Sigmoid","ReLU","Step / Sign","Tanh"],
+     correct:2,
+     exp:"The step function's derivative is zero almost everywhere and undefined at 0, giving no useful gradient for the chain rule."},
+    {q:"A recurrent network architecture is characterized by:",
+     opts:["No hidden layers at all","Fully connected layers only","At least one feedback loop / cycle","Radial basis hidden units"],
+     correct:2,
+     exp:"Feedback loops (cycles) distinguish recurrent networks from feedforward ones, which only pass signals forward."}
+  ];
+  const quiz2data = [
+    {q:"Why is a nonlinear activation function essential in a multilayer network?",
+     opts:["It speeds up matrix multiplication","Without it, stacked layers collapse into an equivalent single linear layer","It reduces the number of parameters","It removes the need for a bias term"],
+     correct:1,
+     exp:"Composing purely linear layers is still linear overall — nonlinearity is what gives depth extra representational power."},
+    {q:"Mini-batch gradient descent computes the gradient over:",
+     opts:["The full dataset every step","A single randomly chosen example","A small subset of the training data","Only the validation set"],
+     correct:2,
+     exp:"Mini-batch GD is the practical middle ground between (slow, stable) batch GD and (fast, noisy) stochastic GD."},
+    {q:"In backpropagation, the hidden-layer error term δʰ is computed using:",
+     opts:["Only the hidden layer's own inputs","The output error propagated backward through the connecting weights, times the local derivative","A fixed learning rate constant","The empirical risk directly"],
+     correct:1,
+     exp:"δʰ = (Σ δᵒw)·f′(net) — this is the chain rule propagating error backward, layer by layer."},
+    {q:"Empirical Risk Minimization minimizes:",
+     opts:["The true (population) risk directly","The average loss over the finite training sample","The number of hidden layers","The learning rate"],
+     correct:1,
+     exp:"True risk over the full data distribution is unobservable; ERM uses the average training-set loss as a computable stand-in."},
+    {q:"L1 regularization tends to produce ______ compared to L2.",
+     opts:["Denser weight vectors","Sparser weight vectors (many exact zeros)","Faster convergence always","Larger bias terms"],
+     correct:1,
+     exp:"The L1 penalty (Σ|wᵢ|) pushes many weights to exactly zero, unlike L2's smooth shrinkage."},
+    {q:"What is the key structural difference between an RBF network's hidden layer and an MLP's hidden layer?",
+     opts:["RBF hidden units use a global sigmoid activation","RBF hidden units respond locally (Gaussian, centered), MLP hidden units respond globally","RBF networks have no hidden layer","MLP networks cannot have more than 2 output units"],
+     correct:1,
+     exp:"RBF hidden neurons activate strongly only near their center (local response); MLP hidden neurons (sigmoid/tanh/ReLU) respond across the whole input space (global)."}
+  ];
+
+  function buildQuiz(containerId, data){
+    const el = document.getElementById(containerId);
+    let html = '<div class="wtitle">Self-check — pick an answer for each question</div>';
+    data.forEach((item, qi)=>{
+      html += `<div class="quiz-q" data-qi="${qi}">
+        <p class="qtext">${qi+1}. ${item.q}</p>`;
+      item.opts.forEach((opt, oi)=>{
+        html += `<label class="quiz-opt"><input type="radio" name="${containerId}-q${qi}" value="${oi}"> <span>${opt}</span></label>`;
+      });
+      html += `<div class="quiz-feedback" data-fb="${qi}"></div></div>`;
+    });
+    html += `<div class="btnrow"><button class="btn primary" id="${containerId}-check">Check answers</button><button class="btn ghost" id="${containerId}-clear">Clear</button></div>
+             <div class="quiz-score" id="${containerId}-score"></div>`;
+    el.innerHTML = html;
+
+    document.getElementById(containerId+'-check').addEventListener('click', ()=>{
+      let score = 0;
+      data.forEach((item, qi)=>{
+        const sel = el.querySelector(`input[name="${containerId}-q${qi}"]:checked`);
+        const fb = el.querySelector(`.quiz-feedback[data-fb="${qi}"]`);
+        fb.classList.add('show');
+        if(!sel){
+          fb.textContent = "No answer selected.";
+          fb.className = "quiz-feedback show wrong";
+          return;
+        }
+        const chosen = parseInt(sel.value,10);
+        if(chosen === item.correct){
+          score++;
+          fb.textContent = "Correct — " + item.exp;
+          fb.className = "quiz-feedback show correct";
+        } else {
+          fb.textContent = "Not quite — " + item.exp;
+          fb.className = "quiz-feedback show wrong";
+        }
+      });
+      document.getElementById(containerId+'-score').textContent = `Score: ${score} / ${data.length}`;
+    });
+    document.getElementById(containerId+'-clear').addEventListener('click', ()=>{
+      el.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+      el.querySelectorAll('.quiz-feedback').forEach(f=>{f.classList.remove('show'); f.textContent='';});
+      document.getElementById(containerId+'-score').textContent = '';
+    });
+  }
+
+  buildQuiz('quiz1', quiz1data);
+  buildQuiz('quiz2', quiz2data);
+})();
+</script>
+</body>
+</html>
