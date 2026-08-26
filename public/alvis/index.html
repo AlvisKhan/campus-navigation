@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alvis Vault · Private Documents</title>
+  <title>Private Vault · Archives</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px 80px;
+      padding: 48px 20px 80px;
       position: relative;
       overflow-x: hidden;
     }
@@ -60,7 +60,7 @@
 
     /* Header */
     .header {
-      margin-bottom: 32px;
+      margin-bottom: 36px;
       text-align: center;
     }
 
@@ -95,18 +95,20 @@
     }
 
     h1 {
-      font-size: 2.25rem;
+      font-size: 2.5rem;
       font-weight: 800;
       letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .subheading {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+      text-transform: capitalize;
     }
 
     /* Search & Stats Bar */
@@ -198,6 +200,8 @@
       gap: 16px;
       min-width: 0;
       flex: 1;
+      text-decoration: none;
+      color: inherit;
     }
 
     .file-icon {
@@ -317,8 +321,8 @@
         <span class="badge-dot"></span>
         <span>PRIVATE VAULT</span>
       </div>
-      <h1>Alvis Workspace</h1>
-      <p class="subheading">Auto-indexed personal document library</p>
+      <h1>Private Vault</h1>
+      <p class="subheading">archives</p>
     </header>
 
     <div class="controls-bar">
@@ -353,17 +357,16 @@
 
     async function loadFiles() {
       try {
-        const res = await fetch('./files.json?t=' + Date.now());
+        const res = await fetch('/alvis/files.json?t=' + Date.now());
         if (!res.ok) throw new Error('files.json not found');
         allFiles = await res.json();
       } catch (err) {
         console.warn('Using fallback file list:', err);
-        // Fallback default list if fetch fails
         allFiles = [
           {
             filename: 'nn12.html',
             title: 'Neural Networks · Unit I & II Study Guide',
-            sizeFormatted: '79 KB',
+            sizeFormatted: '77 KB',
             lastModified: new Date().toISOString()
           }
         ];
@@ -386,11 +389,11 @@
 
       emptyState.style.display = 'none';
       grid.innerHTML = files.map(file => {
-        const fileUrl = `./${file.filename}`;
+        const fileUrl = `/alvis/${file.filename}`;
         const fullUrl = `${window.location.origin}/alvis/${file.filename}`;
         return `
           <div class="file-card">
-            <div class="file-card-left" onclick="window.location.href='${fileUrl}'" style="cursor: pointer;">
+            <a class="file-card-left" href="${fileUrl}">
               <div class="file-icon">📄</div>
               <div class="file-info">
                 <div class="file-title" title="${escapeHtml(file.title)}">${escapeHtml(file.title)}</div>
@@ -399,7 +402,7 @@
                   ${file.sizeFormatted ? `<span>•</span><span>${file.sizeFormatted}</span>` : ''}
                 </div>
               </div>
-            </div>
+            </a>
             <div class="file-card-right">
               <button class="btn-action" onclick="copyLink('${fullUrl}', event)">
                 <span>🔗</span> Copy
