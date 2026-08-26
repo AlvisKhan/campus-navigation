@@ -55,12 +55,12 @@
 
     .container {
       width: 100%;
-      max-width: 820px;
+      max-width: 860px;
     }
 
     /* Header */
     .header {
-      margin-bottom: 36px;
+      margin-bottom: 32px;
       text-align: center;
     }
 
@@ -101,21 +101,20 @@
       background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .subheading {
       color: var(--text-muted);
       font-size: 1.05rem;
       letter-spacing: 0.04em;
-      text-transform: capitalize;
     }
 
     /* Search & Stats Bar */
     .controls-bar {
       display: flex;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -164,6 +163,35 @@
       border: 1px solid var(--card-border);
     }
 
+    /* Filter Chips */
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .filter-chip:hover, .filter-chip.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
     /* Grid of files */
     .files-grid {
       display: flex;
@@ -176,7 +204,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 18px 22px;
+      padding: 16px 20px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
@@ -204,17 +232,17 @@
       color: inherit;
     }
 
-    .file-icon {
-      width: 44px;
-      height: 44px;
+    .file-icon-box {
+      width: 46px;
+      height: 46px;
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(14, 165, 233, 0.05));
-      border: 1px solid rgba(56, 189, 248, 0.25);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
     }
 
     .file-info {
@@ -235,17 +263,34 @@
     .file-meta {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 0.8rem;
+      gap: 8px;
+      font-size: 0.78rem;
       color: var(--text-muted);
       font-family: 'JetBrains Mono', monospace;
+      flex-wrap: wrap;
     }
 
-    .file-path {
-      color: var(--accent);
-      background: rgba(56, 189, 248, 0.08);
+    .ext-badge {
+      font-weight: 700;
       padding: 2px 6px;
       border-radius: 4px;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* Format colors */
+    .ext-pdf { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .ext-word { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .ext-spreadsheet { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .ext-presentation { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .ext-web { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .ext-document { background: rgba(168, 85, 247, 0.15); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .ext-image { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
+    .ext-archive { background: rgba(234, 179, 8, 0.15); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.3); }
+    .ext-other { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+    .file-path {
+      color: var(--text-muted);
     }
 
     .file-card-right {
@@ -332,11 +377,22 @@
           type="text" 
           id="search-input" 
           class="search-input" 
-          placeholder="Filter files by title or filename..." 
+          placeholder="Search by title, filename, or format..." 
           autocomplete="off"
         />
       </div>
       <div id="files-count" class="files-count">0 FILES</div>
+    </div>
+
+    <!-- Category Filter Chips -->
+    <div id="filter-chips" class="filter-chips">
+      <button class="filter-chip active" data-filter="all">All Documents</button>
+      <button class="filter-chip" data-filter="pdf">📕 PDF</button>
+      <button class="filter-chip" data-filter="word">📘 Word</button>
+      <button class="filter-chip" data-filter="presentation">📙 PPT</button>
+      <button class="filter-chip" data-filter="spreadsheet">📊 Excel</button>
+      <button class="filter-chip" data-filter="web">📄 HTML</button>
+      <button class="filter-chip" data-filter="document">📝 Text</button>
     </div>
 
     <div id="files-grid" class="files-grid">
@@ -346,7 +402,7 @@
     <div id="empty-state" class="empty-state" style="display: none;">
       <div class="empty-icon">📂</div>
       <h3>No matching files found</h3>
-      <p>Try searching for a different keyword or upload HTML files to <code>public/alvis/</code>.</p>
+      <p>Try searching for a different keyword or upload files to <code>public/alvis/</code>.</p>
     </div>
   </div>
 
@@ -354,6 +410,7 @@
 
   <script>
     let allFiles = [];
+    let currentCategory = 'all';
 
     async function loadFiles() {
       try {
@@ -366,38 +423,70 @@
           {
             filename: 'nn12.html',
             title: 'Neural Networks · Unit I & II Study Guide',
+            extension: 'HTML',
+            category: 'web',
+            icon: '📄',
             sizeFormatted: '77 KB',
             lastModified: new Date().toISOString()
           }
         ];
       }
-      renderFiles(allFiles);
+      renderFiles();
     }
 
-    function renderFiles(files) {
+    function getBadgeClass(category) {
+      switch(category) {
+        case 'pdf': return 'ext-pdf';
+        case 'word': return 'ext-word';
+        case 'spreadsheet': return 'ext-spreadsheet';
+        case 'presentation': return 'ext-presentation';
+        case 'web': return 'ext-web';
+        case 'document': return 'ext-document';
+        case 'image': return 'ext-image';
+        case 'archive': return 'ext-archive';
+        default: return 'ext-other';
+      }
+    }
+
+    function renderFiles() {
       const grid = document.getElementById('files-grid');
       const countEl = document.getElementById('files-count');
       const emptyState = document.getElementById('empty-state');
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
 
-      countEl.textContent = `${files.length} FILE${files.length === 1 ? '' : 'S'}`;
+      const filtered = allFiles.filter(f => {
+        const matchesCategory = currentCategory === 'all' || f.category === currentCategory;
+        const matchesQuery = !query || 
+          (f.title && f.title.toLowerCase().includes(query)) ||
+          (f.filename && f.filename.toLowerCase().includes(query)) ||
+          (f.extension && f.extension.toLowerCase().includes(query));
+        return matchesCategory && matchesQuery;
+      });
 
-      if (files.length === 0) {
+      countEl.textContent = `${filtered.length} FILE${filtered.length === 1 ? '' : 'S'}`;
+
+      if (filtered.length === 0) {
         grid.innerHTML = '';
         emptyState.style.display = 'block';
         return;
       }
 
       emptyState.style.display = 'none';
-      grid.innerHTML = files.map(file => {
+      grid.innerHTML = filtered.map(file => {
         const fileUrl = `/alvis/${file.filename}`;
         const fullUrl = `${window.location.origin}/alvis/${file.filename}`;
+        const extClass = getBadgeClass(file.category || 'other');
+        const icon = file.icon || '📄';
+        const ext = file.extension || 'FILE';
+
         return `
           <div class="file-card">
             <a class="file-card-left" href="${fileUrl}" target="_blank" rel="noopener noreferrer">
-              <div class="file-icon">📄</div>
+              <div class="file-icon-box">${icon}</div>
               <div class="file-info">
                 <div class="file-title" title="${escapeHtml(file.title)}">${escapeHtml(file.title)}</div>
                 <div class="file-meta">
+                  <span class="ext-badge ${extClass}">${ext}</span>
                   <span class="file-path">${escapeHtml(file.filename)}</span>
                   ${file.sizeFormatted ? `<span>•</span><span>${file.sizeFormatted}</span>` : ''}
                 </div>
@@ -441,17 +530,18 @@
       }, 2500);
     }
 
-    document.getElementById('search-input').addEventListener('input', (e) => {
-      const query = e.target.value.toLowerCase().trim();
-      if (!query) {
-        renderFiles(allFiles);
-        return;
-      }
-      const filtered = allFiles.filter(f => 
-        (f.title && f.title.toLowerCase().includes(query)) ||
-        (f.filename && f.filename.toLowerCase().includes(query))
-      );
-      renderFiles(filtered);
+    document.getElementById('search-input').addEventListener('input', () => {
+      renderFiles();
+    });
+
+    // Chip filter clicks
+    document.querySelectorAll('.filter-chip').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCategory = btn.getAttribute('data-filter');
+        renderFiles();
+      });
     });
 
     loadFiles();

@@ -1,37 +1,52 @@
 [
   {
-    "filename": "DBMS_GATE_Study_Material.html",
-    "title": "DBMS – GATE CSE Complete Study Material",
-    "sizeBytes": 114152,
-    "sizeFormatted": "111 KB",
-    "lastModified": "2026-06-14T13:35:04.855Z"
-  },
-  {
-    "filename": "OS_Interview_Prep.html",
-    "title": "OS // Interview Prep",
-    "sizeBytes": 41629,
-    "sizeFormatted": "41 KB",
-    "lastModified": "2026-08-20T18:01:10.449Z"
-  },
-  {
-    "filename": "esl_study_material.html",
-    "title": "Elements of Statistical Learning — Study Guide",
-    "sizeBytes": 84600,
-    "sizeFormatted": "83 KB",
-    "lastModified": "2026-05-12T23:09:45.985Z"
-  },
-  {
     "filename": "nn12.html",
     "title": "Neural Networks · Unit I & II Study Guide",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
     "sizeBytes": 79137,
     "sizeFormatted": "77 KB",
     "lastModified": "2026-08-26T18:14:29.994Z"
   },
   {
+    "filename": "OS_Interview_Prep.html",
+    "title": "OS // Interview Prep",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 41629,
+    "sizeFormatted": "41 KB",
+    "lastModified": "2026-08-20T18:01:10.449Z"
+  },
+  {
+    "filename": "DBMS_GATE_Study_Material.html",
+    "title": "DBMS – GATE CSE Complete Study Material",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 114152,
+    "sizeFormatted": "111 KB",
+    "lastModified": "2026-06-14T13:35:04.855Z"
+  },
+  {
     "filename": "stack_queue_masterclass.html",
     "title": "Stack & Queue — C++ Masterclass",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
     "sizeBytes": 92868,
     "sizeFormatted": "91 KB",
     "lastModified": "2026-06-08T19:58:43.472Z"
+  },
+  {
+    "filename": "esl_study_material.html",
+    "title": "Elements of Statistical Learning — Study Guide",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 84600,
+    "sizeFormatted": "83 KB",
+    "lastModified": "2026-05-12T23:09:45.985Z"
   }
 ]
