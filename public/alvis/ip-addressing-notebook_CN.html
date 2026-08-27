@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>IP Addressing — Rainy Day Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@400;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #efe8d8;
+    --paper-2: #e6ded0;
+    --paper-shadow: #cfc6b2;
+    --ink: #1f3a52;
+    --ink-soft: #3c5a73;
+    --rust: #b64d2c;
+    --moss: #6f7e46;
+    --plum: #6a4c78;
+    --rule: rgba(31,58,82,0.16);
+    --rule-strong: rgba(31,58,82,0.28);
+    --glass-top: #26333c;
+    --glass-bot: #48606c;
+    --drop: rgba(214,231,235,0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--paper-shadow);
+    font-family: 'Literata', serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--rust); }
+
+  /* ---------- TOP NAV ---------- */
+  .top-nav{
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    z-index: 10;
+  }
+  .back-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #e2f1f5;
+    text-decoration: none;
+    padding: 6px 12px;
+    background: rgba(15, 25, 32, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    backdrop-filter: blur(8px);
+    transition: all 0.15s ease;
+  }
+  .back-btn:hover{
+    background: rgba(15, 25, 32, 0.9);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  /* ---------- RAIN WINDOW HERO ---------- */
+  .rain-window{
+    position: relative;
+    height: 42vh;
+    min-height: 290px;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--glass-top), var(--glass-bot));
+    display:flex;
+    align-items:flex-end;
+  }
+  .rain-window::after{
+    content:"";
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.10), transparent 55%),
+                radial-gradient(ellipse at 80% 30%, rgba(255,255,255,0.06), transparent 60%);
+    pointer-events:none;
+  }
+  .pane-grid{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 33.33% 100%, 100% 100%;
+    pointer-events:none;
+  }
+  .drop{
+    position:absolute;
+    top:-10%;
+    width:2px;
+    background: linear-gradient(180deg, transparent, var(--drop) 60%, transparent);
+    border-radius: 2px;
+    opacity:0.8;
+    animation-name: fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  @keyframes fall{
+    0%{ transform: translateY(-10%); }
+    100%{ transform: translateY(115vh); }
+  }
+  .fog-wipe{ position:absolute; inset:0; backdrop-filter: blur(0.3px); pointer-events:none; }
+
+  .hero-copy{
+    position:relative; z-index:2; width:100%;
+    padding: 2.3rem 8vw 2rem;
+    color: #f1efe4;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem; letter-spacing:0.18em; text-transform:uppercase;
+    color: #cfe3e8; opacity:0.85; margin:0 0 0.4rem;
+  }
+  .hero-copy h1{
+    font-family:'Caveat', cursive; font-weight:700;
+    font-size: clamp(2.6rem, 6.5vw, 4.8rem);
+    line-height:0.95; margin:0;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.35);
+  }
+  .hero-copy p{
+    font-family:'Kalam', cursive; max-width: 46ch;
+    font-size:1.02rem; margin: 0.7rem 0 0; color:#dfe9ea;
+  }
+  .hero-scribble{
+    position:absolute; right: 6vw; bottom: 1.2rem;
+    font-family:'Caveat', cursive; font-size:1rem;
+    color:#cfe3e8; opacity:0.9; transform: rotate(-3deg);
+  }
+
+  /* ---------- NOTEBOOK PAGE ---------- */
+  .notebook{
+    position:relative;
+    max-width: 900px;
+    margin: -28px auto 0;
+    background: var(--paper);
+    box-shadow: 0 30px 60px rgba(20,20,10,0.35), 0 2px 0 rgba(255,255,255,0.4) inset;
+    border-radius: 4px 4px 2px 2px;
+    padding: 2.6rem 2.4rem 3rem 4.6rem;
+    background-image: repeating-linear-gradient(
+        var(--paper) 0px, var(--paper) 35px, var(--rule) 36px, var(--paper) 37px
+      );
+    background-position-y: 6.4rem;
+  }
+  .notebook::before{
+    content:"";
+    position:absolute; left: 1.5rem; top: 1.4rem; bottom: 1.4rem; width: 22px;
+    background-image: radial-gradient(circle, #d8d0bb 0 40%, transparent 41%),
+                       radial-gradient(circle at 60% 60%, rgba(0,0,0,0.18), transparent 60%);
+    background-size: 22px 44px; background-repeat: repeat-y;
+    box-shadow: inset -2px 0 6px rgba(0,0,0,0.12);
+  }
+  .notebook::after{
+    content:""; position:absolute; top:0; bottom:0; left: 3.5rem; width:1.5px;
+    background: var(--rust); opacity:0.5;
+  }
+
+  h2.section-title{
+    font-family:'Caveat', cursive; font-weight:700; font-size: clamp(2rem, 5vw, 2.4rem);
+    color: var(--ink); margin: 0 0 0.2rem;
+    display:flex; align-items:baseline; gap:0.6rem;
+  }
+  h2.section-title .num{
+    font-family:'JetBrains Mono', monospace; font-size:1rem; color: var(--rust);
+    border: 1.5px solid var(--rust); border-radius:50%;
+    width:1.9rem; height:1.9rem;
+    display:inline-flex; align-items:center; justify-content:center;
+    transform: rotate(-6deg); flex-shrink:0;
+  }
+  .section-sub{
+    font-family:'Kalam', cursive; color: var(--ink-soft);
+    margin: 0 0 1.4rem; font-size:0.98rem;
+  }
+  h3.sub-title{
+    font-family:'Caveat', cursive; font-weight:700; font-size:1.6rem;
+    color: var(--ink); margin: 1.8rem 0 0.5rem;
+  }
+  p.body-text{ font-size:0.98rem; line-height:1.7; margin: 0 0 1rem; }
+  p.body-text mark.hl{ background: linear-gradient(180deg, transparent 60%, #d9e1a8 60%); padding: 0 0.1rem; }
+
+  /* ---------- 32-bit anatomy diagram ---------- */
+  .anatomy{
+    background: var(--paper-2);
+    border: 1px solid var(--rule-strong);
+    border-radius: 3px;
+    padding: 1.1rem 1.2rem 1.3rem;
+    margin: 0.8rem 0 1.6rem;
+    box-shadow: 2px 3px 0 rgba(31,58,82,0.06);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .anatomy-address{
+    font-family:'JetBrains Mono', monospace;
+    font-size:1.3rem; font-weight:600; color: var(--rust);
+    text-align:center; margin-bottom:0.9rem; letter-spacing:0.02em;
+  }
+  .anatomy-octets{
+    display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap;
+  }
+  .anatomy-octet{ display:flex; flex-direction:column; align-items:center; gap:0.3rem; }
+  .anatomy-octet .dec{
+    font-family:'JetBrains Mono', monospace; font-size:0.85rem; color: var(--ink-soft);
+  }
+  .anatomy-bits{ display:flex; gap:2px; }
+  .anatomy-bit{
+    width:20px; height:20px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem;
+    background: rgba(60,90,115,0.10);
+    border: 1px solid var(--rule-strong);
+    border-radius:2px;
+  }
+  .anatomy-caption{
+    font-family:'Kalam', cursive; font-size:0.85rem; color: var(--ink-soft);
+    text-align:center; margin-top:0.8rem;
+  }
+
+  /* ---------- class cards ---------- */
+  .class-card{
+    background: var(--paper-2);
+    border: 1px solid var(--rule-strong);
+    border-radius: 3px;
+    padding: 1.1rem 1.3rem 1.3rem;
+    margin-bottom: 1.4rem;
+    box-shadow: 3px 4px 0 rgba(31,58,82,0.07);
+  }
+  .class-card-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    flex-wrap:wrap; gap:0.4rem 1rem;
+    margin-bottom:0.6rem;
+  }
+  .class-card-head h3{
+    font-family:'Caveat', cursive; font-weight:700; font-size:1.9rem;
+    margin:0; color: var(--rust);
+  }
+  .class-card-head .range-chip{
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem;
+    background: rgba(31,58,82,0.08); color: var(--ink-soft);
+    padding: 0.15rem 0.55rem; border-radius: 2px;
+  }
+  .class-note{
+    font-family:'Kalam', cursive; font-size:0.95rem; color: var(--ink);
+    margin: 0.5rem 0 0.9rem; line-height:1.5;
+  }
+
+  /* bit diagram */
+  .bitdiagram{
+    display:flex; flex-wrap:wrap; gap: 0.9rem 1rem;
+    justify-content:center;
+    background: rgba(255,255,255,0.35);
+    border: 1px dashed var(--rule-strong);
+    border-radius: 3px;
+    padding: 0.9rem 0.7rem;
+    margin-bottom: 0.9rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .octet-group{ display:flex; flex-direction:column; align-items:center; gap:0.3rem; }
+  .octet-label{
+    font-family:'JetBrains Mono', monospace; font-size:0.66rem;
+    color: var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em;
+  }
+  .octet-bits{ display:flex; gap:2px; }
+  .bitcell{
+    width:19px; height:19px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-weight:600; font-size:0.68rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 2px;
+    color: var(--ink);
+  }
+  .bitcell[data-type="id"]{ background: rgba(182,77,44,0.28); color:#7a3016; }
+  .bitcell[data-type="net"]{ background: rgba(60,90,115,0.20); }
+  .bitcell[data-type="host"]{ background: rgba(111,126,70,0.26); }
+  .bitcell[data-type="group"]{ background: rgba(106,76,120,0.22); }
+  .bitcell[data-type="reserved"]{
+    background: repeating-linear-gradient(45deg, rgba(31,58,82,0.10), rgba(31,58,82,0.10) 3px, transparent 3px, transparent 6px);
+  }
+
+  .legend{
+    display:flex; flex-wrap:wrap; gap: 0.9rem;
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; color: var(--ink-soft);
+    justify-content:center; margin-bottom:1.6rem;
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:0.35rem; }
+  .swatch{ width:13px; height:13px; border-radius:2px; border:1px solid var(--rule-strong); display:inline-block; }
+  .swatch.id{ background: rgba(182,77,44,0.28); }
+  .swatch.net{ background: rgba(60,90,115,0.20); }
+  .swatch.host{ background: rgba(111,126,70,0.26); }
+  .swatch.group{ background: rgba(106,76,120,0.22); }
+  .swatch.reserved{ background: repeating-linear-gradient(45deg, rgba(31,58,82,0.10), rgba(31,58,82,0.10) 3px, transparent 3px, transparent 6px); }
+
+  .facts-table{
+    width:100%; border-collapse:collapse;
+    font-family:'JetBrains Mono', monospace; font-size:0.8rem;
+    margin-bottom:0.3rem;
+  }
+  .facts-table td{ padding: 0.3rem 0.5rem; border-bottom:1px solid var(--rule); }
+  .facts-table td:first-child{ color: var(--ink-soft); width:46%; }
+
+  /* summary table */
+  .summary-table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin: 0.6rem 0 1.6rem; }
+  table.summary-table{
+    width:100%; min-width:560px; border-collapse:collapse;
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem;
+    background: var(--paper-2); border: 1px solid var(--rule-strong);
+  }
+  table.summary-table th, table.summary-table td{
+    padding: 0.5rem 0.6rem; border-bottom:1px solid var(--rule); text-align:left;
+  }
+  table.summary-table th{ color: var(--rust); background: rgba(182,77,44,0.08); font-weight:600; }
+  table.summary-table tr:last-child td{ border-bottom:none; }
+
+  /* special address list */
+  .special-list{ list-style:none; margin:0 0 1.6rem; padding:0; display:flex; flex-direction:column; gap:0.6rem; }
+  .special-list li{
+    background: var(--paper-2); border-left: 3px solid var(--moss);
+    border-radius:2px; padding:0.6rem 0.9rem; font-size:0.92rem; line-height:1.55;
+  }
+  .special-list code{
+    font-family:'JetBrains Mono', monospace; background: rgba(31,58,82,0.08);
+    padding:0.05rem 0.35rem; border-radius:2px; font-size:0.85rem; color: var(--ink);
+  }
+
+  /* worked example */
+  .worked{
+    background: var(--paper-2); border: 1px solid var(--rule-strong);
+    border-radius: 3px; padding: 1.1rem 1.3rem; margin-bottom:1.6rem;
+  }
+  .worked-steps{ margin:0; padding-left:1.2rem; }
+  .worked-steps li{ margin-bottom:0.55rem; font-size:0.95rem; line-height:1.6; }
+  .worked-steps code{ font-family:'JetBrains Mono', monospace; background: rgba(31,58,82,0.08); padding:0.05rem 0.3rem; border-radius:2px; }
+  .split-diagram{
+    display:flex; justify-content:center; gap:0.4rem; margin: 0.9rem 0 0.3rem; flex-wrap:wrap;
+  }
+  .split-block{
+    text-align:center; padding: 0.4rem 0.7rem; border-radius:3px; font-family:'JetBrains Mono', monospace;
+  }
+  .split-block.netpart{ background: rgba(60,90,115,0.20); border:1px solid var(--rule-strong); }
+  .split-block.hostpart{ background: rgba(111,126,70,0.26); border:1px solid var(--rule-strong); }
+  .split-block .lbl{ font-size:0.65rem; color: var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; display:block; margin-bottom:0.15rem; }
+  .split-block .val{ font-size:1rem; font-weight:600; }
+
+  /* concept notes (subnetting quick recap) */
+  .concept-grid{
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.9rem 1.3rem; margin-bottom: 1.4rem;
+  }
+  .concept-card{
+    background: var(--paper-2); border: 1px solid var(--rule-strong); border-radius: 3px;
+    padding: 0.85rem 1rem 1rem; position:relative;
+    box-shadow: 2px 3px 0 rgba(31,58,82,0.06);
+  }
+  .concept-card h3{ font-family:'Kalam', cursive; font-size:1.05rem; margin:0 0 0.35rem; color: var(--rust); }
+  .concept-card p, .concept-card ul{ margin:0; font-size:0.88rem; line-height:1.5; color: var(--ink); }
+  .concept-card ul{ padding-left:1.1rem; }
+  .concept-card code{ font-family:'JetBrains Mono', monospace; background: rgba(31,58,82,0.08); padding:0.05rem 0.3rem; border-radius:2px; font-size:0.82rem; }
+
+  /* PYQ cards */
+  .pyq-list{ display:flex; flex-direction:column; gap:1.1rem; }
+  .pyq-card{
+    position:relative; background: var(--paper-2); border: 1px solid var(--rule-strong);
+    border-radius: 3px; padding: 1.1rem 1.3rem; box-shadow: 3px 4px 0 rgba(31,58,82,0.07);
+  }
+  .pyq-tag{
+    display:inline-flex; align-items:center; gap:0.35rem;
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; letter-spacing:0.02em;
+    background: var(--rust); color: #fdf6ec; padding: 0.18rem 0.55rem; border-radius: 2px;
+    transform: rotate(-1.4deg); box-shadow: 1px 2px 0 rgba(0,0,0,0.15); margin-bottom: 0.55rem;
+  }
+  .pyq-card .q-label{ font-family:'Kalam', cursive; color: var(--ink-soft); font-size:0.82rem; margin-right:0.4rem; }
+  .pyq-card p.question{ margin: 0.3rem 0 0.7rem; font-size: 1rem; line-height:1.55; }
+  .pyq-card .options{
+    font-family:'JetBrains Mono', monospace; font-size:0.82rem; color: var(--ink-soft);
+    margin: 0 0 0.8rem; line-height:1.7; white-space: pre-wrap;
+  }
+  .reveal-btn{
+    font-family:'Kalam', cursive; font-size:0.95rem; background: none; border: none;
+    border-bottom: 1.5px dashed var(--ink-soft); color: var(--ink-soft); cursor:pointer;
+    padding: 0.15rem 0.1rem; display:inline-flex; align-items:center; gap:0.4rem;
+  }
+  .reveal-btn:hover{ color: var(--rust); border-color: var(--rust); }
+  .reveal-btn:focus-visible, button:focus-visible, .corner:focus-visible{ outline: 2px solid var(--rust); outline-offset: 3px; }
+  .reveal-btn .arrow{ transition: transform 0.25s ease; display:inline-block; }
+  .pyq-card.open .reveal-btn .arrow{ transform: rotate(90deg); }
+  .solution{ display:grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s ease; }
+  .pyq-card.open .solution{ grid-template-rows: 1fr; }
+  .solution-inner{ overflow:hidden; }
+  .solution-box{
+    margin-top: 0.7rem; padding: 0.75rem 0.9rem; background: #f6f1e4;
+    border-left: 3px solid var(--moss); border-radius: 2px;
+    font-family:'Kalam', cursive; font-size:0.98rem; line-height:1.55; color: var(--ink);
+  }
+  .solution-box .answer{ font-family:'JetBrains Mono', monospace; font-weight:600; color: var(--moss); }
+  .corner{
+    position:absolute; top:0; right:0; width:0; height:0;
+    border-style:solid; border-width: 0 24px 24px 0;
+    border-color: transparent var(--paper) transparent transparent;
+    filter: drop-shadow(-2px 2px 2px rgba(31,32,20,0.25));
+    cursor:pointer; transition: border-width 0.2s ease; background: transparent; padding:0;
+  }
+  .corner:hover{ border-width: 0 30px 30px 0; }
+
+  /* cheat sheet */
+  .cheatsheet{
+    margin-top: 2.4rem; padding: 1.2rem 1.3rem;
+    background: repeating-linear-gradient(135deg, #f4efe1, #f4efe1 10px, #efe9da 10px, #efe9da 20px);
+    border: 1px dashed var(--rule-strong); border-radius: 3px; position:relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cheatsheet h3{ font-family:'Caveat', cursive; font-size:1.7rem; margin:0 0 0.6rem; color: var(--rust); }
+  .cheatsheet table{ width:100%; border-collapse: collapse; font-family:'JetBrains Mono', monospace; font-size:0.82rem; }
+  .cheatsheet td, .cheatsheet th{ text-align:left; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--rule); }
+  .cheatsheet th{ color: var(--ink-soft); font-weight:600; }
+
+  footer.note{ text-align:center; font-family:'Kalam', cursive; color: var(--ink-soft); font-size:0.85rem; padding: 1.6rem 1rem 2.4rem; }
+
+  /* ---------- RESPONSIVE BREAKPOINTS ---------- */
+  @media (max-width: 640px){
+    .rain-window{ min-height: 250px; height: auto; }
+    .hero-copy{ padding: 4rem 1.2rem 1.8rem; }
+    .hero-scribble{ display: none; }
+    .notebook{
+      padding: 2.2rem 1rem 2.6rem 2.9rem;
+      margin-top: -20px;
+    }
+    .notebook::before{ left: 0.5rem; width:14px; background-size:14px 34px; }
+    .notebook::after{ left: 2.1rem; }
+    .bitcell{ width:16px; height:16px; font-size:0.6rem; }
+    .anatomy-bit{ width:16px; height:16px; font-size:0.6rem; }
+    .bitdiagram{ gap: 0.6rem 0.8rem; padding: 0.7rem 0.5rem; }
+    .class-card{ padding: 1rem 1rem 1.1rem; }
+    .worked{ padding: 1rem 1rem; }
+    .pyq-card{ padding: 1rem 1.1rem; }
+  }
+
+  @media (max-width: 480px){
+    .top-nav{ top: 10px; left: 10px; }
+    .back-btn{ font-size: 0.72rem; padding: 5px 9px; }
+    .hero-copy{ padding: 3.4rem 0.9rem 1.4rem; }
+    .hero-copy h1{ font-size: 2.4rem; }
+    .hero-copy p{ font-size: 0.92rem; }
+    .notebook{
+      padding: 1.8rem 0.75rem 2.2rem 2.2rem;
+      margin-top: -14px;
+    }
+    .notebook::before{ left: 0.35rem; width: 11px; background-size: 11px 28px; }
+    .notebook::after{ left: 1.55rem; }
+    h2.section-title{ font-size: 1.75rem; gap: 0.4rem; }
+    h2.section-title .num{ width: 1.5rem; height: 1.5rem; font-size: 0.85rem; }
+    .section-sub{ font-size: 0.88rem; margin-bottom: 1rem; }
+    h3.sub-title{ font-size: 1.35rem; margin: 1.4rem 0 0.4rem; }
+    p.body-text{ font-size: 0.92rem; line-height: 1.6; }
+    .anatomy{ padding: 0.8rem 0.6rem 1rem; }
+    .anatomy-address{ font-size: 1.1rem; margin-bottom: 0.6rem; }
+    .anatomy-bit{ width: 14px; height: 14px; font-size: 0.55rem; }
+    .anatomy-octet .dec{ font-size: 0.78rem; }
+    .bitcell{ width: 14px; height: 14px; font-size: 0.55rem; }
+    .octet-label{ font-size: 0.58rem; }
+    .bitdiagram{ gap: 0.4rem 0.5rem; padding: 0.6rem 0.3rem; }
+    .facts-table{ font-size: 0.75rem; }
+    .facts-table td{ padding: 0.25rem 0.3rem; }
+    .facts-table td:first-child{ width: 44%; font-size: 0.72rem; }
+    .class-card-head h3{ font-size: 1.6rem; }
+    .class-card-head .range-chip{ font-size: 0.72rem; }
+    .concept-grid{ grid-template-columns: 1fr; gap: 0.8rem; }
+    .cheatsheet{ padding: 1rem 0.8rem; }
+    .cheatsheet h3{ font-size: 1.4rem; }
+    .cheatsheet table{ font-size: 0.74rem; }
+    .cheatsheet td, .cheatsheet th{ padding: 0.3rem 0.3rem; }
+    .solution-box{ font-size: 0.9rem; }
+  }
+
+  @media (max-width: 360px){
+    .notebook{
+      padding: 1.5rem 0.5rem 1.8rem 1.8rem;
+    }
+    .notebook::after{ left: 1.25rem; }
+    .bitcell{ width: 12px; height: 12px; font-size: 0.5rem; }
+    .anatomy-bit{ width: 12px; height: 12px; font-size: 0.5rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .drop{ animation: none; opacity:0.35; }
+    html{ scroll-behavior:auto; }
+    .reveal-btn .arrow, .corner, .solution{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="top-nav">
+    <a href="/alvis/" class="back-btn">← Back to Vault</a>
+  </div>
+
+  <div class="rain-window" aria-hidden="false">
+    <div class="pane-grid"></div>
+    <div id="rain"></div>
+    <div class="fog-wipe"></div>
+    <div class="hero-copy">
+      <p class="hero-eyebrow">Computer Networks · Network Layer</p>
+      <h1>IP Addressing</h1>
+      <p>Notes from a rainy afternoon of subnet masks, CIDR blocks, and ten years of GATE questions worth re-reading.</p>
+    </div>
+    <div class="hero-scribble">scroll down, the ink's still wet ↓</div>
+  </div>
+
+  <main class="notebook">
+
+    <!-- ================= SECTION 1: CLASSFUL ADDRESSING ================= -->
+    <section aria-labelledby="classful-h">
+      <h2 class="section-title" id="classful-h"><span class="num">1</span> Classful addressing, from scratch</h2>
+      <p class="section-sub">read this section once, slowly, and the numericals stop being scary</p>
+
+      <p class="body-text">Every IPv4 address is just <mark class="hl">32 bits</mark> — a string of 0s and 1s. We never write it that way because nobody wants to read 32 digits, so we chop it into four 8-bit chunks called <strong>octets</strong>, convert each chunk to decimal (0–255), and separate them with dots. That's <em>dotted-decimal notation</em>.</p>
+
+      <div class="anatomy">
+        <div class="anatomy-address">200 . 31 . 7 . 9</div>
+        <div class="anatomy-octets" id="anatomy-octets"></div>
+        <p class="anatomy-caption">4 octets × 8 bits = 32 bits total — the same address, just two ways of writing it.</p>
+      </div>
+
+      <p class="body-text">Now the real question: once you have 32 bits, how much of that address names the <strong>network</strong> the host lives on, and how much names the <strong>host</strong> itself? Before 1993, the internet answered this with <strong>classful addressing</strong>: the very first few bits of the address were reserved to announce which "class" the address belonged to, and the class alone decided where the network/host split falls. No calculation needed — just read the leading bits.</p>
+
+      <p class="body-text">There are five classes: <strong>A, B, C</strong> (used for normal network/host addressing), and <strong>D, E</strong> (special-purpose, not split into network/host at all). Here's each one, bit by bit.</p>
+
+      <!-- Legend -->
+      <div class="legend">
+        <span><span class="swatch id"></span> class-identifier bits (fixed)</span>
+        <span><span class="swatch net"></span> network bits</span>
+        <span><span class="swatch host"></span> host bits</span>
+        <span><span class="swatch group"></span> multicast group ID</span>
+        <span><span class="swatch reserved"></span> reserved</span>
+      </div>
+
+      <!-- CLASS A -->
+      <div class="class-card">
+        <div class="class-card-head">
+          <h3>Class A</h3>
+          <span class="range-chip">first octet 0 – 127</span>
+        </div>
+        <div class="bitdiagram" id="bits-A"></div>
+        <table class="facts-table">
+          <tr><td>Leading bit</td><td><code>0</code></td></tr>
+          <tr><td>Network / host split</td><td>7 network bits + 24 host bits</td></tr>
+          <tr><td>Default mask</td><td>255.0.0.0 &nbsp; (/8)</td></tr>
+          <tr><td>Usable networks</td><td>2⁷ − 2 = 126 &nbsp; (0 and 127 are reserved, see below)</td></tr>
+          <tr><td>Usable hosts / network</td><td>2²⁴ − 2 = 16,777,214</td></tr>
+        </table>
+        <p class="class-note">Analogy: a handful of enormous cities. Only 126 class-A networks exist, but each one can hold over 16 million hosts — these went to early giants (governments, huge corporations).</p>
+      </div>
+
+      <!-- CLASS B -->
+      <div class="class-card">
+        <div class="class-card-head">
+          <h3>Class B</h3>
+          <span class="range-chip">first octet 128 – 191</span>
+        </div>
+        <div class="bitdiagram" id="bits-B"></div>
+        <table class="facts-table">
+          <tr><td>Leading bits</td><td><code>10</code></td></tr>
+          <tr><td>Network / host split</td><td>14 network bits + 16 host bits</td></tr>
+          <tr><td>Default mask</td><td>255.255.0.0 &nbsp; (/16)</td></tr>
+          <tr><td>Usable networks</td><td>2¹⁴ = 16,384</td></tr>
+          <tr><td>Usable hosts / network</td><td>2¹⁶ − 2 = 65,534</td></tr>
+        </table>
+        <p class="class-note">Analogy: mid-sized towns. Universities and mid-size companies typically got a class B — the classic GATE "organization wants to form subnets" question almost always starts here.</p>
+      </div>
+
+      <!-- CLASS C -->
+      <div class="class-card">
+        <div class="class-card-head">
+          <h3>Class C</h3>
+          <span class="range-chip">first octet 192 – 223</span>
+        </div>
+        <div class="bitdiagram" id="bits-C"></div>
+        <table class="facts-table">
+          <tr><td>Leading bits</td><td><code>110</code></td></tr>
+          <tr><td>Network / host split</td><td>21 network bits + 8 host bits</td></tr>
+          <tr><td>Default mask</td><td>255.255.255.0 &nbsp; (/24)</td></tr>
+          <tr><td>Usable networks</td><td>2²¹ = 2,097,152</td></tr>
+          <tr><td>Usable hosts / network</td><td>2⁸ − 2 = 254</td></tr>
+        </table>
+        <p class="class-note">Analogy: individual houses. Millions of small networks, each with room for only 254 hosts — most home and small-office ranges (like the familiar 192.168.x.x) echo this class.</p>
+      </div>
+
+      <!-- CLASS D -->
+      <div class="class-card">
+        <div class="class-card-head">
+          <h3>Class D</h3>
+          <span class="range-chip">first octet 224 – 239</span>
+        </div>
+        <div class="bitdiagram" id="bits-D"></div>
+        <table class="facts-table">
+          <tr><td>Leading bits</td><td><code>1110</code></td></tr>
+          <tr><td>Remaining 28 bits</td><td>one single <em>multicast group ID</em> — not split into network/host</td></tr>
+          <tr><td>Used for</td><td>multicasting — one sender, many receivers (e.g. video streaming to a group)</td></tr>
+        </table>
+        <p class="class-note">There's no "network" or "host" here at all — the whole 28-bit remainder just names a group that multiple hosts can tune into.</p>
+      </div>
+
+      <!-- CLASS E -->
+      <div class="class-card">
+        <div class="class-card-head">
+          <h3>Class E</h3>
+          <span class="range-chip">first octet 240 – 255</span>
+        </div>
+        <div class="bitdiagram" id="bits-E"></div>
+        <table class="facts-table">
+          <tr><td>Leading bits</td><td><code>11110</code></td></tr>
+          <tr><td>Remaining 27 bits</td><td>reserved — not used for normal addressing</td></tr>
+          <tr><td>Used for</td><td>experimental / future use only</td></tr>
+        </table>
+        <p class="class-note">You'll basically never see a class E address doing real work — GATE mentions it mostly so you can rule it out in "which class is this" questions.</p>
+      </div>
+
+      <h3 class="sub-title">The first-octet rule, at a glance</h3>
+      <p class="body-text">In practice you never decode all the bits by hand — you just look at the <strong>first octet's decimal value</strong> and match it to a range:</p>
+      <div class="summary-table-wrap">
+        <table class="summary-table">
+          <thead>
+            <tr><th>Class</th><th>Leading bits</th><th>First octet range</th><th>Default mask</th><th>Networks</th><th>Hosts / network</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>A</td><td>0xxxxxxx</td><td>0 – 127</td><td>255.0.0.0 (/8)</td><td>126</td><td>16,777,214</td></tr>
+            <tr><td>B</td><td>10xxxxxx</td><td>128 – 191</td><td>255.255.0.0 (/16)</td><td>16,384</td><td>65,534</td></tr>
+            <tr><td>C</td><td>110xxxxx</td><td>192 – 223</td><td>255.255.255.0 (/24)</td><td>2,097,152</td><td>254</td></tr>
+            <tr><td>D</td><td>1110xxxx</td><td>224 – 239</td><td>— (multicast)</td><td>—</td><td>—</td></tr>
+            <tr><td>E</td><td>11110xxx</td><td>240 – 255</td><td>— (reserved)</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub-title">Special addresses worth knowing</h3>
+      <p class="body-text">A few addresses are carved out and never handed to an ordinary host, classful scheme or not:</p>
+      <ul class="special-list">
+        <li><code>0.0.0.0</code> — means "this host, this network." Used by a device before it has been assigned a real address (e.g. during DHCP boot-up).</li>
+        <li><code>127.0.0.0/8</code> — the loopback block. <code>127.0.0.1</code> always means "myself" and never touches the wire.</li>
+        <li><code>255.255.255.255</code> — the limited broadcast address, delivered to every host on the local network only (routers don't forward it onward).</li>
+        <li>Within <em>any</em> network, the address with <strong>all host bits 0</strong> is the network address, and <strong>all host bits 1</strong> is the directed broadcast address — neither can be assigned to a host. That's exactly why the usable host count is always 2ⁿ <strong>− 2</strong>.</li>
+        <li>Private ranges (RFC 1918) — <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code> — are reserved for internal networks and never routed on the public internet.</li>
+      </ul>
+
+      <h3 class="sub-title">Worked example: classify an address by hand</h3>
+      <div class="worked">
+        <p class="body-text" style="margin-bottom:0.8rem;">Classify <strong>172.16.5.9</strong> and find its network ID and host ID.</p>
+        <ol class="worked-steps">
+          <li>Look at the first octet: <code>172</code>. That falls between 128 and 191 → it's a <strong>Class B</strong> address.</li>
+          <li>Class B's default mask is <code>255.255.0.0</code> (/16) — the first two octets are the network part, the last two are the host part.</li>
+          <li>Split the address along that boundary: network ID = <code>172.16.0.0</code>, host ID = <code>0.0.5.9</code>.</li>
+        </ol>
+        <div class="split-diagram">
+          <div class="split-block netpart"><span class="lbl">network</span><span class="val">172 . 16</span></div>
+          <div class="split-block hostpart"><span class="lbl">host</span><span class="val">5 . 9</span></div>
+        </div>
+        <p class="anatomy-caption">Two more to try in your head: <code>10.4.5.1</code> → Class A → network <code>10.0.0.0</code>, host <code>0.4.5.1</code>. &nbsp; <code>223.1.2.3</code> → Class C → network <code>223.1.2.0</code>, host <code>0.0.0.3</code>.</p>
+      </div>
+
+      <p class="body-text">Classful addressing is easy to read but wasteful: a company with 300 hosts overflows a class C (254 hosts) but wastes almost all of a class B (65,534 hosts). That rigidity — plus the internet running out of class B networks in the early 90s — is exactly why <strong>subnetting</strong> and later <strong>CIDR</strong> were invented. That's the next page of notes.</p>
+    </section>
+
+    <!-- ================= SECTION 2: SUBNETTING QUICK RECAP ================= -->
+    <section aria-labelledby="notes-h">
+      <h2 class="section-title" id="notes-h"><span class="num">2</span> Subnetting &amp; CIDR — quick recap</h2>
+      <p class="section-sub">the formulas that turn one classful network into many usable pieces</p>
+
+      <div class="concept-grid">
+        <div class="concept-card">
+          <h3>Subnetting formulas</h3>
+          <p>Borrow <mark class="hl">s</mark> bits from the host part:</p>
+          <p><code>subnets = 2^s</code><br><code>hosts/subnet = 2^h − 2</code></p>
+          <p>(−2 for the network address and the broadcast address)</p>
+        </div>
+        <div class="concept-card">
+          <h3>Same network test</h3>
+          <p>Two hosts share a network only if</p>
+          <p><code>IP₁ AND mask = IP₂ AND mask</code></p>
+          <p>— do this bitwise, octet by octet. GATE loves masks that aren't a clean run of 1s.</p>
+        </div>
+        <div class="concept-card">
+          <h3>CIDR blocks</h3>
+          <p><code>/n</code> means the first <mark class="hl">n</mark> bits are network bits. A block of size <code>2^k</code> addresses must start on a multiple of <code>2^k</code> — that alignment rule is where most CIDR questions get you.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 3: PYQs ================= -->
+    <section aria-labelledby="pyq-h">
+      <h2 class="section-title" id="pyq-h"><span class="num">3</span> GATE PYQs</h2>
+      <p class="section-sub">ten questions on IP addressing, 2003–2026 · tap the corner or the line to unfold the solution</p>
+
+      <div class="pyq-list" id="pyq-list"></div>
+    </section>
+
+    <section class="cheatsheet" aria-labelledby="cheat-h">
+      <h3 id="cheat-h">Margin cheat-sheet</h3>
+      <table>
+        <thead><tr><th>Mask (last non-255 octet)</th><th>Borrowed bits</th><th>Hosts/subnet</th></tr></thead>
+        <tbody>
+          <tr><td>128</td><td>1</td><td>2^7 − 2 = 126</td></tr>
+          <tr><td>192</td><td>2</td><td>2^6 − 2 = 62</td></tr>
+          <tr><td>224</td><td>3</td><td>2^5 − 2 = 30</td></tr>
+          <tr><td>240</td><td>4</td><td>2^4 − 2 = 14</td></tr>
+          <tr><td>248</td><td>5</td><td>2^3 − 2 = 6</td></tr>
+          <tr><td>252</td><td>6</td><td>2^2 − 2 = 2</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer class="note">questions sourced from official GATE CSE papers · answers worked from first principles, not memorised</footer>
+
+<script>
+// ---------- rain ----------
+(function(){
+  const container = document.getElementById('rain');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const count = reduce ? 12 : 46;
+  for(let i=0;i<count;i++){
+    const d = document.createElement('div');
+    d.className = 'drop';
+    const left = Math.random()*100;
+    const dur = 0.7 + Math.random()*1.1;
+    const delay = Math.random()*2.5;
+    const h = 40 + Math.random()*70;
+    d.style.left = left + '%';
+    d.style.height = h + 'px';
+    d.style.animationDuration = dur + 's';
+    d.style.animationDelay = delay + 's';
+    container.appendChild(d);
+  }
+})();
+
+// ---------- 32-bit anatomy diagram (200.31.7.9) ----------
+(function(){
+  const octets = [
+    {dec:200, bin:'11001000'},
+    {dec:31,  bin:'00011111'},
+    {dec:7,   bin:'00000111'},
+    {dec:9,   bin:'00001001'}
+  ];
+  const el = document.getElementById('anatomy-octets');
+  el.innerHTML = octets.map(o => {
+    const bits = o.bin.split('').map(b => '<span class="anatomy-bit">'+b+'</span>').join('');
+    return '<div class="anatomy-octet"><div class="anatomy-bits">'+bits+'</div><div class="dec">'+o.dec+'</div></div>';
+  }).join('');
+})();
+
+// ---------- classful bit diagrams ----------
+function buildBitDiagram(containerId, idPattern, hostBits, remainderType){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const total = 32;
+  const idLen = idPattern.length;
+  let html = '';
+  for(let octet=0; octet<4; octet++){
+    html += '<div class="octet-group"><div class="octet-label">Octet '+(octet+1)+'</div><div class="octet-bits">';
+    for(let b=0;b<8;b++){
+      const pos = octet*8+b;
+      let type = 'net', val = '';
+      if(pos < idLen){
+        type = 'id';
+        val = idPattern[pos];
+      } else if(remainderType === 'host'){
+        type = (pos >= total - hostBits) ? 'host' : 'net';
+      } else {
+        type = remainderType;
+      }
+      html += '<span class="bitcell" data-type="'+type+'">'+val+'</span>';
+    }
+    html += '</div></div>';
+  }
+  el.innerHTML = html;
+}
+buildBitDiagram('bits-A', '0', 24, 'host');
+buildBitDiagram('bits-B', '10', 16, 'host');
+buildBitDiagram('bits-C', '110', 8, 'host');
+buildBitDiagram('bits-D', '1110', 0, 'group');
+buildBitDiagram('bits-E', '11110', 0, 'reserved');
+
+// ---------- PYQ data ----------
+const PYQS = [
+  {
+    year: "GATE CS 2005", marks: "1 mark",
+    q: "An organization has a class B network and wishes to form subnets for 64 departments. The subnet mask would be:",
+    opts: "(A) 255.255.0.0   (B) 255.255.64.0\n(C) 255.255.128.0   (D) 255.255.252.0",
+    ans: "(D) 255.255.252.0",
+    work: "Class B already fixes 16 network bits. 64 departments need 2^6 = 64, so borrow 6 more bits from the host part. 16 + 6 = 22 ones → 11111111.11111111.11111100.00000000 = 255.255.252.0."
+  },
+  {
+    year: "GATE CS 2003", marks: "2 marks",
+    q: "The subnet mask for a particular network is 255.255.31.0. Which of the following pairs of IP addresses could belong to this network?",
+    opts: "(A) 172.57.88.62 and 172.56.87.233\n(B) 10.35.28.2 and 10.35.29.4\n(C) 191.203.31.87 and 191.234.31.88\n(D) 128.8.129.43 and 128.8.161.55",
+    ans: "(D) 128.8.129.43 and 128.8.161.55",
+    work: "31 = 00011111 in binary — a deliberately non-contiguous mask, so you must AND bit-by-bit rather than assume a clean prefix. For (D): 129 = 10000001, 161 = 10100001. Both ANDed with 00011111 give 00000001. First two octets match (128.8), so both addresses AND to the same value — same network. The other pairs fail this bitwise check."
+  },
+  {
+    year: "GATE CS 2007", marks: "2 marks",
+    q: "The address of a class B host is to be split into subnets with a 6-bit subnet number. What is the maximum number of subnets and the maximum number of hosts in each subnet?",
+    opts: "",
+    ans: "64 subnets, 1022 hosts per subnet",
+    work: "Class B leaves 16 host bits. A 6-bit subnet field gives 2^6 = 64 subnets, leaving 10 host bits: 2^10 − 2 = 1022 usable hosts per subnet."
+  },
+  {
+    year: "GATE CS 2008", marks: "2 marks",
+    q: "If a class B network on the Internet has a subnet mask of 255.255.248.0, what is the maximum number of hosts per subnet?",
+    opts: "",
+    ans: "2046 hosts",
+    work: "255.255.248.0 = 11111111.11111111.11111000.00000000 → 21 network bits total, so 11 host bits remain. 2^11 − 2 = 2046."
+  },
+  {
+    year: "GATE CS 2012", marks: "1 mark",
+    q: "In the IPv4 addressing format, the number of networks allowed under Class C addresses is:",
+    opts: "",
+    ans: "2^21 = 2,097,152",
+    work: "Class C addresses start with the fixed bits '110', leaving 21 bits of the network portion free to vary → 2^21 possible class C networks."
+  },
+  {
+    year: "GATE CS 2012", marks: "2 marks",
+    q: "An ISP has the CIDR block 245.248.128.0/20 available. It wants to give half of this chunk to Organization A, and a quarter to Organization B, retaining the rest. Which address blocks should A and B get?",
+    opts: "",
+    ans: "A: 245.248.128.0/21   ·   B: 245.248.136.0/22   ·   ISP retains: 245.248.140.0/22",
+    work: "/20 spans 245.248.128.0–245.248.143.255 (4096 addresses). Half (2048 addrs = /21) goes to A as the first half: 128–135 → 245.248.128.0/21. The remaining half (136–143) splits into two /22 quarters (1024 addrs each): B takes the first, 245.248.136.0/22 (136–139); the ISP keeps 245.248.140.0/22 (140–143)."
+  },
+  {
+    year: "GATE CS 2015 (Set 3)", marks: "2 marks",
+    q: "In the network 200.20.11.144/27, what is the fourth octet (in decimal) of the last IP address that can be assigned to a host?",
+    opts: "",
+    ans: "158",
+    work: "/27 gives blocks of 2^5 = 32 addresses, aligned on multiples of 32. 144 falls in the block 128–159, so the network address is .128 and the broadcast address is .159. The last assignable host is one below the broadcast: .158."
+  },
+  {
+    year: "GATE CS 2019", marks: "2 marks",
+    q: "Machines M, N, P have IP addresses 100.10.5.2, 100.10.5.5, and 100.10.5.6 respectively, all with subnet mask 255.255.255.252. Which of the three actually share a subnet?",
+    opts: "",
+    ans: "N and P share a subnet; M does not.",
+    work: "/30 blocks hold 4 addresses each: .0–.3 and .4–.7, etc. M's address .2 falls in the .0–.3 block (network .0, broadcast .3). N (.5) and P (.6) both fall in the .4–.7 block (network .4, broadcast .7). So N and P are on the same subnet, and M is on a different one."
+  },
+  {
+    year: "GATE CS 2020", marks: "2 marks",
+    q: "An organization needs IPs for 1500 computers. Its ISP serves from 202.61.0.0/17 and wants to allot a block that minimizes routing entries via aggregation. Which of these candidate blocks work — I. 202.61.84.0/21  II. 202.61.104.0/21  III. 202.61.64.0/21  IV. 202.61.144.0/21?",
+    opts: "",
+    ans: "II and III only",
+    work: "1500 hosts need 2^11 = 2048 addresses → a /21 block. A /21 block (size 8 in the third octet) must start on a multiple of 8. 84/8 = 10.5 → invalid (I). 104/8 = 13 → valid (II). 64/8 = 8 → valid (III). 144 lies outside the /17 parent's range of 0–127 in the third octet → invalid (IV)."
+  },
+  {
+    year: "GATE CS 2026 (Set 2)", marks: "1 mark",
+    q: "If an IP network uses a subnet mask of 255.255.240.0, the maximum number of IP addresses that can be assigned to network interfaces is ______.",
+    opts: "",
+    ans: "4094",
+    work: "255.255.240.0 has 20 network bits, leaving 12 host bits. Total addresses = 2^12 = 4096; subtract the network address and the broadcast address → 4094 assignable addresses."
+  }
+];
+
+const list = document.getElementById('pyq-list');
+PYQS.forEach((item, i) => {
+  const card = document.createElement('article');
+  card.className = 'pyq-card';
+
+  const corner = document.createElement('button');
+  corner.className = 'corner';
+  corner.setAttribute('aria-label', 'Peek at solution (fold corner)');
+  corner.addEventListener('click', () => toggle(card));
+  card.appendChild(corner);
+
+  const tag = document.createElement('div');
+  tag.className = 'pyq-tag';
+  tag.textContent = item.year + ' · ' + item.marks;
+  card.appendChild(tag);
+
+  const q = document.createElement('p');
+  q.className = 'question';
+  q.innerHTML = '<span class="q-label">Q' + (i+1) + '.</span>' + item.q;
+  card.appendChild(q);
+
+  if(item.opts){
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    opts.textContent = item.opts;
+    card.appendChild(opts);
+  }
+
+  const btn = document.createElement('button');
+  btn.className = 'reveal-btn';
+  btn.innerHTML = 'Peek at the solution <span class="arrow">➜</span>';
+  btn.addEventListener('click', () => toggle(card));
+  card.appendChild(btn);
+
+  const sol = document.createElement('div');
+  sol.className = 'solution';
+  sol.innerHTML = '<div class="solution-inner"><div class="solution-box">' +
+    item.work + '<br><br><span class="answer">Answer: ' + item.ans + '</span></div></div>';
+  card.appendChild(sol);
+
+  list.appendChild(card);
+});
+
+function toggle(card){ card.classList.toggle('open'); }
+</script>
+
+</body>
+</html>
