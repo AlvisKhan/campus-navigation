@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <title>SQL RAG App — Frontend Architecture & Presentation Guide</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #071311;
+      --bg-card: rgba(13, 35, 30, 0.7);
+      --bg-card-hover: rgba(20, 52, 45, 0.85);
+      --border-color: rgba(78, 143, 130, 0.22);
+      --border-glow: rgba(136, 199, 174, 0.4);
+      --primary-teal: #10b981;
+      --accent-cyan: #14b8a6;
+      --accent-mint: #88c7ae;
+      --text-main: #f0fdf9;
+      --text-muted: #94a3b8;
+      --text-dim: rgba(240, 253, 249, 0.45);
+      --code-bg: rgba(6, 16, 14, 0.9);
+      --badge-bg: rgba(16, 185, 129, 0.12);
+      --speaker-note-bg: rgba(19, 78, 74, 0.35);
+      --speaker-border: #14b8a6;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+      position: relative;
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(16, 185, 129, 0.15), transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(20, 184, 166, 0.12), transparent 45%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(7, 19, 17, 0.8);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(78, 143, 130, 0.4);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-cyan);
+    }
+
+    /* Top Banner / Nav */
+    header.top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(7, 19, 17, 0.9);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+
+    .menu-toggle-btn {
+      display: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.25rem;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .menu-toggle-btn:hover {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--primary-teal);
+      color: var(--accent-mint);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(20, 184, 166, 0.4));
+      border: 1px solid var(--border-glow);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-mint);
+      flex-shrink: 0;
+    }
+
+    .brand-text-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #ffffff, var(--accent-mint));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+    }
+
+    .brand-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      background: var(--badge-bg);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-mint);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-shrink: 0;
+    }
+
+    .btn-mode {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.45rem 0.85rem;
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      white-space: nowrap;
+      min-height: 36px;
+    }
+
+    .btn-mode:hover {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--primary-teal);
+      color: #ffffff;
+    }
+
+    .btn-mode.active {
+      background: var(--primary-teal);
+      color: #03201a;
+      border-color: var(--primary-teal);
+    }
+
+    /* Layout Wrapper */
+    .app-layout {
+      display: flex;
+      max-width: 1600px;
+      margin: 0 auto;
+      min-height: calc(100vh - 65px);
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar Navigation (Desktop) */
+    aside.guide-sidebar {
+      width: 300px;
+      position: sticky;
+      top: 65px;
+      height: calc(100vh - 65px);
+      overflow-y: auto;
+      padding: 1.5rem 1rem;
+      border-right: 1px solid var(--border-color);
+      background: rgba(5, 15, 13, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      flex-shrink: 0;
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
+      z-index: 50;
+    }
+
+    .sidebar-top-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.25rem 0.5rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-top-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent-mint);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-close-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .sidebar-close-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    .sidebar-heading {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      font-weight: 700;
+      margin: 1.2rem 0 0.5rem 0.75rem;
+    }
+    .sidebar-heading:first-of-type {
+      margin-top: 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      margin-bottom: 0.25rem;
+      min-height: 42px;
+    }
+
+    .nav-link:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateX(3px);
+    }
+
+    .nav-link.active {
+      color: var(--accent-mint);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      font-weight: 600;
+    }
+
+    .nav-link .icon {
+      font-size: 1rem;
+      opacity: 0.85;
+      flex-shrink: 0;
+    }
+
+    /* Mobile Backdrop */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 180;
+    }
+
+    /* Main Presentation Content */
+    main.guide-content {
+      flex: 1;
+      padding: 2.5rem 3.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero-box {
+      background: linear-gradient(135deg, rgba(13, 40, 35, 0.9), rgba(6, 20, 18, 0.95));
+      border: 1px solid var(--border-glow);
+      border-radius: 24px;
+      padding: clamp(1.5rem, 4vw, 3rem);
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .hero-box::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.2), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.75rem, 5.5vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.18;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, #ffffff 30%, var(--accent-mint) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      word-break: break-word;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+      color: var(--text-muted);
+      max-width: 800px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .hero-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.1rem 1.25rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.4rem, 3.5vw, 1.85rem);
+      font-weight: 700;
+      color: var(--accent-mint);
+      margin-bottom: 0.25rem;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: 1.3;
+    }
+
+    /* Section Cards */
+    .section-block {
+      margin-bottom: 3.5rem;
+      scroll-margin-top: 85px;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .section-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--primary-teal);
+      background: var(--badge-bg);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 0.3rem 0.65rem;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.4rem, 4vw, 1.85rem);
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      word-break: break-word;
+    }
+
+    /* Glass Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: clamp(1.2rem, 3vw, 2rem);
+      margin-bottom: 1.75rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      transition: all 0.3s ease;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .card:hover {
+      border-color: var(--border-glow);
+    }
+
+    /* Speaker Note Banner (Gold/Teal Highlighting) */
+    .speaker-note {
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(13, 40, 35, 0.4));
+      border-left: 4px solid var(--accent-cyan);
+      border-top: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      border-radius: 0 16px 16px 0;
+      padding: 1.15rem 1.35rem;
+      margin: 1.5rem 0;
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .speaker-note-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-mint);
+      margin-bottom: 0.6rem;
+      line-height: 1.3;
+    }
+
+    .speaker-points {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .speaker-points li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      line-height: 1.55;
+      word-break: break-word;
+    }
+
+    .speaker-points li:last-child {
+      margin-bottom: 0;
+    }
+
+    .speaker-points li::before {
+      content: '🎙️';
+      position: absolute;
+      left: 0;
+      top: 0.1rem;
+      font-size: 0.85rem;
+    }
+
+    .speaker-points li strong {
+      color: #5eead4;
+    }
+
+    /* Interactive Component Tabs */
+    .component-tabs-container {
+      background: rgba(5, 16, 14, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      overflow: hidden;
+      margin: 1.5rem 0;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .tab-bar {
+      display: flex;
+      background: rgba(0, 0, 0, 0.35);
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.35rem 0.5rem 0;
+      gap: 0.35rem;
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      height: 4px;
+    }
+    .tab-bar::-webkit-scrollbar-thumb {
+      background: rgba(78, 143, 130, 0.3);
+      border-radius: 2px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.75rem 1.15rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 2px solid transparent;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-height: 40px;
+    }
+
+    .tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-mint);
+      border-bottom-color: var(--primary-teal);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .tab-content {
+      padding: clamp(1.2rem, 3vw, 2rem);
+      display: none;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Code Snippets */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.74rem, 2vw, 0.84rem);
+      color: #d1fae5;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 1rem 0;
+      line-height: 1.6;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .code-tag {
+      color: #38bdf8;
+    }
+    .code-kw {
+      color: #f472b6;
+      font-weight: 600;
+    }
+    .code-fn {
+      color: #a78bfa;
+    }
+    .code-str {
+      color: #fde047;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    /* Pill Badges */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      margin-right: 0.4rem;
+      margin-bottom: 0.4rem;
+      line-height: 1.4;
+    }
+
+    .pill-green {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+
+    .pill-cyan {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: rgba(6, 182, 212, 0.3);
+      color: #67e8f9;
+    }
+
+    .pill-purple {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: rgba(168, 85, 247, 0.3);
+      color: #d8b4fe;
+    }
+
+    /* UI Mockup Simulation Frames */
+    .ui-mockup-frame {
+      background: #081a17;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      margin: 1.5rem 0;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .ui-mockup-header {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .mockup-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444;
+      flex-shrink: 0;
+    }
+    .mockup-dot:nth-child(2) { background: #f59e0b; }
+    .mockup-dot:nth-child(3) { background: #10b981; }
+
+    .mockup-title {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim);
+      margin-left: 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ui-mockup-body {
+      padding: clamp(1rem, 2.5vw, 1.5rem);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Diagram Tree Box */
+    .arch-flow-diagram {
+      background: rgba(4, 14, 12, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: clamp(1.2rem, 3vw, 2rem);
+      margin: 1.5rem 0;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      text-align: center;
+    }
+
+    .flow-node {
+      background: rgba(13, 40, 35, 0.85);
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 0.75rem 1.1rem;
+      color: #ffffff;
+      display: inline-block;
+      margin: 0.4rem 0.25rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      font-size: clamp(0.78rem, 2vw, 0.88rem);
+    }
+
+    .flow-node.highlight {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(20, 184, 166, 0.35));
+      border-color: var(--primary-teal);
+    }
+
+    .flow-arrow {
+      display: inline-flex;
+      align-items: center;
+      color: var(--accent-mint);
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin: 0 0.35rem;
+    }
+
+    /* Action Checklist for presentation */
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      padding: 0.85rem 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .checklist-item:hover {
+      background: rgba(16, 185, 129, 0.06);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .chk-icon {
+      color: var(--primary-teal);
+      font-size: 1.15rem;
+      margin-top: 0.1rem;
+      flex-shrink: 0;
+    }
+
+    /* Presentation Slide Controls at Bottom */
+    .slide-controls {
+      position: fixed;
+      bottom: max(16px, env(safe-area-inset-bottom, 16px));
+      right: 16px;
+      z-index: 99;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(7, 19, 17, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-glow);
+      padding: 0.45rem 0.8rem;
+      border-radius: 9999px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .slide-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: #ffffff;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .slide-btn:hover {
+      background: var(--primary-teal);
+      color: #03201a;
+    }
+
+    .slide-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent-mint);
+      padding: 0 0.35rem;
+      white-space: nowrap;
+    }
+
+    .back-to-top {
+      position: fixed;
+      bottom: max(16px, env(safe-area-inset-bottom, 16px));
+      left: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.9);
+      color: #03201a;
+      border: 1px solid var(--border-glow);
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: none;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      z-index: 99;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      font-weight: bold;
+    }
+
+    .back-to-top:hover {
+      transform: translateY(-2px);
+      background: var(--accent-mint);
+    }
+
+    .back-to-top.show {
+      display: flex;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 860px) {
+      header.top-nav {
+        padding: 0.6rem 0.9rem;
+      }
+      .menu-toggle-btn {
+        display: inline-flex;
+      }
+      .brand-title {
+        font-size: 1.02rem;
+      }
+      .brand-badge {
+        display: none;
+      }
+      .btn-mode span.btn-text-full {
+        display: none;
+      }
+      .btn-mode {
+        padding: 0.4rem 0.65rem;
+        font-size: 0.78rem;
+      }
+
+      aside.guide-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: min(320px, 86vw) !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        background: rgba(6, 18, 15, 0.97) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-right: 1px solid var(--border-glow) !important;
+        box-shadow: 12px 0 40px rgba(0, 0, 0, 0.8) !important;
+        transform: translateX(-100%) !important;
+        z-index: 200 !important;
+        visibility: hidden;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        padding: 1.25rem 1rem 2rem !important;
+      }
+
+      aside.guide-sidebar.open {
+        transform: translateX(0) !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+      }
+
+      .sidebar-top-bar {
+        display: flex;
+      }
+
+      .sidebar-backdrop.open {
+        display: block;
+      }
+
+      main.guide-content {
+        padding: 1.25rem 1rem 5rem !important;
+      }
+
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .hero-box {
+        margin-bottom: 2rem;
+      }
+
+      .section-block {
+        margin-bottom: 2.5rem;
+      }
+
+      .slide-controls {
+        padding: 0.35rem 0.65rem;
+        gap: 0.35rem;
+      }
+
+      .slide-btn {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+      }
+      .stat-card {
+        padding: 0.75rem 0.85rem;
+      }
+      .stat-val {
+        font-size: 1.25rem;
+      }
+      .stat-label {
+        font-size: 0.68rem;
+      }
+      .speaker-points li {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <button class="menu-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle navigation menu">
+        ☰
+      </button>
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+          </svg>
+        </div>
+        <div class="brand-text-wrap">
+          <span class="brand-title">SQL RAG</span>
+          <span class="brand-badge">Frontend Walkthrough</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/alvis/" class="btn-mode" title="Back to Alvis Documents Hub">
+        <span>🏠</span>
+        <span class="btn-text-full">Hub</span>
+      </a>
+      <button class="btn-mode active" id="toggleNotesBtn" onclick="toggleSpeakerNotes()">
+        <span>🎙️</span>
+        <span class="btn-text-full">Cue Cards: ON</span>
+      </button>
+      <button class="btn-mode" onclick="window.print()" title="Print / Save PDF">
+        <span>🖨️</span>
+        <span class="btn-text-full">Export PDF</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Backdrop -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="guide-sidebar" id="guideSidebar">
+      <div class="sidebar-top-bar">
+        <div class="sidebar-top-title">
+          <span>✨</span> Presentation Flow
+        </div>
+        <button class="sidebar-close-btn" onclick="toggleSidebar(false)" aria-label="Close navigation">✕</button>
+      </div>
+
+      <div class="sidebar-heading">Presentation Flow</div>
+      <a href="#overview" class="nav-link active" onclick="handleNavLinkClick()">
+        <span class="icon">🚀</span>
+        <span>1. Executive Overview</span>
+      </a>
+      <a href="#architecture" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">🏗️</span>
+        <span>2. Tech Stack & Architecture</span>
+      </a>
+      <a href="#visual-engine" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">✨</span>
+        <span>3. WebGL & Glassmorphism</span>
+      </a>
+      <a href="#state-flow" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">🔄</span>
+        <span>4. State & Auth Flow</span>
+      </a>
+
+      <div class="sidebar-heading">Core Application Tabs</div>
+      <a href="#tab-dashboard" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">📊</span>
+        <span>Dashboard (Home)</span>
+      </a>
+      <a href="#tab-query-editor" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">⚡</span>
+        <span>AI Query Editor</span>
+      </a>
+      <a href="#tab-results-panel" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">📋</span>
+        <span>Results & Export</span>
+      </a>
+      <a href="#tab-schema-manager" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">🗂️</span>
+        <span>Schema Manager</span>
+      </a>
+      <a href="#tab-data-manager" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">📝</span>
+        <span>Data & CRUD Manager</span>
+      </a>
+      <a href="#tab-history" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">⏱️</span>
+        <span>Query History Logs</span>
+      </a>
+      <a href="#tab-settings" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">⚙️</span>
+        <span>Settings & Theming</span>
+      </a>
+
+      <div class="sidebar-heading">Presenter Tools</div>
+      <a href="#talking-points-summary" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">🎯</span>
+        <span>3-Minute Pitch Script</span>
+      </a>
+      <a href="#qa-cheat-sheet" class="nav-link" onclick="handleNavLinkClick()">
+        <span class="icon">💡</span>
+        <span>Audience Q&A Guide</span>
+      </a>
+    </aside>
+
+    <!-- Main Content Body -->
+    <main class="guide-content">
+
+      <!-- 1. Executive Overview -->
+      <section id="overview" class="section-block">
+        <div class="hero-box">
+          <span class="section-tag">PROJECT PRESENTATION</span>
+          <h1 class="hero-title">SQL RAG Frontend<br/>Interactive Architecture Guide</h1>
+          <p class="hero-subtitle">
+            An enterprise-grade, glassmorphic Web application empowering non-technical and technical users to translate natural language questions into executable SQL, inspect schemas, manipulate datasets, and analyze query telemetry with instant visual feedback.
+          </p>
+
+          <div class="hero-stats-grid">
+            <div class="stat-card">
+              <div class="stat-val">React 19</div>
+              <div class="stat-label">Core UI Framework</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">Vite 8.0</div>
+              <div class="stat-label">Next-Gen Bundler</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">Three.js / GSAP</div>
+              <div class="stat-label">Dynamic Canvas Shaders</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">6 Core Tabs</div>
+              <div class="stat-label">Complete Workflow Suite</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speaker Cue Card -->
+        <div class="speaker-note">
+          <div class="speaker-note-header">🎙️ Presenter Script — Opening Hook (30 Seconds)</div>
+          <ul class="speaker-points">
+            <li><strong>Hook:</strong> <em>"Today I'm presenting the frontend of our SQL RAG platform. In traditional data workflows, extracting insights from databases requires deep SQL knowledge. Our application bridges this gap with an intuitive natural language interface backed by live database introspection and enterprise analytics."</em></li>
+            <li><strong>Visual Polish:</strong> <em>"Notice the design language: rather than a dull admin dashboard, we built an immersive glassmorphism UI with real-time WebGL ambient background shaders (Three.js), dynamic theme adaptation, and instant telemetry feedback."</em></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 2. Tech Stack & Architecture -->
+      <section id="architecture" class="section-block">
+        <div class="section-header">
+          <span class="section-tag">02 / ARCHITECTURE</span>
+          <h2 class="section-title">Technology Stack & Component Tree</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; margin-bottom: 1rem; color: var(--accent-mint);">
+              📦 Frontend Tech Stack
+            </h3>
+            <div style="margin-bottom: 1rem;">
+              <span class="pill pill-green">React 19 (Hooks & Suspense)</span>
+              <span class="pill pill-cyan">Vite 8.0 (Fast HMR)</span>
+              <span class="pill pill-purple">Three.js & GSAP</span>
+              <span class="pill">TailwindCSS 4 + Custom Tokens</span>
+              <span class="pill">Axios + JWT Interceptors</span>
+              <span class="pill">JetBrains Mono + Outfit Fonts</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">
+              The project is structured around component modularity, zero third-party UI framework lock-in, high-performance canvas animations, and decoupled backend communication.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; margin-bottom: 1rem; color: var(--accent-mint);">
+              📁 Folder & Component Structure
+            </h3>
+            <div class="code-block" style="margin: 0; font-size: 0.8rem;">
+frontend/src/
+├── api/
+│   └── <span class="code-tag">axios.js</span>          <span style="color:#64748b;">// API instance & JWT interceptors</span>
+├── context/
+│   └── <span class="code-tag">AuthContext.jsx</span>   <span style="color:#64748b;">// Global login, token & user state</span>
+├── components/
+│   ├── <span class="code-fn">Sidebar.jsx</span>       <span style="color:#64748b;">// Navigation & user profile badge</span>
+│   ├── <span class="code-fn">Header.jsx</span>        <span style="color:#64748b;">// Theme toggle & active status</span>
+│   ├── <span class="code-fn">DashboardHome.jsx</span> <span style="color:#64748b;">// Telemetry, stats & quick prompt</span>
+│   ├── <span class="code-fn">QueryEditor.jsx</span>   <span style="color:#64748b;">// Line numbers & direct SQL run</span>
+│   ├── <span class="code-fn">ResultsPanel.jsx</span>  <span style="color:#64748b;">// Dynamic table & CSV export</span>
+│   ├── <span class="code-fn">SchemaManager.jsx</span> <span style="color:#64748b;">// Custom DDL creator & viewer</span>
+│   ├── <span class="code-fn">DataManager.jsx</span>   <span style="color:#64748b;">// Live row insert & delete</span>
+│   ├── <span class="code-fn">HistoryLog.jsx</span>    <span style="color:#64748b;">// Session execution records</span>
+│   ├── <span class="code-fn">ColorBends.jsx</span>    <span style="color:#64748b;">// WebGL interactive shader</span>
+│   └── <span class="code-fn">GradualBlur.jsx</span>   <span style="color:#64748b;">// Smooth layered blur filter</span>
+└── <span class="code-tag">App.jsx</span>               <span style="color:#64748b;">// Main workspace & tab router</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Architecture Flow Diagram -->
+        <div class="arch-flow-diagram">
+          <h4 style="font-size: 0.95rem; color: var(--accent-mint); margin-bottom: 1rem; font-family: 'Outfit';">
+            Visual Component Hierarchy & Execution Pipeline
+          </h4>
+          <div style="text-align: center; line-height: 2.2;">
+            <div class="flow-node highlight"><strong>AuthProvider</strong> (AuthContext.jsx)</div>
+            <div class="flow-arrow">➔</div>
+            <div class="flow-node"><strong>App Shell</strong> (App.jsx)</div>
+            <br/>
+            <div class="flow-arrow">⇣</div>
+            <br/>
+            <div class="flow-node" style="border-color: #38bdf8;"><strong>Ambient Shaders</strong> (ColorBends)</div>
+            <div class="flow-node"><strong>Sidebar Nav</strong> (Tab Switcher)</div>
+            <div class="flow-node"><strong>Header</strong> (Theme & Profile)</div>
+            <br/>
+            <div class="flow-arrow">⇣</div>
+            <br/>
+            <div class="flow-node highlight">DashboardHome</div>
+            <div class="flow-node highlight">Query / Results</div>
+            <div class="flow-node highlight">SchemaManager</div>
+            <div class="flow-node highlight">DataManager</div>
+            <div class="flow-node highlight">HistoryLog</div>
+            <div class="flow-node highlight">Settings</div>
+          </div>
+        </div>
+
+        <div class="speaker-note">
+          <div class="speaker-note-header">🎙️ Presenter Script — Architecture Explanation</div>
+          <ul class="speaker-points">
+            <li><strong>Component Modularity:</strong> <em>"The app follows a single-page reactive architecture. `App.jsx` orchestrates global state (active database schema, execution results, recent query history), while delegating domain logic to specialized subcomponents."</em></li>
+            <li><strong>Decoupled API Client:</strong> <em>"All HTTP requests flow through a configured Axios client in `api/axios.js` that automatically attaches the user's bearer token and gracefully handles session expiries with unified response interceptors."</em></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3. WebGL & Design System -->
+      <section id="visual-engine" class="section-block">
+        <div class="section-header">
+          <span class="section-tag">03 / DESIGN SYSTEM</span>
+          <h2 class="section-title">WebGL Canvas Shaders & Glassmorphism</h2>
+        </div>
+
+        <div class="card">
+          <div class="grid-2">
+            <div>
+              <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: var(--accent-mint); margin-bottom: 0.8rem;">
+                🌊 Three.js ColorBends Shader
+              </h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Behind the application is an active 3D WebGL canvas powered by custom fragment shaders. It renders undulating organic gradient waves that react smoothly to mouse movement and theme changes:
+              </p>
+              <ul style="padding-left: 1.2rem; font-size: 0.88rem; color: #cbd5e1; line-height: 1.8;">
+                <li><strong>Dark Mode Palette:</strong> Obsidian Jade (<code class="code-tag">#0D2823</code>, <code class="code-tag">#173D35</code>, <code class="code-tag">#4E8F82</code>, <code class="code-tag">#88C7AE</code>)</li>
+                <li><strong>Light Mode Palette:</strong> Warm Cream & Mint (<code class="code-tag">#F4F1E8</code>, <code class="code-tag">#E8E2D0</code>, <code class="code-tag">#B6D7D4</code>, <code class="code-tag">#7AB9B0</code>)</li>
+                <li><strong>Dynamic Properties:</strong> Warp strength, Simplex noise displacement, parallax camera angle, and automated continuous slow rotation.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: var(--accent-mint); margin-bottom: 0.8rem;">
+                💎 Glassmorphism CSS Architecture
+              </h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Custom utility styles defined in <code class="code-tag">index.css</code> achieve depth without visual clutter:
+              </p>
+              <div class="code-block" style="margin: 0; font-size: 0.78rem;">
+<span class="code-kw">.glass-card</span> {
+  <span class="code-fn">background</span>: rgba(13, 40, 35, 0.55);
+  <span class="code-fn">backdrop-filter</span>: blur(16px);
+  <span class="code-fn">border</span>: 1px solid rgba(78, 143, 130, 0.2);
+  <span class="code-fn">border-radius</span>: 1rem;
+}
+<span class="code-kw">.glass-btn-primary</span> {
+  <span class="code-fn">background</span>: linear-gradient(135deg, #10b981, #0d9488);
+  <span class="code-fn">box-shadow</span>: 0 4px 20px rgba(16, 185, 129, 0.35);
+}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="speaker-note">
+          <div class="speaker-note-header">🎙️ Presenter Script — Visual Aesthetics</div>
+          <ul class="speaker-points">
+            <li><strong>Why it matters:</strong> <em>"Developer and data tools are notoriously sterile. By integrating Three.js shaders and layered glassmorphism, we deliver a modern consumer-grade experience that keeps users engaged during intensive data analysis sessions."</em></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 4. Interactive Core Tabs Breakdown -->
+      <section id="tab-breakdown" class="section-block">
+        <div class="section-header">
+          <span class="section-tag">04 / APPLICATION WALKTHROUGH</span>
+          <h2 class="section-title">Deep Dive into Each Core Screen</h2>
+        </div>
+
+        <!-- Interactive Tabbed Display -->
+        <div class="component-tabs-container">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchGuideTab('tab-dash')">📊 1. Dashboard</button>
+            <button class="tab-btn" onclick="switchGuideTab('tab-query')">⚡ 2. Query Editor</button>
+            <button class="tab-btn" onclick="switchGuideTab('tab-results')">📋 3. Results Panel</button>
+            <button class="tab-btn" onclick="switchGuideTab('tab-schema')">🗂️ 4. Schema Manager</button>
+            <button class="tab-btn" onclick="switchGuideTab('tab-data')">📝 5. Data Manager</button>
+            <button class="tab-btn" onclick="switchGuideTab('tab-hist')">⏱️ 6. History Logs</button>
+            <button class="tab-btn" onclick="switchGuideTab('tab-sett')">⚙️ 7. Settings</button>
+          </div>
+
+          <!-- Tab 1: Dashboard -->
+          <div id="tab-dash" class="tab-content active">
+            <h3 style="font-family: 'Outfit'; font-size: 1.35rem; color: #ffffff; margin-bottom: 0.5rem;">
+              DashboardHome.jsx — Real-time Telemetry & Quick Action Hub
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+              The command center of the application. It dynamically calculates rolling 7-day performance metrics, presents instant query prompts, and lists active database schemas.
+            </p>
+
+            <div class="grid-2">
+              <div class="card" style="margin: 0; background: rgba(0,0,0,0.3);">
+                <h4 style="color: var(--accent-mint); font-size: 1rem; margin-bottom: 0.8rem;">Key Functionalities</h4>
+                <ul style="padding-left: 1.2rem; font-size: 0.88rem; color: #e2e8f0; line-height: 1.8;">
+                  <li><strong>4 Live Metric Cards:</strong> Total Queries, Active Tables, Success Rate (%), and Average Execution Latency (seconds).</li>
+                  <li><strong>Week-Over-Week Delta Computation:</strong> Real-time trend comparisons comparing the current 7-day window vs. previous 7-day period with color-coded directional indicators.</li>
+                  <li><strong>Quick Natural Language Prompt:</strong> Integrated query generation input that immediately triggers AI SQL synthesis and routes to editor.</li>
+                  <li><strong>Active Tables Inspector:</strong> Direct summary of discovered tables with column count badges and schema click-through.</li>
+                </ul>
+              </div>
+
+              <div class="ui-mockup-frame" style="margin: 0;">
+                <div class="ui-mockup-header">
+                  <span class="mockup-dot"></span>
+                  <span class="mockup-dot"></span>
+                  <span class="mockup-dot"></span>
+                  <span class="mockup-title">Dashboard Live Preview</span>
+                </div>
+                <div class="ui-mockup-body">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); border-radius: 10px; padding: 0.75rem;">
+                      <div style="font-size: 0.7rem; color: #88c7ae;">TOTAL QUERIES</div>
+                      <div style="font-size: 1.25rem; font-weight: bold; color: #fff;">18 Queries</div>
+                      <div style="font-size: 0.65rem; color: #34d399;">↑ 25% from last week</div>
+                    </div>
+                    <div style="background: rgba(20,184,166,0.1); border: 1px solid rgba(20,184,166,0.25); border-radius: 10px; padding: 0.75rem;">
+                      <div style="font-size: 0.7rem; color: #88c7ae;">SUCCESS RATE</div>
+                      <div style="font-size: 1.25rem; font-weight: bold; color: #fff;">94%</div>
+                      <div style="font-size: 0.65rem; color: #34d399;">↑ 4% from last week</div>
+                    </div>
+                  </div>
+                  <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.75rem; font-size: 0.8rem; color: #94a3b8;">
+                    💬 <em>"What are the top 5 products by total sales?"</em>
+                    <div style="text-align: right; margin-top: 0.4rem;">
+                      <span style="background: #10b981; color: #042f2e; font-weight: bold; font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 6px;">Generate SQL</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="speaker-note">
+              <div class="speaker-note-header">🎙️ Presenter Script — Dashboard Tab</div>
+              <ul class="speaker-points">
+                <li><em>"When the user logs in, they land on the Dashboard. Notice how the metrics aren't static dummy numbers; they are dynamically computed using `useMemo` / array aggregations over the user's execution history in localStorage."</em></li>
+                <li><em>"The user can type a question right here or click one of the suggested query templates to immediately trigger SQL translation."</em></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tab 2: Query Editor -->
+          <div id="tab-query" class="tab-content">
+            <h3 style="font-family: 'Outfit'; font-size: 1.35rem; color: #ffffff; margin-bottom: 0.5rem;">
+              QuestionInput.jsx & QueryEditor.jsx — Dual AI + Manual IDE
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+              A developer-centric querying experience supporting both prompt-based generation and raw SQL execution with keyboard shortcuts and syntax ergonomics.
+            </p>
+
+            <div class="grid-2">
+              <div class="card" style="margin: 0; background: rgba(0,0,0,0.3);">
+                <h4 style="color: var(--accent-mint); font-size: 1rem; margin-bottom: 0.8rem;">Technical Highlights</h4>
+                <ul style="padding-left: 1.2rem; font-size: 0.88rem; color: #e2e8f0; line-height: 1.8;">
+                  <li><strong>Natural Language Synthesis:</strong> Sends prompt + active schema context to backend `/generate` endpoint.</li>
+                  <li><strong>Line-Numbered Code Editor:</strong> Dynamic line counter gutter that adjusts synchronously with code height.</li>
+                  <li><strong>Keyboard Productivity:</strong> Supports <kbd class="pill" style="font-size:0.75rem;">Cmd ↵</kbd> / <kbd class="pill" style="font-size:0.75rem;">Ctrl ↵</kbd> hotkeys for instant generation without touching the mouse.</li>
+                  <li><strong>Collapsible Schema Explorer:</strong> Left-hand drawer displaying available tables and column datatypes for quick reference.</li>
+                </ul>
+              </div>
+
+              <div class="code-block" style="margin: 0; font-size: 0.82rem;">
+<span style="color: #64748b;">// Keyboard shortcut handler in QuestionInput.jsx</span>
+<span class="code-kw">const</span> <span class="code-fn">handleKeyDown</span> = (e) => {
+  <span class="code-kw">if</span> (e.key === <span class="code-str">"Enter"</span> && (e.metaKey || e.ctrlKey)) {
+    e.<span class="code-fn">preventDefault</span>();
+    <span class="code-fn">generateSQL</span>();
+  }
+};
+              </div>
+            </div>
+
+            <div class="speaker-note">
+              <div class="speaker-note-header">🎙️ Presenter Script — Query Editor Tab</div>
+              <ul class="speaker-points">
+                <li><em>"Here in the Query Editor, the user has full control. If the AI generates an 8-line complex JOIN query, the user can review it, tweak WHERE conditions in the code editor, and press 'Run Query'."</em></li>
+                <li><em>"We also built in a copy-to-clipboard button and real-time execution timers so users know the exact performance characteristics of their query."</em></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tab 3: Results Panel -->
+          <div id="tab-results" class="tab-content">
+            <h3 style="font-family: 'Outfit'; font-size: 1.35rem; color: #ffffff; margin-bottom: 0.5rem;">
+              ResultsPanel.jsx — Data Table, Skeleton Loading & CSV Exporter
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+              Renders execution results with defensive null handling, animated skeleton loaders, formatted error banners, and browser-native CSV data export.
+            </p>
+
+            <div class="grid-2">
+              <div class="card" style="margin: 0; background: rgba(0,0,0,0.3);">
+                <h4 style="color: var(--accent-mint); font-size: 1rem; margin-bottom: 0.8rem;">Core Engineering Details</h4>
+                <ul style="padding-left: 1.2rem; font-size: 0.88rem; color: #e2e8f0; line-height: 1.8;">
+                  <li><strong>Dynamic Column Deduction:</strong> Automatically maps keys from the first record in the JSON result payload to create table headers.</li>
+                  <li><strong>Client-Side CSV Generator:</strong> Encodes result rows into RFC 4180 compliant CSV strings and triggers an automatic browser Blob download link.</li>
+                  <li><strong>Empty & Error State Resilience:</strong> Clear visual feedback for 0 rows, execution syntax errors, or backend connectivity issues.</li>
+                </ul>
+              </div>
+
+              <div class="code-block" style="margin: 0; font-size: 0.8rem;">
+<span style="color: #64748b;">// Client-side instant CSV export in ResultsPanel.jsx</span>
+<span class="code-kw">const</span> <span class="code-fn">exportToCSV</span> = () => {
+  <span class="code-kw">const</span> csv = [columns.<span class="code-fn">join</span>(<span class="code-str">","</span>), ...rows.<span class="code-fn">map</span>(r => ...)].<span class="code-fn">join</span>(<span class="code-str">"\n"</span>);
+  <span class="code-kw">const</span> blob = <span class="code-kw">new</span> <span class="code-fn">Blob</span>([csv], { type: <span class="code-str">"text/csv;charset=utf-8;"</span> });
+  <span class="code-kw">const</span> link = document.<span class="code-fn">createElement</span>(<span class="code-str">"a"</span>);
+  link.href = URL.<span class="code-fn">createObjectURL</span>(blob);
+  link.download = <span class="code-str">"query_results.csv"</span>;
+  link.<span class="code-fn">click</span>();
+};
+              </div>
+            </div>
+
+            <div class="speaker-note">
+              <div class="speaker-note-header">🎙️ Presenter Script — Results Panel</div>
+              <ul class="speaker-points">
+                <li><em>"When a query completes, the data is dynamically rendered in this glass table. Notice the 'Export CSV' button in the header—it generates the CSV on-the-fly in client memory without requiring an extra server roundtrip."</em></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tab 4: Schema Manager -->
+          <div id="tab-schema" class="tab-content">
+            <h3 style="font-family: 'Outfit'; font-size: 1.35rem; color: #ffffff; margin-bottom: 0.5rem;">
+              SchemaManager.jsx — Custom DDL Definition & Schema Isolation
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+              Allows users to define custom database schemas, store them in the backend database, select them for prompt grounding, and delete obsolete schemas with confirmation protection.
+            </p>
+
+            <div class="grid-2">
+              <div class="card" style="margin: 0; background: rgba(0,0,0,0.3);">
+                <h4 style="color: var(--accent-mint); font-size: 1rem; margin-bottom: 0.8rem;">Schema Syntax & Management</h4>
+                <ul style="padding-left: 1.2rem; font-size: 0.88rem; color: #e2e8f0; line-height: 1.8;">
+                  <li><strong>DDL Grammar Parsing:</strong> Standardized table format: <code class="code-tag">Table(col1 TYPE, col2 TYPE)</code> for reliable LLM ingestion.</li>
+                  <li><strong>Saved Schemas Deck:</strong> Interactive schema cards displaying table counts and quick-activation switches.</li>
+                  <li><strong>Confirmation Modals:</strong> Custom glassmorphic modal prompts before irreversible schema deletion.</li>
+                </ul>
+              </div>
+
+              <div class="ui-mockup-frame" style="margin: 0;">
+                <div class="ui-mockup-header">
+                  <span class="mockup-dot"></span>
+                  <span class="mockup-dot"></span>
+                  <span class="mockup-dot"></span>
+                  <span class="mockup-title">Schema Format Validator</span>
+                </div>
+                <div class="ui-mockup-body" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">
+                  <span style="color: #34d399;">✓ Correct Format:</span><br/>
+                  <span style="color: #67e8f9;">Students</span>(student_id INT PRIMARY KEY, name TEXT, cgpa REAL)<br/>
+                  <span style="color: #67e8f9;">Courses</span>(course_id INT PRIMARY KEY, title TEXT, credits INT)
+                </div>
+              </div>
+            </div>
+
+            <div class="speaker-note">
+              <div class="speaker-note-header">🎙️ Presenter Script — Schema Manager</div>
+              <ul class="speaker-points">
+                <li><em>"The Schema Manager is how our RAG pipeline knows what database tables exist. Users can register their own custom schemas, which the backend then leverages for context-aware query generation."</em></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tab 5: Data Manager -->
+          <div id="tab-data" class="tab-content">
+            <h3 style="font-family: 'Outfit'; font-size: 1.35rem; color: #ffffff; margin-bottom: 0.5rem;">
+              DataManager.jsx — In-Browser Table Data CRUD
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+              Enables non-developers to browse live tables, insert new rows via auto-generated forms, and delete specific records without writing SQL.
+            </p>
+
+            <div class="grid-2">
+              <div class="card" style="margin: 0; background: rgba(0,0,0,0.3);">
+                <h4 style="color: var(--accent-mint); font-size: 1rem; margin-bottom: 0.8rem;">Features</h4>
+                <ul style="padding-left: 1.2rem; font-size: 0.88rem; color: #e2e8f0; line-height: 1.8;">
+                  <li><strong>Schema-Driven Dynamic Form Generation:</strong> Parses column types from active schema and renders appropriate input controls.</li>
+                  <li><strong>Primary Key Resolution:</strong> Automatically identifies the leading ID column to construct safe backend deletion queries.</li>
+                  <li><strong>Live Refresh:</strong> Immediately refetches table contents after insertions or deletions.</li>
+                </ul>
+              </div>
+
+              <div class="code-block" style="margin: 0; font-size: 0.8rem;">
+<span style="color: #64748b;">// Delete handler with automatic primary key extraction</span>
+<span class="code-kw">const</span> <span class="code-fn">deleteRow</span> = <span class="code-kw">async</span> (row) => {
+  <span class="code-kw">const</span> idCol = Object.<span class="code-fn">keys</span>(row)[0];
+  <span class="code-kw">await</span> api.<span class="code-fn">post</span>(<span class="code-str">"/delete-row"</span>, {
+    table_name: selectedTable,
+    row_id: row[idCol],
+    id_column: idCol
+  });
+};
+              </div>
+            </div>
+
+            <div class="speaker-note">
+              <div class="speaker-note-header">🎙️ Presenter Script — Data Manager</div>
+              <ul class="speaker-points">
+                <li><em>"This tab gives business users a direct UI to inspect and test data rows without needing SQLite browser tools or command-line clients."</em></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tab 6: History Log -->
+          <div id="tab-hist" class="tab-content">
+            <h3 style="font-family: 'Outfit'; font-size: 1.35rem; color: #ffffff; margin-bottom: 0.5rem;">
+              HistoryLog.jsx — Comprehensive Query Audit & Telemetry
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+              Maintains an immutable execution log synchronized with browser storage, complete with latency timings, expandable SQL queries, and error diagnostics.
+            </p>
+
+            <div class="grid-2">
+              <div class="card" style="margin: 0; background: rgba(0,0,0,0.3);">
+                <h4 style="color: var(--accent-mint); font-size: 1rem; margin-bottom: 0.8rem;">Capabilities</h4>
+                <ul style="padding-left: 1.2rem; font-size: 0.88rem; color: #e2e8f0; line-height: 1.8;">
+                  <li><strong>Expandable Accordion Rows:</strong> Click any log entry to view full multi-line SQL, error stacktraces, and duration metrics.</li>
+                  <li><strong>Clipboard Copy & Single/Bulk Deletion:</strong> Fast copy of past successful queries into clipboard with toast feedback.</li>
+                  <li><strong>Status Badging:</strong> Visual color badges (Green for Success, Red for Failure).</li>
+                </ul>
+              </div>
+
+              <div class="ui-mockup-frame" style="margin: 0;">
+                <div class="ui-mockup-header">
+                  <span class="mockup-dot"></span>
+                  <span class="mockup-dot"></span>
+                  <span class="mockup-dot"></span>
+                  <span class="mockup-title">Session Audit Logs</span>
+                </div>
+                <div class="ui-mockup-body" style="font-size: 0.78rem;">
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.4rem; margin-bottom: 0.4rem;">
+                    <span>Top 5 products by revenue</span>
+                    <span style="color: #34d399; font-weight: bold;">Success (0.85s)</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span>Users placed orders in 30d</span>
+                    <span style="color: #34d399; font-weight: bold;">Success (1.10s)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="speaker-note">
+              <div class="speaker-note-header">🎙️ Presenter Script — History Logs</div>
+              <ul class="speaker-points">
+                <li><em>"The History tab is essential for debugging and performance analysis. It lets users trace previously run queries, inspect exact execution durations, and re-copy generated SQL."</em></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tab 7: Settings -->
+          <div id="tab-sett" class="tab-content">
+            <h3 style="font-family: 'Outfit'; font-size: 1.35rem; color: #ffffff; margin-bottom: 0.5rem;">
+              SettingsPage.jsx — User Profile, Theming & Connection Inspection
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
+              Provides user personalization, profile name updates with email masking, manual theme overrides, and database connection diagnostics.
+            </p>
+
+            <div class="grid-2">
+              <div class="card" style="margin: 0; background: rgba(0,0,0,0.3);">
+                <h4 style="color: var(--accent-mint); font-size: 1rem; margin-bottom: 0.8rem;">Profile & Security Features</h4>
+                <ul style="padding-left: 1.2rem; font-size: 0.88rem; color: #e2e8f0; line-height: 1.8;">
+                  <li><strong>Email Masking Utility:</strong> Protects user identity (e.g. <code class="code-tag">alv***@sqlrag.com</code>).</li>
+                  <li><strong>Theme Switcher:</strong> Instantly toggles root CSS class <code class="code-tag">.dark</code> and updates WebGL shader parameters.</li>
+                  <li><strong>Connection Diagnostics:</strong> Displays active SQLite database file location and backend endpoint URL.</li>
+                </ul>
+              </div>
+
+              <div class="code-block" style="margin: 0; font-size: 0.8rem;">
+<span style="color: #64748b;">// Email masking in SettingsPage.jsx</span>
+<span class="code-kw">const</span> <span class="code-fn">maskEmail</span> = (email) => {
+  <span class="code-kw">const</span> [local, domain] = email.<span class="code-fn">split</span>(<span class="code-str">"@"</span>);
+  <span class="code-kw">return</span> <span class="code-str">`</span>${local.<span class="code-fn">slice</span>(0, 3)}${<span class="code-str">"*"</span>.<span class="code-fn">repeat</span>(local.length - 3)}@${domain}<span class="code-str">`</span>;
+};
+              </div>
+            </div>
+
+            <div class="speaker-note">
+              <div class="speaker-note-header">🎙️ Presenter Script — Settings Tab</div>
+              <ul class="speaker-points">
+                <li><em>"Finally, Settings gives users granular control over their profile name, privacy masking, and visual mode preferences while exposing backend database connectivity details."</em></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 3-Minute Presentation Pitch Script -->
+      <section id="talking-points-summary" class="section-block">
+        <div class="section-header">
+          <span class="section-tag">05 / PRESENTATION ROADMAP</span>
+          <h2 class="section-title">The Complete 3-Minute Presentation Walkthrough</h2>
+        </div>
+
+        <div class="card">
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+            Follow this chronological step-by-step cue sheet when presenting to your audience:
+          </p>
+
+          <div class="checklist-item">
+            <span class="chk-icon">1️⃣</span>
+            <div>
+              <strong style="color: var(--accent-mint);">Minute 0:00 - 0:45: The Problem & The Solution</strong><br/>
+              <span style="font-size: 0.9rem; color: #cbd5e1;">
+                Start on the <strong>Dashboard</strong>. Explain that non-engineers struggle with SQL syntax and table joins. Show the 4 dynamic metric cards and explain how the system translates natural language into verified SQL.
+              </span>
+            </div>
+          </div>
+
+          <div class="checklist-item">
+            <span class="chk-icon">2️⃣</span>
+            <div>
+              <strong style="color: var(--accent-mint);">Minute 0:45 - 1:30: Live Query Generation & Execution</strong><br/>
+              <span style="font-size: 0.9rem; color: #cbd5e1;">
+                Switch to <strong>Query Editor</strong>. Type a question like <em>"Show top 5 products by price"</em>, press <kbd class="pill">Cmd ↵</kbd>, show the generated SQL appearing in the editor with line numbers, and hit <strong>Run Query</strong>.
+              </span>
+            </div>
+          </div>
+
+          <div class="checklist-item">
+            <span class="chk-icon">3️⃣</span>
+            <div>
+              <strong style="color: var(--accent-mint);">Minute 1:30 - 2:15: Results, CSV Export & History Audit</strong><br/>
+              <span style="font-size: 0.9rem; color: #cbd5e1;">
+                Highlight the <strong>Results Panel</strong>. Show the tabular output, click <strong>Export CSV</strong> to demonstrate client-side file generation, then click over to <strong>History</strong> to show the automatically logged latency duration and timestamp.
+              </span>
+            </div>
+          </div>
+
+          <div class="checklist-item">
+            <span class="chk-icon">4️⃣</span>
+            <div>
+              <strong style="color: var(--accent-mint);">Minute 2:15 - 3:00: Schema Flexibility & Design Aesthetics</strong><br/>
+              <span style="font-size: 0.9rem; color: #cbd5e1;">
+                Briefly show <strong>Schema Manager</strong> and <strong>Data Manager</strong> to prove multi-database extensibility. Conclude by toggling Light/Dark theme in <strong>Settings</strong>, highlighting the Three.js WebGL background shader and responsive performance.
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Audience Q&A Cheat Sheet -->
+      <section id="qa-cheat-sheet" class="section-block">
+        <div class="section-header">
+          <span class="section-tag">06 / PRESENTER PREPARATION</span>
+          <h2 class="section-title">Audience Q&A Defense Guide</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="color: #38bdf8; font-size: 1rem; margin-bottom: 0.6rem;">
+              ❓ "How does the frontend communicate with the AI model?"
+            </h4>
+            <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
+              <strong>Answer:</strong> The frontend does not call the LLM directly. Instead, it securely posts the question and the active schema definition to the backend FastAPI <code class="code-tag">/generate</code> endpoint. The backend constructs the RAG prompt, gets the generated SQL, and returns it as a JSON payload to the frontend.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4 style="color: #38bdf8; font-size: 1rem; margin-bottom: 0.6rem;">
+              ❓ "How is state managed without Redux or Zustand?"
+            </h4>
+            <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
+              <strong>Answer:</strong> We leveraged React 19's native Context API (<code class="code-tag">AuthContext</code>) for global auth state and clean lifted component state in <code class="code-tag">App.jsx</code> with persistent synchronization to <code class="code-tag">localStorage</code>. This keeps the bundle lightweight and eliminates boilerplate.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4 style="color: #38bdf8; font-size: 1rem; margin-bottom: 0.6rem;">
+              ❓ "What happens if a user submits a malicious SQL query?"
+            </h4>
+            <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
+              <strong>Answer:</strong> The frontend defensively wraps queries in error boundaries and displays error messages returned by the database engine. On the backend, SQLite execution handles transactions and schema isolation.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4 style="color: #38bdf8; font-size: 1rem; margin-bottom: 0.6rem;">
+              ❓ "Does the WebGL background hurt browser performance?"
+            </h4>
+            <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
+              <strong>Answer:</strong> No. <code class="code-tag">ColorBends.jsx</code> utilizes optimized fragment shaders running directly on the GPU with low iteration count, 0.15 speed factor, and throttled mouse influence, maintaining a constant 60 FPS without CPU contention.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Back to Top Floating Button -->
+  <button class="back-to-top" id="backToTop" onclick="scrollToTop()" title="Back to top" aria-label="Back to top">
+    ▲
+  </button>
+
+  <!-- Bottom Floating Slide/Section Tracker -->
+  <div class="slide-controls">
+    <button class="slide-btn" onclick="prevSection()" title="Previous Section" aria-label="Previous section">▲</button>
+    <span class="slide-counter" id="sectionIndicator">Section 1 / 6</span>
+    <button class="slide-btn" onclick="nextSection()" title="Next Section" aria-label="Next section">▼</button>
+  </div>
+
+  <!-- Script for Interactivity -->
+  <script>
+    // Off-Canvas Mobile Drawer Toggle
+    function toggleSidebar(force) {
+      const sidebar = document.getElementById('guideSidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (!sidebar) return;
+
+      const shouldOpen = typeof force === 'boolean' ? force : !sidebar.classList.contains('open');
+      if (shouldOpen) {
+        sidebar.classList.add('open');
+        if (backdrop) backdrop.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      } else {
+        sidebar.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Auto-close sidebar on link click (for mobile)
+    function handleNavLinkClick() {
+      if (window.innerWidth <= 860) {
+        toggleSidebar(false);
+      }
+    }
+
+    // Back to top smooth scroll
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Window scroll listener for back-to-top visibility
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById('backToTop');
+      if (btn) {
+        if (window.scrollY > 350) {
+          btn.classList.add('show');
+        } else {
+          btn.classList.remove('show');
+        }
+      }
+    }, { passive: true });
+
+    // Tab Switcher for Component Breakdown
+    function switchGuideTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      const activeBtn = event ? event.currentTarget : null;
+      if (activeBtn) activeBtn.classList.add('active');
+      const targetContent = document.getElementById(tabId);
+      if (targetContent) targetContent.classList.add('active');
+    }
+
+    // Toggle Speaker Notes on/off
+    let notesVisible = true;
+    function toggleSpeakerNotes() {
+      notesVisible = !notesVisible;
+      const notes = document.querySelectorAll('.speaker-note');
+      const btn = document.getElementById('toggleNotesBtn');
+      notes.forEach(n => {
+        n.style.display = notesVisible ? 'block' : 'none';
+      });
+      if (btn) {
+        if (notesVisible) {
+          btn.classList.add('active');
+          btn.innerHTML = '<span>🎙️</span><span class="btn-text-full">Cue Cards: ON</span>';
+        } else {
+          btn.classList.remove('active');
+          btn.innerHTML = '<span>🎙️</span><span class="btn-text-full">Cue Cards: OFF</span>';
+        }
+      }
+    }
+
+    // Scroll & Section Tracker
+    const sections = ['overview', 'architecture', 'visual-engine', 'tab-breakdown', 'talking-points-summary', 'qa-cheat-sheet'];
+    let currentSectionIdx = 0;
+
+    function updateSectionIndicator() {
+      const indicator = document.getElementById('sectionIndicator');
+      if (indicator) {
+        indicator.innerText = `Section ${currentSectionIdx + 1} / ${sections.length}`;
+      }
+      // Update sidebar active link
+      document.querySelectorAll('.guide-sidebar .nav-link').forEach((link, idx) => {
+        if (idx === currentSectionIdx) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+
+    function nextSection() {
+      if (currentSectionIdx < sections.length - 1) {
+        currentSectionIdx++;
+        const target = document.getElementById(sections[currentSectionIdx]);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+        updateSectionIndicator();
+      }
+    }
+
+    function prevSection() {
+      if (currentSectionIdx > 0) {
+        currentSectionIdx--;
+        const target = document.getElementById(sections[currentSectionIdx]);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+        updateSectionIndicator();
+      }
+    }
+
+    // Keyboard navigation (Arrow keys & Escape)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        toggleSidebar(false);
+      } else if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        nextSection();
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        prevSection();
+      }
+    });
+
+    // Intersection observer to track scrolling
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const idx = sections.indexOf(entry.target.id);
+          if (idx !== -1) {
+            currentSectionIdx = idx;
+            updateSectionIndicator();
+          }
+        }
+      });
+    }, { threshold: 0.25 });
+
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+  </script>
+</body>
+</html>
