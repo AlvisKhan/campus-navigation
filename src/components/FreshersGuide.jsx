@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import {
+  EMERGENCY_CONTACTS,
   EMERGENCY_MEDICAL_CONTACTS,
-  POLICE_CONTACTS,
   FIRE_AND_RESCUE_CONTACTS,
   DISASTER_MANAGEMENT_CONTACTS,
+  POLICE_CONTACTS,
   DISTRICT_ADMIN_CONTACTS,
-  ALL_EMERGENCY_HELPLINES,
   APDCL_POWER_CONTACTS,
+  ADDITIONAL_CONTACTS,
   ARYABHATTA_HOSTEL_DATA,
   TRANSPORT_CONTACTS,
   FOOD_AND_SERVICES,
@@ -28,20 +29,31 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
   }, []);
 
   const [activeEmergencyTab, setActiveEmergencyTab] = useState("all");
+  const [activeAdditionalTab, setActiveAdditionalTab] = useState("all");
 
   const emergencyCategories = [
-    { id: "all", label: "All Helplines", icon: "🚨", count: ALL_EMERGENCY_HELPLINES.length },
+    { id: "all", label: "All Emergency", icon: "🚨", count: EMERGENCY_CONTACTS.length },
     { id: "medical", label: "Medical & Ambulance", icon: "🚑", count: EMERGENCY_MEDICAL_CONTACTS.length },
-    { id: "police", label: "Police & Security", icon: "👮", count: POLICE_CONTACTS.length },
     { id: "fire", label: "Fire & Rescue", icon: "🚒", count: FIRE_AND_RESCUE_CONTACTS.length },
     { id: "disaster", label: "Disaster (DDMA)", icon: "🌊", count: DISASTER_MANAGEMENT_CONTACTS.length },
-    { id: "admin", label: "District Admin", icon: "🏛️", count: DISTRICT_ADMIN_CONTACTS.length },
   ];
 
   const displayedEmergencyContacts =
     activeEmergencyTab === "all"
-      ? ALL_EMERGENCY_HELPLINES
-      : ALL_EMERGENCY_HELPLINES.filter((c) => c.category === activeEmergencyTab);
+      ? EMERGENCY_CONTACTS
+      : EMERGENCY_CONTACTS.filter((c) => c.category === activeEmergencyTab);
+
+  const additionalCategories = [
+    { id: "all", label: "All Contacts", icon: "📞", count: ADDITIONAL_CONTACTS.length },
+    { id: "police", label: "Police & Security", icon: "👮", count: POLICE_CONTACTS.length },
+    { id: "admin", label: "District Admin", icon: "🏛️", count: DISTRICT_ADMIN_CONTACTS.length },
+    { id: "power", label: "Electricity (APDCL)", icon: "⚡", count: APDCL_POWER_CONTACTS.length },
+  ];
+
+  const displayedAdditionalContacts =
+    activeAdditionalTab === "all"
+      ? ADDITIONAL_CONTACTS
+      : ADDITIONAL_CONTACTS.filter((c) => c.category === activeAdditionalTab);
 
   const handleLocate = (locationId) => {
     if (onSelectMapLocation) {
@@ -112,7 +124,7 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
           {/* Quick Jump Anchors */}
           <div className="hero-quick-actions">
             <a href="#emergency-section" className="hero-action-pill alert-pill">
-              <span>🚨</span> Emergency Helplines
+              <span>🚨</span> Emergency Contacts
             </a>
             <a href="#aryabhatta-section" className="hero-action-pill aryabhatta-pill">
               <span>🏢</span> Aryabhatta Hostel
@@ -122,9 +134,6 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
             </a>
             <a href="#laundry-section" className="hero-action-pill">
               <span>🧺</span> Washing Machines
-            </a>
-            <a href="#electricity-section" className="hero-action-pill electricity-pill">
-              <span>⚡</span> Power (APDCL)
             </a>
             <a href="#campus-basics" className="hero-action-pill">
               <span>🏛️</span> Campus Basics
@@ -147,6 +156,9 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
             <a href="#senior-tips-section" className="hero-action-pill">
               <span>💡</span> Senior Tips
             </a>
+            <a href="#additional-contacts" className="hero-action-pill additional-pill">
+              <span>📞</span> Additional Contacts
+            </a>
           </div>
         </div>
       </header>
@@ -156,15 +168,15 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
         <section id="emergency-section" className="guide-section emergency-highlight-section">
           <div className="section-hud-tag">
             <span className="hud-blinker red"></span>
-            <span>CRITICAL CAMPUS & DISTRICT TELEMETRY // 24/7 HELPLINES</span>
+            <span>CRITICAL CAMPUS & MEDICAL TELEMETRY // 24/7 EMERGENCY AID</span>
           </div>
 
           <div className="section-header-block">
             <h2 className="section-title">
-              <span className="title-icon">🚨</span> Emergency & Public Safety Helplines
+              <span className="title-icon">🚨</span> Emergency Contacts
             </h2>
             <p className="section-desc">
-              Direct official contact numbers for Medical Aid, Police Stations & Outposts, Fire Services, Disaster Management (DDMA), and District Administration. Tap any number to call immediately.
+              24/7 Rapid response medical ambulances, Silchar Medical College & Hospital (SMCH), Fire Rescue, and Disaster Management (DDMA). Tap any number to initiate a call immediately.
             </p>
           </div>
 
@@ -877,94 +889,7 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
           </div>
         </section>
 
-        {/* ================= 4. ELECTRICITY & POWER OUTAGE SUPPORT (APDCL) ================= */}
-        <section id="electricity-section" className="guide-section electricity-section">
-          <div className="section-hud-tag">
-            <span className="hud-blinker amber"></span>
-            <span>POWER UTILITIES & BREAKDOWN HELPLINES // APDCL CACHAR</span>
-          </div>
-
-          <div className="section-header-block">
-            <h2 className="section-title">
-              <span className="title-icon">⚡</span> Electricity & Power Outage Support (APDCL)
-            </h2>
-            <p className="section-desc">
-              Assam Power Distribution Company Limited (APDCL) contacts for reporting campus power cuts, local feeder trips, transformer breakdowns, and 24/7 electrical assistance.
-            </p>
-          </div>
-
-          <div className="apdcl-grid">
-            {APDCL_POWER_CONTACTS.map((item) => (
-              <div key={item.id} className="apdcl-card" style={{ "--card-accent": item.color }}>
-                <div className="apdcl-card-top">
-                  <span className="apdcl-icon">{item.icon}</span>
-                  <span className="apdcl-badge">{item.badge}</span>
-                </div>
-                <div className="apdcl-card-body">
-                  <h3 className="apdcl-name">{item.name}</h3>
-                  <span className="apdcl-role">{item.designation}</span>
-                  <p className="apdcl-desc">{item.description}</p>
-                </div>
-                <div className="apdcl-actions-group">
-                  {item.whatsAppUrl && (
-                    <a
-                      href={item.whatsAppUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="apdcl-wa-btn"
-                      title="Chat on APDCL WhatsApp"
-                    >
-                      <span className="wa-icon">💬</span>
-                      <span>CHAT ON WHATSAPP ({item.displayNumber})</span>
-                      <span className="ext-arrow">↗</span>
-                    </a>
-                  )}
-
-                  <div className="apdcl-numbers-list">
-                    {item.numbers.map((n, idx) => (
-                      <div key={idx} className="apdcl-number-row">
-                        <a
-                          href={`tel:${n.num}`}
-                          className="apdcl-call-pill"
-                          title={`Call ${item.name} (${n.display})`}
-                        >
-                          <span className="call-icon">📞</span>
-                          <span className="call-num-text">{n.display}</span>
-                          <span className="call-mini-tag">CALL</span>
-                        </a>
-                        <button
-                          className="copy-key-btn apdcl-copy-btn"
-                          onClick={(e) => {
-                            navigator.clipboard?.writeText(n.num);
-                            const btn = e.currentTarget;
-                            btn.innerText = "✓";
-                            setTimeout(() => { btn.innerText = "COPY"; }, 2000);
-                          }}
-                          title="Copy number"
-                        >
-                          COPY
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="apdcl-tip-card">
-            <div className="apdcl-tip-icon">💡</div>
-            <div className="apdcl-tip-text">
-              <strong>Quick Outage Protocol for Hostels & Quarters:</strong>
-              <p>
-                1. <strong>Single Room / Wing Trip:</strong> First inform your Hostel Housekeeping or Supervisor (usually an internal MCB or switchgear trip).<br />
-                2. <strong>Campus Blackout / Transformer Fault:</strong> Send <code>Hi</code> to the APDCL WhatsApp Bot (<code>7575999666</code>) or call <code>1912</code> with the location details (NIT Silchar, Fakira Bazar / Ghungoor Feeder).
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ================= 5. CAMPUS BASICS & KEY HUBS ================= */}
+        {/* ================= 4. CAMPUS BASICS & KEY HUBS ================= */}
         <section id="campus-basics" className="guide-section">
           <div className="section-hud-tag">
             <span className="hud-blinker"></span>
@@ -1707,7 +1632,141 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
           </div>
         </section>
 
-        {/* ================= 10. CAMPUS MAP INVITATION BANNER ================= */}
+        {/* ================= 10. ADDITIONAL IMPORTANT CONTACTS & PUBLIC SERVICES ================= */}
+        <section id="additional-contacts" className="guide-section additional-contacts-section">
+          <div className="section-hud-tag">
+            <span className="hud-blinker cyan"></span>
+            <span>PUBLIC SERVICES & UTILITIES DIRECTORY // CACHAR & SILCHAR</span>
+          </div>
+
+          <div className="section-header-block">
+            <h2 className="section-title">
+              <span className="title-icon">📞</span> Additional Important Contacts
+            </h2>
+            <p className="section-desc">
+              Official public service contacts for Silchar Police Stations, Outposts, SP Cachar Office, Deputy Commissioner (DC), and APDCL Electricity breakdown support.
+            </p>
+          </div>
+
+          {/* Additional Contacts Category Filter Bar */}
+          <div className="emergency-filter-bar additional-filter-bar">
+            {additionalCategories.map((cat) => (
+              <button
+                key={cat.id}
+                className={`emergency-filter-btn additional-filter-btn ${activeAdditionalTab === cat.id ? "active" : ""}`}
+                onClick={() => setActiveAdditionalTab(cat.id)}
+              >
+                <span className="filter-icon">{cat.icon}</span>
+                <span className="filter-label">{cat.label}</span>
+                <span className="filter-count">{cat.count}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="additional-contacts-grid">
+            {displayedAdditionalContacts.map((item) => (
+              <div key={item.id} className="additional-contact-card" style={{ "--card-accent": item.color }}>
+                <div className="add-card-top">
+                  <div className="add-header-left">
+                    <span className="add-icon">{item.icon}</span>
+                    {item.designation && <span className="add-designation">{item.designation}</span>}
+                  </div>
+                  <span className="add-badge">{item.badge}</span>
+                </div>
+
+                <div className="add-card-body">
+                  <h3 className="add-name">{item.name}</h3>
+                  <p className="add-desc">{item.description}</p>
+                </div>
+
+                <div className="add-actions-group">
+                  {item.whatsAppUrl && (
+                    <a
+                      href={item.whatsAppUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="apdcl-wa-btn"
+                      title="Chat on APDCL WhatsApp"
+                    >
+                      <span className="wa-icon">💬</span>
+                      <span>CHAT ON WHATSAPP ({item.displayNumber})</span>
+                      <span className="ext-arrow">↗</span>
+                    </a>
+                  )}
+
+                  {item.numbers && item.numbers.length > 1 ? (
+                    <div className="add-multi-numbers">
+                      {item.numbers.map((n, idx) => (
+                        <div key={idx} className="add-num-row">
+                          <a
+                            href={`tel:${n.num}`}
+                            className="add-call-pill"
+                            title={`Call ${item.name} (${n.display})`}
+                          >
+                            <span className="call-icon">📞</span>
+                            <span className="call-num-text">{n.display}</span>
+                            <span className="call-mini-tag">CALL</span>
+                          </a>
+                          <button
+                            className="copy-key-btn add-copy-btn"
+                            onClick={(e) => {
+                              navigator.clipboard?.writeText(n.num);
+                              const btn = e.currentTarget;
+                              btn.innerText = "✓";
+                              setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+                            }}
+                            title="Copy number"
+                          >
+                            COPY
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="add-single-row">
+                      <a
+                        href={`tel:${item.number}`}
+                        className="add-primary-call-btn"
+                        title={`Call ${item.name} at ${item.displayNumber}`}
+                      >
+                        <span className="call-icon">📞</span>
+                        <span className="call-number">{item.displayNumber}</span>
+                        <span className="call-cta">CALL NOW</span>
+                      </a>
+                      <button
+                        className="copy-key-btn add-copy-btn-single"
+                        onClick={(e) => {
+                          navigator.clipboard?.writeText(item.number);
+                          const btn = e.currentTarget;
+                          btn.innerText = "✓ COPIED";
+                          setTimeout(() => { btn.innerText = "COPY"; }, 2000);
+                        }}
+                        title="Copy number to clipboard"
+                      >
+                        COPY
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {(activeAdditionalTab === "all" || activeAdditionalTab === "power") && (
+            <div className="apdcl-tip-card">
+              <div className="apdcl-tip-icon">💡</div>
+              <div className="apdcl-tip-text">
+                <strong>Quick Power Outage Protocol for Hostels & Quarters:</strong>
+                <p>
+                  1. <strong>Single Room / Wing Trip:</strong> First inform your Hostel Housekeeping or Supervisor (usually an internal MCB or switchgear trip).<br />
+                  2. <strong>Campus Blackout / Transformer Fault:</strong> Send <code>Hi</code> to the APDCL WhatsApp Bot (<code>7575999666</code>) or call <code>1912</code> with location details (NIT Silchar, Fakira Bazar / Ghungoor Feeder).
+                </p>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* ================= 11. CAMPUS MAP INVITATION BANNER ================= */}
         <section className="map-invitation-banner">
           <div className="map-inv-glow"></div>
           <div className="map-inv-content">

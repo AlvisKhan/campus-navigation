@@ -12,7 +12,7 @@ export const EMERGENCY_MEDICAL_CONTACTS = [
     number: "9678780002",
     displayNumber: "+91 96787 80002",
     category: "medical",
-    categoryLabel: "Medical",
+    categoryLabel: "Medical & Ambulance",
     badge: "24/7 Primary Ambulance",
     description: "Main NIT Silchar campus emergency ambulance service.",
     icon: "🚑",
@@ -25,7 +25,7 @@ export const EMERGENCY_MEDICAL_CONTACTS = [
     number: "9678780007",
     displayNumber: "+91 96787 80007",
     category: "medical",
-    categoryLabel: "Medical",
+    categoryLabel: "Medical & Ambulance",
     badge: "Emergency Backup",
     description: "Secondary campus medical emergency ambulance.",
     icon: "🚨",
@@ -38,7 +38,7 @@ export const EMERGENCY_MEDICAL_CONTACTS = [
     number: "8610038097",
     displayNumber: "+91 86100 38097",
     category: "medical",
-    categoryLabel: "Medical",
+    categoryLabel: "Medical & Ambulance",
     badge: "Quick Response",
     description: "Mini ambulance unit for rapid emergency response across campus corridors.",
     icon: "🚐",
@@ -51,7 +51,7 @@ export const EMERGENCY_MEDICAL_CONTACTS = [
     number: "03842234196",
     displayNumber: "03842-234196",
     category: "medical",
-    categoryLabel: "Medical",
+    categoryLabel: "Medical & Ambulance",
     badge: "Govt Tertiary Hospital",
     description: "Silchar Medical College & Hospital (Ghungoor) — 24/7 tertiary care, trauma & specialized emergency.",
     mapLocationId: "smch-silchar",
@@ -67,7 +67,7 @@ export const EMERGENCY_MEDICAL_CONTACTS = [
     number: "108",
     displayNumber: "108",
     category: "medical",
-    categoryLabel: "Medical",
+    categoryLabel: "Medical & Ambulance",
     badge: "24/7 State Emergency",
     description: "Govt of Assam 24/7 Mrityunjoy emergency ambulance helpline across Cachar.",
     icon: "🆘",
@@ -75,84 +75,7 @@ export const EMERGENCY_MEDICAL_CONTACTS = [
   },
 ];
 
-// Backwards compatibility alias
-export const EMERGENCY_CONTACTS = EMERGENCY_MEDICAL_CONTACTS;
-
-// 2. Police & Security Outposts
-export const POLICE_CONTACTS = [
-  {
-    id: "sp-cachar",
-    name: "SP, Cachar",
-    designation: "Superintendent of Police",
-    numbers: [{ num: "6026900230", display: "+91 60269 00230", primary: true }],
-    number: "6026900230",
-    displayNumber: "+91 60269 00230",
-    category: "police",
-    categoryLabel: "Police & Security",
-    badge: "Superintendent of Police",
-    description: "Direct official mobile contact for the Superintendent of Police, Cachar District.",
-    icon: "👮",
-    color: "#3B82F6",
-  },
-  {
-    id: "sp-office-cachar",
-    name: "SP Office, Cachar",
-    designation: "District Police Control HQ",
-    numbers: [{ num: "03842245866", display: "03842-245866", primary: true }],
-    number: "03842245866",
-    displayNumber: "03842-245866",
-    category: "police",
-    categoryLabel: "Police & Security",
-    badge: "District Police HQ",
-    description: "Office of the Superintendent of Police, Cachar administrative & police control desk.",
-    icon: "🏢",
-    color: "#2563EB",
-  },
-  {
-    id: "silchar-ps",
-    name: "Silchar Police Station",
-    designation: "Sadar Police Station",
-    numbers: [{ num: "7896817123", display: "+91 78968 17123", primary: true }],
-    number: "7896817123",
-    displayNumber: "+91 78968 17123",
-    category: "police",
-    categoryLabel: "Police & Security",
-    badge: "Main Sadar PS",
-    description: "Central Silchar Town Police Station for jurisdiction matters, FIRs, and emergency response.",
-    icon: "🚔",
-    color: "#6366F1",
-  },
-  {
-    id: "ghungoor-outpost",
-    name: "Ghungoor Police Outpost",
-    designation: "Local Outpost (Near SMCH & Campus)",
-    numbers: [{ num: "9678746354", display: "+91 96787 46354", primary: true }],
-    number: "9678746354",
-    displayNumber: "+91 96787 46354",
-    category: "police",
-    categoryLabel: "Police & Security",
-    badge: "Closest to Campus",
-    description: "Local police outpost stationed at Ghungoor (nearest to NIT Silchar & Medical College).",
-    icon: "🛡️",
-    color: "#06B6D4",
-  },
-  {
-    id: "rangirkhari-outpost",
-    name: "Rangirkhari Police Outpost",
-    designation: "Rangirkhari Town Outpost",
-    numbers: [{ num: "9864627518", display: "+91 98646 27518", primary: true }],
-    number: "9864627518",
-    displayNumber: "+91 98646 27518",
-    category: "police",
-    categoryLabel: "Police & Security",
-    badge: "Town Outpost",
-    description: "Police outpost stationed at Rangirkhari junction along the primary route to Silchar town.",
-    icon: "🚨",
-    color: "#8B5CF6",
-  },
-];
-
-// 3. Fire & Emergency Rescue Services
+// 2. Fire & Emergency Rescue Services
 export const FIRE_AND_RESCUE_CONTACTS = [
   {
     id: "fire-emergency-101",
@@ -198,7 +121,7 @@ export const FIRE_AND_RESCUE_CONTACTS = [
   },
 ];
 
-// 4. Disaster Management Authority (DDMA Cachar)
+// 3. Disaster Management Authority (DDMA Cachar)
 export const DISASTER_MANAGEMENT_CONTACTS = [
   {
     id: "ddma-cachar",
@@ -232,9 +155,108 @@ export const DISASTER_MANAGEMENT_CONTACTS = [
     icon: "🛡️",
     color: "#0D9488",
   },
+  {
+    id: "child-helpline",
+    name: "Child Helpline",
+    designation: "National Child Assistance & Protection",
+    numbers: [{ num: "1098", display: "1098 (Toll Free)", primary: true }],
+    number: "1098",
+    displayNumber: "1098",
+    category: "helpline",
+    categoryLabel: "Child Helpline",
+    badge: "24/7 National Helpline",
+    description: "Toll-free 24-hour national emergency outreach service for children in need of care and protection.",
+    icon: "🧒",
+    color: "#10B981",
+  },
 ];
 
-// 5. District Administration & Public Helplines
+// STRICT EMERGENCY ONLY CONTACTS LIST (Shown at top)
+export const EMERGENCY_CONTACTS = [
+  ...EMERGENCY_MEDICAL_CONTACTS,
+  ...FIRE_AND_RESCUE_CONTACTS,
+  ...DISASTER_MANAGEMENT_CONTACTS,
+];
+
+// ==========================================
+// ADDITIONAL CONTACTS (Shown in section at the end of page)
+// ==========================================
+
+// 4. Police & Security Outposts
+export const POLICE_CONTACTS = [
+  {
+    id: "sp-cachar",
+    name: "SP, Cachar",
+    designation: "Superintendent of Police",
+    numbers: [{ num: "6026900230", display: "+91 60269 00230", primary: true }],
+    number: "6026900230",
+    displayNumber: "+91 60269 00230",
+    category: "police",
+    categoryLabel: "Police & Security",
+    badge: "Superintendent of Police",
+    description: "Direct official mobile contact for the Superintendent of Police, Cachar District.",
+    icon: "👮",
+    color: "#3B82F6",
+  },
+  {
+    id: "sp-office-cachar",
+    name: "SP Office, Cachar",
+    designation: "District Police Control HQ",
+    numbers: [{ num: "03842245866", display: "03842-245866", primary: true }],
+    number: "03842245866",
+    displayNumber: "03842-245866",
+    category: "police",
+    categoryLabel: "Police & Security",
+    badge: "District Police HQ",
+    description: "Office of the Superintendent of Police, Cachar administrative & police control desk.",
+    icon: "🏢",
+    color: "#2563EB",
+  },
+  {
+    id: "silchar-ps",
+    name: "Silchar Police Station",
+    designation: "Sadar Police Station",
+    numbers: [{ num: "7896817123", display: "+91 78968 17123", primary: true }],
+    number: "7896817123",
+    displayNumber: "+91 78968 17123",
+    category: "police",
+    categoryLabel: "Police & Security",
+    badge: "Main Sadar PS",
+    description: "Central Silchar Town Police Station for jurisdiction matters, FIRs, and police assistance.",
+    icon: "🚔",
+    color: "#6366F1",
+  },
+  {
+    id: "ghungoor-outpost",
+    name: "Ghungoor Police Outpost",
+    designation: "Local Outpost (Near SMCH & Campus)",
+    numbers: [{ num: "9678746354", display: "+91 96787 46354", primary: true }],
+    number: "9678746354",
+    displayNumber: "+91 96787 46354",
+    category: "police",
+    categoryLabel: "Police & Security",
+    badge: "Closest to Campus",
+    description: "Local police outpost stationed at Ghungoor (nearest to NIT Silchar & Medical College).",
+    icon: "🛡️",
+    color: "#06B6D4",
+  },
+  {
+    id: "rangirkhari-outpost",
+    name: "Rangirkhari Police Outpost",
+    designation: "Rangirkhari Town Outpost",
+    numbers: [{ num: "9864627518", display: "+91 98646 27518", primary: true }],
+    number: "9864627518",
+    displayNumber: "+91 98646 27518",
+    category: "police",
+    categoryLabel: "Police & Security",
+    badge: "Town Outpost",
+    description: "Police outpost stationed at Rangirkhari junction along the primary route to Silchar town.",
+    icon: "🚨",
+    color: "#8B5CF6",
+  },
+];
+
+// 5. District Administration
 export const DISTRICT_ADMIN_CONTACTS = [
   {
     id: "dc-cachar",
@@ -250,29 +272,6 @@ export const DISTRICT_ADMIN_CONTACTS = [
     icon: "🏛️",
     color: "#8B5CF6",
   },
-  {
-    id: "child-helpline",
-    name: "Child Helpline",
-    designation: "National Child Assistance & Protection",
-    numbers: [{ num: "1098", display: "1098 (Toll Free)", primary: true }],
-    number: "1098",
-    displayNumber: "1098",
-    category: "admin",
-    categoryLabel: "District Admin",
-    badge: "24/7 National Helpline",
-    description: "Toll-free 24-hour national emergency outreach service for children in need of care and protection.",
-    icon: "🧒",
-    color: "#10B981",
-  },
-];
-
-// Combined Emergency Helplines List for tabbed/unified filtering
-export const ALL_EMERGENCY_HELPLINES = [
-  ...EMERGENCY_MEDICAL_CONTACTS,
-  ...POLICE_CONTACTS,
-  ...FIRE_AND_RESCUE_CONTACTS,
-  ...DISASTER_MANAGEMENT_CONTACTS,
-  ...DISTRICT_ADMIN_CONTACTS,
 ];
 
 // 6. APDCL Electricity & Power Supply Helplines (Assam Power Distribution Company Limited)
@@ -284,6 +283,8 @@ export const APDCL_POWER_CONTACTS = [
     numbers: [{ num: "1912", display: "1912 (Toll Free)", primary: true }],
     number: "1912",
     displayNumber: "1912",
+    category: "power",
+    categoryLabel: "Electricity (APDCL)",
     badge: "24/7 Power Helpline",
     description: "Assam Power Distribution toll-free round-the-clock power fault & blackout complaint helpline.",
     icon: "⚡",
@@ -296,6 +297,8 @@ export const APDCL_POWER_CONTACTS = [
     numbers: [{ num: "7575999666", display: "+91 75759 99666", primary: true }],
     number: "7575999666",
     displayNumber: "+91 75759 99666",
+    category: "power",
+    categoryLabel: "Electricity (APDCL)",
     badge: "Instant WhatsApp",
     whatsAppUrl: "https://wa.me/917575999666?text=Hi",
     description: "Official APDCL automated WhatsApp service for outage lodging, electricity bill checks, and complaint status.",
@@ -312,6 +315,8 @@ export const APDCL_POWER_CONTACTS = [
     ],
     number: "038422420310",
     displayNumber: "03842-2420310 / 8638712347",
+    category: "power",
+    categoryLabel: "Electricity (APDCL)",
     badge: "Divisional DGM Desk",
     description: "Office of the Deputy General Manager, APDCL Cachar Electrical Circle for escalations and grid updates.",
     icon: "🏢",
@@ -327,6 +332,8 @@ export const APDCL_POWER_CONTACTS = [
     ],
     number: "03842241530",
     displayNumber: "03842-241530 / 7577822380",
+    category: "power",
+    categoryLabel: "Electricity (APDCL)",
     badge: "Silchar-I Sub-Division",
     description: "Sub-divisional office for local transformer, feeder lines, and electricity breakdown issues.",
     icon: "🔌",
@@ -342,11 +349,20 @@ export const APDCL_POWER_CONTACTS = [
     ],
     number: "03842242120",
     displayNumber: "03842-242120 / 8876243435",
+    category: "power",
+    categoryLabel: "Electricity (APDCL)",
     badge: "Silchar-II Sub-Division",
     description: "Sub-divisional office for Silchar area II electrical power restoration, repairs, and complaints.",
     icon: "🔌",
     color: "#38BDF8",
   },
+];
+
+// Combined Additional Contacts (Police, District Administration, APDCL Power)
+export const ADDITIONAL_CONTACTS = [
+  ...POLICE_CONTACTS,
+  ...DISTRICT_ADMIN_CONTACTS,
+  ...APDCL_POWER_CONTACTS,
 ];
 
 export const TRANSPORT_CONTACTS = [
