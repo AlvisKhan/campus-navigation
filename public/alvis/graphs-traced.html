@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="description" content="Graphs, Traced — an interactive, diagrammatic C++ field guide and live visualizer for mastering graph algorithms, traversal, shortest paths, MSTs, and topological sorting.">
+<title>Graphs, Traced — a C++ field guide &amp; live visualizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF1F7;
+  --paper-alt:#E1E7F1;
+  --paper-deep:#D3DBEA;
+  --ink:#161B22;
+  --ink-soft:#4B5568;
+  --ink-faint:#7C87A0;
+  --grid:#C3CEE1;
+  --blueprint:#2B5FA5;
+  --blueprint-dark:#1D4278;
+  --blueprint-light:#E6F0FA;
+  --signal:#E15A34;
+  --signal-dark:#A53D22;
+  --signal-light:#FDECE6;
+  --moss:#2F8F63;
+  --moss-dark:#1F6E4A;
+  --moss-light:#E8F6EF;
+  --amber:#D99A2B;
+  --amber-dark:#9B6B18;
+  --amber-light:#FDF6E8;
+  --violet:#6E4FE0;
+  --violet-dark:#4B33A6;
+  --violet-light:#F1EDFD;
+  --cyan:#0EA5E9;
+  --white:#FFFFFF;
+  --radius:12px;
+  --sidebar-w:280px;
+  --header-h:56px;
+  --shadow-sm:0 1px 3px rgba(22,27,34,0.05);
+  --shadow-md:0 4px 12px rgba(22,27,34,0.08);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+}
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size:16px;
+  line-height:1.65;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:28px 28px;
+  background-attachment:fixed;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4,h5{
+  font-family:'Fraunces', Georgia, serif;
+  color:var(--ink);
+  margin:0 0 0.4em 0;
+  letter-spacing:-0.015em;
+  font-weight:700;
+}
+
+code, pre, .mono{
+  font-family:'IBM Plex Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+a{color:var(--blueprint); text-decoration-thickness:1px;}
+
+/* ---------- progress bar ---------- */
+#progress-bar{
+  position:fixed; top:0; left:0; height:3.5px; width:0%;
+  background:linear-gradient(90deg, var(--blueprint), var(--signal), var(--amber));
+  z-index:1001; transition:width 0.1s linear;
+}
+
+/* ---------- mobile top bar ---------- */
+.mobile-header{
+  display:none;
+  position:sticky; top:0; left:0; right:0;
+  height:var(--header-h);
+  background:rgba(238, 241, 247, 0.95);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--grid);
+  z-index:990;
+  padding:0 16px;
+  align-items:center;
+  justify-content:space-between;
+}
+.mobile-brand{
+  display:flex; align-items:center; gap:8px;
+  font-family:'Fraunces', serif; font-weight:700; font-size:1.05rem;
+  color:var(--ink); text-decoration:none;
+}
+.mobile-brand span{
+  font-family:'Public Sans', sans-serif; font-size:0.65rem; font-weight:700;
+  letter-spacing:0.1em; color:var(--signal); text-transform:uppercase;
+  background:var(--signal-light); padding:2px 6px; border-radius:4px; margin-left:4px;
+}
+.mobile-menu-btn{
+  display:flex; align-items:center; gap:6px;
+  background:var(--white); border:1px solid var(--grid); border-radius:8px;
+  padding:7px 12px; font-family:'IBM Plex Mono', monospace; font-size:0.8rem;
+  font-weight:600; color:var(--ink); cursor:pointer;
+  box-shadow:var(--shadow-sm);
+}
+
+/* ---------- layout shell ---------- */
+.shell{
+  display:grid;
+  grid-template-columns:var(--sidebar-w) 1fr;
+  max-width:1380px;
+  margin:0 auto;
+  align-items:start;
+}
+
+/* ---------- sidebar ---------- */
+#sidebar{
+  position:sticky; top:0;
+  height:100vh;
+  overflow-y:auto;
+  padding:28px 18px 40px 24px;
+  border-right:1px solid var(--grid);
+  background:var(--paper);
+  z-index:900;
+}
+.brand{
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:24px;
+}
+.brand svg{flex:none;}
+.brand-text{font-family:'Fraunces', serif; font-weight:700; font-size:1.18rem; line-height:1.15;}
+.brand-text span{
+  display:block; font-family:'Public Sans',sans-serif; font-weight:600; font-size:0.68rem;
+  letter-spacing:0.14em; color:var(--ink-faint); text-transform:uppercase; margin-top:3px;
+}
+
+.legend-note{
+  font-size:0.8rem; color:var(--ink-soft); margin:0 0 20px 0; padding:10px 12px;
+  background:var(--paper-alt); border-radius:8px; border:1px dashed var(--grid);
+  line-height:1.5;
+}
+.legend-note b{color:var(--signal-dark);}
+
+nav.toc{list-style:none; margin:0; padding:0;}
+nav.toc li{margin:0 0 2px 0;}
+nav.toc a{
+  display:flex; align-items:center; text-decoration:none; color:var(--ink-soft);
+  font-size:0.88rem; padding:8px 10px; border-radius:8px;
+  border-left:3px solid transparent;
+  transition:background 0.15s, color 0.15s, border-color 0.15s;
+}
+nav.toc a:hover{background:var(--paper-alt); color:var(--ink);}
+nav.toc a.active{
+  color:var(--blueprint-dark); border-left-color:var(--blueprint);
+  background:var(--paper-alt); font-weight:600;
+}
+nav.toc .chapter-num{
+  display:inline-block; width:26px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; font-size:0.75rem; flex:none;
+}
+nav.toc .chapter-pill{
+  margin-left:auto; font-size:0.65rem; font-family:'IBM Plex Mono',monospace; padding:1px 6px;
+  border-radius:10px; background:var(--paper-deep); color:var(--ink-soft);
+}
+
+.sidebar-backdrop{
+  display:none;
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(15, 23, 42, 0.5);
+  z-index:950;
+  opacity:0; transition:opacity 0.25s;
+}
+
+/* ---------- main content ---------- */
+main{
+  padding:0 48px 120px 52px;
+  min-width:0;
+}
+
+.hero{
+  padding:56px 0 40px 0;
+  border-bottom:1px solid var(--grid);
+  margin-bottom:48px;
+}
+.hero .eyebrow{
+  font-family:'IBM Plex Mono',monospace; font-size:0.78rem; letter-spacing:0.14em;
+  color:var(--blueprint-dark); text-transform:uppercase; margin-bottom:12px; display:inline-flex;
+  align-items:center; gap:8px; background:var(--blueprint-light); padding:4px 10px; border-radius:6px;
+  border:1px solid rgba(43,95,165,0.2); font-weight:600;
+}
+.hero h1{font-size:3.2rem; font-weight:700; margin-bottom:0.18em; line-height:1.08;}
+.hero h1 em{font-style:italic; color:var(--signal); font-family:'Fraunces', serif;}
+.hero .sub{font-size:1.15rem; color:var(--ink-soft); max-width:680px; margin-bottom:28px; line-height:1.6;}
+.hero-grid{display:grid; grid-template-columns:1.05fr 1fr; gap:36px; align-items:center;}
+.hero-copy p{max-width:540px; margin-bottom:1em; font-size:0.98rem;}
+.hero-viz{
+  background:var(--white); border:1px solid var(--grid); border-radius:var(--radius);
+  padding:16px; box-shadow:var(--shadow-md); position:relative;
+}
+.hero-viz-badge{
+  position:absolute; top:12px; right:12px; font-family:'IBM Plex Mono',monospace; font-size:0.7rem;
+  background:var(--signal-light); color:var(--signal-dark); border:1px solid rgba(225,90,52,0.3);
+  padding:3px 8px; border-radius:4px; font-weight:600;
+}
+.hero-viz-caption{font-size:0.82rem; color:var(--ink-faint); margin-top:10px; text-align:center;}
+.hero-viz-caption b{color:var(--ink-soft);}
+
+section.chapter{
+  padding-top:40px;
+  margin-bottom:32px;
+  scroll-margin-top:70px;
+}
+.chapter-head{
+  display:flex; align-items:baseline; gap:12px; margin-bottom:6px; flex-wrap:wrap;
+}
+.chapter-head .num{
+  font-family:'IBM Plex Mono',monospace; color:var(--ink-faint); font-size:0.95rem; font-weight:600;
+}
+.chapter-kicker{
+  font-family:'IBM Plex Mono',monospace; font-size:0.75rem; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--signal-dark); margin-bottom:6px; display:block; font-weight:600;
+}
+.chapter h2{font-size:2.1rem; line-height:1.2; margin-bottom:0.2em;}
+.chapter .lede{font-size:1.05rem; color:var(--ink-soft); max-width:740px; margin-bottom:24px; line-height:1.6;}
+
+/* ---------- cards & layout ---------- */
+.card{
+  background:var(--white); border:1px solid var(--grid); border-radius:var(--radius);
+  padding:22px 24px; margin-bottom:20px; box-shadow:var(--shadow-sm);
+}
+.card h3{font-size:1.24rem; margin-bottom:0.5em;}
+.card h4{font-size:1.02rem; color:var(--blueprint-dark); margin-bottom:0.4em; font-family:'Public Sans', sans-serif; font-weight:700;}
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+.three-col{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
+.four-col{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px;}
+
+p{margin:0 0 1em 0;}
+ul, ol{margin:0 0 1em 0; padding-left:1.3em;}
+li{margin-bottom:0.45em;}
+
+.tag{
+  display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:0.72rem;
+  padding:2px 8px; border-radius:20px; background:var(--paper-alt); color:var(--ink-soft);
+  border:1px solid var(--grid); margin-right:6px; font-weight:600; vertical-align:middle;
+}
+.tag.blueprint{color:var(--blueprint-dark); background:var(--blueprint-light); border-color:var(--blueprint);}
+.tag.signal{color:var(--signal-dark); background:var(--signal-light); border-color:var(--signal);}
+.tag.moss{color:var(--moss-dark); background:var(--moss-light); border-color:var(--moss);}
+.tag.amber{color:var(--amber-dark); background:var(--amber-light); border-color:var(--amber);}
+.tag.violet{color:var(--violet-dark); background:var(--violet-light); border-color:var(--violet);}
+
+/* ---------- code blocks ---------- */
+.codeblock{
+  background:var(--ink); color:#E9EDF6; border-radius:10px; overflow:hidden; margin:14px 0 20px 0;
+  border:1px solid #0d1015; box-shadow:var(--shadow-sm); position:relative;
+}
+.codeblock .filebar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 14px; background:#0f141d; font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:#9AA7C2;
+  border-bottom:1px solid #232b3a; user-select:none;
+}
+.codeblock .filebar .copy-btn{
+  background:#1c2333; color:#a2afc7; border:1px solid #2f3b52; border-radius:4px;
+  padding:3px 8px; font-size:0.7rem; cursor:pointer; font-family:'IBM Plex Mono',monospace;
+  transition:all 0.15s;
+}
+.codeblock .filebar .copy-btn:hover{background:#2b3850; color:#fff;}
+.codeblock pre{
+  margin:0; padding:14px 16px; overflow-x:auto; font-size:0.84rem; line-height:1.65;
+  -webkit-overflow-scrolling:touch;
+}
+.codeblock code{font-family:'IBM Plex Mono',monospace;}
+.codeblock .line{display:block; padding:0 6px; border-radius:4px; transition:background 0.2s, box-shadow 0.2s;}
+.codeblock .line.active-line{background:rgba(225,90,52,0.22); box-shadow:inset 3px 0 0 var(--signal);}
+.kw{color:#7CB1F2;} .tp{color:#5DD1A8;} .cm{color:#7C87A0; font-style:italic;} .st{color:#E8C07D;} .fn{color:#E9B4F0;} .num-lit{color:#F59E0B;}
+
+/* ---------- visualizer widgets ---------- */
+.viz{
+  background:var(--white); border:1px solid var(--grid); border-radius:var(--radius);
+  padding:20px; margin:18px 0 26px 0; box-shadow:var(--shadow-md);
+}
+.viz-top{
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;
+  flex-wrap:wrap; gap:8px; border-bottom:1px solid var(--paper-alt); padding-bottom:8px;
+}
+.viz-title{
+  font-family:'IBM Plex Mono',monospace; font-size:0.8rem; letter-spacing:0.06em;
+  color:var(--blueprint-dark); text-transform:uppercase; font-weight:700; display:flex; align-items:center; gap:6px;
+}
+.viz-badge{
+  font-size:0.68rem; font-family:'IBM Plex Mono',monospace; background:var(--signal-light);
+  color:var(--signal-dark); padding:2px 6px; border-radius:4px; border:1px solid rgba(225,90,52,0.3);
+}
+.viz-body{
+  display:grid; grid-template-columns:1.45fr 1fr; gap:16px; align-items:start;
+}
+.viz-graph{
+  background:var(--paper); border:1px solid var(--grid); border-radius:8px;
+  position:relative; overflow:hidden; min-height:260px; display:flex; align-items:center; justify-content:center;
+}
+.viz-graph svg{display:block; width:100%; height:auto; max-height:380px; touch-action:manipulation;}
+.viz-side{display:flex; flex-direction:column; gap:10px;}
+.panel{background:var(--paper); border:1px solid var(--grid); border-radius:8px; padding:10px 12px;}
+.panel-label{
+  font-family:'IBM Plex Mono',monospace; font-size:0.7rem; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px; font-weight:600;
+}
+.chip-row{display:flex; gap:5px; flex-wrap:wrap; min-height:28px; align-items:center;}
+.chip{
+  font-family:'IBM Plex Mono',monospace; font-size:0.78rem; padding:3px 8px; border-radius:5px;
+  background:var(--amber); color:#3d2e0a; border:1px solid #c98a1f; font-weight:600;
+}
+.chip.empty{background:transparent; border:1px dashed var(--grid); color:var(--ink-faint); font-weight:400; font-size:0.74rem;}
+.chip.blue{background:var(--blueprint-light); color:var(--blueprint-dark); border-color:var(--blueprint);}
+.chip.green{background:var(--moss-light); color:var(--moss-dark); border-color:var(--moss);}
+.chip.red{background:var(--signal-light); color:var(--signal-dark); border-color:var(--signal);}
+.msg-box{
+  min-height:50px; font-size:0.88rem; color:var(--ink); background:var(--paper);
+  border:1px solid var(--grid); border-radius:8px; padding:10px 12px; line-height:1.5;
+}
+.msg-box b{color:var(--blueprint-dark);}
+.info-panel{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+.info-panel table{width:100%; border-collapse:collapse; font-family:'IBM Plex Mono',monospace; font-size:0.78rem;}
+.info-panel td, .info-panel th{padding:4px 6px; text-align:center; border-bottom:1px solid var(--grid);}
+.info-panel th{color:var(--ink-faint); font-weight:600; background:rgba(0,0,0,0.02);}
+.info-panel td.updated{color:var(--signal-dark); font-weight:700; background:var(--signal-light);}
+.viz-controls{
+  display:flex; align-items:center; gap:8px; margin-top:14px; flex-wrap:wrap;
+  border-top:1px solid var(--paper-alt); padding-top:12px;
+}
+button.ctrl{
+  font-family:'IBM Plex Mono',monospace; font-size:0.8rem; cursor:pointer;
+  background:var(--white); border:1px solid var(--grid); border-radius:6px; padding:7px 12px;
+  color:var(--ink); transition:background 0.15s, border-color 0.15s, transform 0.05s;
+  min-height:38px; display:inline-flex; align-items:center; justify-content:center;
+}
+button.ctrl:active{transform:scale(0.97);}
+button.ctrl:hover{background:var(--paper-alt); border-color:var(--blueprint);}
+button.ctrl.primary{background:var(--blueprint); color:white; border-color:var(--blueprint-dark); font-weight:600;}
+button.ctrl.primary:hover{background:var(--blueprint-dark);}
+button.ctrl:disabled{opacity:0.35; cursor:default; pointer-events:none;}
+.step-counter{font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--ink-faint); margin-left:auto; font-weight:600;}
+
+/* svg node/edge states */
+.gnode circle{fill:var(--paper-deep); stroke:var(--ink); stroke-width:2.2px; transition:fill 0.25s, stroke 0.25s, stroke-width 0.25s;}
+.gnode text{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13.5px; fill:var(--ink); text-anchor:middle; dominant-baseline:central; pointer-events:none;}
+.gnode .dist{font-size:10px; fill:var(--blueprint-dark); font-weight:700;}
+.gnode .sub-label{font-size:9.5px; fill:var(--ink-faint); font-family:'IBM Plex Mono',monospace;}
+.gnode.visited circle{fill:var(--blueprint); stroke:var(--blueprint-dark);}
+.gnode.visited text{fill:white;}
+.gnode.current circle{fill:var(--signal); stroke:var(--signal-dark); stroke-width:3px;}
+.gnode.current text{fill:white;}
+.gnode.frontier circle{fill:var(--amber); stroke:#a5730f;}
+.gnode.in-stack circle{fill:#8b5cf6; stroke:#5b21b6; stroke-width:3px;}
+.gnode.in-stack text{fill:white;}
+.gnode.articulation circle{stroke:var(--signal-dark); stroke-width:4px; stroke-dasharray:3 2;}
+
+.gedge line{stroke:var(--grid); stroke-width:3px; transition:stroke 0.25s, stroke-width 0.25s;}
+.gedge.active line{stroke:var(--signal); stroke-width:4.5px;}
+.gedge.tree line{stroke:var(--moss); stroke-width:4.5px;}
+.gedge.back line{stroke:var(--signal); stroke-width:4px; stroke-dasharray:4 3;}
+.gedge.bridge line{stroke:#DC2626; stroke-width:5px;}
+.gedge .wlabel{font-family:'IBM Plex Mono',monospace; font-size:11px; fill:var(--ink-soft); text-anchor:middle; font-weight:600;}
+
+/* ---------- interactive quiz & details ---------- */
+details.quiz{
+  background:var(--paper-alt); border:1px solid var(--grid); border-radius:8px;
+  padding:12px 16px; margin:16px 0; transition:border-color 0.2s;
+}
+details.quiz summary{
+  cursor:pointer; font-weight:600; color:var(--blueprint-dark); font-family:'Public Sans',sans-serif;
+  user-select:none; list-style-position:inside;
+}
+details.quiz[open]{border-color:var(--blueprint);}
+details.quiz .answer{
+  margin-top:10px; padding-top:10px; border-top:1px dashed var(--grid); font-size:0.92rem; line-height:1.55;
+}
+
+/* ---------- tables ---------- */
+.table-responsive{
+  width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; margin:14px 0 18px 0;
+  border:1px solid var(--grid); border-radius:8px; background:var(--white);
+}
+table.cheat{width:100%; border-collapse:collapse; font-size:0.88rem; min-width:560px;}
+table.cheat th{
+  text-align:left; font-family:'IBM Plex Mono',monospace; font-size:0.72rem; letter-spacing:0.06em;
+  text-transform:uppercase; color:var(--ink-faint); padding:10px 12px; border-bottom:2px solid var(--ink);
+  background:var(--paper);
+}
+table.cheat td{padding:10px 12px; border-bottom:1px solid var(--grid); vertical-align:middle;}
+table.cheat tr:hover td{background:var(--paper-alt);}
+.complexity{font-family:'IBM Plex Mono',monospace; white-space:nowrap; font-size:0.82rem; font-weight:600;}
+
+/* ---------- playbook & flow ---------- */
+.playbook-card{margin-bottom:22px;}
+.playbook-row{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 8px; border-bottom:1px solid var(--grid);
+}
+.playbook-row:last-child{border-bottom:none;}
+.playbook-row .q{color:var(--ink-soft); font-size:0.92rem; flex:1;}
+.playbook-row .arrow{color:var(--ink-faint); font-size:1.1rem; flex:none; padding:0 4px;}
+.playbook-row .a{
+  font-weight:700; color:var(--blueprint-dark); font-family:'IBM Plex Mono',monospace;
+  font-size:0.86rem; background:var(--blueprint-light); padding:4px 10px; border-radius:6px;
+  border:1px solid rgba(43,95,165,0.25); flex:none; text-align:right; min-width:140px;
+}
+
+.flow{display:flex; flex-direction:column; gap:0;}
+.flow-q{
+  background:var(--paper); border:1px solid var(--grid); border-left:4px solid var(--blueprint);
+  border-radius:6px; padding:10px 14px; margin-bottom:6px; font-size:0.92rem;
+}
+.flow-q b{color:var(--ink);}
+.flow-a{
+  margin:0 0 14px 18px; padding:8px 14px; font-size:0.88rem; color:var(--ink-soft);
+  border-left:2px dashed var(--grid);
+}
+.flow-a .go{color:var(--signal-dark); font-weight:700; font-family:'IBM Plex Mono',monospace; background:var(--signal-light); padding:2px 6px; border-radius:4px;}
+
+/* ---------- callouts ---------- */
+.callout{
+  border-left:4px solid var(--amber); background:var(--amber-light); border-radius:0 8px 8px 0;
+  padding:14px 18px; margin:16px 0; font-size:0.92rem; line-height:1.55; border-top:1px solid rgba(217,154,43,0.15);
+  border-bottom:1px solid rgba(217,154,43,0.15); border-right:1px solid rgba(217,154,43,0.15);
+}
+.callout.pitfall{
+  border-left-color:var(--signal); background:var(--signal-light);
+  border-color:rgba(225,90,52,0.2);
+}
+.callout.pitfall b{color:var(--signal-dark);}
+.callout.pro{
+  border-left-color:var(--moss); background:var(--moss-light);
+  border-color:rgba(47,143,99,0.2);
+}
+.callout.pro b{color:var(--moss-dark);}
+.callout.blueprint{
+  border-left-color:var(--blueprint); background:var(--blueprint-light);
+  border-color:rgba(43,95,165,0.2);
+}
+.callout.blueprint b{color:var(--blueprint-dark);}
+.callout b{color:#8a641c;}
+
+/* ---------- floating action buttons ---------- */
+.floating-nav{
+  position:fixed; bottom:20px; right:20px; z-index:995; display:flex; flex-direction:column; gap:8px;
+}
+.fab-btn{
+  width:44px; height:44px; border-radius:50%; background:var(--white); border:1px solid var(--grid);
+  box-shadow:var(--shadow-md); display:flex; align-items:center; justify-content:center;
+  color:var(--ink); cursor:pointer; font-size:1.1rem; transition:transform 0.15s, background 0.15s;
+}
+.fab-btn:hover{background:var(--paper-alt); transform:translateY(-2px);}
+.fab-btn.primary{background:var(--blueprint); color:white; border-color:var(--blueprint-dark);}
+
+/* ---------- toast notification ---------- */
+.toast-msg{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--ink); color:#fff; font-family:'IBM Plex Mono',monospace; font-size:0.8rem;
+  padding:8px 16px; border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,0.3); z-index:2000;
+  pointer-events:none; transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s;
+  opacity:0;
+}
+.toast-msg.show{transform:translateX(-50%) translateY(0); opacity:1;}
+
+footer{
+  border-top:1px solid var(--grid); padding:36px 0; text-align:center; color:var(--ink-faint); font-size:0.85rem;
+}
+
+/* ============================================================
+   RESPONSIVE MEDIA QUERIES (MOBILE PHONE SCREEN COMPATIBILITY)
+   ============================================================ */
+@media (max-width:980px){
+  .mobile-header{display:flex;}
+  .shell{grid-template-columns:1fr;}
+  #sidebar{
+    position:fixed; top:0; left:0; width:min(320px, 85vw); height:100vh;
+    box-shadow:2px 0 16px rgba(0,0,0,0.15);
+    transform:translateX(-100%); transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index:960;
+  }
+  #sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop.open{display:block; opacity:1;}
+  
+  main{padding:20px 24px 80px 24px;}
+  .hero{padding:24px 0 32px 0; margin-bottom:36px;}
+  .hero h1{font-size:2.4rem;}
+  .hero-grid{grid-template-columns:1fr; gap:24px;}
+  .viz-body{grid-template-columns:1fr;}
+}
+
+@media (max-width:640px){
+  main{padding:14px 14px 70px 14px;}
+  .hero h1{font-size:2rem;}
+  .hero .sub{font-size:1rem;}
+  .chapter h2{font-size:1.65rem;}
+  .card{padding:16px 14px; margin-bottom:16px;}
+  .two-col, .three-col{grid-template-columns:1fr; gap:14px;}
+  
+  .playbook-row{
+    flex-direction:column; align-items:flex-start; gap:8px; padding:10px 4px;
+  }
+  .playbook-row .arrow{display:none;}
+  .playbook-row .a{align-self:flex-start; min-width:auto;}
+  
+  .viz{padding:14px 12px; margin:14px 0 20px 0;}
+  .viz-controls{gap:6px;}
+  button.ctrl{padding:6px 10px; font-size:0.75rem; min-height:36px;}
+  .step-counter{width:100%; text-align:right; margin-top:4px;}
+  
+  .codeblock pre{font-size:0.76rem; padding:12px 10px;}
+  .codeblock .filebar{font-size:0.7rem; padding:6px 10px;}
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header class="mobile-header">
+  <a href="#start" class="mobile-brand">
+    <svg width="24" height="24" viewBox="0 0 34 34">
+      <circle cx="8" cy="8" r="5" fill="#2B5FA5"/>
+      <circle cx="26" cy="10" r="5" fill="#E15A34"/>
+      <circle cx="12" cy="26" r="5" fill="#D99A2B"/>
+      <circle cx="27" cy="25" r="5" fill="#2F8F63"/>
+      <line x1="8" y1="8" x2="26" y2="10" stroke="#161B22" stroke-width="2"/>
+      <line x1="8" y1="8" x2="12" y2="26" stroke="#161B22" stroke-width="2"/>
+      <line x1="26" y1="10" x2="27" y2="25" stroke="#161B22" stroke-width="2"/>
+      <line x1="12" y1="26" x2="27" y2="25" stroke="#161B22" stroke-width="2"/>
+    </svg>
+    Graphs, Traced <span>C++</span>
+  </a>
+  <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">
+    ☰ &nbsp;Chapters
+  </button>
+</header>
+
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+<div class="shell">
+  <aside id="sidebar">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34">
+        <circle cx="8" cy="8" r="4.5" fill="#2B5FA5"/>
+        <circle cx="26" cy="10" r="4.5" fill="#E15A34"/>
+        <circle cx="12" cy="26" r="4.5" fill="#D99A2B"/>
+        <circle cx="27" cy="25" r="4.5" fill="#2F8F63"/>
+        <line x1="8" y1="8" x2="26" y2="10" stroke="#161B22" stroke-width="1.6"/>
+        <line x1="8" y1="8" x2="12" y2="26" stroke="#161B22" stroke-width="1.6"/>
+        <line x1="26" y1="10" x2="27" y2="25" stroke="#161B22" stroke-width="1.6"/>
+        <line x1="12" y1="26" x2="27" y2="25" stroke="#161B22" stroke-width="1.6"/>
+      </svg>
+      <div class="brand-text">Graphs, Traced<span>C++17 Masterclass</span></div>
+    </div>
+
+    <p class="legend-note">Every visualizer below is <b>interactive &amp; live</b> in C++. Step through algorithms to watch queues, recursion stacks, priority queues, and low-link values in real time.</p>
+
+    <nav class="toc" id="toc">
+      <li><a href="#start"><span class="chapter-num">00</span>Start Here <span class="chapter-pill">Intro</span></a></li>
+      <li><a href="#what-is"><span class="chapter-num">01</span>What is a Graph? <span class="chapter-pill">Core</span></a></li>
+      <li><a href="#representing"><span class="chapter-num">02</span>Representing Graphs <span class="chapter-pill">C++</span></a></li>
+      <li><a href="#bfs"><span class="chapter-num">03</span>Breadth-First Search <span class="chapter-pill">Live</span></a></li>
+      <li><a href="#dfs"><span class="chapter-num">04</span>Depth-First Search <span class="chapter-pill">Live</span></a></li>
+      <li><a href="#components"><span class="chapter-num">05</span>Cycles &amp; 3-Coloring <span class="chapter-pill">Live</span></a></li>
+      <li><a href="#shortest"><span class="chapter-num">06</span>Shortest Paths <span class="chapter-pill">Dijkstra+BF</span></a></li>
+      <li><a href="#mst"><span class="chapter-num">07</span>Minimum Spanning Trees <span class="chapter-pill">MST</span></a></li>
+      <li><a href="#topo"><span class="chapter-num">08</span>Topological Sort <span class="chapter-pill">Kahn's</span></a></li>
+      <li><a href="#toolbox"><span class="chapter-num">09</span>Bridges &amp; Tarjan <span class="chapter-pill">Low-Link</span></a></li>
+      <li><a href="#patterns"><span class="chapter-num">10</span>LeetCode Top Patterns <span class="chapter-pill">Guide</span></a></li>
+      <li><a href="#playbook"><span class="chapter-num">11</span>The Playbook <span class="chapter-pill">Decision</span></a></li>
+      <li><a href="#cheatsheet"><span class="chapter-num">12</span>Cheat Sheet <span class="chapter-pill">O(V+E)</span></a></li>
+    </nav>
+  </aside>
+
+  <main>
+    <!-- ================= 00 HERO ================= -->
+    <section class="hero" id="start">
+      <span class="eyebrow">Interactive Study Guide · C++17 · Competitive &amp; Interview Prep</span>
+      <h1>Graphs, <em>traced</em>.</h1>
+      <p class="sub">Every real-world network — transport grids, database queries, build pipelines, dependency graphs, circuit paths — is a graph in disguise. Master how to recognize graph problems, pick the right algorithm in seconds, and write flawless C++ by watching each algorithm execute step-by-step.</p>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p><b>Tap any node</b> in the diagram to the right. Watch the BFS ripple radiate outward layer by layer — exactly as <span class="mono">std::queue</span> explores it in memory.</p>
+          <p>Tracing graph algorithms by hand on a whiteboard or scratchpad is one of the most tested skills in technical interviews. By the end of this guide, BFS, DFS, Dijkstra, Bellman-Ford, Kruskal, Kahn's Topo Sort, and Tarjan's Bridge algorithms will be second nature.</p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+            <a href="#bfs" class="ctrl primary" style="text-decoration:none;">Explore BFS Trace ▶</a>
+            <a href="#patterns" class="ctrl" style="text-decoration:none;">View Interview Patterns</a>
+          </div>
+        </div>
+        <div>
+          <div class="hero-viz">
+            <span class="hero-viz-badge">Interactive Live Demo</span>
+            <div id="hero-svg-holder"></div>
+            <p class="hero-viz-caption">Tap any node to trigger a <b>live BFS wave</b></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 01 WHAT IS A GRAPH ================= -->
+    <section class="chapter" id="what-is">
+      <span class="chapter-kicker">Chapter 01</span>
+      <div class="chapter-head"><span class="num">01</span><h2>What is a graph? Fundamental anatomy</h2></div>
+      <p class="lede">A graph is a discrete mathematical structure consisting of a set of vertices (objects) and a set of edges (relations). Getting crisp on graph vocabulary unlocks instant problem modeling.</p>
+
+      <div class="card">
+        <div class="two-col">
+          <div>
+            <h4>Vertices &amp; Edges</h4>
+            <p>A <b>vertex</b> (node) is an entity: a person, city, router, or game state. An <b>edge</b> connects two vertices. Formally, <span class="mono">G = (V, E)</span> where <span class="mono">V</span> is the set of vertices and <span class="mono">E ⊆ V × V</span>.</p>
+            <h4>Directed vs. Undirected</h4>
+            <p>In an <b>undirected</b> graph, edges are bidirectional (friendships, two-way roads). In a <b>directed graph</b> (digraph), edges have arrows pointing from source to destination (Twitter follows, prerequisites, web links).</p>
+          </div>
+          <div>
+            <h4>Weighted vs. Unweighted</h4>
+            <p>In <b>weighted graphs</b>, each edge has a numeric weight (distance, latency, cost). In <b>unweighted graphs</b>, every edge has uniform cost 1, which means plain BFS finds optimal paths in <span class="mono">O(V + E)</span> time.</p>
+            <h4>Degree &amp; Handshaking Theorem</h4>
+            <p>The <b>degree</b> of vertex <span class="mono">u</span> is the number of incident edges. In directed graphs, split into <i>in-degree</i> (incoming) and <i>out-degree</i> (outgoing). <br><b>Handshaking Lemma:</b> <span class="mono">∑ deg(v) = 2|E|</span> (the sum of degrees is always even).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Essential Graph Topologies</h3>
+        <div class="four-col">
+          <div>
+            <span class="tag blueprint">Tree</span>
+            <p style="font-size:0.9rem;">Connected, acyclic graph. With <span class="mono">N</span> vertices, it has exactly <span class="mono">N − 1</span> edges. Exactly one unique path between any two vertices.</p>
+          </div>
+          <div>
+            <span class="tag signal">DAG</span>
+            <p style="font-size:0.9rem;"><b>Directed Acyclic Graph</b>. The bedrock of build systems, course requirements, and dynamic programming on graphs. Topological sorting is only defined on DAGs.</p>
+          </div>
+          <div>
+            <span class="tag moss">Bipartite</span>
+            <p style="font-size:0.9rem;">Vertices can be partitioned into two sets <span class="mono">U</span> and <span class="mono">V</span> such that no edge connects two vertices in the same set. <b>Contains no odd cycles!</b></p>
+          </div>
+          <div>
+            <span class="tag violet">Complete (Kₙ)</span>
+            <p style="font-size:0.9rem;">Every pair of distinct vertices is connected by a unique edge. Contains <span class="mono">N(N − 1)/2</span> edges. Highly dense graph.</p>
+          </div>
+        </div>
+      </div>
+
+      <details class="quiz">
+        <summary>💡 Check yourself — A graph has 7 vertices and each vertex has degree 3. Can such a graph exist?</summary>
+        <div class="answer"><b>No!</b> By the Handshaking Lemma, the sum of degrees across all vertices must equal <span class="mono">2 × |E|</span>, which is always an <b>even integer</b>. Here, the sum of degrees would be <span class="mono">7 × 3 = 21</span>, which is odd. Thus, no such graph can exist.</div>
+      </details>
+    </section>
+
+    <!-- ================= 02 REPRESENTING GRAPHS ================= -->
+    <section class="chapter" id="representing">
+      <span class="chapter-kicker">Chapter 02</span>
+      <div class="chapter-head"><span class="num">02</span><h2>Representing graphs in modern C++</h2></div>
+      <p class="lede">Choosing the right data structure directly determines your time and space complexity. Three core representations dominate C++ graph problems.</p>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>1. Adjacency list <span class="tag blueprint">95% of problems</span></h3>
+          <p style="font-size:0.9rem;">Stores each node's neighbors in an array of vectors. Space: <span class="mono">O(V + E)</span>. Optimal for sparse graphs where <span class="mono">E ≪ V²</span>.</p>
+          <div class="codeblock">
+            <div class="filebar"><span>adj_list.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="kw">#include</span> <span class="st">&lt;vector&gt;</span>
+<span class="kw">#include</span> <span class="st">&lt;iostream&gt;</span>
+
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">int</span> n, m; <span class="cm">// n = nodes, m = edges</span>
+<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; adj;
+
+<span class="kw">void</span> buildUnweighted() {
+    adj.assign(n, <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;());
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num-lit">0</span>; i &lt; m; ++i) {
+        <span class="kw">int</span> u, v; cin &gt;&gt; u &gt;&gt; v;
+        adj[u].push_back(v);
+        adj[v].push_back(u); <span class="cm">// omit if directed</span>
+    }
+}
+
+<span class="cm">// Weighted Graph: vector&lt;pair&lt;neighbor, weight&gt;&gt;</span>
+<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="tp">pair</span>&lt;<span class="kw">int</span>, <span class="kw">int</span>&gt;&gt;&gt; wadj;
+<span class="kw">void</span> addWeightedEdge(<span class="kw">int</span> u, <span class="kw">int</span> v, <span class="kw">int</span> w) {
+    wadj[u].push_back({v, w});
+    wadj[v].push_back({u, w});
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>2. Adjacency matrix <span class="tag signal">Dense / Small V</span></h3>
+          <p style="font-size:0.9rem;">A <span class="mono">V × V</span> 2D matrix where <span class="mono">mat[u][v]</span> stores edge existence or weight. Edge existence check in <span class="mono">O(1)</span> time. Space: <span class="mono">O(V²)</span>.</p>
+          <div class="codeblock">
+            <div class="filebar"><span>adj_matrix.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="kw">#include</span> <span class="st">&lt;vector&gt;</span>
+<span class="kw">using</span> <span class="kw">namespace</span> std;
+
+<span class="kw">const</span> <span class="kw">int</span> INF = <span class="num-lit">1e9</span>;
+<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; mat(n, <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;(n, INF));
+
+<span class="kw">void</span> initMatrix() {
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num-lit">0</span>; i &lt; n; i++) mat[i][i] = <span class="num-lit">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num-lit">0</span>; i &lt; m; i++) {
+        <span class="kw">int</span> u, v, w; cin &gt;&gt; u &gt;&gt; v &gt;&gt; w;
+        mat[u][v] = w;
+        mat[v][u] = w; <span class="cm">// undirected</span>
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>3. Implicit Grid Graphs (The 2D Matrix Pattern)</h3>
+        <p>In countless interview questions (e.g. <i>Number of Islands</i>, <i>Rotting Oranges</i>, <i>Shortest Path in Binary Matrix</i>), you are given a 2D grid where each cell is a vertex and orthogonal neighbors are edges. <b>Never convert the grid into an adjacency list!</b> Traverse it implicitly using direction arrays:</p>
+        <div class="codeblock">
+          <div class="filebar"><span>grid_graph_template.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cm">// 4-directional delta arrays (North, South, West, East)</span>
+<span class="kw">const</span> <span class="kw">int</span> dr[] = {-<span class="num-lit">1</span>, <span class="num-lit">1</span>, <span class="num-lit">0</span>, <span class="num-lit">0</span>};
+<span class="kw">const</span> <span class="kw">int</span> dc[] = {<span class="num-lit">0</span>, <span class="num-lit">0</span>, -<span class="num-lit">1</span>, <span class="num-lit">1</span>};
+
+<span class="kw">bool</span> isValid(<span class="kw">int</span> r, <span class="kw">int</span> c, <span class="kw">int</span> R, <span class="kw">int</span> C, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">char</span>&gt;&gt;&amp; grid) {
+    <span class="kw">return</span> (r &gt;= <span class="num-lit">0</span> &amp;&amp; r &lt; R &amp;&amp; c &gt;= <span class="num-lit">0</span> &amp;&amp; c &lt; C &amp;&amp; grid[r][c] == <span class="st">'1'</span>);
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 03 BFS ================= -->
+    <section class="chapter" id="bfs">
+      <span class="chapter-kicker">Chapter 03</span>
+      <div class="chapter-head"><span class="num">03</span><h2>Breadth-First Search (BFS)</h2></div>
+      <p class="lede">BFS expands in concentric ripples layer-by-layer. Because it visits all nodes at distance <span class="mono">d</span> before visiting any node at distance <span class="mono">d + 1</span>, BFS finds shortest paths in unweighted graphs in <span class="mono">O(V + E)</span> time.</p>
+
+      <div class="codeblock">
+        <div class="filebar"><span>bfs.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre id="code-bfs"><code></code></pre>
+      </div>
+
+      <!-- BFS VISUALIZER -->
+      <div class="viz" id="viz-bfs">
+        <div class="viz-top">
+          <span class="viz-title">⚡ Interactive Live Trace — BFS from Node A</span>
+          <span class="viz-badge">Queue Discipline</span>
+        </div>
+        <div class="viz-body">
+          <div class="viz-graph" id="viz-bfs-graph"></div>
+          <div class="viz-side">
+            <div class="panel">
+              <div class="panel-label">std::queue (front → back)</div>
+              <div class="chip-row" id="viz-bfs-frontier"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-label">Visited Set</div>
+              <div class="chip-row" id="viz-bfs-visited"></div>
+            </div>
+            <div class="msg-box" id="viz-bfs-msg"></div>
+          </div>
+        </div>
+        <div class="viz-controls">
+          <button class="ctrl" id="viz-bfs-reset">⟲ Reset</button>
+          <button class="ctrl" id="viz-bfs-prev">◀ Prev</button>
+          <button class="ctrl primary" id="viz-bfs-next">Next Step ▶</button>
+          <button class="ctrl" id="viz-bfs-play">▶ Auto-Play</button>
+          <span class="step-counter" id="viz-bfs-counter"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Critical BFS Variants in Interviews</h4>
+        <div class="two-col">
+          <div>
+            <span class="tag blueprint">Multi-Source BFS</span>
+            <p style="font-size:0.9rem;">When you need the distance from <i>any</i> fire / water / guard to all other cells, push <b>all starting sources</b> into the queue at <span class="mono">t = 0</span> before the loop starts. The wave naturally propagates simultaneously!</p>
+          </div>
+          <div>
+            <span class="tag moss">0-1 BFS (std::deque)</span>
+            <p style="font-size:0.9rem;">When edge weights are only <span class="mono">0</span> or <span class="mono">1</span>, use <span class="mono">std::deque</span>. Push 0-weight edges to <span class="mono">push_front()</span> and 1-weight edges to <span class="mono">push_back()</span>. Gives Dijkstra shortest path in <span class="mono">O(V + E)</span>!</p>
+          </div>
+        </div>
+        <div class="callout pitfall"><b>Common Bug:</b> Always mark a node <span class="mono">visited = true</span> at <b>enqueue time</b> (when pushing), NOT at dequeue time (when popping). If you wait until dequeue, the same node will be enqueued dozens of times across multiple neighbors, causing <span class="mono">O(2ⁿ)</span> exponential memory blowup!</div>
+      </div>
+    </section>
+
+    <!-- ================= 04 DFS ================= -->
+    <section class="chapter" id="dfs">
+      <span class="chapter-kicker">Chapter 04</span>
+      <div class="chapter-head"><span class="num">04</span><h2>Depth-First Search (DFS) &amp; Call Stack</h2></div>
+      <p class="lede">DFS plunges along a single path as deeply as possible before backtracking. Its recursive formulation matches the system call stack, making it the ideal tool for path finding, connectivity, topological ordering, and tree recursion.</p>
+
+      <div class="codeblock">
+        <div class="filebar"><span>dfs.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre id="code-dfs"><code></code></pre>
+      </div>
+
+      <!-- DFS VISUALIZER -->
+      <div class="viz" id="viz-dfs">
+        <div class="viz-top">
+          <span class="viz-title">⚡ Interactive Live Trace — DFS from Node A</span>
+          <span class="viz-badge">Call Stack</span>
+        </div>
+        <div class="viz-body">
+          <div class="viz-graph" id="viz-dfs-graph"></div>
+          <div class="viz-side">
+            <div class="panel">
+              <div class="panel-label">Call Stack (top → bottom)</div>
+              <div class="chip-row" id="viz-dfs-frontier"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-label">Visited Set</div>
+              <div class="chip-row" id="viz-dfs-visited"></div>
+            </div>
+            <div class="msg-box" id="viz-dfs-msg"></div>
+          </div>
+        </div>
+        <div class="viz-controls">
+          <button class="ctrl" id="viz-dfs-reset">⟲ Reset</button>
+          <button class="ctrl" id="viz-dfs-prev">◀ Prev</button>
+          <button class="ctrl primary" id="viz-dfs-next">Next Step ▶</button>
+          <button class="ctrl" id="viz-dfs-play">▶ Auto-Play</button>
+          <span class="step-counter" id="viz-dfs-counter"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>DFS Edge Classification in Directed Graphs</h3>
+        <p>When running DFS on a directed graph, every edge <span class="mono">u → v</span> falls into one of four categories:</p>
+        <div class="four-col">
+          <div style="background:var(--paper); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
+            <b style="color:var(--moss-dark);">1. Tree Edge</b>
+            <p style="font-size:0.82rem; margin-top:4px;">Edge leading to an unvisited node during exploration. Forms the DFS tree.</p>
+          </div>
+          <div style="background:var(--paper); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
+            <b style="color:var(--signal-dark);">2. Back Edge</b>
+            <p style="font-size:0.82rem; margin-top:4px;">Edge pointing from a node to one of its ancestors on the current recursion stack. <b>Proves a cycle exists!</b></p>
+          </div>
+          <div style="background:var(--paper); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
+            <b style="color:var(--blueprint-dark);">3. Forward Edge</b>
+            <p style="font-size:0.82rem; margin-top:4px;">Edge pointing from an ancestor to an already finished descendant in the DFS tree.</p>
+          </div>
+          <div style="background:var(--paper); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
+            <b style="color:var(--ink-soft);">4. Cross Edge</b>
+            <p style="font-size:0.82rem; margin-top:4px;">Edge connecting two nodes that are not ancestor/descendant of each other.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 05 COMPONENTS & CYCLES ================= -->
+    <section class="chapter" id="components">
+      <span class="chapter-kicker">Chapter 05</span>
+      <div class="chapter-head"><span class="num">05</span><h2>Cycle detection &amp; 3-Coloring DFS</h2></div>
+      <p class="lede">Cycle detection is among the most frequent interview problems (e.g., Course Schedule). The algorithm changes fundamentally between undirected and directed graphs.</p>
+
+      <div class="two-col">
+        <div class="card">
+          <h4>Undirected Cycle Check (Parent Pointer)</h4>
+          <p style="font-size:0.88rem;">If DFS reaches an already-visited neighbor that is <b>not the immediate parent</b>, that edge is a back-edge and completes a cycle.</p>
+          <div class="codeblock">
+            <div class="filebar"><span>cycle_undirected.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="kw">bool</span> hasCycleUndirected(<span class="kw">int</span> u, <span class="kw">int</span> p, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; adj, <span class="tp">vector</span>&lt;<span class="kw">bool</span>&gt;&amp; vis) {
+    vis[u] = <span class="kw">true</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> v : adj[u]) {
+        <span class="kw">if</span> (!vis[v]) {
+            <span class="kw">if</span> (hasCycleUndirected(v, u, adj, vis)) <span class="kw">return</span> <span class="kw">true</span>;
+        } <span class="kw">else if</span> (v != p) {
+            <span class="kw">return</span> <span class="kw">true</span>; <span class="cm">// back-edge found</span>
+        }
+    }
+    <span class="kw">return</span> <span class="kw">false</span>;
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>Directed Cycle Check (3-Color State)</h4>
+          <p style="font-size:0.88rem;">Parent pointers fail in digraphs. Track vertex state: <span class="mono">0 = White (unvisited)</span>, <span class="mono">1 = Gray (in active recursion stack)</span>, <span class="mono">2 = Black (finished)</span>.</p>
+          <div class="codeblock">
+            <div class="filebar"><span>cycle_directed_3color.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cm">// 0: Unvisited, 1: Visiting (In Stack), 2: Visited (Done)</span>
+<span class="kw">bool</span> dfsCycle3Color(<span class="kw">int</span> u, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; adj, <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&amp; state) {
+    state[u] = <span class="num-lit">1</span>; <span class="cm">// Gray: currently exploring path</span>
+    <span class="kw">for</span> (<span class="kw">int</span> v : adj[u]) {
+        <span class="kw">if</span> (state[v] == <span class="num-lit">1</span>) <span class="kw">return</span> <span class="kw">true</span>; <span class="cm">// hit active stack node =&gt; cycle!</span>
+        <span class="kw">if</span> (state[v] == <span class="num-lit">0</span> &amp;&amp; dfsCycle3Color(v, adj, state)) <span class="kw">return</span> <span class="kw">true</span>;
+    }
+    state[u] = <span class="num-lit">2</span>; <span class="cm">// Black: completely safe</span>
+    <span class="kw">return</span> <span class="kw">false</span>;
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEW LIVE VISUALIZER: DIRECTED CYCLE 3-COLORING -->
+      <div class="viz" id="viz-cycle">
+        <div class="viz-top">
+          <span class="viz-title">⚡ Interactive Live Trace — Directed 3-Color Cycle Detection</span>
+          <span class="viz-badge">Back-Edge Detector</span>
+        </div>
+        <div class="viz-body">
+          <div class="viz-graph" id="viz-cycle-graph"></div>
+          <div class="viz-side">
+            <div class="panel">
+              <div class="panel-label">Active Stack (State = 1 / Gray)</div>
+              <div class="chip-row" id="viz-cycle-frontier"></div>
+            </div>
+            <div class="panel info-panel">
+              <div class="panel-label">Node State Colors</div>
+              <div id="viz-cycle-table"></div>
+            </div>
+            <div class="msg-box" id="viz-cycle-msg"></div>
+          </div>
+        </div>
+        <div class="viz-controls">
+          <button class="ctrl" id="viz-cycle-reset">⟲ Reset</button>
+          <button class="ctrl" id="viz-cycle-prev">◀ Prev</button>
+          <button class="ctrl primary" id="viz-cycle-next">Next Step ▶</button>
+          <button class="ctrl" id="viz-cycle-play">▶ Auto-Play</button>
+          <span class="step-counter" id="viz-cycle-counter"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 06 SHORTEST PATHS ================= -->
+    <section class="chapter" id="shortest">
+      <span class="chapter-kicker">Chapter 06</span>
+      <div class="chapter-head"><span class="num">06</span><h2>Shortest paths: Dijkstra &amp; Bellman-Ford</h2></div>
+      <p class="lede">Finding the shortest path depends on edge weights: Unweighted → BFS; Non-negative weights → Dijkstra; Negative weights → Bellman-Ford; All pairs → Floyd-Warshall.</p>
+
+      <div class="card">
+        <h3>1. Dijkstra's Algorithm <span class="tag blueprint">Non-Negative Weights</span></h3>
+        <p>Greedily finalizes the shortest distance node from a min-priority-queue. Runs in <span class="mono">O((V + E) log V)</span> time.</p>
+        <div class="codeblock">
+          <div class="filebar"><span>dijkstra.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre id="code-dij"><code></code></pre>
+        </div>
+      </div>
+
+      <!-- DIJKSTRA VISUALIZER -->
+      <div class="viz" id="viz-dij">
+        <div class="viz-top">
+          <span class="viz-title">⚡ Interactive Live Trace — Dijkstra from Node A</span>
+          <span class="viz-badge">Min-Priority Queue</span>
+        </div>
+        <div class="viz-body">
+          <div class="viz-graph" id="viz-dij-graph"></div>
+          <div class="viz-side">
+            <div class="panel">
+              <div class="panel-label">Min-Heap (dist, node)</div>
+              <div class="chip-row" id="viz-dij-frontier"></div>
+            </div>
+            <div class="panel info-panel">
+              <div class="panel-label">Distance Table</div>
+              <div id="viz-dij-table"></div>
+            </div>
+            <div class="msg-box" id="viz-dij-msg"></div>
+          </div>
+        </div>
+        <div class="viz-controls">
+          <button class="ctrl" id="viz-dij-reset">⟲ Reset</button>
+          <button class="ctrl" id="viz-dij-prev">◀ Prev</button>
+          <button class="ctrl primary" id="viz-dij-next">Next Step ▶</button>
+          <button class="ctrl" id="viz-dij-play">▶ Auto-Play</button>
+          <span class="step-counter" id="viz-dij-counter"></span>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>2. Bellman-Ford <span class="tag signal">Negative Weights &amp; Cycles</span></h3>
+          <p style="font-size:0.88rem;">Relaxes all <span class="mono">E</span> edges <span class="mono">V − 1</span> times. If a <span class="mono">V</span>-th pass still reduces any distance, a <b>negative weight cycle</b> exists! Space: <span class="mono">O(V)</span>, Time: <span class="mono">O(V · E)</span>.</p>
+          <div class="codeblock">
+            <div class="filebar"><span>bellman_ford.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; bellmanFord(<span class="kw">int</span> src, <span class="kw">int</span> n, <span class="tp">vector</span>&lt;<span class="tp">array</span>&lt;<span class="kw">int</span>,<span class="num-lit">3</span>&gt;&gt;&amp; edges) {
+    <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; dist(n, INF);
+    dist[src] = <span class="num-lit">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num-lit">0</span>; i &lt; n - <span class="num-lit">1</span>; ++i) {
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; [u, v, w] : edges) {
+            <span class="kw">if</span> (dist[u] != INF &amp;&amp; dist[u] + w &lt; dist[v])
+                dist[v] = dist[u] + w;
+        }
+    }
+    <span class="cm">// Check for negative cycle</span>
+    <span class="kw">for</span> (<span class="kw">auto</span>&amp; [u, v, w] : edges) {
+        <span class="kw">if</span> (dist[u] != INF &amp;&amp; dist[u] + w &lt; dist[v])
+            <span class="kw">throw</span> <span class="tp">runtime_error</span>(<span class="st">"Negative cycle detected"</span>);
+    }
+    <span class="kw">return</span> dist;
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>3. Floyd-Warshall <span class="tag moss">All-Pairs Shortest Path</span></h3>
+          <p style="font-size:0.88rem;">Computes shortest paths between every pair in <span class="mono">O(V³)</span>. Dynamic programming formulation: <span class="mono">d[i][j] = min(d[i][j], d[i][k] + d[k][j])</span>.</p>
+          <div class="codeblock">
+            <div class="filebar"><span>floyd_warshall.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="cm">// k MUST be the outermost loop!</span>
+<span class="kw">for</span> (<span class="kw">int</span> k = <span class="num-lit">0</span>; k &lt; n; ++k)
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num-lit">0</span>; i &lt; n; ++i)
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num-lit">0</span>; j &lt; n; ++j)
+            <span class="kw">if</span> (dist[i][k] &lt; INF &amp;&amp; dist[k][j] &lt; INF)
+                dist[i][j] = <span class="tp">min</span>(dist[i][j], dist[i][k] + dist[k][j]);</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 07 MST ================= -->
+    <section class="chapter" id="mst">
+      <span class="chapter-kicker">Chapter 07</span>
+      <div class="chapter-head"><span class="num">07</span><h2>Minimum Spanning Trees (MST) &amp; DSU</h2></div>
+      <p class="lede">An MST is a subset of edges connecting all <span class="mono">V</span> vertices with exactly <span class="mono">V − 1</span> edges and minimal total edge weight. Solved greedily by Kruskal (edge-driven) or Prim (vertex-driven).</p>
+
+      <div class="two-col">
+        <div class="card">
+          <h4>Disjoint Set Union (DSU with Path Compression)</h4>
+          <div class="codeblock">
+            <div class="filebar"><span>dsu.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="kw">struct</span> DSU {
+    <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; parent, rank;
+    DSU(<span class="kw">int</span> n) : parent(n), rank(n, <span class="num-lit">0</span>) {
+        iota(parent.begin(), parent.end(), <span class="num-lit">0</span>);
+    }
+    <span class="kw">int</span> find(<span class="kw">int</span> x) {
+        <span class="kw">if</span> (parent[x] != x) parent[x] = find(parent[x]);
+        <span class="kw">return</span> parent[x]; <span class="cm">// path compression</span>
+    }
+    <span class="kw">bool</span> unite(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+        a = find(a); b = find(b);
+        <span class="kw">if</span> (a == b) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">if</span> (rank[a] &lt; rank[b]) swap(a, b);
+        parent[b] = a; <span class="cm">// union by rank</span>
+        <span class="kw">if</span> (rank[a] == rank[b]) rank[a]++;
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+};</code></pre>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>Kruskal's Algorithm</h4>
+          <div class="codeblock">
+            <div class="filebar"><span>kruskal.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><code><span class="kw">int</span> kruskalMST(<span class="kw">int</span> n, <span class="tp">vector</span>&lt;<span class="tp">array</span>&lt;<span class="kw">int</span>,<span class="num-lit">3</span>&gt;&gt;&amp; edges) {
+    <span class="cm">// {weight, u, v}</span>
+    sort(edges.begin(), edges.end());
+    DSU dsu(n);
+    <span class="kw">int</span> total = <span class="num-lit">0</span>, edgesCount = <span class="num-lit">0</span>;
+    <span class="kw">for</span> (<span class="kw">auto</span>&amp; [w, u, v] : edges) {
+        <span class="kw">if</span> (dsu.unite(u, v)) {
+            total += w;
+            <span class="kw">if</span> (++edgesCount == n - <span class="num-lit">1</span>) <span class="kw">break</span>;
+        }
+    }
+    <span class="kw">return</span> total;
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- KRUSKAL VISUALIZER -->
+      <div class="viz" id="viz-kru">
+        <div class="viz-top">
+          <span class="viz-title">⚡ Interactive Live Trace — Kruskal's MST (Greedy DSU)</span>
+          <span class="viz-badge">Forest Union</span>
+        </div>
+        <div class="viz-body">
+          <div class="viz-graph" id="viz-kru-graph"></div>
+          <div class="viz-side">
+            <div class="panel">
+              <div class="panel-label">Sorted Edges Queue</div>
+              <div class="chip-row" id="viz-kru-frontier"></div>
+            </div>
+            <div class="panel info-panel">
+              <div class="panel-label">MST Edge List &amp; Total Cost</div>
+              <div id="viz-kru-table"></div>
+            </div>
+            <div class="msg-box" id="viz-kru-msg"></div>
+          </div>
+        </div>
+        <div class="viz-controls">
+          <button class="ctrl" id="viz-kru-reset">⟲ Reset</button>
+          <button class="ctrl" id="viz-kru-prev">◀ Prev</button>
+          <button class="ctrl primary" id="viz-kru-next">Next Step ▶</button>
+          <button class="ctrl" id="viz-kru-play">▶ Auto-Play</button>
+          <span class="step-counter" id="viz-kru-counter"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 08 TOPO SORT ================= -->
+    <section class="chapter" id="topo">
+      <span class="chapter-kicker">Chapter 08</span>
+      <div class="chapter-head"><span class="num">08</span><h2>Topological sort (Kahn's &amp; DFS)</h2></div>
+      <p class="lede">Given a DAG, a topological sort linearly orders vertices so that every directed edge <span class="mono">u → v</span> has <span class="mono">u</span> appearing before <span class="mono">v</span>. Used for build dependency systems, course schedules, and task workflows.</p>
+
+      <div class="codeblock">
+        <div class="filebar"><span>topo_kahn.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <pre id="code-topo"><code></code></pre>
+      </div>
+
+      <!-- KAHN'S VISUALIZER -->
+      <div class="viz" id="viz-topo">
+        <div class="viz-top">
+          <span class="viz-title">⚡ Interactive Live Trace — Kahn's Algorithm on Prerequisite DAG</span>
+          <span class="viz-badge">In-Degree Reduction</span>
+        </div>
+        <div class="viz-body">
+          <div class="viz-graph" id="viz-topo-graph"></div>
+          <div class="viz-side">
+            <div class="panel">
+              <div class="panel-label">Queue (in-degree == 0)</div>
+              <div class="chip-row" id="viz-topo-frontier"></div>
+            </div>
+            <div class="panel info-panel">
+              <div class="panel-label">Topological Output Order</div>
+              <div id="viz-topo-table"></div>
+            </div>
+            <div class="msg-box" id="viz-topo-msg"></div>
+          </div>
+        </div>
+        <div class="viz-controls">
+          <button class="ctrl" id="viz-topo-reset">⟲ Reset</button>
+          <button class="ctrl" id="viz-topo-prev">◀ Prev</button>
+          <button class="ctrl primary" id="viz-topo-next">Next Step ▶</button>
+          <button class="ctrl" id="viz-topo-play">▶ Auto-Play</button>
+          <span class="step-counter" id="viz-topo-counter"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 09 BRIDGES & TARJAN ================= -->
+    <section class="chapter" id="toolbox">
+      <span class="chapter-kicker">Chapter 09</span>
+      <div class="chapter-head"><span class="num">09</span><h2>Bridges, Articulation Points &amp; Tarjan's Low-Link</h2></div>
+      <p class="lede">A <b>bridge</b> is an edge whose deletion increases the number of connected components. An <b>articulation point</b> (cut vertex) is a node whose deletion disconnects the graph. Tarjan's algorithm finds all bridges and cut vertices in a single DFS pass <span class="mono">O(V + E)</span> using discovery and low-link numbers.</p>
+
+      <div class="card">
+        <h4>Tarjan's Low-Link Formula</h4>
+        <div class="two-col">
+          <div>
+            <p><b>disc[u]</b>: The step counter at which vertex <span class="mono">u</span> was first visited in DFS.<br>
+            <b>low[u]</b>: The lowest discovery time reachable from <span class="mono">u</span>'s subtree via at most one back-edge.</p>
+          </div>
+          <div>
+            <p><b>Bridge Condition:</b> Edge <span class="mono">u – v</span> is a bridge if and only if <span class="mono">low[v] &gt; disc[u]</span> (meaning <span class="mono">v</span> has no back-edge to <span class="mono">u</span> or <span class="mono">u</span>'s ancestors).<br>
+            <b>Articulation Point Condition:</b> Node <span class="mono">u</span> is a cut vertex if <span class="mono">low[v] ≥ disc[u]</span> (non-root) or root with <span class="mono">≥ 2</span> DFS children.</p>
+          </div>
+        </div>
+
+        <div class="codeblock">
+          <div class="filebar"><span>tarjan_bridges.cpp</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">void</span> dfsBridges(<span class="kw">int</span> u, <span class="kw">int</span> p, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; adj, <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&amp; disc, <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&amp; low, <span class="kw">int</span>&amp; timer, <span class="tp">vector</span>&lt;<span class="tp">pair</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt;&gt;&amp; bridges) {
+    disc[u] = low[u] = ++timer;
+    <span class="kw">for</span> (<span class="kw">int</span> v : adj[u]) {
+        <span class="kw">if</span> (v == p) <span class="kw">continue</span>; <span class="cm">// don't walk straight back to parent</span>
+        <span class="kw">if</span> (disc[v]) {
+            low[u] = <span class="tp">min</span>(low[u], disc[v]); <span class="cm">// Back-edge</span>
+        } <span class="kw">else</span> {
+            dfsBridges(v, u, adj, disc, low, timer, bridges);
+            low[u] = <span class="tp">min</span>(low[u], low[v]); <span class="cm">// Tree edge</span>
+            <span class="kw">if</span> (low[v] &gt; disc[u]) {
+                bridges.push_back({u, v}); <span class="cm">// Bridge discovered!</span>
+            }
+        }
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- NEW LIVE VISUALIZER: TARJAN'S BRIDGES -->
+      <div class="viz" id="viz-bridge">
+        <div class="viz-top">
+          <span class="viz-title">⚡ Interactive Live Trace — Tarjan's Bridge &amp; Cut-Edge Detector</span>
+          <span class="viz-badge">Low-Link Values</span>
+        </div>
+        <div class="viz-body">
+          <div class="viz-graph" id="viz-bridge-graph"></div>
+          <div class="viz-side">
+            <div class="panel info-panel">
+              <div class="panel-label">Discovery [disc] &amp; Low-Link [low]</div>
+              <div id="viz-bridge-table"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-label">Bridges Identified</div>
+              <div class="chip-row" id="viz-bridge-frontier"></div>
+            </div>
+            <div class="msg-box" id="viz-bridge-msg"></div>
+          </div>
+        </div>
+        <div class="viz-controls">
+          <button class="ctrl" id="viz-bridge-reset">⟲ Reset</button>
+          <button class="ctrl" id="viz-bridge-prev">◀ Prev</button>
+          <button class="ctrl primary" id="viz-bridge-next">Next Step ▶</button>
+          <button class="ctrl" id="viz-bridge-play">▶ Auto-Play</button>
+          <span class="step-counter" id="viz-bridge-counter"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 10 LEETCODE PATTERNS ================= -->
+    <section class="chapter" id="patterns">
+      <span class="chapter-kicker">Chapter 10</span>
+      <div class="chapter-head"><span class="num">10</span><h2>Top Interview Patterns &amp; LeetCode Map</h2></div>
+      <p class="lede">Every major tech interview graph problem maps directly into one of these canonical patterns.</p>
+
+      <div class="table-responsive">
+        <table class="cheat">
+          <thead>
+            <tr>
+              <th>Pattern</th>
+              <th>LeetCode Problems</th>
+              <th>Technique</th>
+              <th>Key Insight</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Connected Components &amp; Flood Fill</b></td>
+              <td>200. Number of Islands<br>695. Max Area of Island</td>
+              <td><span class="tag blueprint">DFS / BFS</span></td>
+              <td>Sink cells in-place (<span class="mono">grid[r][c] = '0'</span>) to eliminate extra visited array memory.</td>
+            </tr>
+            <tr>
+              <td><b>Shortest Path in Unweighted Grid</b></td>
+              <td>1091. Shortest Path in Binary Matrix<br>127. Word Ladder</td>
+              <td><span class="tag signal">Queue BFS</span></td>
+              <td>Encountering target node in BFS queue guarantees optimal shortest hop count.</td>
+            </tr>
+            <tr>
+              <td><b>Multi-Source Simultaneous Spread</b></td>
+              <td>994. Rotting Oranges<br>542. 01 Matrix<br>286. Walls and Gates</td>
+              <td><span class="tag amber">Multi-Source BFS</span></td>
+              <td>Initialize queue with all sources at level 0; count layer increments.</td>
+            </tr>
+            <tr>
+              <td><b>Prerequisites &amp; Build Ordering</b></td>
+              <td>207. Course Schedule<br>210. Course Schedule II<br>269. Alien Dictionary</td>
+              <td><span class="tag violet">Kahn's Topo / 3-Color</span></td>
+              <td>Count in-degrees; if topological sort size <span class="mono">&lt; N</span>, a dependency cycle exists.</td>
+            </tr>
+            <tr>
+              <td><b>Weighted Shortest Path</b></td>
+              <td>743. Network Delay Time<br>787. Cheapest Flights K Stops</td>
+              <td><span class="tag blueprint">Dijkstra / Bellman-Ford</span></td>
+              <td>Use min-priority queue; discard stale heap entries when <span class="mono">d &gt; dist[u]</span>.</td>
+            </tr>
+            <tr>
+              <td><b>Dynamic Connectivity &amp; Cycle</b></td>
+              <td>684. Redundant Connection<br>128. Longest Consecutive Sequence</td>
+              <td><span class="tag moss">DSU (Union-Find)</span></td>
+              <td>If <span class="mono">find(u) == find(v)</span> before uniting, that edge is redundant and closes a cycle.</td>
+            </tr>
+            <tr>
+              <td><b>Critical Connections</b></td>
+              <td>1192. Critical Connections in a Network</td>
+              <td><span class="tag signal">Tarjan Low-Link</span></td>
+              <td>An edge <span class="mono">u – v</span> is critical if and only if <span class="mono">low[v] &gt; disc[u]</span>.</td>
+            </tr>
+            <tr>
+              <td><b>Two-Team Conflict / Graph Coloring</b></td>
+              <td>785. Is Graph Bipartite?<br>886. Possible Bipartition</td>
+              <td><span class="tag blueprint">2-Color BFS/DFS</span></td>
+              <td>Color current node 0, neighbors 1; if any neighbor already shares same color, return false.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================= 11 PLAYBOOK ================= -->
+    <section class="chapter" id="playbook">
+      <span class="chapter-kicker">Chapter 11</span>
+      <div class="chapter-head"><span class="num">11</span><h2>The Playbook — Problem Statement to Solution in 10s</h2></div>
+      <p class="lede">Recognize the problem phrasing cues and immediately apply the matching algorithmic pattern.</p>
+
+      <div class="card playbook-card">
+        <div class="playbook-row"><div class="q">"Fewest number of moves / hops / transformations" (unweighted)</div><div class="arrow">→</div><div class="a">BFS</div></div>
+        <div class="playbook-row"><div class="q">"Shortest distance / cheapest path" with non-negative edge costs</div><div class="arrow">→</div><div class="a">Dijkstra</div></div>
+        <div class="playbook-row"><div class="q">"Shortest path" with weights that could be 0 or 1</div><div class="arrow">→</div><div class="a">0-1 BFS (std::deque)</div></div>
+        <div class="playbook-row"><div class="q">"Shortest path" with potential negative edge weights / detecting negative loops</div><div class="arrow">→</div><div class="a">Bellman-Ford</div></div>
+        <div class="playbook-row"><div class="q">"All pairs shortest paths" with small number of vertices (V ≤ 400)</div><div class="arrow">→</div><div class="a">Floyd-Warshall</div></div>
+        <div class="playbook-row"><div class="q">"Connect all nodes with minimal total wire / cable cost"</div><div class="arrow">→</div><div class="a">Kruskal / Prim MST</div></div>
+        <div class="playbook-row"><div class="q">"Valid sequence given prerequisites / build order"</div><div class="arrow">→</div><div class="a">Topological Sort (Kahn)</div></div>
+        <div class="playbook-row"><div class="q">"Detect if circular dependency / deadlock exists in directed graph"</div><div class="arrow">→</div><div class="a">3-Color DFS</div></div>
+        <div class="playbook-row"><div class="q">"Can vertices be split into two groups with no internal conflicts?"</div><div class="arrow">→</div><div class="a">2-Coloring (Bipartite)</div></div>
+        <div class="playbook-row"><div class="q">"Find critical server links whose failure disconnects the network"</div><div class="arrow">→</div><div class="a">Tarjan's Bridges</div></div>
+      </div>
+
+      <div class="card">
+        <h3>5-Step Systematic Decision Flowchart</h3>
+        <div class="flow">
+          <div class="flow-q"><b>Step 1.</b> Is the graph directed (dependencies, one-way paths) or undirected (bidirectional connections)?</div>
+          <div class="flow-a">Directed → Topological Sort, 3-Color Cycle Detection, SCCs. Undirected → Components, Bridges, MSTs, Bipartite.</div>
+          <div class="flow-q"><b>Step 2.</b> Are edge weights uniform, 0/1, non-negative, or negative?</div>
+          <div class="flow-a">Uniform 1 → <span class="go">BFS</span>. Weights 0 or 1 → <span class="go">0-1 BFS</span>. Non-negative → <span class="go">Dijkstra</span>. Negative → <span class="go">Bellman-Ford</span>.</div>
+          <div class="flow-q"><b>Step 3.</b> Are you seeking single-source shortest path or all-pairs shortest path?</div>
+          <div class="flow-a">Single-source → <span class="go">Dijkstra / Bellman-Ford</span>. All-pairs with small V → <span class="go">Floyd-Warshall</span>.</div>
+          <div class="flow-q"><b>Step 4.</b> Are you connecting everything together as cheaply as possible?</div>
+          <div class="flow-a">Yes → <span class="go">Kruskal / Prim MST</span> (never confuse with shortest path!).</div>
+          <div class="flow-q"><b>Step 5.</b> Does the graph structure change dynamically with edge additions?</div>
+          <div class="flow-a">Yes → <span class="go">DSU (Disjoint Set Union)</span>.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 12 CHEAT SHEET ================= -->
+    <section class="chapter" id="cheatsheet">
+      <span class="chapter-kicker">Chapter 12</span>
+      <div class="chapter-head"><span class="num">12</span><h2>Algorithm Complexity Cheat Sheet</h2></div>
+      <p class="lede">Comprehensive time and space complexity reference for all major graph algorithms.</p>
+
+      <div class="table-responsive">
+        <table class="cheat">
+          <thead>
+            <tr><th>Algorithm</th><th>Primary Use Case</th><th>Time Complexity</th><th>Space Complexity</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>BFS</b></td><td>Unweighted shortest path, level-order traversal</td><td class="complexity">O(V + E)</td><td class="complexity">O(V)</td></tr>
+            <tr><td><b>0-1 BFS</b></td><td>Shortest path with edge weights {0, 1}</td><td class="complexity">O(V + E)</td><td class="complexity">O(V)</td></tr>
+            <tr><td><b>DFS</b></td><td>Connectivity, cycle check, path-finding</td><td class="complexity">O(V + E)</td><td class="complexity">O(V)</td></tr>
+            <tr><td><b>Dijkstra</b></td><td>Non-negative single-source shortest path</td><td class="complexity">O((V + E) log V)</td><td class="complexity">O(V)</td></tr>
+            <tr><td><b>Bellman-Ford</b></td><td>Negative weights, negative cycle detection</td><td class="complexity">O(V · E)</td><td class="complexity">O(V)</td></tr>
+            <tr><td><b>Floyd-Warshall</b></td><td>All-pairs shortest paths for small V (≤ 400)</td><td class="complexity">O(V³)</td><td class="complexity">O(V²)</td></tr>
+            <tr><td><b>Kruskal's MST</b></td><td>Minimum spanning tree (edge-driven)</td><td class="complexity">O(E log E)</td><td class="complexity">O(V)</td></tr>
+            <tr><td><b>Prim's MST</b></td><td>Minimum spanning tree (vertex-driven)</td><td class="complexity">O((V + E) log V)</td><td class="complexity">O(V)</td></tr>
+            <tr><td><b>Kahn's Algorithm</b></td><td>Topological sort &amp; DAG cycle detection</td><td class="complexity">O(V + E)</td><td class="complexity">O(V)</td></tr>
+            <tr><td><b>DSU (Union-Find)</b></td><td>Dynamic components, cycle detection in undirected</td><td class="complexity">O(α(V)) ≈ O(1)</td><td class="complexity">O(V)</td></tr>
+            <tr><td><b>Tarjan's Bridges</b></td><td>Critical bridges &amp; articulation points</td><td class="complexity">O(V + E)</td><td class="complexity">O(V)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout pro"><b>Final Takeaway:</b> Every graph problem comes down to recognizing the representation, picking the right data structure (Queue, Stack, Min-Heap, or DSU), and marking states cleanly. Bookmark this page on your phone or desktop for lightning-fast interview revisions!</div>
+    </section>
+
+    <footer>
+      Graphs, Traced — Interactive C++ Field Guide &amp; Masterclass · Built for deep understanding and interview excellence.
+    </footer>
+  </main>
+</div>
+
+<!-- Floating Action Navigation for Mobile -->
+<div class="floating-nav">
+  <button class="fab-btn primary" id="fab-top" title="Scroll to top" aria-label="Scroll to top">↑</button>
+</div>
+
+<div class="toast-msg" id="toast-msg">Code copied to clipboard!</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   0. HELPER UTILITIES
+   ============================================================ */
+function qs(id){ return document.getElementById(id); }
+function svgEl(tag, attrs){
+  var e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  if(attrs){ for(var k in attrs){ e.setAttribute(k, attrs[k]); } }
+  return e;
+}
+function chip(text, colorClass){
+  var cls = colorClass ? ' ' + colorClass : '';
+  return '<span class="chip' + cls + '">' + text + '</span>';
+}
+function emptyChip(){ return '<span class="chip empty">empty</span>'; }
+function edgeKey(a,b){ return a < b ? a+'-'+b : b+'-'+a; }
+
+/* Toast helper */
+window.copyCode = function(btn){
+  var codeBlock = btn.closest('.codeblock');
+  if(!codeBlock) return;
+  var codeText = codeBlock.querySelector('code').innerText;
+  navigator.clipboard.writeText(codeText).then(function(){
+    var toast = qs('toast-msg');
+    toast.textContent = 'Code snippet copied to clipboard!';
+    toast.classList.add('show');
+    setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+  });
+};
+
+/* ============================================================
+   1. CODE BUILDERS
+   ============================================================ */
+function buildCodeBlock(containerId, lines){
+  var container = qs(containerId);
+  if(!container) return;
+  var codeEl = container.querySelector('code');
+  if(!codeEl) codeEl = container;
+  codeEl.innerHTML = '';
+  lines.forEach(function(html, i){
+    var span = document.createElement('span');
+    span.className = 'line';
+    span.id = containerId + '-line-' + i;
+    span.innerHTML = html.length ? html : '\u00A0';
+    codeEl.appendChild(span);
+    codeEl.appendChild(document.createTextNode('\n'));
+  });
+}
+
+var K = '<span class="kw">', K_='</span>', T='<span class="tp">', T_='</span>', C='<span class="cm">', C_='</span>', N='<span class="num-lit">', N_='</span>';
+
+buildCodeBlock('code-bfs', [
+  T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt; bfs('+K+'int'+K_+' src, '+T+'vector'+T_+'&lt;'+T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt;&gt;&amp; adj, '+K+'int'+K_+' n) {',
+  '    '+T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt; dist(n, -'+N+'1'+N_+');',
+  '    '+T+'queue'+T_+'&lt;'+K+'int'+K_+'&gt; q;',
+  '    dist[src] = '+N+'0'+N_+';',
+  '    q.push(src);            '+C+'// mark visited (dist set) at push time'+C_,
+  '    '+K+'while'+K_+' (!q.empty()) {',
+  '        '+K+'int'+K_+' u = q.front(); q.pop();',
+  '        '+K+'for'+K_+' ('+K+'int'+K_+' v : adj[u]) {',
+  '            '+K+'if'+K_+' (dist[v] == -'+N+'1'+N_+') {   '+C+'// unvisited'+C_,
+  '                dist[v] = dist[u] + '+N+'1'+N_+';',
+  '                q.push(v);',
+  '            }',
+  '        }',
+  '    }',
+  '    '+K+'return'+K_+' dist;',
+  '}'
+]);
+
+buildCodeBlock('code-dfs', [
+  K+'void'+K_+' dfs('+K+'int'+K_+' u, '+T+'vector'+T_+'&lt;'+T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt;&gt;&amp; adj, '+T+'vector'+T_+'&lt;'+K+'bool'+K_+'&gt;&amp; visited) {',
+  '    visited[u] = '+K+'true'+K_+';',
+  '    '+C+'// process u here'+C_,
+  '    '+K+'for'+K_+' ('+K+'int'+K_+' v : adj[u]) {',
+  '        '+K+'if'+K_+' (!visited[v]) {',
+  '            dfs(v, adj, visited);   '+C+'// dive deeper recursively'+C_,
+  '        }',
+  '    }',
+  '    '+C+'// u fully explored — backtracks now'+C_,
+  '}'
+]);
+
+buildCodeBlock('code-dij', [
+  T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt; dijkstra('+K+'int'+K_+' src, '+T+'vector'+T_+'&lt;'+T+'vector'+T_+'&lt;'+T+'pair'+T_+'&lt;'+K+'int'+K_+','+K+'int'+K_+'&gt;&gt;&gt;&amp; adj, '+K+'int'+K_+' n) {',
+  '    '+T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt; dist(n, INT_MAX);',
+  '    '+T+'priority_queue'+T_+'&lt;'+T+'pair'+T_+'&lt;'+K+'int'+K_+','+K+'int'+K_+'&gt;, '+T+'vector'+T_+'&lt;'+T+'pair'+T_+'&lt;'+K+'int'+K_+','+K+'int'+K_+'&gt;&gt;, greater&lt;&gt;&gt; pq;',
+  '    dist[src] = '+N+'0'+N_+';',
+  '    pq.push({'+N+'0'+N_+', src});',
+  '    '+K+'while'+K_+' (!pq.empty()) {',
+  '        '+K+'auto'+K_+' [d, u] = pq.top(); pq.pop();',
+  '        '+K+'if'+K_+' (d &gt; dist[u]) '+K+'continue'+K_+';   '+C+'// discard stale entry'+C_,
+  '        '+K+'for'+K_+' ('+K+'auto'+K_+' [v, w] : adj[u]) {',
+  '            '+K+'if'+K_+' (dist[u] + w &lt; dist[v]) {   '+C+'// edge relaxation'+C_,
+  '                dist[v] = dist[u] + w;',
+  '                pq.push({dist[v], v});',
+  '            }',
+  '        }',
+  '    }',
+  '    '+K+'return'+K_+' dist;',
+  '}'
+]);
+
+buildCodeBlock('code-topo', [
+  T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt; topoSortKahn('+K+'int'+K_+' n, '+T+'vector'+T_+'&lt;'+T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt;&gt;&amp; adj) {',
+  '    '+T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt; indeg(n, '+N+'0'+N_+');',
+  '    '+K+'for'+K_+' ('+K+'int'+K_+' u = '+N+'0'+N_+'; u &lt; n; u++)',
+  '        '+K+'for'+K_+' ('+K+'int'+K_+' v : adj[u]) indeg[v]++;',
+  '    '+T+'queue'+T_+'&lt;'+K+'int'+K_+'&gt; q;',
+  '    '+K+'for'+K_+' ('+K+'int'+K_+' u = '+N+'0'+N_+'; u &lt; n; u++)',
+  '        '+K+'if'+K_+' (indeg[u] == '+N+'0'+N_+') q.push(u);   '+C+'// in-degree 0 has no prerequisites'+C_,
+  '    '+T+'vector'+T_+'&lt;'+K+'int'+K_+'&gt; order;',
+  '    '+K+'while'+K_+' (!q.empty()) {',
+  '        '+K+'int'+K_+' u = q.front(); q.pop();',
+  '        order.push_back(u);',
+  '        '+K+'for'+K_+' ('+K+'int'+K_+' v : adj[u])',
+  '            '+K+'if'+K_+' (--indeg[v] == '+N+'0'+N_+') q.push(v);',
+  '    }',
+  '    '+K+'return'+K_+' order;   '+C+'// order.size() &lt; n  =&gt;  a cycle exists!'+C_,
+  '}'
+]);
+
+/* ============================================================
+   2. GRAPH TOPOLOGIES
+   ============================================================ */
+var GRAPH_UNWEIGHTED = {
+  nodes: {
+    A:{x:60,y:175}, B:{x:185,y:65}, C:{x:185,y:285},
+    D:{x:315,y:65}, E:{x:315,y:285}, F:{x:440,y:175}, G:{x:440,y:55}
+  },
+  adj: { A:['B','C'], B:['A','D'], C:['A','E'], D:['B','E','F'], E:['C','D','F'], F:['D','E','G'], G:['F'] },
+  viewBox:'0 0 500 350'
+};
+
+var GRAPH_WEIGHTED = {
+  nodes: { A:{x:60,y:175}, B:{x:190,y:55}, C:{x:190,y:295}, D:{x:335,y:55}, E:{x:335,y:295}, F:{x:465,y:175} },
+  edges: [ ['A','B',4], ['A','C',2], ['B','C',1], ['B','D',5], ['C','D',8], ['C','E',10], ['D','E',2], ['D','F',6], ['E','F',3] ],
+  viewBox:'0 0 520 350'
+};
+
+var GRAPH_DAG = {
+  nodes: {
+    IC:{x:60,y:170,label:'CS1'}, DM:{x:205,y:65,label:'DM'}, DS:{x:205,y:275,label:'DS'},
+    AL:{x:380,y:170,label:'ALG'}, DB:{x:380,y:295,label:'DB'}, AI:{x:530,y:210,label:'AI'}
+  },
+  edges: [ ['IC','DM'], ['IC','DS'], ['DM','AL'], ['DS','AL'], ['DS','DB'], ['AL','AI'], ['DB','AI'] ],
+  viewBox:'0 0 580 340'
+};
+
+var GRAPH_CYCLE_DIRECTED = {
+  nodes: {
+    A:{x:60,y:170}, B:{x:190,y:70}, C:{x:330,y:70},
+    D:{x:330,y:270}, E:{x:190,y:270}, F:{x:460,y:170}
+  },
+  edges: [ ['A','B'], ['B','C'], ['C','D'], ['D','E'], ['E','B'], ['C','F'] ], // Cycle: B->C->D->E->B
+  viewBox:'0 0 510 340'
+};
+
+var GRAPH_BRIDGE = {
+  nodes: {
+    A:{x:60,y:90}, B:{x:180,y:90}, C:{x:120,y:240},
+    D:{x:290,y:165},
+    E:{x:400,y:90}, F:{x:400,y:240}
+  },
+  edges: [ ['A','B'], ['B','C'], ['C','A'], ['B','D'], ['D','E'], ['E','F'], ['F','D'] ], // Bridge is B-D!
+  viewBox:'0 0 460 310'
+};
+
+function buildWeightedAdj(g){
+  var adj = {};
+  Object.keys(g.nodes).forEach(function(k){ adj[k] = []; });
+  g.edges.forEach(function(e){
+    adj[e[0]].push([e[1], e[2]]);
+    adj[e[1]].push([e[0], e[2]]);
+  });
+  Object.keys(adj).forEach(function(k){ adj[k].sort(function(a,b){ return a[0] < b[0] ? -1 : 1; }); });
+  return adj;
+}
+
+function buildDirectedAdj(g){
+  var adj = {};
+  Object.keys(g.nodes).forEach(function(k){ adj[k] = []; });
+  g.edges.forEach(function(e){ adj[e[0]].push(e[1]); });
+  return adj;
+}
+
+/* ============================================================
+   3. SVG RENDERING ENGINE
+   ============================================================ */
+function renderGraphSVG(prefix, nodes, edgeList, opts){
+  opts = opts || {};
+  var svg = svgEl('svg', { viewBox: opts.viewBox, xmlns:'http://www.w3.org/2000/svg' });
+  if(opts.directed){
+    var defs = svgEl('defs');
+    var marker = svgEl('marker', {id: prefix+'-arrow', viewBox:'0 0 10 10', refX:'9', refY:'5', markerWidth:'7', markerHeight:'7', orient:'auto-start-reverse'});
+    var path = svgEl('path', {d:'M 0 0 L 10 5 L 0 10 z', fill:'#4B5568'});
+    marker.appendChild(path); defs.appendChild(marker); svg.appendChild(defs);
+  }
+  var edgeGroup = svgEl('g', {class:'edges'});
+  edgeList.forEach(function(e){
+    var a = nodes[e[0]], b = nodes[e[1]];
+    var key = opts.directed ? e[0]+'>'+e[1] : edgeKey(e[0], e[1]);
+    var g = svgEl('g', {class:'gedge', id: prefix+'-edge-'+key});
+    var line = svgEl('line', {x1:a.x, y1:a.y, x2:b.x, y2:b.y});
+    if(opts.directed){
+      var dx = b.x-a.x, dy = b.y-a.y, len = Math.sqrt(dx*dx+dy*dy);
+      var ux = dx/len, uy = dy/len, R = 25;
+      line.setAttribute('x1', a.x+ux*R); line.setAttribute('y1', a.y+uy*R);
+      line.setAttribute('x2', b.x-ux*R); line.setAttribute('y2', b.y-uy*R);
+      line.setAttribute('marker-end', 'url(#'+prefix+'-arrow)');
+    }
+    g.appendChild(line);
+    if(e[2] !== undefined){
+      var mx = (a.x+b.x)/2, my=(a.y+b.y)/2;
+      var wbg = svgEl('rect', {x:mx-10, y:my-9, width:20, height:16, fill:'#EEF1F7', rx:3});
+      var wt = svgEl('text', {class:'wlabel', x:mx, y:my+3});
+      wt.textContent = e[2];
+      g.appendChild(wbg); g.appendChild(wt);
+    }
+    edgeGroup.appendChild(g);
+  });
+  svg.appendChild(edgeGroup);
+
+  var nodeGroup = svgEl('g', {class:'nodes'});
+  Object.keys(nodes).forEach(function(id){
+    var n = nodes[id];
+    var g = svgEl('g', {class:'gnode', id: prefix+'-node-'+id});
+    var circle = svgEl('circle', {cx:n.x, cy:n.y, r:23});
+    var text = svgEl('text', {x:n.x, y:n.y});
+    text.textContent = n.label || id;
+    g.appendChild(circle); g.appendChild(text);
+    if(opts.showDist){
+      var dtext = svgEl('text', {class:'dist', x:n.x, y:n.y+36});
+      dtext.setAttribute('id', prefix+'-dist-'+id);
+      dtext.textContent = '';
+      g.appendChild(dtext);
+    }
+    nodeGroup.appendChild(g);
+  });
+  svg.appendChild(nodeGroup);
+  return svg;
+}
+
+/* ============================================================
+   4. STEP GENERATION ALGORITHMS
+   ============================================================ */
+
+/* 4.1 BFS */
+function generateBFSSteps(graph, start){
+  var adj = graph.adj, steps = [], visited = {}, queue = [];
+  visited[start] = true; queue.push(start);
+  steps.push({ visited:Object.keys(visited).slice(), current:null, frontier:queue.slice(),
+    msg:'Initialize <b>'+start+'</b> with distance 0, mark visited and enqueue.' });
+  while(queue.length){
+    var u = queue.shift();
+    steps.push({ visited:Object.keys(visited).slice(), current:u, frontier:queue.slice(),
+      msg:'Dequeue <b>'+u+'</b> from front of queue. Exploring its neighbors...' });
+    var nbrs = adj[u].slice().sort();
+    nbrs.forEach(function(v){
+      if(!visited[v]){
+        visited[v] = true; queue.push(v);
+        steps.push({ visited:Object.keys(visited).slice(), current:u, frontier:queue.slice(), edge:edgeKey(u,v),
+          msg:'Neighbor <b>'+v+'</b> is unvisited → mark visited and push onto queue.' });
+      } else {
+        steps.push({ visited:Object.keys(visited).slice(), current:u, frontier:queue.slice(), edge:edgeKey(u,v),
+          msg:'Neighbor <b>'+v+'</b> is already visited → skip.' });
+      }
+    });
+  }
+  steps.push({ visited:Object.keys(visited).slice(), current:null, frontier:[],
+    msg:'Queue is empty. <b>BFS complete!</b> Every reachable vertex in this component visited.' });
+  return steps;
+}
+
+/* 4.2 DFS */
+function generateDFSSteps(graph, start){
+  var adj = graph.adj, steps = [], visited = {};
+  var callStack = [];
+  function visit(u){
+    visited[u] = true;
+    callStack.push(u);
+    steps.push({ visited:Object.keys(visited).slice(), current:u, frontier:callStack.slice(),
+      msg:'Push frame for <b>'+u+'</b> to call stack. Check unvisited neighbors...' });
+    var nbrs = adj[u].slice().sort();
+    for(var i=0;i<nbrs.length;i++){
+      var v = nbrs[i];
+      if(!visited[v]){
+        steps.push({ visited:Object.keys(visited).slice(), current:u, frontier:callStack.slice(), edge:edgeKey(u,v),
+          msg:'Neighbor <b>'+v+'</b> is unvisited → dive into recursive call <span class="mono">dfs('+v+')</span>.' });
+        visit(v);
+      } else {
+        steps.push({ visited:Object.keys(visited).slice(), current:u, frontier:callStack.slice(), edge:edgeKey(u,v),
+          msg:'Neighbor <b>'+v+'</b> is already visited → backtrack step.' });
+      }
+    }
+    steps.push({ visited:Object.keys(visited).slice(), current:u, frontier:callStack.slice(),
+      msg:'All neighbors of <b>'+u+'</b> exhausted → pop call frame and return.' });
+    callStack.pop();
+  }
+  visit(start);
+  steps.push({ visited:Object.keys(visited).slice(), current:null, frontier:[],
+    msg:'Call stack is empty. <b>DFS traversal complete.</b>' });
+  return steps;
+}
+
+/* 4.3 DIRECTED CYCLE DETECTION (3-COLOR DFS) */
+function generateCycleSteps(graph){
+  var adj = buildDirectedAdj(graph);
+  var ids = Object.keys(graph.nodes);
+  var state = {}; ids.forEach(function(i){ state[i] = 0; }); // 0=White, 1=Gray (In-Stack), 2=Black (Done)
+  var steps = [];
+  var inStack = [];
+
+  function stateTable(){
+    return '<table><tr><th>Node</th>' + ids.map(function(i){return '<th>'+i+'</th>';}).join('') +
+      '</tr><tr><th>State</th>' + ids.map(function(i){
+        var st = state[i];
+        var label = st === 0 ? '0 (White)' : (st === 1 ? '<b style="color:var(--violet)">1 (Gray)</b>' : '<b style="color:var(--moss)">2 (Done)</b>');
+        return '<td>' + label + '</td>';
+      }).join('') + '</tr></table>';
+  }
+
+  steps.push({ visited:[], inStack:[], current:null, panelHTML:stateTable(),
+    msg:'Start 3-Color Cycle Detection: All nodes initialized to State 0 (White/Unvisited).' });
+
+  var cycleFound = false;
+
+  function dfs(u){
+    if(cycleFound) return;
+    state[u] = 1;
+    inStack.push(u);
+    steps.push({ inStack:inStack.slice(), current:u, panelHTML:stateTable(),
+      msg:'Visit <b>'+u+'</b> → Set State to <b>1 (Gray: on recursion stack)</b>.' });
+
+    var nbrs = adj[u] || [];
+    for(var i=0;i<nbrs.length;i++){
+      var v = nbrs[i];
+      if(state[v] === 1){
+        // Back edge found!
+        cycleFound = true;
+        steps.push({ inStack:inStack.slice(), current:u, edge:u+'>'+v, backEdge:true, panelHTML:stateTable(),
+          msg:'🚨 <b>BACK-EDGE FOUND!</b> Edge '+u+'→'+v+' points to <b>'+v+'</b> (State 1/Gray in active stack) → <b>CYCLE DETECTED!</b> ('+inStack.slice(inStack.indexOf(v)).join('→')+'→'+v+')' });
+        return;
+      } else if(state[v] === 0){
+        steps.push({ inStack:inStack.slice(), current:u, edge:u+'>'+v, panelHTML:stateTable(),
+          msg:'Traverse edge '+u+'→'+v+' to unvisited node <b>'+v+'</b>.' });
+        dfs(v);
+        if(cycleFound) return;
+      }
+    }
+    state[u] = 2;
+    inStack.pop();
+    steps.push({ inStack:inStack.slice(), current:u, panelHTML:stateTable(),
+      msg:'Node <b>'+u+'</b> fully processed → Mark <b>2 (Black: Safe/Done)</b> and pop.' });
+  }
+
+  for(var i=0; i<ids.length; i++){
+    if(state[ids[i]] === 0){
+      dfs(ids[i]);
+      if(cycleFound) break;
+    }
+  }
+
+  return steps;
+}
+
+/* 4.4 DIJKSTRA */
+function generateDijkstraSteps(graph, start){
+  var wadj = buildWeightedAdj(graph);
+  var ids = Object.keys(graph.nodes);
+  var dist = {}; ids.forEach(function(id){ dist[id] = Infinity; });
+  dist[start] = 0;
+  var pq = [[0, start]];
+  var finalized = {};
+  var steps = [];
+  function pqLabel(pq){ return pq.slice().sort(function(a,b){return a[0]-b[0];}).map(function(p){ return '('+(p[0]===Infinity?'∞':p[0])+', '+p[1]+')'; }); }
+  function distTable(updated){
+    return '<table><tr><th>Node</th>'+ids.map(function(i){return '<th>'+i+'</th>';}).join('')+'</tr><tr><th>dist</th>'+
+      ids.map(function(i){
+        var v = dist[i]===Infinity?'∞':dist[i];
+        var cls = (updated===i) ? ' class="updated"' : '';
+        return '<td'+cls+'>'+v+'</td>';
+      }).join('')+'</tr></table>';
+  }
+  steps.push({ visited:[], current:null, frontier:pqLabel(pq), panelHTML:distTable(null),
+    msg:'Initialize dist['+start+'] = 0, all other distances = ∞. Push ('+start+', 0) to Min-Heap.' });
+  while(pq.length){
+    pq.sort(function(a,b){ return a[0]-b[0]; });
+    var top = pq.shift();
+    var d = top[0], u = top[1];
+    if(d > dist[u]){
+      steps.push({ visited:Object.keys(finalized).slice(), current:u, frontier:pqLabel(pq), panelHTML:distTable(null),
+        msg:'Popped stale heap pair ('+d+', '+u+'). Current shortest is '+dist[u]+' → discard.' });
+      continue;
+    }
+    finalized[u] = true;
+    steps.push({ visited:Object.keys(finalized).slice(), current:u, frontier:pqLabel(pq), panelHTML:distTable(null),
+      msg:'Pop minimum unvisited vertex <b>'+u+'</b> with finalized distance <b>'+dist[u]+'</b>.' });
+    wadj[u].forEach(function(pair){
+      var v = pair[0], w = pair[1];
+      var nd = dist[u] + w;
+      if(nd < dist[v]){
+        dist[v] = nd; pq.push([nd, v]);
+        steps.push({ visited:Object.keys(finalized).slice(), current:u, frontier:pqLabel(pq), edge:edgeKey(u,v), panelHTML:distTable(v),
+          msg:'Relax edge '+u+'→'+v+' (w='+w+'): dist['+u+'] + '+w+' = <b>'+nd+'</b> &lt; '+dist[v]+' → update &amp; push.' });
+      } else {
+        steps.push({ visited:Object.keys(finalized).slice(), current:u, frontier:pqLabel(pq), edge:edgeKey(u,v), panelHTML:distTable(null),
+          msg:'Edge '+u+'→'+v+' (w='+w+'): dist['+u+'] + '+w+' = '+nd+' does not improve '+v+' (already '+dist[v]+') → skip.' });
+      }
+    });
+  }
+  steps.push({ visited:Object.keys(finalized).slice(), current:null, frontier:[], panelHTML:distTable(null),
+    msg:'Min-heap is empty. <b>Dijkstra complete!</b> All shortest distances are optimal.' });
+  return steps;
+}
+
+/* 4.5 KRUSKAL MST */
+function generateKruskalSteps(graph){
+  var ids = Object.keys(graph.nodes);
+  var parent = {}; ids.forEach(function(i){ parent[i]=i; });
+  function find(x){ while(parent[x]!==x){ parent[x]=parent[parent[x]]; x=parent[x]; } return x; }
+  function union(a,b){ a=find(a); b=find(b); if(a===b) return false; parent[b]=a; return true; }
+
+  var sorted = graph.edges.slice().sort(function(a,b){ return a[2]-b[2]; });
+  var steps = [], mst = [], total = 0;
+  function remLabel(list){ return list.map(function(e){ return e[0]+'-'+e[1]+' ('+e[2]+')'; }); }
+  function mstHTML(){
+    if(!mst.length) return '<span style="color:var(--ink-faint)">No edges added yet</span>';
+    return '<table><tr><th>Edge</th><th>Weight</th></tr>'+mst.map(function(e){ return '<tr><td>'+e[0]+'–'+e[1]+'</td><td>'+e[2]+'</td></tr>'; }).join('')+
+      '<tr><th>Total</th><th>'+total+'</th></tr></table>';
+  }
+  steps.push({ visited:[], current:null, frontier:remLabel(sorted), panelHTML:mstHTML(),
+    msg:'Sort all edges in ascending order of weight. Process greedily with DSU.' });
+  var remaining = sorted.slice();
+  var used = 0, n = ids.length;
+  for(var i=0;i<sorted.length;i++){
+    var e = sorted[i];
+    remaining = sorted.slice(i+1);
+    if(used >= n-1) break;
+    if(find(e[0]) !== find(e[1])){
+      union(e[0], e[1]);
+      mst.push(e); total += e[2]; used++;
+      steps.push({ visited:[], current:null, frontier:remLabel(remaining), edge:edgeKey(e[0],e[1]), treeEdge:true, panelHTML:mstHTML(),
+        msg:'Edge <b>'+e[0]+'–'+e[1]+'</b> (w='+e[2]+') connects distinct components → <b>Accept into MST</b>.' });
+    } else {
+      steps.push({ visited:[], current:null, frontier:remLabel(remaining), edge:edgeKey(e[0],e[1]), panelHTML:mstHTML(),
+        msg:'Edge <b>'+e[0]+'–'+e[1]+'</b> (w='+e[2]+') connects nodes in same component → <b>Reject (prevents cycle)</b>.' });
+    }
+    if(used >= n-1) break;
+  }
+  steps.push({ visited:[], current:null, frontier:[], panelHTML:mstHTML(),
+    msg:'MST complete with exactly '+(n-1)+' edges. <b>Total minimum weight: '+total+'</b>.' });
+  return steps;
+}
+
+/* 4.6 KAHN'S TOPO SORT */
+function generateKahnSteps(graph){
+  var adj = buildDirectedAdj(graph);
+  var ids = Object.keys(graph.nodes);
+  var indeg = {}; ids.forEach(function(i){ indeg[i]=0; });
+  graph.edges.forEach(function(e){ indeg[e[1]]++; });
+  var queue = [];
+  ids.forEach(function(i){ if(indeg[i]===0) queue.push(i); });
+  var order = [];
+  var steps = [];
+  function orderHTML(){
+    if(!order.length) return '<span style="color:var(--ink-faint)">No outputs yet</span>';
+    return order.map(function(o,idx){ return (idx+1)+'. '+(graph.nodes[o].label||o); }).join('<br>');
+  }
+  steps.push({ visited:[], current:null, frontier:queue.slice(), panelHTML:orderHTML(),
+    msg:'Calculate in-degrees for all courses. Enqueue all vertices with <b>in-degree == 0</b>.' });
+  while(queue.length){
+    var u = queue.shift();
+    order.push(u);
+    steps.push({ visited:order.slice(), current:u, frontier:queue.slice(), panelHTML:orderHTML(),
+      msg:'Dequeue <b>'+(graph.nodes[u].label||u)+'</b> and append to course schedule (all prerequisites met!).' });
+    adj[u].forEach(function(v){
+      indeg[v]--;
+      if(indeg[v]===0){
+        queue.push(v);
+        steps.push({ visited:order.slice(), current:u, frontier:queue.slice(), edge:u+'>'+v, panelHTML:orderHTML(),
+          msg:'Prerequisite satisfied for <b>'+(graph.nodes[v].label||v)+'</b> (in-degree hit 0) → Enqueue!' });
+      } else {
+        steps.push({ visited:order.slice(), current:u, frontier:queue.slice(), edge:u+'>'+v, panelHTML:orderHTML(),
+          msg:'Decrement in-degree of <b>'+(graph.nodes[v].label||v)+'</b> (remaining prereqs: '+indeg[v]+').' });
+      }
+    });
+  }
+  steps.push({ visited:order.slice(), current:null, frontier:[], panelHTML:orderHTML(),
+    msg:'Queue empty and all '+ids.length+' courses scheduled. <b>Valid Topological Order found!</b>' });
+  return steps;
+}
+
+/* 4.7 TARJAN'S BRIDGES */
+function generateBridgeSteps(graph){
+  var adj = {}; Object.keys(graph.nodes).forEach(function(k){ adj[k]=[]; });
+  graph.edges.forEach(function(e){ adj[e[0]].push(e[1]); adj[e[1]].push(e[0]); });
+  var ids = Object.keys(graph.nodes);
+  var disc = {}, low = {}, timer = 0, bridges = [];
+  var steps = [];
+
+  function bridgeTable(){
+    return '<table><tr><th>Node</th>' + ids.map(function(i){return '<th>'+i+'</th>';}).join('') +
+      '</tr><tr><th>disc</th>' + ids.map(function(i){return '<td>'+(disc[i]||'-')+'</td>';}).join('') +
+      '</tr><tr><th>low</th>' + ids.map(function(i){return '<td>'+(low[i]||'-')+'</td>';}).join('') +
+      '</tr></table>';
+  }
+
+  function bridgesList(){
+    return bridges.map(function(b){ return b[0]+'–'+b[1]; });
+  }
+
+  steps.push({ visited:[], current:null, frontier:bridgesList(), panelHTML:bridgeTable(),
+    msg:'Start Tarjan\'s Bridge Algorithm: Initialize discovery times (disc) and low-link values (low).' });
+
+  function dfs(u, p){
+    disc[u] = low[u] = ++timer;
+    steps.push({ visited:Object.keys(disc), current:u, frontier:bridgesList(), panelHTML:bridgeTable(),
+      msg:'Visit <b>'+u+'</b>: Set disc['+u+'] = low['+u+'] = <b>'+timer+'</b>.' });
+
+    var nbrs = adj[u];
+    for(var i=0; i<nbrs.length; i++){
+      var v = nbrs[i];
+      if(v === p) continue;
+      if(disc[v]){
+        // Back edge
+        low[u] = Math.min(low[u], disc[v]);
+        steps.push({ visited:Object.keys(disc), current:u, edge:edgeKey(u,v), backEdge:true, frontier:bridgesList(), panelHTML:bridgeTable(),
+          msg:'Back-edge to ancestor '+v+': update low['+u+'] = min(low['+u+'], disc['+v+']) = <b>'+low[u]+'</b>.' });
+      } else {
+        steps.push({ visited:Object.keys(disc), current:u, edge:edgeKey(u,v), frontier:bridgesList(), panelHTML:bridgeTable(),
+          msg:'Tree edge to unvisited '+v+' → recurse into <span class="mono">dfs('+v+')</span>.' });
+        dfs(v, u);
+        low[u] = Math.min(low[u], low[v]);
+        if(low[v] > disc[u]){
+          bridges.push([u, v]);
+          steps.push({ visited:Object.keys(disc), current:u, edge:edgeKey(u,v), bridgeEdge:true, frontier:bridgesList(), panelHTML:bridgeTable(),
+            msg:'💥 <b>BRIDGE DISCOVERED!</b> Edge <b>'+u+'–'+v+'</b> satisfies <span class="mono">low['+v+'] ('+low[v]+') &gt; disc['+u+'] ('+disc[u]+')</span>.' });
+        }
+      }
+    }
+  }
+
+  dfs('A', null);
+
+  steps.push({ visited:Object.keys(disc), current:null, frontier:bridgesList(), panelHTML:bridgeTable(),
+    msg:'Tarjan complete! All critical bridges identified.' });
+  return steps;
+}
+
+/* ============================================================
+   5. GENERIC STEP PLAYER CONTROLLER
+   ============================================================ */
+function StepPlayer(cfg){
+  this.cfg = cfg;
+  this.steps = cfg.generator();
+  this.idx = 0;
+  this.playing = false;
+  this.timer = null;
+  this.svg = renderGraphSVG(cfg.vizId, cfg.nodes, cfg.edgeList, {viewBox:cfg.viewBox, directed:cfg.directed, showDist:cfg.showDist});
+  var holder = qs(cfg.vizId+'-graph');
+  if(holder) holder.appendChild(this.svg);
+  this.render();
+  this.wireControls();
+}
+
+StepPlayer.prototype.wireControls = function(){
+  var self = this;
+  var prefix = this.cfg.vizId;
+  var nextBtn = qs(prefix+'-next');
+  var prevBtn = qs(prefix+'-prev');
+  var resetBtn = qs(prefix+'-reset');
+  var playBtn = qs(prefix+'-play');
+
+  if(nextBtn) nextBtn.addEventListener('click', function(){ self.stop(); self.next(); });
+  if(prevBtn) prevBtn.addEventListener('click', function(){ self.stop(); self.prev(); });
+  if(resetBtn) resetBtn.addEventListener('click', function(){ self.stop(); self.idx = 0; self.render(); });
+  if(playBtn) playBtn.addEventListener('click', function(){ self.togglePlay(); });
+};
+
+StepPlayer.prototype.next = function(){
+  if(this.idx < this.steps.length - 1){ this.idx++; this.render(); }
+  else { this.stop(); }
+};
+
+StepPlayer.prototype.prev = function(){
+  if(this.idx > 0){ this.idx--; this.render(); }
+};
+
+StepPlayer.prototype.togglePlay = function(){
+  var self = this, prefix = this.cfg.vizId;
+  var playBtn = qs(prefix+'-play');
+  if(this.playing){ this.stop(); return; }
+  if(this.idx >= this.steps.length-1) this.idx = 0;
+  this.playing = true;
+  if(playBtn) playBtn.textContent = '❙❙ Pause';
+  this.timer = setInterval(function(){
+    if(self.idx >= self.steps.length - 1){ self.stop(); return; }
+    self.idx++; self.render();
+  }, 1150);
+};
+
+StepPlayer.prototype.stop = function(){
+  this.playing = false;
+  clearInterval(this.timer);
+  var playBtn = qs(this.cfg.vizId+'-play');
+  if(playBtn) playBtn.textContent = '▶ Auto-Play';
+};
+
+StepPlayer.prototype.render = function(){
+  var step = this.steps[this.idx];
+  var prefix = this.cfg.vizId;
+
+  // reset nodes
+  Object.keys(this.cfg.nodes).forEach(function(id){
+    var n = qs(prefix+'-node-'+id);
+    if(n) n.setAttribute('class', 'gnode');
+  });
+
+  (step.visited||[]).forEach(function(id){
+    var n = qs(prefix+'-node-'+id);
+    if(n) n.classList.add('visited');
+  });
+
+  (step.inStack||[]).forEach(function(id){
+    var n = qs(prefix+'-node-'+id);
+    if(n){ n.classList.remove('visited'); n.classList.add('in-stack'); }
+  });
+
+  if(step.current){
+    var cn = qs(prefix+'-node-'+step.current);
+    if(cn){ cn.classList.remove('visited', 'in-stack'); cn.classList.add('current'); }
+  }
+
+  // reset edges
+  var edgeEls = document.querySelectorAll('#'+prefix+'-graph .gedge');
+  edgeEls.forEach(function(e){ e.setAttribute('class','gedge'); });
+
+  if(step.edge){
+    var eg = qs(prefix+'-edge-'+step.edge);
+    if(eg){
+      if(step.backEdge) eg.classList.add('back');
+      else if(step.bridgeEdge) eg.classList.add('bridge');
+      else eg.classList.add('active');
+    }
+  }
+
+  // persist tree edges for Kruskal
+  if(this.cfg.trackTree){
+    this._treeSoFar = this._treeSoFar || [];
+    if(step.treeEdge && step.edge && this._treeSoFar.indexOf(step.edge) === -1){
+      this._treeSoFar.push(step.edge);
+    }
+    if(this.idx === 0){ this._treeSoFar = []; }
+    this._treeSoFar.forEach(function(k){
+      var teg = qs(prefix+'-edge-'+k);
+      if(teg) teg.classList.add('tree');
+    });
+    if(step.edge){
+      var cureg = qs(prefix+'-edge-'+step.edge);
+      if(cureg) cureg.classList.add('active');
+    }
+  }
+
+  // chips
+  var frontierEl = qs(prefix+'-frontier');
+  if(frontierEl){
+    var color = (prefix === 'viz-cycle') ? 'red' : (prefix === 'viz-bridge' ? 'red' : null);
+    frontierEl.innerHTML = (step.frontier && step.frontier.length) ? step.frontier.map(function(t){ return chip(t, color); }).join('') : emptyChip();
+  }
+  var visitedEl = qs(prefix+'-visited');
+  if(visitedEl){
+    visitedEl.innerHTML = (step.visited && step.visited.length) ? step.visited.map(function(t){ return chip(t, 'blue'); }).join('') : emptyChip();
+  }
+  var tableEl = qs(prefix+'-table');
+  if(tableEl && step.panelHTML){ tableEl.innerHTML = step.panelHTML; }
+
+  // message
+  var msgEl = qs(prefix+'-msg');
+  if(msgEl) msgEl.innerHTML = step.msg;
+
+  // counter + buttons
+  var counterEl = qs(prefix+'-counter');
+  if(counterEl) counterEl.textContent = 'Step ' + (this.idx+1) + ' / ' + this.steps.length;
+  var prevBtn = qs(prefix+'-prev');
+  var nextBtn = qs(prefix+'-next');
+  if(prevBtn) prevBtn.disabled = (this.idx === 0);
+  if(nextBtn) nextBtn.disabled = (this.idx === this.steps.length-1);
+};
+
+/* ============================================================
+   6. INITIALIZATION & EVENT LISTENERS
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function(){
+
+  // Instantiate Visualizers
+  new StepPlayer({
+    vizId:'viz-bfs', nodes:GRAPH_UNWEIGHTED.nodes,
+    edgeList:Object.keys(GRAPH_UNWEIGHTED.adj).reduce(function(acc,u){
+      GRAPH_UNWEIGHTED.adj[u].forEach(function(v){ if(u<v) acc.push([u,v]); }); return acc; }, []),
+    viewBox:GRAPH_UNWEIGHTED.viewBox,
+    generator:function(){ return generateBFSSteps(GRAPH_UNWEIGHTED, 'A'); }
+  });
+
+  new StepPlayer({
+    vizId:'viz-dfs', nodes:GRAPH_UNWEIGHTED.nodes,
+    edgeList:Object.keys(GRAPH_UNWEIGHTED.adj).reduce(function(acc,u){
+      GRAPH_UNWEIGHTED.adj[u].forEach(function(v){ if(u<v) acc.push([u,v]); }); return acc; }, []),
+    viewBox:GRAPH_UNWEIGHTED.viewBox,
+    generator:function(){ return generateDFSSteps(GRAPH_UNWEIGHTED, 'A'); }
+  });
+
+  new StepPlayer({
+    vizId:'viz-cycle', nodes:GRAPH_CYCLE_DIRECTED.nodes,
+    edgeList:GRAPH_CYCLE_DIRECTED.edges, directed:true,
+    viewBox:GRAPH_CYCLE_DIRECTED.viewBox,
+    generator:function(){ return generateCycleSteps(GRAPH_CYCLE_DIRECTED); }
+  });
+
+  new StepPlayer({
+    vizId:'viz-dij', nodes:GRAPH_WEIGHTED.nodes, edgeList:GRAPH_WEIGHTED.edges, showDist:true,
+    viewBox:GRAPH_WEIGHTED.viewBox,
+    generator:function(){ return generateDijkstraSteps(GRAPH_WEIGHTED, 'A'); }
+  });
+
+  new StepPlayer({
+    vizId:'viz-kru', nodes:GRAPH_WEIGHTED.nodes, edgeList:GRAPH_WEIGHTED.edges, trackTree:true,
+    viewBox:GRAPH_WEIGHTED.viewBox,
+    generator:function(){ return generateKruskalSteps(GRAPH_WEIGHTED); }
+  });
+
+  new StepPlayer({
+    vizId:'viz-topo', nodes:GRAPH_DAG.nodes, edgeList:GRAPH_DAG.edges, directed:true,
+    viewBox:GRAPH_DAG.viewBox,
+    generator:function(){ return generateKahnSteps(GRAPH_DAG); }
+  });
+
+  new StepPlayer({
+    vizId:'viz-bridge', nodes:GRAPH_BRIDGE.nodes, edgeList:GRAPH_BRIDGE.edges,
+    viewBox:GRAPH_BRIDGE.viewBox,
+    generator:function(){ return generateBridgeSteps(GRAPH_BRIDGE); }
+  });
+
+  /* Hero interactive ripple */
+  var heroHolder = qs('hero-svg-holder');
+  if(heroHolder){
+    var heroSvg = renderGraphSVG('hero', GRAPH_UNWEIGHTED.nodes, Object.keys(GRAPH_UNWEIGHTED.adj).reduce(function(acc,u){
+        GRAPH_UNWEIGHTED.adj[u].forEach(function(v){ if(u<v) acc.push([u,v]); }); return acc; }, []),
+      {viewBox:GRAPH_UNWEIGHTED.viewBox});
+    heroHolder.appendChild(heroSvg);
+
+    Object.keys(GRAPH_UNWEIGHTED.nodes).forEach(function(id){
+      var n = qs('hero-node-'+id);
+      if(n){
+        n.style.cursor = 'pointer';
+        n.addEventListener('click', function(){ runHeroRipple(id); });
+      }
+    });
+  }
+
+  function runHeroRipple(start){
+    var steps = generateBFSSteps(GRAPH_UNWEIGHTED, start);
+    var i = 0;
+    Object.keys(GRAPH_UNWEIGHTED.nodes).forEach(function(id){
+      var el = qs('hero-node-'+id);
+      if(el) el.setAttribute('class','gnode');
+    });
+    document.querySelectorAll('#hero-svg-holder .gedge').forEach(function(e){ e.setAttribute('class','gedge'); });
+
+    function tick(){
+      if(i >= steps.length) return;
+      var step = steps[i];
+      Object.keys(GRAPH_UNWEIGHTED.nodes).forEach(function(id){
+        var n = qs('hero-node-'+id);
+        if(n) n.classList.remove('visited','current');
+      });
+      (step.visited||[]).forEach(function(id){
+        var n = qs('hero-node-'+id);
+        if(n) n.classList.add('visited');
+      });
+      if(step.current){
+        var cn = qs('hero-node-'+step.current);
+        if(cn) cn.classList.add('current');
+      }
+      if(step.edge){
+        var eg = qs('hero-edge-'+step.edge);
+        if(eg) eg.classList.add('active');
+      }
+      i++;
+      setTimeout(tick, 220);
+    }
+    tick();
+  }
+  setTimeout(function(){ runHeroRipple('A'); }, 500);
+
+  /* Scroll spy & progress bar */
+  var sections = document.querySelectorAll('main section');
+  var navLinks = document.querySelectorAll('nav.toc a');
+  function onScroll(){
+    var scrollTop = window.scrollY;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var pb = qs('progress-bar');
+    if(pb) pb.style.width = (docHeight>0 ? (scrollTop/docHeight*100) : 0) + '%';
+
+    var current = sections[0] ? sections[0].id : null;
+    sections.forEach(function(sec){
+      if(scrollTop + 160 >= sec.offsetTop){ current = sec.id; }
+    });
+    navLinks.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* Mobile menu drawer */
+  var menuBtn = qs('mobile-menu-btn');
+  var sidebar = qs('sidebar');
+  var backdrop = qs('sidebar-backdrop');
+  function toggleMobileMenu(){
+    var isOpen = sidebar.classList.toggle('open');
+    backdrop.classList.toggle('open', isOpen);
+  }
+  function closeMobileMenu(){
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('open');
+  }
+  if(menuBtn) menuBtn.addEventListener('click', toggleMobileMenu);
+  if(backdrop) backdrop.addEventListener('click', closeMobileMenu);
+  navLinks.forEach(function(a){ a.addEventListener('click', closeMobileMenu); });
+
+  /* Fab scroll to top */
+  var fabTop = qs('fab-top');
+  if(fabTop){
+    fabTop.addEventListener('click', function(){
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  }
+
+});
+
+})();
+</script>
+</body>
+</html>

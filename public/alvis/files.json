@@ -1,5 +1,15 @@
 [
   {
+    "filename": "graphs-traced.html",
+    "title": "Graphs, Traced — a C++ Field Guide & Visualizer",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 111450,
+    "sizeFormatted": "109 KB",
+    "lastModified": "2026-08-29T21:06:00.000Z"
+  },
+  {
     "filename": "SNB_frontend_architecture_guide.html",
     "title": "SQL RAG App — Frontend Architecture & Presentation Guide",
     "extension": "HTML",
