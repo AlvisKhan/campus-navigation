@@ -8,6 +8,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script>
+  /* Instant Dark Mode Initialization before page render to avoid flash */
+  (function() {
+    var savedTheme = localStorage.getItem('graphs_theme');
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  })();
+</script>
 <style>
 :root{
   --paper:#EEF1F7;
@@ -41,6 +53,38 @@
   --shadow-md:0 4px 12px rgba(22,27,34,0.08);
 }
 
+/* ============================================================
+   DARK MODE PALETTE OVERRIDES
+   ============================================================ */
+[data-theme="dark"]{
+  --paper:#0B0F19;
+  --paper-alt:#131B2E;
+  --paper-deep:#1E293B;
+  --ink:#F1F5F9;
+  --ink-soft:#94A3B8;
+  --ink-faint:#64748B;
+  --grid:#1E293B;
+  --blueprint:#38BDF8;
+  --blueprint-dark:#7DD3FC;
+  --blueprint-light:rgba(56, 189, 248, 0.14);
+  --signal:#F87171;
+  --signal-dark:#FCA5A5;
+  --signal-light:rgba(248, 113, 113, 0.14);
+  --moss:#34D399;
+  --moss-dark:#6EE7B7;
+  --moss-light:rgba(52, 211, 153, 0.14);
+  --amber:#FBBF24;
+  --amber-dark:#FDE047;
+  --amber-light:rgba(251, 191, 36, 0.14);
+  --violet:#A78BFA;
+  --violet-dark:#C4B5FD;
+  --violet-light:rgba(167, 139, 250, 0.14);
+  --cyan:#38BDF8;
+  --white:#111827;
+  --shadow-sm:0 2px 6px rgba(0,0,0,0.4);
+  --shadow-md:0 6px 20px rgba(0,0,0,0.6);
+}
+
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 @media (prefers-reduced-motion: reduce){
@@ -62,6 +106,7 @@ body{
   background-attachment:fixed;
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
+  transition:background 0.2s ease, color 0.2s ease;
 }
 
 h1,h2,h3,h4,h5{
@@ -98,6 +143,10 @@ a{color:var(--blueprint); text-decoration-thickness:1px;}
   padding:0 16px;
   align-items:center;
   justify-content:space-between;
+  transition:background 0.2s ease, border-color 0.2s ease;
+}
+[data-theme="dark"] .mobile-header{
+  background:rgba(11, 15, 25, 0.95);
 }
 .mobile-brand{
   display:flex; align-items:center; gap:8px;
@@ -114,7 +163,28 @@ a{color:var(--blueprint); text-decoration-thickness:1px;}
   background:var(--white); border:1px solid var(--grid); border-radius:8px;
   padding:7px 12px; font-family:'IBM Plex Mono', monospace; font-size:0.8rem;
   font-weight:600; color:var(--ink); cursor:pointer;
-  box-shadow:var(--shadow-sm);
+  box-shadow:var(--shadow-sm); transition:background 0.15s, border-color 0.15s;
+}
+
+/* ---------- Theme toggle button styles ---------- */
+.theme-toggle-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--paper-alt); border:1px solid var(--grid); border-radius:8px;
+  padding:7px 12px; font-family:'IBM Plex Mono', monospace; font-size:0.8rem;
+  font-weight:600; color:var(--ink); cursor:pointer; transition:all 0.15s;
+  user-select:none; width:100%; justify-content:center; margin-bottom:18px;
+}
+.theme-toggle-btn:hover{
+  background:var(--paper-deep); border-color:var(--blueprint);
+}
+.mobile-theme-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  background:var(--white); border:1px solid var(--grid); border-radius:8px;
+  width:36px; height:36px; font-size:1rem; cursor:pointer; color:var(--ink);
+  transition:all 0.15s;
+}
+.mobile-theme-btn:hover{
+  background:var(--paper-alt); border-color:var(--blueprint);
 }
 
 /* ---------- layout shell ---------- */
@@ -135,13 +205,14 @@ a{color:var(--blueprint); text-decoration-thickness:1px;}
   border-right:1px solid var(--grid);
   background:var(--paper);
   z-index:900;
+  transition:background 0.2s ease, border-color 0.2s ease;
 }
 .brand{
   display:flex; align-items:center; gap:12px;
-  margin-bottom:24px;
+  margin-bottom:20px;
 }
 .brand svg{flex:none;}
-.brand-text{font-family:'Fraunces', serif; font-weight:700; font-size:1.18rem; line-height:1.15;}
+.brand-text{font-family:'Fraunces', serif; font-weight:700; font-size:1.18rem; line-height:1.15; color:var(--ink);}
 .brand-text span{
   display:block; font-family:'Public Sans',sans-serif; font-weight:600; font-size:0.68rem;
   letter-spacing:0.14em; color:var(--ink-faint); text-transform:uppercase; margin-top:3px;
@@ -178,9 +249,10 @@ nav.toc .chapter-pill{
 .sidebar-backdrop{
   display:none;
   position:fixed; top:0; left:0; right:0; bottom:0;
-  background:rgba(15, 23, 42, 0.5);
+  background:rgba(15, 23, 42, 0.6);
   z-index:950;
   opacity:0; transition:opacity 0.25s;
+  backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
 }
 
 /* ---------- main content ---------- */
@@ -239,6 +311,7 @@ section.chapter{
 .card{
   background:var(--white); border:1px solid var(--grid); border-radius:var(--radius);
   padding:22px 24px; margin-bottom:20px; box-shadow:var(--shadow-sm);
+  transition:background 0.2s ease, border-color 0.2s ease;
 }
 .card h3{font-size:1.24rem; margin-bottom:0.5em;}
 .card h4{font-size:1.02rem; color:var(--blueprint-dark); margin-bottom:0.4em; font-family:'Public Sans', sans-serif; font-weight:700;}
@@ -263,20 +336,26 @@ li{margin-bottom:0.45em;}
 
 /* ---------- code blocks ---------- */
 .codeblock{
-  background:var(--ink); color:#E9EDF6; border-radius:10px; overflow:hidden; margin:14px 0 20px 0;
-  border:1px solid #0d1015; box-shadow:var(--shadow-sm); position:relative;
+  background:#0d1117; color:#E9EDF6; border-radius:10px; overflow:hidden; margin:14px 0 20px 0;
+  border:1px solid #21262d; box-shadow:var(--shadow-sm); position:relative;
+}
+[data-theme="dark"] .codeblock{
+  background:#070b12; border-color:#1e293b;
 }
 .codeblock .filebar{
   display:flex; align-items:center; justify-content:space-between;
-  padding:8px 14px; background:#0f141d; font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:#9AA7C2;
-  border-bottom:1px solid #232b3a; user-select:none;
+  padding:8px 14px; background:#161b22; font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:#9AA7C2;
+  border-bottom:1px solid #21262d; user-select:none;
+}
+[data-theme="dark"] .codeblock .filebar{
+  background:#0d1117; border-bottom-color:#1e293b;
 }
 .codeblock .filebar .copy-btn{
-  background:#1c2333; color:#a2afc7; border:1px solid #2f3b52; border-radius:4px;
+  background:#21262d; color:#c9d1d9; border:1px solid #30363d; border-radius:4px;
   padding:3px 8px; font-size:0.7rem; cursor:pointer; font-family:'IBM Plex Mono',monospace;
   transition:all 0.15s;
 }
-.codeblock .filebar .copy-btn:hover{background:#2b3850; color:#fff;}
+.codeblock .filebar .copy-btn:hover{background:#30363d; color:#fff;}
 .codeblock pre{
   margin:0; padding:14px 16px; overflow-x:auto; font-size:0.84rem; line-height:1.65;
   -webkit-overflow-scrolling:touch;
@@ -290,6 +369,7 @@ li{margin-bottom:0.45em;}
 .viz{
   background:var(--white); border:1px solid var(--grid); border-radius:var(--radius);
   padding:20px; margin:18px 0 26px 0; box-shadow:var(--shadow-md);
+  transition:background 0.2s ease, border-color 0.2s ease;
 }
 .viz-top{
   display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;
@@ -309,10 +389,11 @@ li{margin-bottom:0.45em;}
 .viz-graph{
   background:var(--paper); border:1px solid var(--grid); border-radius:8px;
   position:relative; overflow:hidden; min-height:260px; display:flex; align-items:center; justify-content:center;
+  transition:background 0.2s ease, border-color 0.2s ease;
 }
 .viz-graph svg{display:block; width:100%; height:auto; max-height:380px; touch-action:manipulation;}
 .viz-side{display:flex; flex-direction:column; gap:10px;}
-.panel{background:var(--paper); border:1px solid var(--grid); border-radius:8px; padding:10px 12px;}
+.panel{background:var(--paper); border:1px solid var(--grid); border-radius:8px; padding:10px 12px; transition:background 0.2s ease;}
 .panel-label{
   font-family:'IBM Plex Mono',monospace; font-size:0.7rem; letter-spacing:0.08em;
   text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px; font-weight:600;
@@ -322,6 +403,9 @@ li{margin-bottom:0.45em;}
   font-family:'IBM Plex Mono',monospace; font-size:0.78rem; padding:3px 8px; border-radius:5px;
   background:var(--amber); color:#3d2e0a; border:1px solid #c98a1f; font-weight:600;
 }
+[data-theme="dark"] .chip{
+  background:#451a03; color:#fef3c7; border-color:#78350f;
+}
 .chip.empty{background:transparent; border:1px dashed var(--grid); color:var(--ink-faint); font-weight:400; font-size:0.74rem;}
 .chip.blue{background:var(--blueprint-light); color:var(--blueprint-dark); border-color:var(--blueprint);}
 .chip.green{background:var(--moss-light); color:var(--moss-dark); border-color:var(--moss);}
@@ -329,12 +413,14 @@ li{margin-bottom:0.45em;}
 .msg-box{
   min-height:50px; font-size:0.88rem; color:var(--ink); background:var(--paper);
   border:1px solid var(--grid); border-radius:8px; padding:10px 12px; line-height:1.5;
+  transition:background 0.2s ease;
 }
 .msg-box b{color:var(--blueprint-dark);}
 .info-panel{overflow-x:auto; -webkit-overflow-scrolling:touch;}
 .info-panel table{width:100%; border-collapse:collapse; font-family:'IBM Plex Mono',monospace; font-size:0.78rem;}
-.info-panel td, .info-panel th{padding:4px 6px; text-align:center; border-bottom:1px solid var(--grid);}
+.info-panel td, .info-panel th{padding:4px 6px; text-align:center; border-bottom:1px solid var(--grid); color:var(--ink);}
 .info-panel th{color:var(--ink-faint); font-weight:600; background:rgba(0,0,0,0.02);}
+[data-theme="dark"] .info-panel th{background:rgba(255,255,255,0.04);}
 .info-panel td.updated{color:var(--signal-dark); font-weight:700; background:var(--signal-light);}
 .viz-controls{
   display:flex; align-items:center; gap:8px; margin-top:14px; flex-wrap:wrap;
@@ -349,6 +435,7 @@ button.ctrl{
 button.ctrl:active{transform:scale(0.97);}
 button.ctrl:hover{background:var(--paper-alt); border-color:var(--blueprint);}
 button.ctrl.primary{background:var(--blueprint); color:white; border-color:var(--blueprint-dark); font-weight:600;}
+[data-theme="dark"] button.ctrl.primary{color:#0b0f19; font-weight:700;}
 button.ctrl.primary:hover{background:var(--blueprint-dark);}
 button.ctrl:disabled{opacity:0.35; cursor:default; pointer-events:none;}
 .step-counter{font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--ink-faint); margin-left:auto; font-weight:600;}
@@ -360,24 +447,28 @@ button.ctrl:disabled{opacity:0.35; cursor:default; pointer-events:none;}
 .gnode .sub-label{font-size:9.5px; fill:var(--ink-faint); font-family:'IBM Plex Mono',monospace;}
 .gnode.visited circle{fill:var(--blueprint); stroke:var(--blueprint-dark);}
 .gnode.visited text{fill:white;}
+[data-theme="dark"] .gnode.visited text{fill:#0b0f19;}
 .gnode.current circle{fill:var(--signal); stroke:var(--signal-dark); stroke-width:3px;}
 .gnode.current text{fill:white;}
+[data-theme="dark"] .gnode.current text{fill:#0b0f19;}
 .gnode.frontier circle{fill:var(--amber); stroke:#a5730f;}
 .gnode.in-stack circle{fill:#8b5cf6; stroke:#5b21b6; stroke-width:3px;}
 .gnode.in-stack text{fill:white;}
 .gnode.articulation circle{stroke:var(--signal-dark); stroke-width:4px; stroke-dasharray:3 2;}
 
 .gedge line{stroke:var(--grid); stroke-width:3px; transition:stroke 0.25s, stroke-width 0.25s;}
+[data-theme="dark"] .gedge line{stroke:#334155;}
 .gedge.active line{stroke:var(--signal); stroke-width:4.5px;}
 .gedge.tree line{stroke:var(--moss); stroke-width:4.5px;}
 .gedge.back line{stroke:var(--signal); stroke-width:4px; stroke-dasharray:4 3;}
 .gedge.bridge line{stroke:#DC2626; stroke-width:5px;}
 .gedge .wlabel{font-family:'IBM Plex Mono',monospace; font-size:11px; fill:var(--ink-soft); text-anchor:middle; font-weight:600;}
+.wbg{fill:var(--paper); transition:fill 0.2s;}
 
 /* ---------- interactive quiz & details ---------- */
 details.quiz{
   background:var(--paper-alt); border:1px solid var(--grid); border-radius:8px;
-  padding:12px 16px; margin:16px 0; transition:border-color 0.2s;
+  padding:12px 16px; margin:16px 0; transition:border-color 0.2s, background 0.2s;
 }
 details.quiz summary{
   cursor:pointer; font-weight:600; color:var(--blueprint-dark); font-family:'Public Sans',sans-serif;
@@ -385,21 +476,22 @@ details.quiz summary{
 }
 details.quiz[open]{border-color:var(--blueprint);}
 details.quiz .answer{
-  margin-top:10px; padding-top:10px; border-top:1px dashed var(--grid); font-size:0.92rem; line-height:1.55;
+  margin-top:10px; padding-top:10px; border-top:1px dashed var(--grid); font-size:0.92rem; line-height:1.55; color:var(--ink);
 }
 
 /* ---------- tables ---------- */
 .table-responsive{
   width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; margin:14px 0 18px 0;
   border:1px solid var(--grid); border-radius:8px; background:var(--white);
+  transition:background 0.2s, border-color 0.2s;
 }
 table.cheat{width:100%; border-collapse:collapse; font-size:0.88rem; min-width:560px;}
 table.cheat th{
   text-align:left; font-family:'IBM Plex Mono',monospace; font-size:0.72rem; letter-spacing:0.06em;
   text-transform:uppercase; color:var(--ink-faint); padding:10px 12px; border-bottom:2px solid var(--ink);
-  background:var(--paper);
+  background:var(--paper-alt);
 }
-table.cheat td{padding:10px 12px; border-bottom:1px solid var(--grid); vertical-align:middle;}
+table.cheat td{padding:10px 12px; border-bottom:1px solid var(--grid); vertical-align:middle; color:var(--ink);}
 table.cheat tr:hover td{background:var(--paper-alt);}
 .complexity{font-family:'IBM Plex Mono',monospace; white-space:nowrap; font-size:0.82rem; font-weight:600;}
 
@@ -421,7 +513,7 @@ table.cheat tr:hover td{background:var(--paper-alt);}
 .flow{display:flex; flex-direction:column; gap:0;}
 .flow-q{
   background:var(--paper); border:1px solid var(--grid); border-left:4px solid var(--blueprint);
-  border-radius:6px; padding:10px 14px; margin-bottom:6px; font-size:0.92rem;
+  border-radius:6px; padding:10px 14px; margin-bottom:6px; font-size:0.92rem; transition:background 0.2s;
 }
 .flow-q b{color:var(--ink);}
 .flow-a{
@@ -435,6 +527,7 @@ table.cheat tr:hover td{background:var(--paper-alt);}
   border-left:4px solid var(--amber); background:var(--amber-light); border-radius:0 8px 8px 0;
   padding:14px 18px; margin:16px 0; font-size:0.92rem; line-height:1.55; border-top:1px solid rgba(217,154,43,0.15);
   border-bottom:1px solid rgba(217,154,43,0.15); border-right:1px solid rgba(217,154,43,0.15);
+  color:var(--ink);
 }
 .callout.pitfall{
   border-left-color:var(--signal); background:var(--signal-light);
@@ -452,6 +545,7 @@ table.cheat tr:hover td{background:var(--paper-alt);}
 }
 .callout.blueprint b{color:var(--blueprint-dark);}
 .callout b{color:#8a641c;}
+[data-theme="dark"] .callout b{color:var(--amber-dark);}
 
 /* ---------- floating action buttons ---------- */
 .floating-nav{
@@ -464,11 +558,12 @@ table.cheat tr:hover td{background:var(--paper-alt);}
 }
 .fab-btn:hover{background:var(--paper-alt); transform:translateY(-2px);}
 .fab-btn.primary{background:var(--blueprint); color:white; border-color:var(--blueprint-dark);}
+[data-theme="dark"] .fab-btn.primary{color:#0b0f19; font-weight:700;}
 
 /* ---------- toast notification ---------- */
 .toast-msg{
   position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
-  background:var(--ink); color:#fff; font-family:'IBM Plex Mono',monospace; font-size:0.8rem;
+  background:var(--ink); color:var(--paper); font-family:'IBM Plex Mono',monospace; font-size:0.8rem;
   padding:8px 16px; border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,0.3); z-index:2000;
   pointer-events:none; transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s;
   opacity:0;
@@ -487,7 +582,7 @@ footer{
   .shell{grid-template-columns:1fr;}
   #sidebar{
     position:fixed; top:0; left:0; width:min(320px, 85vw); height:100vh;
-    box-shadow:2px 0 16px rgba(0,0,0,0.15);
+    box-shadow:2px 0 16px rgba(0,0,0,0.4);
     transform:translateX(-100%); transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     z-index:960;
   }
@@ -536,16 +631,19 @@ footer{
       <circle cx="26" cy="10" r="5" fill="#E15A34"/>
       <circle cx="12" cy="26" r="5" fill="#D99A2B"/>
       <circle cx="27" cy="25" r="5" fill="#2F8F63"/>
-      <line x1="8" y1="8" x2="26" y2="10" stroke="#161B22" stroke-width="2"/>
-      <line x1="8" y1="8" x2="12" y2="26" stroke="#161B22" stroke-width="2"/>
-      <line x1="26" y1="10" x2="27" y2="25" stroke="#161B22" stroke-width="2"/>
-      <line x1="12" y1="26" x2="27" y2="25" stroke="#161B22" stroke-width="2"/>
+      <line x1="8" y1="8" x2="26" y2="10" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="8" y1="8" x2="12" y2="26" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="26" y1="10" x2="27" y2="25" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="12" y1="26" x2="27" y2="25" stroke="var(--ink)" stroke-width="2"/>
     </svg>
     Graphs, Traced <span>C++</span>
   </a>
-  <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">
-    ☰ &nbsp;Chapters
-  </button>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <button class="mobile-theme-btn" id="mobile-theme-btn" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">
+      ☰ &nbsp;Chapters
+    </button>
+  </div>
 </header>
 
 <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
@@ -558,13 +656,19 @@ footer{
         <circle cx="26" cy="10" r="4.5" fill="#E15A34"/>
         <circle cx="12" cy="26" r="4.5" fill="#D99A2B"/>
         <circle cx="27" cy="25" r="4.5" fill="#2F8F63"/>
-        <line x1="8" y1="8" x2="26" y2="10" stroke="#161B22" stroke-width="1.6"/>
-        <line x1="8" y1="8" x2="12" y2="26" stroke="#161B22" stroke-width="1.6"/>
-        <line x1="26" y1="10" x2="27" y2="25" stroke="#161B22" stroke-width="1.6"/>
-        <line x1="12" y1="26" x2="27" y2="25" stroke="#161B22" stroke-width="1.6"/>
+        <line x1="8" y1="8" x2="26" y2="10" stroke="var(--ink)" stroke-width="1.6"/>
+        <line x1="8" y1="8" x2="12" y2="26" stroke="var(--ink)" stroke-width="1.6"/>
+        <line x1="26" y1="10" x2="27" y2="25" stroke="var(--ink)" stroke-width="1.6"/>
+        <line x1="12" y1="26" x2="27" y2="25" stroke="var(--ink)" stroke-width="1.6"/>
       </svg>
       <div class="brand-text">Graphs, Traced<span>C++17 Masterclass</span></div>
     </div>
+
+    <!-- Theme Toggle Switch in Sidebar -->
+    <button class="theme-toggle-btn" id="sidebar-theme-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
+      <span class="theme-icon" id="sidebar-theme-icon">🌙</span>
+      <span class="theme-text" id="sidebar-theme-text">Dark Mode</span>
+    </button>
 
     <p class="legend-note">Every visualizer below is <b>interactive &amp; live</b> in C++. Step through algorithms to watch queues, recursion stacks, priority queues, and low-link values in real time.</p>
 
@@ -838,19 +942,19 @@ footer{
         <h3>DFS Edge Classification in Directed Graphs</h3>
         <p>When running DFS on a directed graph, every edge <span class="mono">u → v</span> falls into one of four categories:</p>
         <div class="four-col">
-          <div style="background:var(--paper); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
+          <div style="background:var(--paper-alt); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
             <b style="color:var(--moss-dark);">1. Tree Edge</b>
             <p style="font-size:0.82rem; margin-top:4px;">Edge leading to an unvisited node during exploration. Forms the DFS tree.</p>
           </div>
-          <div style="background:var(--paper); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
+          <div style="background:var(--paper-alt); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
             <b style="color:var(--signal-dark);">2. Back Edge</b>
             <p style="font-size:0.82rem; margin-top:4px;">Edge pointing from a node to one of its ancestors on the current recursion stack. <b>Proves a cycle exists!</b></p>
           </div>
-          <div style="background:var(--paper); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
+          <div style="background:var(--paper-alt); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
             <b style="color:var(--blueprint-dark);">3. Forward Edge</b>
             <p style="font-size:0.82rem; margin-top:4px;">Edge pointing from an ancestor to an already finished descendant in the DFS tree.</p>
           </div>
-          <div style="background:var(--paper); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
+          <div style="background:var(--paper-alt); padding:10px 12px; border-radius:8px; border:1px solid var(--grid);">
             <b style="color:var(--ink-soft);">4. Cross Edge</b>
             <p style="font-size:0.82rem; margin-top:4px;">Edge connecting two nodes that are not ancestor/descendant of each other.</p>
           </div>
@@ -1353,8 +1457,9 @@ footer{
   </main>
 </div>
 
-<!-- Floating Action Navigation for Mobile -->
+<!-- Floating Action Navigation -->
 <div class="floating-nav">
+  <button class="fab-btn" id="fab-theme" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
   <button class="fab-btn primary" id="fab-top" title="Scroll to top" aria-label="Scroll to top">↑</button>
 </div>
 
@@ -1365,7 +1470,7 @@ footer{
 "use strict";
 
 /* ============================================================
-   0. HELPER UTILITIES
+   0. HELPER UTILITIES & THEME MANAGEMENT
    ============================================================ */
 function qs(id){ return document.getElementById(id); }
 function svgEl(tag, attrs){
@@ -1392,6 +1497,28 @@ window.copyCode = function(btn){
     setTimeout(function(){ toast.classList.remove('show'); }, 2000);
   });
 };
+
+/* Theme Toggle Helper */
+function updateThemeUI(theme){
+  var isDark = (theme === 'dark');
+  var sidebarIcon = qs('sidebar-theme-icon');
+  var sidebarText = qs('sidebar-theme-text');
+  var mobileBtn = qs('mobile-theme-btn');
+  var fabTheme = qs('fab-theme');
+
+  if(sidebarIcon) sidebarIcon.textContent = isDark ? '☀️' : '🌙';
+  if(sidebarText) sidebarText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+  if(mobileBtn) mobileBtn.textContent = isDark ? '☀️' : '🌙';
+  if(fabTheme) fabTheme.textContent = isDark ? '☀️' : '🌙';
+}
+
+function toggleTheme(){
+  var current = document.documentElement.getAttribute('data-theme') || 'light';
+  var next = (current === 'dark') ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('graphs_theme', next);
+  updateThemeUI(next);
+}
 
 /* ============================================================
    1. CODE BUILDERS
@@ -1558,7 +1685,7 @@ function renderGraphSVG(prefix, nodes, edgeList, opts){
   if(opts.directed){
     var defs = svgEl('defs');
     var marker = svgEl('marker', {id: prefix+'-arrow', viewBox:'0 0 10 10', refX:'9', refY:'5', markerWidth:'7', markerHeight:'7', orient:'auto-start-reverse'});
-    var path = svgEl('path', {d:'M 0 0 L 10 5 L 0 10 z', fill:'#4B5568'});
+    var path = svgEl('path', {d:'M 0 0 L 10 5 L 0 10 z', fill:'currentColor'});
     marker.appendChild(path); defs.appendChild(marker); svg.appendChild(defs);
   }
   var edgeGroup = svgEl('g', {class:'edges'});
@@ -1577,7 +1704,7 @@ function renderGraphSVG(prefix, nodes, edgeList, opts){
     g.appendChild(line);
     if(e[2] !== undefined){
       var mx = (a.x+b.x)/2, my=(a.y+b.y)/2;
-      var wbg = svgEl('rect', {x:mx-10, y:my-9, width:20, height:16, fill:'#EEF1F7', rx:3});
+      var wbg = svgEl('rect', {class:'wbg', x:mx-10, y:my-9, width:20, height:16, rx:3});
       var wt = svgEl('text', {class:'wlabel', x:mx, y:my+3});
       wt.textContent = e[2];
       g.appendChild(wbg); g.appendChild(wt);
@@ -2058,6 +2185,19 @@ StepPlayer.prototype.render = function(){
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function(){
 
+  // Update Theme Button UI on load
+  var currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  updateThemeUI(currentTheme);
+
+  // Wire Theme Toggle Event Listeners
+  var sidebarThemeBtn = qs('sidebar-theme-btn');
+  var mobileThemeBtn = qs('mobile-theme-btn');
+  var fabTheme = qs('fab-theme');
+
+  if(sidebarThemeBtn) sidebarThemeBtn.addEventListener('click', toggleTheme);
+  if(mobileThemeBtn) mobileThemeBtn.addEventListener('click', toggleTheme);
+  if(fabTheme) fabTheme.addEventListener('click', toggleTheme);
+
   // Instantiate Visualizers
   new StepPlayer({
     vizId:'viz-bfs', nodes:GRAPH_UNWEIGHTED.nodes,
@@ -2137,7 +2277,7 @@ document.addEventListener('DOMContentLoaded', function(){
       var step = steps[i];
       Object.keys(GRAPH_UNWEIGHTED.nodes).forEach(function(id){
         var n = qs('hero-node-'+id);
-        if(n) n.classList.remove('visited','current');
+        n.classList.remove('visited','current');
       });
       (step.visited||[]).forEach(function(id){
         var n = qs('hero-node-'+id);
