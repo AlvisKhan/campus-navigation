@@ -653,6 +653,32 @@
   margin: 0;
 }
 
+.health-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.smch-banner-locate-btn {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(219, 39, 119, 0.15));
+  border-color: rgba(236, 72, 153, 0.5);
+  color: #f472b6;
+}
+
+.smch-banner-locate-btn:hover {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  border-color: #ec4899;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.4);
+}
+
+.emergency-locate-btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
 /* ================= APDCL Electricity & Power Support Section ================= */
 .electricity-section {
   border-color: rgba(245, 158, 11, 0.35);

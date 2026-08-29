@@ -251,6 +251,15 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
                       >
                         COPY
                       </button>
+                      {item.mapLocationId && (
+                        <button
+                          className="serv-locate-btn emergency-locate-btn"
+                          onClick={() => handleLocate(item.mapLocationId)}
+                          title={`Locate ${item.name} on Campus Map`}
+                        >
+                          <span>📍</span> Map
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -260,15 +269,25 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
 
           <div className="health-centre-map-banner">
             <div className="health-banner-text">
-              <strong>Need In-Person Medical Attention on Campus?</strong>
-              <p>The NIT Health Centre provides 24/7 doctor consultations, emergency triage, and prescription medicines. For specialized or trauma care, Silchar Medical College & Hospital (SMCH) is located nearby at Ghungoor.</p>
+              <strong>Need In-Person Medical Attention?</strong>
+              <p>The NIT Health Centre provides 24/7 doctor consultations and triage on campus. For major emergencies, trauma care, and specialized treatment, Silchar Medical College & Hospital (SMCH) is located at Ghungoor (24.7748° N, 92.7931° E).</p>
             </div>
-            <button
-              className="guide-map-locate-btn"
-              onClick={() => handleLocate("health-centre")}
-            >
-              <span>🏥</span> LOCATE HEALTH CENTRE ON MAP
-            </button>
+            <div className="health-banner-actions">
+              <button
+                className="guide-map-locate-btn"
+                onClick={() => handleLocate("health-centre")}
+                title="Locate NIT Health Centre on Map"
+              >
+                <span>🏥</span> HEALTH CENTRE (CAMPUS)
+              </button>
+              <button
+                className="guide-map-locate-btn smch-banner-locate-btn"
+                onClick={() => handleLocate("smch-silchar")}
+                title="Locate Silchar Medical College on Map"
+              >
+                <span>🚑</span> SMCH (GHUNGOOR)
+              </button>
+            </div>
           </div>
         </section>
 

@@ -816,6 +816,17 @@ const locations = [
     verified: true,
   },
   {
+    id: "smch-silchar",
+    name: "Silchar Medical College & Hospital (SMCH)",
+    category: "Healthcare",
+    categoryId: "healthcare",
+    latitude: 24.77479100477429,
+    longitude: 92.79312860460078,
+    description: "Premier government medical college & 24/7 tertiary hospital, trauma center, and emergency healthcare facility at Ghungoor, Silchar.",
+    aliases: ["smch", "silchar medical college", "medical college", "smch hospital", "ghungoor hospital", "medical"],
+    verified: true,
+  },
+  {
     id: "sbi-branch",
     name: "SBI Branch NIT Silchar",
     category: "Services & Shopping",
