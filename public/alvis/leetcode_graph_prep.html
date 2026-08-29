@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="description" content="Graph Theory Field Guide — 20 Curated LeetCode Graph Problems worked out in clean C++17 with intuition, step-by-step approaches, edge case checklists, and an interactive quiz.">
+<title>Graph Theory Field Guide — C++ / LeetCode Masterclass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#090c12;
+    --bg-panel:#0d1119;
+    --bg-card:#111726;
+    --bg-card-hover:#151d30;
+    --border:#212a3d;
+    --border-soft:#1a2233;
+    --text:#e7ecf6;
+    --text-dim:#8993ab;
+    --text-faint:#57617a;
+    --cyan:#5eead4;
+    --cyan-dim:#5eead422;
+    --blue:#6fb3ff;
+    --blue-dim:#6fb3ff22;
+    --amber:#fbbf24;
+    --amber-dim:#fbbf2422;
+    --coral:#fb7185;
+    --coral-dim:#fb718522;
+    --violet:#b39dfb;
+    --violet-dim:#b39dfb22;
+    --moss:#34d399;
+    --moss-dim:#34d39922;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --disp: 'Space Grotesk', var(--sans);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -5%, #16203a55, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, #1a1030aa, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--cyan); color:#04151a; }
+  a{ color:inherit; text-decoration-thickness:1px; }
+
+  h1,h2,h3,h4,h5{ font-family:var(--disp); font-weight:700; margin:0; letter-spacing:-0.015em; }
+  code, .mono{ font-family:var(--mono); }
+
+  /* ---------- Progress bar ---------- */
+  #progress-bar{
+    position:fixed; top:0; left:0; height:3.5px; width:0%;
+    background:linear-gradient(90deg, var(--cyan), var(--blue), var(--violet), var(--coral));
+    z-index:1001; transition:width 0.1s linear;
+  }
+
+  /* ---------- Custom Scrollbars ---------- */
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-track{ background:var(--bg); }
+  ::-webkit-scrollbar-thumb{ background:#26304a; border-radius:6px; }
+  ::-webkit-scrollbar-thumb:hover{ background:#334066; }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:900;
+    display:flex; align-items:center; gap:12px;
+    padding:10px 18px;
+    background:rgba(9, 12, 18, 0.92);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .topbar .mark{ width:28px; height:28px; flex:none; }
+  .topbar .brand{ font-family:var(--disp); font-size:15px; font-weight:700; letter-spacing:0.01em; }
+  .topbar .brand small{
+    display:block; font-family:var(--mono); font-weight:500; font-size:10px;
+    color:var(--text-faint); letter-spacing:0.06em; text-transform:uppercase; margin-top:1px;
+  }
+  .topbar .search{
+    margin-left:auto;
+    display:flex; align-items:center; gap:8px;
+    background:var(--bg-card); border:1px solid var(--border);
+    border-radius:8px; padding:6px 12px; min-width:0;
+    width:220px; transition:border-color 0.2s, width 0.2s;
+  }
+  .topbar .search:focus-within{ border-color:var(--cyan); width:260px; }
+  .topbar .search input{
+    background:none; border:none; outline:none; color:var(--text);
+    font-family:var(--mono); font-size:12px; width:100%;
+  }
+  .topbar .search svg{ flex:none; opacity:0.5; width:14px; height:14px; }
+  .topbar .counter{
+    font-family:var(--mono); font-size:11px; color:var(--text-faint);
+    border:1px solid var(--border); padding:5px 10px; border-radius:7px;
+    white-space:nowrap; background:var(--bg-panel);
+  }
+  .topbar .counter b{ color:var(--cyan); font-weight:700; }
+  .hamburger{
+    display:none; background:var(--bg-card); border:1px solid var(--border);
+    border-radius:8px; width:38px; height:38px; align-items:center; justify-content:center;
+    flex:none; cursor:pointer; min-height:38px;
+  }
+  .hamburger span, .hamburger::before, .hamburger::after{
+    content:''; display:block; width:16px; height:1.5px; background:var(--text-dim); position:relative;
+  }
+  .hamburger{ flex-direction:column; gap:3.5px; }
+
+  /* ---------- Layout shell ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns:240px 1fr;
+    max-width:1400px;
+    margin:0 auto;
+  }
+
+  /* ---------- Sidebar : graph-spine nav ---------- */
+  .sidebar{
+    position:sticky; top:58px;
+    align-self:start;
+    height:calc(100vh - 58px);
+    overflow-y:auto;
+    padding:24px 10px 40px 22px;
+    border-right:1px solid var(--border-soft);
+    background:var(--bg);
+  }
+  .spine{ position:relative; padding-left:22px; }
+  .spine::before{
+    content:''; position:absolute; left:5px; top:8px; bottom:8px; width:1.5px;
+    background:linear-gradient(to bottom, var(--cyan) 0%, var(--violet) 50%, var(--coral) 100%);
+    opacity:0.35;
+  }
+  .spine-node{
+    position:relative; display:block; padding:7px 10px 7px 6px;
+    color:var(--text-dim); text-decoration:none; font-size:12px;
+    border-radius:6px; margin-bottom:2px; transition:background .15s, color .15s;
+    font-family:var(--mono); font-weight:500;
+  }
+  .spine-node::before{
+    content:''; position:absolute; left:-19px; top:50%; transform:translateY(-50%);
+    width:7px; height:7px; border-radius:50%; background:var(--bg);
+    border:1.5px solid var(--text-faint); transition:.15s;
+  }
+  .spine-node:hover{ color:var(--text); background:var(--bg-card); }
+  .spine-node:hover::before{ border-color:var(--cyan); }
+  .spine-node.active{ color:var(--text); background:var(--bg-card); font-weight:600; }
+  .spine-node.active::before{ background:var(--cyan); border-color:var(--cyan); box-shadow:0 0 8px var(--cyan); }
+  .spine-count{ float:right; color:var(--text-faint); font-size:10px; font-weight:400; }
+  .sidebar .quiz-link{
+    margin-top:18px; display:flex; gap:8px; align-items:center;
+    padding:9px 12px; border-radius:8px; border:1px dashed var(--border);
+    color:var(--amber); text-decoration:none; font-family:var(--mono); font-size:11.5px;
+    transition:background .15s, border-color .15s;
+  }
+  .sidebar .quiz-link:hover{ background:var(--amber-dim); border-color:var(--amber); }
+
+  /* ---------- Mobile drawer backdrop ---------- */
+  .scrim{
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:990;
+    backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+    opacity:0; transition:opacity 0.25s ease;
+  }
+  .scrim.show{ display:block; opacity:1; }
+
+  /* ---------- Main Content ---------- */
+  main{ padding:0 32px 80px; min-width:0; }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative; padding:52px 6px 36px; overflow:hidden;
+    border-bottom:1px solid var(--border-soft); margin-bottom:38px;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--cyan); display:inline-flex; align-items:center; gap:8px; margin-bottom:16px;
+    background:var(--cyan-dim); padding:4px 10px; border-radius:6px; border:1px solid rgba(94,234,212,0.25);
+    font-weight:600;
+  }
+  .hero h1{ font-size:clamp(26px, 4.4vw, 48px); line-height:1.1; max-width:780px; }
+  .hero h1 .hl{ color:var(--cyan); }
+  .hero p.lede{ margin-top:16px; max-width:620px; color:var(--text-dim); font-size:14.5px; line-height:1.6; }
+  .hero-stats{ display:flex; gap:24px; margin-top:28px; flex-wrap:wrap; }
+  .hero-stats .stat b{ font-family:var(--disp); font-size:26px; display:block; color:var(--text); }
+  .hero-stats .stat span{ font-family:var(--mono); font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; }
+  .hero-graph{ position:absolute; right:-20px; top:10px; width:420px; max-width:42vw; opacity:0.95; }
+
+  .legend{ display:flex; gap:12px; flex-wrap:wrap; margin-top:24px; }
+  .legend .tag{ display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; color:var(--text-dim); }
+  .legend .dot{ width:8px; height:8px; border-radius:50%; }
+
+  /* ---------- Global Controls Ribbon (Expand / Filters) ---------- */
+  .controls-ribbon{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin-bottom:28px; flex-wrap:wrap;
+  }
+  .filter-chips{ display:flex; gap:6px; flex-wrap:wrap; }
+  .filter-chip{
+    background:var(--bg-card); border:1px solid var(--border); color:var(--text-dim);
+    font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:6px;
+    cursor:pointer; transition:all 0.15s; user-select:none;
+  }
+  .filter-chip:hover{ color:var(--text); border-color:#334066; background:var(--bg-card-hover); }
+  .filter-chip.active{ background:var(--cyan-dim); border-color:var(--cyan); color:var(--cyan); font-weight:600; }
+  
+  .view-toggles{ display:flex; gap:8px; }
+  .toggle-btn{
+    background:var(--bg-card); border:1px solid var(--border); color:var(--text-dim);
+    font-family:var(--mono); font-size:11px; padding:6px 12px; border-radius:6px;
+    cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-weight:500;
+  }
+  .toggle-btn:hover{ color:var(--text); border-color:var(--cyan); }
+
+  /* ---------- Category section ---------- */
+  .cat-section{ margin-bottom:52px; scroll-margin-top:72px; }
+  .cat-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:6px; flex-wrap:wrap; }
+  .cat-head h2{ font-size:21px; }
+  .cat-idx{ font-family:var(--mono); color:var(--text-faint); font-size:13px; font-weight:600; }
+  .cat-desc{ color:var(--text-dim); font-size:13.5px; max-width:720px; margin-bottom:20px; }
+
+  /* ---------- Problem card ---------- */
+  .card{
+    background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
+    margin-bottom:14px; overflow:hidden; scroll-margin-top:72px;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .card:hover{ border-color:#2b3654; box-shadow:var(--shadow-sm); }
+  .card-head{
+    display:flex; align-items:center; gap:12px; padding:15px 18px; cursor:pointer;
+    user-select:none; min-height:48px;
+  }
+  .card-head .num{ font-family:var(--mono); font-size:11px; color:var(--text-faint); flex:none; width:24px; font-weight:600; }
+  .card-head .titles{ flex:1; min-width:0; }
+  .card-head h3{ font-size:15px; font-weight:600; }
+  .card-head .lc{ font-family:var(--mono); font-size:10.5px; color:var(--text-faint); margin-top:2px; }
+  .diff{ font-family:var(--mono); font-size:9.5px; padding:3px 8px; border-radius:20px; text-transform:uppercase; letter-spacing:0.04em; flex:none; font-weight:600; }
+  .diff.easy{ color:var(--cyan); background:var(--cyan-dim); border:1px solid #5eead444; }
+  .diff.medium{ color:var(--amber); background:var(--amber-dim); border:1px solid #fbbf2444; }
+  .diff.hard{ color:var(--coral); background:var(--coral-dim); border:1px solid #fb718544; }
+  .chev{ flex:none; width:16px; height:16px; color:var(--text-faint); transition:transform .2s; }
+  .card.open .chev{ transform:rotate(180deg); color:var(--cyan); }
+
+  .card-body{ max-height:0; overflow:hidden; transition:max-height .35s ease; }
+  .card.open .card-body{ max-height:5000px; }
+  .card-inner{ padding:0 18px 22px; border-top:1px solid var(--border-soft); }
+
+  .prompt{ font-size:13.5px; color:var(--text-dim); padding:16px 0 4px; line-height:1.55; }
+  .prompt b{ color:var(--text); }
+
+  .block-label{
+    font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em;
+    color:var(--violet); margin:18px 0 8px; display:flex; align-items:center; gap:7px; font-weight:600;
+  }
+  .block-label::before{ content:''; width:5px; height:5px; border-radius:50%; background:var(--violet); }
+  .block-label.approach{ color:var(--blue); }
+  .block-label.approach::before{ background:var(--blue); }
+  .block-label.code{ color:var(--cyan); }
+  .block-label.code::before{ background:var(--cyan); }
+  .block-label.cx{ color:var(--amber); }
+  .block-label.cx::before{ background:var(--amber); }
+
+  .intuition{ font-size:13.5px; color:var(--text-dim); line-height:1.55; }
+  .approach ol{ margin:0; padding-left:18px; font-size:13.5px; color:var(--text-dim); }
+  .approach li{ margin-bottom:6px; }
+  .approach li b{ color:var(--text); }
+
+  .cx-row{ display:flex; gap:20px; flex-wrap:wrap; }
+  .cx-row .cx{ font-family:var(--mono); font-size:12px; color:var(--text-dim); }
+  .cx-row .cx b{ color:var(--amber); }
+
+  .codewrap{ position:relative; margin-top:8px; }
+  pre{
+    background:#080a10; border:1px solid var(--border-soft); border-radius:9px;
+    padding:16px 16px; overflow-x:auto; font-size:12.3px; line-height:1.6; margin:0;
+    -webkit-overflow-scrolling:touch;
+  }
+  pre code{ font-family:var(--mono); white-space:pre; color:#c7d0e6; }
+  .kw{ color:#c586c0; } .tp{ color:#4ec9b0; } .fn{ color:#dcdcaa; } .cm{ color:#5f7561; font-style:italic;} .num{ color:#b5cea8; } .str{ color:#ce9178; } .pp{ color:#569cd6; }
+  
+  .copy-btn{
+    position:absolute; top:8px; right:8px; background:var(--bg-card); border:1px solid var(--border);
+    color:var(--text-dim); font-family:var(--mono); font-size:10.5px; padding:4px 9px; border-radius:5px;
+    cursor:pointer; transition:all .15s; user-select:none;
+  }
+  .copy-btn:hover{ color:var(--cyan); border-color:var(--cyan); background:var(--bg-card-hover); }
+
+  .tags-row{ display:flex; gap:6px; flex-wrap:wrap; margin-top:16px; }
+  .pill{
+    font-family:var(--mono); font-size:10px; color:var(--text-faint);
+    border:1px solid var(--border); padding:3px 8px; border-radius:20px; background:rgba(255,255,255,0.02);
+  }
+
+  /* ---------- Interactive Decision Card ---------- */
+  .decision-box{
+    background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
+    padding:20px 22px; margin-bottom:34px; box-shadow:var(--shadow-sm);
+  }
+  .decision-box h3{ font-size:16px; color:var(--cyan); margin-bottom:8px; }
+  .decision-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-top:14px; }
+  .decision-item{
+    background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:8px; padding:12px 14px;
+  }
+  .decision-item b{ color:var(--text); font-family:var(--mono); font-size:12px; display:block; margin-bottom:4px; }
+  .decision-item p{ font-size:12.5px; color:var(--text-dim); margin:0; line-height:1.45; }
+
+  /* ---------- Quiz ---------- */
+  .quiz-section{ margin-top:60px; padding-top:10px; scroll-margin-top:72px; }
+  .quiz-intro{ color:var(--text-dim); font-size:13.5px; max-width:640px; margin-bottom:24px; line-height:1.6; }
+  .qcard{
+    background:var(--bg-card); border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px 16px; margin-bottom:14px; box-shadow:var(--shadow-sm);
+  }
+  .qcard .qnum{ font-family:var(--mono); font-size:10.5px; color:var(--violet); margin-bottom:8px; font-weight:600; }
+  .qcard .qtext{ font-size:14.5px; font-weight:600; margin-bottom:14px; }
+  .opt{
+    display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid var(--border);
+    border-radius:8px; margin-bottom:8px; cursor:pointer; font-size:13px; color:var(--text-dim);
+    transition:.15s; min-height:40px;
+  }
+  .opt:hover{ background:var(--bg-card-hover); border-color:#2b3654; }
+  .opt input{ margin-top:3px; flex:none; accent-color:var(--cyan); }
+  .opt.correct{ border-color:var(--cyan); background:var(--cyan-dim); color:var(--text); font-weight:500; }
+  .opt.wrong{ border-color:var(--coral); background:var(--coral-dim); color:var(--text); }
+  .qexplain{
+    display:none; margin-top:10px; padding:10px 12px; background:#0d1119; border-left:3px solid var(--blue);
+    font-size:12.5px; color:var(--text-dim); border-radius:0 6px 6px 0; line-height:1.5;
+  }
+  .qexplain.show{ display:block; }
+
+  .quiz-actions{ display:flex; align-items:center; gap:14px; margin-top:24px; flex-wrap:wrap; }
+  .btn{
+    font-family:var(--mono); font-size:12px; background:var(--cyan); color:#04151a; border:none;
+    padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:700; letter-spacing:0.02em;
+    min-height:38px; display:inline-flex; align-items:center; justify-content:center;
+  }
+  .btn:hover{ opacity:0.9; }
+  .btn.ghost{ background:none; border:1px solid var(--border); color:var(--text-dim); }
+  .btn.ghost:hover{ border-color:var(--cyan); color:var(--text); }
+  .score-line{ font-family:var(--mono); font-size:13px; color:var(--text-dim); }
+  .score-line b{ color:var(--cyan); font-size:16px; font-weight:700; }
+
+  /* ---------- Floating Action Button (FAB) ---------- */
+  .fab-top{
+    position:fixed; bottom:24px; right:24px; z-index:950;
+    width:42px; height:42px; border-radius:50%; background:var(--bg-card);
+    border:1px solid var(--border); color:var(--cyan); box-shadow:var(--shadow-md);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem;
+    transition:transform 0.15s, border-color 0.15s;
+  }
+  .fab-top:hover{ transform:translateY(-3px); border-color:var(--cyan); }
+
+  /* ---------- Toast notification ---------- */
+  .toast-msg{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+    background:var(--bg-card); color:var(--cyan); font-family:var(--mono); font-size:0.8rem;
+    padding:8px 18px; border-radius:20px; border:1px solid var(--cyan); box-shadow:0 6px 20px rgba(0,0,0,0.5);
+    z-index:2000; pointer-events:none; transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s;
+    opacity:0;
+  }
+  .toast-msg.show{ transform:translateX(-50%) translateY(0); opacity:1; }
+
+  footer{
+    text-align:center; padding:36px 20px; color:var(--text-faint); font-family:var(--mono);
+    font-size:11px; border-top:1px solid var(--border-soft); margin-top:60px;
+  }
+
+  /* ---------- Responsive Media Queries ---------- */
+  @media (max-width:960px){
+    .shell{ grid-template-columns:1fr; }
+    .sidebar{
+      position:fixed; top:0; left:0; height:100vh; width:min(280px, 85vw); z-index:1000;
+      background:var(--bg-panel); border-right:1px solid var(--border);
+      transform:translateX(-100%); transition:transform .25s ease; padding-top:65px;
+      box-shadow:4px 0 20px rgba(0,0,0,0.5);
+    }
+    .sidebar.open{ transform:translateX(0); }
+    .hamburger{ display:flex; }
+    main{ padding:0 18px 60px; }
+    .topbar .search{ width:130px; }
+    .topbar .search:focus-within{ width:160px; }
+    .topbar .counter{ display:none; }
+    .hero-graph{ display:none; }
+  }
+
+  @media (max-width:600px){
+    .hero{ padding:32px 2px 24px; }
+    .hero h1{ font-size:24px; }
+    .hero p.lede{ font-size:13.5px; }
+    .cat-head h2{ font-size:18px; }
+    .card-head{ padding:12px 14px; gap:10px; }
+    .card-inner{ padding:0 12px 18px; }
+    .card-head h3{ font-size:14px; }
+    .topbar .search{ width:100px; }
+    .topbar .search:focus-within{ width:130px; }
+    .hero-stats{ gap:16px; }
+    pre{ font-size:11.5px; padding:12px 10px; }
+    .filter-chips{ width:100%; overflow-x:auto; flex-wrap:nowrap; padding-bottom:4px; }
+    .filter-chip{ flex:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div class="scrim" id="scrim"></div>
+
+<header class="topbar">
+  <div class="hamburger" id="hamburger" aria-label="Toggle navigation menu"><span></span></div>
+  <svg class="mark" viewBox="0 0 30 30" fill="none">
+    <circle cx="6" cy="7" r="3.2" fill="#5eead4"/>
+    <circle cx="24" cy="6" r="3.2" fill="#6fb3ff"/>
+    <circle cx="15" cy="17" r="3.2" fill="#b39dfb"/>
+    <circle cx="6" cy="24" r="3.2" fill="#fbbf24"/>
+    <circle cx="24" cy="23" r="3.2" fill="#fb7185"/>
+    <path d="M6 7L15 17M24 6L15 17M15 17L6 24M15 17L24 23" stroke="#2b3654" stroke-width="1.3"/>
+  </svg>
+  <div class="brand">Graph Field Guide<small>C++ · LeetCode Masterclass</small></div>
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input id="searchBox" placeholder="Filter problems…" autocomplete="off">
+  </div>
+  <div class="counter"><b id="visibleCount">20</b>/20 problems</div>
+</header>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <nav class="spine">
+      <a class="spine-node" data-cat="all" href="#top">Overview</a>
+      <a class="spine-node" data-cat="c1" href="#c1">01 · Traversal (BFS/DFS)<span class="spine-count">3</span></a>
+      <a class="spine-node" data-cat="c2" href="#c2">02 · Multi-source BFS<span class="spine-count">2</span></a>
+      <a class="spine-node" data-cat="c3" href="#c3">03 · Union–Find<span class="spine-count">3</span></a>
+      <a class="spine-node" data-cat="c4" href="#c4">04 · Topological Sort<span class="spine-count">3</span></a>
+      <a class="spine-node" data-cat="c5" href="#c5">05 · Shortest Path<span class="spine-count">2</span></a>
+      <a class="spine-node" data-cat="c6" href="#c6">06 · MST<span class="spine-count">1</span></a>
+      <a class="spine-node" data-cat="c7" href="#c7">07 · Bipartite<span class="spine-count">2</span></a>
+      <a class="spine-node" data-cat="c8" href="#c8">08 · Advanced<span class="spine-count">4</span></a>
+    </nav>
+    <a class="quiz-link" href="#quiz">▸ Jump to quiz</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <section class="hero" id="top">
+      <div class="eyebrow">LeetCode Graph Patterns · C++17</div>
+      <h1>Every graph pattern <span class="hl">you'll get asked</span>, worked out in C++.</h1>
+      <p class="lede">Twenty hand-picked LeetCode graph problems grouped by canonical technique — with intuition first, step-by-step approach second, and clean C++ implementation third. Finish with a ten-question quick-check quiz to lock it in.</p>
+
+      <svg class="hero-graph" viewBox="0 0 420 320" fill="none">
+        <g stroke="#233053" stroke-width="1.3">
+          <path id="e1" d="M70 60 L200 40"/>
+          <path id="e2" d="M70 60 L60 170"/>
+          <path id="e3" d="M200 40 L330 80"/>
+          <path id="e4" d="M200 40 L210 160"/>
+          <path id="e5" d="M60 170 L210 160"/>
+          <path id="e6" d="M60 170 L100 270"/>
+          <path id="e7" d="M210 160 L330 80"/>
+          <path id="e8" d="M210 160 L280 250"/>
+          <path id="e9" d="M330 80 L360 200"/>
+          <path id="e10" d="M280 250 L360 200"/>
+          <path id="e11" d="M100 270 L280 250"/>
+        </g>
+        <g id="nodes" font-family="JetBrains Mono" font-size="10" fill="#8993ab">
+          <circle id="n1" cx="70" cy="60" r="8" fill="#0d1119" stroke="#5eead4" stroke-width="2"/>
+          <circle id="n2" cx="200" cy="40" r="8" fill="#0d1119" stroke="#2b3654" stroke-width="2"/>
+          <circle id="n3" cx="60" cy="170" r="8" fill="#0d1119" stroke="#2b3654" stroke-width="2"/>
+          <circle id="n4" cx="330" cy="80" r="8" fill="#0d1119" stroke="#2b3654" stroke-width="2"/>
+          <circle id="n5" cx="210" cy="160" r="8" fill="#0d1119" stroke="#2b3654" stroke-width="2"/>
+          <circle id="n6" cx="100" cy="270" r="8" fill="#0d1119" stroke="#2b3654" stroke-width="2"/>
+          <circle id="n7" cx="280" cy="250" r="8" fill="#0d1119" stroke="#2b3654" stroke-width="2"/>
+          <circle id="n8" cx="360" cy="200" r="8" fill="#0d1119" stroke="#2b3654" stroke-width="2"/>
+        </g>
+      </svg>
+
+      <div class="hero-stats">
+        <div class="stat"><b>20</b><span>Curated problems</span></div>
+        <div class="stat"><b>8</b><span>Core patterns</span></div>
+        <div class="stat"><b>10</b><span>Quiz questions</span></div>
+      </div>
+
+      <div class="legend">
+        <div class="tag"><span class="dot" style="background:#5eead4"></span>BFS (Unweighted Shortest Path)</div>
+        <div class="tag"><span class="dot" style="background:#6fb3ff"></span>DFS (Reachability &amp; Backtracking)</div>
+        <div class="tag"><span class="dot" style="background:#b39dfb"></span>Union–Find (Dynamic Components)</div>
+        <div class="tag"><span class="dot" style="background:#fbbf24"></span>Dijkstra / Weighted Shortest Path</div>
+        <div class="tag"><span class="dot" style="background:#fb7185"></span>Cycle / Tarjan's Bridges</div>
+      </div>
+    </section>
+
+    <!-- Interactive Decision Matrix -->
+    <div class="decision-box">
+      <h3>⚡ Rapid Decision Framework: "What should I use?"</h3>
+      <div class="decision-grid">
+        <div class="decision-item">
+          <b>Unweighted Shortest Path / Grid Moves</b>
+          <p>Use <span style="color:var(--cyan)">BFS with queue</span>. Mark visited at push time. If multiple spread origins, push all at level 0.</p>
+        </div>
+        <div class="decision-item">
+          <b>Prerequisites / Course Order / Build DAG</b>
+          <p>Use <span style="color:var(--violet)">Kahn's Topological Sort</span>. If processed count &lt; V, a cycle exists.</p>
+        </div>
+        <div class="decision-item">
+          <b>Merging Groups / Redundant Connection</b>
+          <p>Use <span style="color:var(--blue)">DSU (Union-Find)</span>. Path compression + union by rank gives ~O(1) operations.</p>
+        </div>
+        <div class="decision-item">
+          <b>Shortest Path with Non-Negative Weights</b>
+          <p>Use <span style="color:var(--amber)">Dijkstra with priority_queue</span>. For bounded hops, use Bellman-Ford.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter & View Controls Ribbon -->
+    <div class="controls-ribbon">
+      <div class="filter-chips" id="filterChips">
+        <button class="filter-chip active" data-filter="all">All (20)</button>
+        <button class="filter-chip" data-filter="easy">Easy</button>
+        <button class="filter-chip" data-filter="medium">Medium</button>
+        <button class="filter-chip" data-filter="hard">Hard</button>
+        <button class="filter-chip" data-filter="bfs">BFS</button>
+        <button class="filter-chip" data-filter="dfs">DFS</button>
+        <button class="filter-chip" data-filter="union-find">Union-Find</button>
+        <button class="filter-chip" data-filter="topo">Topo Sort</button>
+        <button class="filter-chip" data-filter="shortest">Shortest Path</button>
+      </div>
+      <div class="view-toggles">
+        <button class="toggle-btn" id="expandAllBtn">▼ Expand All</button>
+        <button class="toggle-btn" id="collapseAllBtn">▲ Collapse All</button>
+      </div>
+    </div>
+
+    <!-- ============ CATEGORY 1 ============ -->
+    <section class="cat-section" id="c1">
+      <div class="cat-head"><span class="cat-idx">01</span><h2>Traversal Basics — BFS &amp; DFS</h2></div>
+      <p class="cat-desc">The foundation everything else is built on. If a problem asks for "connected regions", "reachability", or "flood fill" — start here.</p>
+
+      <!-- Problem 1: Number of Islands -->
+      <article class="card" data-title="number of islands dfs bfs flood fill grid" data-diff="medium" data-cat="dfs bfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">01</span>
+          <div class="titles"><h3>Number of Islands</h3><div class="lc">LeetCode 200</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Given an <b>m x n</b> grid of <b>'1'</b> (land) and <b>'0'</b> (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically.</p>
+
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Every unvisited '1' is the seed of a brand-new island. Once you find one, "erase" the whole landmass connected to it (DFS or BFS) so you never count it twice. The answer is just how many times you had to start a fresh erase.</p>
+
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Scan every cell of the grid in order.</li>
+            <li>When you hit a <b>'1'</b> that hasn't been visited, increment the island count.</li>
+            <li>From that cell, run DFS/BFS marking every connected <b>'1'</b> as visited (or flip to '0').</li>
+            <li>Continue scanning — visited land is skipped instantly.</li>
+          </ol></div>
+
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(R·C)</b></span><span class="cx">Space <b>O(R·C)</b> (recursion stack, worst case all land)</span></div>
+
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">void</span> dfs(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">char</span>&gt;&gt;&amp; g, <span class="kw">int</span> r, <span class="kw">int</span> c) {
+        <span class="kw">if</span> (r &lt; <span class="num">0</span> || c &lt; <span class="num">0</span> || r &gt;= g.size() || c &gt;= g[<span class="num">0</span>].size() || g[r][c] != <span class="str">'1'</span>)
+            <span class="kw">return</span>;
+        g[r][c] = <span class="str">'0'</span>; <span class="cm">// mark visited in-place</span>
+        dfs(g, r+<span class="num">1</span>, c); dfs(g, r-<span class="num">1</span>, c);
+        dfs(g, r, c+<span class="num">1</span>); dfs(g, r, c-<span class="num">1</span>);
+    }
+    <span class="kw">int</span> numIslands(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">char</span>&gt;&gt;&amp; grid) {
+        <span class="kw">int</span> count = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r &lt; grid.size(); r++)
+            <span class="kw">for</span> (<span class="kw">int</span> c = <span class="num">0</span>; c &lt; grid[<span class="num">0</span>].size(); c++)
+                <span class="kw">if</span> (grid[r][c] == <span class="str">'1'</span>) { count++; dfs(grid, r, c); }
+        <span class="kw">return</span> count;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">DFS</span><span class="pill">grid</span><span class="pill">connected-components</span></div>
+        </div></div>
+      </article>
+
+      <!-- Problem 2: Max Area of Island -->
+      <article class="card" data-title="max area of island dfs grid" data-diff="medium" data-cat="dfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">02</span>
+          <div class="titles"><h3>Max Area of Island</h3><div class="lc">LeetCode 695</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Same grid setup as Number of Islands, but instead of counting islands, return the <b>area</b> of the largest one.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Identical scanning skeleton to Number of Islands — the only change is that the DFS now needs to <b>return a value</b> (the size of the island it just explored) instead of just marking cells.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Scan every cell; on an unvisited land cell, launch DFS.</li>
+            <li>DFS returns <b>1 + sum of the four recursive calls</b>, marking cells visited as it goes.</li>
+            <li>Track the maximum value returned across all launches.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(R·C)</b></span><span class="cx">Space <b>O(R·C)</b> worst case</span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">int</span> dfs(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; g, <span class="kw">int</span> r, <span class="kw">int</span> c) {
+        <span class="kw">if</span> (r&lt;<span class="num">0</span>||c&lt;<span class="num">0</span>||r&gt;=g.size()||c&gt;=g[<span class="num">0</span>].size()||g[r][c]==<span class="num">0</span>) <span class="kw">return</span> <span class="num">0</span>;
+        g[r][c] = <span class="num">0</span>;
+        <span class="kw">return</span> <span class="num">1</span> + dfs(g,r+<span class="num">1</span>,c) + dfs(g,r-<span class="num">1</span>,c) + dfs(g,r,c+<span class="num">1</span>) + dfs(g,r,c-<span class="num">1</span>);
+    }
+    <span class="kw">int</span> maxAreaOfIsland(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; grid) {
+        <span class="kw">int</span> best = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r &lt; grid.size(); r++)
+            <span class="kw">for</span> (<span class="kw">int</span> c = <span class="num">0</span>; c &lt; grid[<span class="num">0</span>].size(); c++)
+                <span class="kw">if</span> (grid[r][c] == <span class="num">1</span>) best = <span class="tp">max</span>(best, dfs(grid, r, c));
+        <span class="kw">return</span> best;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">DFS</span><span class="pill">grid</span></div>
+        </div></div>
+      </article>
+
+      <!-- Problem 3: Clone Graph -->
+      <article class="card" data-title="clone graph dfs bfs hashmap" data-diff="medium" data-cat="dfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">03</span>
+          <div class="titles"><h3>Clone Graph</h3><div class="lc">LeetCode 133</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Given a reference node of a connected undirected graph, return a <b>deep copy</b> (clone) of the graph.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">The trap is infinite recursion from cycles. The fix is a hashmap from <b>original node → clone</b>: before recursing into a neighbor, check if you've already started cloning it. This turns the graph traversal into one that "remembers" what it has seen.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Maintain <b>unordered_map&lt;Node*, Node*&gt; visited</b>.</li>
+            <li>DFS(node): if node is in the map, return its clone immediately.</li>
+            <li>Otherwise create the clone, <b>store it in the map first</b> (before recursing — this breaks cycles), then recursively clone each neighbor and push it into the clone's neighbor list.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(V + E)</b></span><span class="cx">Space <b>O(V)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="tp">unordered_map</span>&lt;Node*, Node*&gt; visited;
+    Node* cloneGraph(Node* node) {
+        <span class="kw">if</span> (!node) <span class="kw">return</span> <span class="kw">nullptr</span>;
+        <span class="kw">if</span> (visited.count(node)) <span class="kw">return</span> visited[node];
+        Node* clone = <span class="kw">new</span> Node(node-&gt;val);
+        visited[node] = clone; <span class="cm">// store before recursing (handles cycles)</span>
+        <span class="kw">for</span> (Node* nei : node-&gt;neighbors)
+            clone-&gt;neighbors.push_back(cloneGraph(nei));
+        <span class="kw">return</span> clone;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">DFS</span><span class="pill">hashmap</span><span class="pill">cycles</span></div>
+        </div></div>
+      </article>
+    </section>
+
+    <!-- ============ CATEGORY 2 ============ -->
+    <section class="cat-section" id="c2">
+      <div class="cat-head"><span class="cat-idx">02</span><h2>Multi-source BFS</h2></div>
+      <p class="cat-desc">Instead of starting BFS from one node, throw <em>every</em> starting point into the queue at once. Levels then represent simultaneous spread — perfect for "rot", "distance-to-nearest" problems.</p>
+
+      <article class="card" data-title="rotting oranges multi source bfs" data-diff="medium" data-cat="bfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">04</span>
+          <div class="titles"><h3>Rotting Oranges</h3><div class="lc">LeetCode 994</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Grid cells are 0 (empty), 1 (fresh orange), or 2 (rotten). Every minute, a rotten orange rots its 4-directional fresh neighbors. Return the minutes until no cell is fresh, or -1 if impossible.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">All rotten oranges spread <b>at the same time</b>, so treat them as a single BFS frontier that starts simultaneously from every rotten cell — not one BFS per orange. Each BFS "layer" processed is exactly one minute passing.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Push every initially rotten cell into the queue, count fresh oranges.</li>
+            <li>BFS layer by layer; each layer = one minute. Rot fresh neighbors, decrement fresh count, push them.</li>
+            <li>Track minutes as the number of layers processed.</li>
+            <li>After BFS, if fresh count &gt; 0, return -1, else return minutes.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(R·C)</b></span><span class="cx">Space <b>O(R·C)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">int</span> orangesRotting(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; grid) {
+        <span class="kw">int</span> rows = grid.size(), cols = grid[<span class="num">0</span>].size(), fresh = <span class="num">0</span>, minutes = <span class="num">0</span>;
+        <span class="tp">queue</span>&lt;<span class="tp">pair</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt;&gt; q;
+        <span class="kw">for</span> (<span class="kw">int</span> r=<span class="num">0</span>;r&lt;rows;r++) <span class="kw">for</span> (<span class="kw">int</span> c=<span class="num">0</span>;c&lt;cols;c++) {
+            <span class="kw">if</span> (grid[r][c]==<span class="num">2</span>) q.push({r,c});
+            <span class="kw">if</span> (grid[r][c]==<span class="num">1</span>) fresh++;
+        }
+        <span class="kw">int</span> dr[] = {<span class="num">1</span>,-<span class="num">1</span>,<span class="num">0</span>,<span class="num">0</span>}, dc[] = {<span class="num">0</span>,<span class="num">0</span>,<span class="num">1</span>,-<span class="num">1</span>};
+        <span class="kw">while</span> (!q.empty() &amp;&amp; fresh &gt; <span class="num">0</span>) {
+            <span class="kw">int</span> sz = q.size();
+            <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;sz;i++) {
+                <span class="kw">auto</span> [r,c] = q.front(); q.pop();
+                <span class="kw">for</span> (<span class="kw">int</span> d=<span class="num">0</span>;d&lt;<span class="num">4</span>;d++) {
+                    <span class="kw">int</span> nr=r+dr[d], nc=c+dc[d];
+                    <span class="kw">if</span> (nr&gt;=<span class="num">0</span>&amp;&amp;nc&gt;=<span class="num">0</span>&amp;&amp;nr&lt;rows&amp;&amp;nc&lt;cols&amp;&amp;grid[nr][nc]==<span class="num">1</span>) {
+                        grid[nr][nc] = <span class="num">2</span>; fresh--; q.push({nr,nc});
+                    }
+                }
+            }
+            minutes++;
+        }
+        <span class="kw">return</span> fresh == <span class="num">0</span> ? minutes : -<span class="num">1</span>;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">BFS</span><span class="pill">multi-source</span><span class="pill">grid</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="01 matrix multi source bfs distance" data-diff="medium" data-cat="bfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">05</span>
+          <div class="titles"><h3>01 Matrix</h3><div class="lc">LeetCode 542</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Given a binary matrix, return the distance of every cell to its nearest 0.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Rather than running BFS from every 1 toward the nearest 0 (slow), flip the direction: start BFS simultaneously from <b>every 0</b> and expand outward. The first time a 1-cell is reached, that layer number <em>is</em> its shortest distance.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Push all cells with value 0 into the queue with distance 0; mark visited.</li>
+            <li>BFS outward; each unvisited neighbor gets <b>current distance + 1</b>.</li>
+            <li>Continue until the queue is empty — every cell now holds its answer.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(R·C)</b></span><span class="cx">Space <b>O(R·C)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; updateMatrix(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; mat) {
+        <span class="kw">int</span> rows = mat.size(), cols = mat[<span class="num">0</span>].size();
+        <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; dist(rows, <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;(cols, -<span class="num">1</span>));
+        <span class="tp">queue</span>&lt;<span class="tp">pair</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt;&gt; q;
+        <span class="kw">for</span> (<span class="kw">int</span> r=<span class="num">0</span>;r&lt;rows;r++) <span class="kw">for</span> (<span class="kw">int</span> c=<span class="num">0</span>;c&lt;cols;c++)
+            <span class="kw">if</span> (mat[r][c]==<span class="num">0</span>) { dist[r][c]=<span class="num">0</span>; q.push({r,c}); }
+        <span class="kw">int</span> dr[]={<span class="num">1</span>,-<span class="num">1</span>,<span class="num">0</span>,<span class="num">0</span>}, dc[]={<span class="num">0</span>,<span class="num">0</span>,<span class="num">1</span>,-<span class="num">1</span>};
+        <span class="kw">while</span> (!q.empty()) {
+            <span class="kw">auto</span> [r,c] = q.front(); q.pop();
+            <span class="kw">for</span> (<span class="kw">int</span> d=<span class="num">0</span>;d&lt;<span class="num">4</span>;d++) {
+                <span class="kw">int</span> nr=r+dr[d], nc=c+dc[d];
+                <span class="kw">if</span> (nr&gt;=<span class="num">0</span>&amp;&amp;nc&gt;=<span class="num">0</span>&amp;&amp;nr&lt;rows&amp;&amp;nc&lt;cols&amp;&amp;dist[nr][nc]==-<span class="num">1</span>) {
+                    dist[nr][nc] = dist[r][c] + <span class="num">1</span>;
+                    q.push({nr,nc});
+                }
+            }
+        }
+        <span class="kw">return</span> dist;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">BFS</span><span class="pill">multi-source</span></div>
+        </div></div>
+      </article>
+    </section>
+
+    <!-- ============ CATEGORY 3 ============ -->
+    <section class="cat-section" id="c3">
+      <div class="cat-head"><span class="cat-idx">03</span><h2>Union–Find (Disjoint Set)</h2></div>
+      <p class="cat-desc">Whenever you're grouping items by connectivity, detecting cycles in an undirected graph, or merging sets — DSU with path compression + union by rank gives near-O(1) operations.</p>
+
+      <article class="card" data-title="number of provinces union find dsu" data-diff="medium" data-cat="union-find">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">06</span>
+          <div class="titles"><h3>Number of Provinces</h3><div class="lc">LeetCode 547</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Given an n×n adjacency matrix where <b>isConnected[i][j] = 1</b> means city i and j are directly connected, return the number of provinces (connected components).</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">This is just "count connected components", and Union–Find makes that a one-pass counting exercise: union every connected pair, then count how many distinct roots remain.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Initialize <b>parent[i] = i</b> for all n cities.</li>
+            <li>For every pair (i, j) with isConnected[i][j] == 1, <b>union(i, j)</b>.</li>
+            <li>Count how many indices are their own root (<b>find(i) == i</b>) — that's the province count.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(n² · α(n))</b></span><span class="cx">Space <b>O(n)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; parent, rnk;
+    <span class="kw">int</span> find(<span class="kw">int</span> x) { <span class="kw">return</span> parent[x]==x ? x : parent[x]=find(parent[x]); }
+    <span class="kw">void</span> unite(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+        a = find(a); b = find(b);
+        <span class="kw">if</span> (a == b) <span class="kw">return</span>;
+        <span class="kw">if</span> (rnk[a] &lt; rnk[b]) <span class="tp">swap</span>(a,b);
+        parent[b] = a;
+        <span class="kw">if</span> (rnk[a] == rnk[b]) rnk[a]++;
+    }
+    <span class="kw">int</span> findCircleNum(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; isConnected) {
+        <span class="kw">int</span> n = isConnected.size();
+        parent.resize(n); rnk.assign(n, <span class="num">0</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;n;i++) parent[i]=i;
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;n;i++)
+            <span class="kw">for</span> (<span class="kw">int</span> j=i+<span class="num">1</span>;j&lt;n;j++)
+                <span class="kw">if</span> (isConnected[i][j]) unite(i,j);
+        <span class="kw">int</span> count = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;n;i++) <span class="kw">if</span> (find(i)==i) count++;
+        <span class="kw">return</span> count;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Union-Find</span><span class="pill">components</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="redundant connection union find cycle detection" data-diff="medium" data-cat="union-find">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">07</span>
+          <div class="titles"><h3>Redundant Connection</h3><div class="lc">LeetCode 684</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">A tree with n nodes had one extra edge added, creating a cycle. Given the edge list, find the edge that can be removed to restore a tree. If multiple answers exist, return the last one in the input.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">A tree has no cycles. Process edges one at a time with Union–Find: if the two endpoints of an edge are <b>already in the same set</b> before you union them, that edge is the one closing a cycle — it's your answer.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Initialize DSU over n+1 nodes.</li>
+            <li>For each edge [u, v] in order: if <b>find(u) == find(v)</b>, return this edge immediately.</li>
+            <li>Otherwise union(u, v) and continue.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(n · α(n))</b></span><span class="cx">Space <b>O(n)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; parent;
+    <span class="kw">int</span> find(<span class="kw">int</span> x) { <span class="kw">return</span> parent[x]==x ? x : parent[x]=find(parent[x]); }
+    <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; findRedundantConnection(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; edges) {
+        <span class="kw">int</span> n = edges.size();
+        parent.resize(n+<span class="num">1</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;=n;i++) parent[i]=i;
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; e : edges) {
+            <span class="kw">int</span> a = find(e[<span class="num">0</span>]), b = find(e[<span class="num">1</span>]);
+            <span class="kw">if</span> (a == b) <span class="kw">return</span> e; <span class="cm">// closes a cycle</span>
+            parent[a] = b;
+        }
+        <span class="kw">return</span> {};
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Union-Find</span><span class="pill">cycle-detection</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="accounts merge union find dsu emails" data-diff="medium" data-cat="union-find">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">08</span>
+          <div class="titles"><h3>Accounts Merge</h3><div class="lc">LeetCode 721</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Each account is [name, email1, email2, ...]. Two accounts belong to the same person if they share at least one email. Merge accounts and return each person's sorted, deduplicated email list.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Think of every email as a node. Emails inside the same account are automatically connected. Union them all, and any two accounts sharing an email fall into the same connected component — group emails by their root.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Map each unique email to an integer id; map id → owner name.</li>
+            <li>For each account, union its first email's id with every other email's id in that account.</li>
+            <li>Group all email ids by <b>find(id)</b> into buckets.</li>
+            <li>For each bucket, sort the emails and prepend the owner's name.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(N log N)</b> (N = total emails, sorting dominates)</span><span class="cx">Space <b>O(N)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; parent;
+    <span class="kw">int</span> find(<span class="kw">int</span> x){ <span class="kw">return</span> parent[x]==x ? x : parent[x]=find(parent[x]); }
+    <span class="kw">void</span> unite(<span class="kw">int</span> a,<span class="kw">int</span> b){ parent[find(a)] = find(b); }
+
+    <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="tp">string</span>&gt;&gt; accountsMerge(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="tp">string</span>&gt;&gt;&amp; accounts) {
+        <span class="tp">unordered_map</span>&lt;<span class="tp">string</span>, <span class="kw">int</span>&gt; emailId;
+        <span class="tp">unordered_map</span>&lt;<span class="kw">int</span>, <span class="tp">string</span>&gt; emailOwner;
+        <span class="kw">int</span> id = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; acc : accounts) {
+            <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">1</span>;i&lt;acc.size();i++) {
+                <span class="kw">if</span> (!emailId.count(acc[i])) emailId[acc[i]] = id++;
+                emailOwner[emailId[acc[i]]] = acc[<span class="num">0</span>];
+            }
+        }
+        parent.resize(id);
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;id;i++) parent[i]=i;
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; acc : accounts) {
+            <span class="kw">int</span> first = emailId[acc[<span class="num">1</span>]];
+            <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">2</span>;i&lt;acc.size();i++) unite(first, emailId[acc[i]]);
+        }
+        <span class="tp">unordered_map</span>&lt;<span class="kw">int</span>, <span class="tp">set</span>&lt;<span class="tp">string</span>&gt;&gt; groups;
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; [email, eid] : emailId) groups[find(eid)].insert(email);
+        <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="tp">string</span>&gt;&gt; res;
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; [root, emails] : groups) {
+            <span class="tp">vector</span>&lt;<span class="tp">string</span>&gt; entry = { emailOwner[root] };
+            entry.insert(entry.end(), emails.begin(), emails.end());
+            res.push_back(entry);
+        }
+        <span class="kw">return</span> res;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Union-Find</span><span class="pill">hashmap</span></div>
+        </div></div>
+      </article>
+    </section>
+
+    <!-- ============ CATEGORY 4 ============ -->
+    <section class="cat-section" id="c4">
+      <div class="cat-head"><span class="cat-idx">04</span><h2>Topological Sort</h2></div>
+      <p class="cat-desc">The pattern behind "task X must happen before task Y". Only works on a <b>DAG</b> — a cycle means no valid ordering exists, which is itself useful information.</p>
+
+      <article class="card" data-title="course schedule topological sort cycle kahn" data-diff="medium" data-cat="topo">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">09</span>
+          <div class="titles"><h3>Course Schedule</h3><div class="lc">LeetCode 207</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">There are numCourses courses labeled 0..n-1. prerequisites[i] = [a, b] means you must take b before a. Return true if you can finish all courses.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">"Can I finish all courses" is exactly "does this dependency graph have a cycle". Kahn's algorithm answers this by repeatedly removing nodes with zero remaining dependencies — if you can remove all of them, there's no cycle.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Build adjacency list and an <b>indegree</b> array from prerequisites.</li>
+            <li>Push all nodes with indegree 0 into a queue.</li>
+            <li>Pop a node, "complete" it, decrement indegree of its neighbors; push any that hit 0.</li>
+            <li>If the number of completed nodes equals numCourses, return true — else a cycle exists.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(V + E)</b></span><span class="cx">Space <b>O(V + E)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">bool</span> canFinish(<span class="kw">int</span> numCourses, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; prereq) {
+        <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; adj(numCourses);
+        <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; indeg(numCourses, <span class="num">0</span>);
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; p : prereq) { adj[p[<span class="num">1</span>]].push_back(p[<span class="num">0</span>]); indeg[p[<span class="num">0</span>]]++; }
+        <span class="tp">queue</span>&lt;<span class="kw">int</span>&gt; q;
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;numCourses;i++) <span class="kw">if</span> (indeg[i]==<span class="num">0</span>) q.push(i);
+        <span class="kw">int</span> seen = <span class="num">0</span>;
+        <span class="kw">while</span> (!q.empty()) {
+            <span class="kw">int</span> u = q.front(); q.pop(); seen++;
+            <span class="kw">for</span> (<span class="kw">int</span> v : adj[u]) <span class="kw">if</span> (--indeg[v]==<span class="num">0</span>) q.push(v);
+        }
+        <span class="kw">return</span> seen == numCourses;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Topological Sort</span><span class="pill">Kahn's</span><span class="pill">cycle</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="course schedule ii topological order output" data-diff="medium" data-cat="topo">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">10</span>
+          <div class="titles"><h3>Course Schedule II</h3><div class="lc">LeetCode 210</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Same setup as Course Schedule, but return <b>a valid ordering</b> of courses, or an empty array if impossible.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Kahn's algorithm doesn't just detect a cycle — the exact order in which nodes get dequeued <em>is</em> a valid topological order. Reuse the same BFS, just record output as you go.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Same indegree/BFS setup as Course Schedule.</li>
+            <li>Every time a node is popped, append it to the result list.</li>
+            <li>If result.size() == numCourses, return it; otherwise return an empty array (cycle detected).</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(V + E)</b></span><span class="cx">Space <b>O(V + E)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; findOrder(<span class="kw">int</span> numCourses, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; prereq) {
+        <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; adj(numCourses);
+        <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; indeg(numCourses, <span class="num">0</span>);
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; p : prereq) { adj[p[<span class="num">1</span>]].push_back(p[<span class="num">0</span>]); indeg[p[<span class="num">0</span>]]++; }
+        <span class="tp">queue</span>&lt;<span class="kw">int</span>&gt; q;
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;numCourses;i++) <span class="kw">if</span> (indeg[i]==<span class="num">0</span>) q.push(i);
+        <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; order;
+        <span class="kw">while</span> (!q.empty()) {
+            <span class="kw">int</span> u = q.front(); q.pop(); order.push_back(u);
+            <span class="kw">for</span> (<span class="kw">int</span> v : adj[u]) <span class="kw">if</span> (--indeg[v]==<span class="num">0</span>) q.push(v);
+        }
+        <span class="kw">return</span> order.size()==numCourses ? order : <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;{};
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Topological Sort</span><span class="pill">Kahn's</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="alien dictionary topological sort build graph" data-diff="hard" data-cat="topo">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">11</span>
+          <div class="titles"><h3>Alien Dictionary</h3><div class="lc">LeetCode 269 (Premium)</div></div>
+          <span class="diff hard">Hard</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">A list of words is sorted according to an unknown alien alphabet. Derive the order of letters, or report that it's invalid.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">The hard part isn't the topo sort — it's <b>extracting the graph</b>. Comparing each pair of adjacent words, the first differing letter tells you "this letter comes before that letter" — one edge per adjacent word pair, at most.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Add every distinct letter in the input as a node.</li>
+            <li>For each pair of adjacent words, find the first index where characters differ; add edge <b>word1[i] → word2[i]</b> and stop comparing that pair.</li>
+            <li><b>Edge case:</b> if word1 is longer than word2 but is a prefix of it (e.g. "abc" before "ab"), the order is invalid.</li>
+            <li>Run topological sort (Kahn's) over the letter graph. If it doesn't cover all letters, return "".</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(C)</b> where C = total chars across all words</span><span class="cx">Space <b>O(1)</b> alphabet-bounded</span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="tp">string</span> alienOrder(<span class="tp">vector</span>&lt;<span class="tp">string</span>&gt;&amp; words) {
+        <span class="tp">unordered_map</span>&lt;<span class="kw">char</span>, <span class="tp">unordered_set</span>&lt;<span class="kw">char</span>&gt;&gt; adj;
+        <span class="tp">unordered_map</span>&lt;<span class="kw">char</span>, <span class="kw">int</span>&gt; indeg;
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; w : words) <span class="kw">for</span> (<span class="kw">char</span> c : w) indeg[c] = <span class="num">0</span>;
+
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i+<span class="num">1</span>&lt;words.size();i++) {
+            <span class="tp">string</span>&amp; a = words[i]; <span class="tp">string</span>&amp; b = words[i+<span class="num">1</span>];
+            <span class="kw">int</span> len = <span class="tp">min</span>(a.size(), b.size());
+            <span class="kw">bool</span> found = <span class="kw">false</span>;
+            <span class="kw">for</span> (<span class="kw">int</span> j=<span class="num">0</span>;j&lt;len;j++) {
+                <span class="kw">if</span> (a[j] != b[j]) {
+                    <span class="kw">if</span> (!adj[a[j]].count(b[j])) { adj[a[j]].insert(b[j]); indeg[b[j]]++; }
+                    found = <span class="kw">true</span>;
+                    <span class="kw">break</span>;
+                }
+            }
+            <span class="kw">if</span> (!found &amp;&amp; a.size() &gt; b.size()) <span class="kw">return</span> <span class="str">""</span>; <span class="cm">// invalid prefix order</span>
+        }
+
+        <span class="tp">queue</span>&lt;<span class="kw">char</span>&gt; q;
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; [c, d] : indeg) <span class="kw">if</span> (d==<span class="num">0</span>) q.push(c);
+        <span class="tp">string</span> res;
+        <span class="kw">while</span> (!q.empty()) {
+            <span class="kw">char</span> u = q.front(); q.pop(); res += u;
+            <span class="kw">for</span> (<span class="kw">char</span> v : adj[u]) <span class="kw">if</span> (--indeg[v]==<span class="num">0</span>) q.push(v);
+        }
+        <span class="kw">return</span> res.size()==indeg.size() ? res : <span class="str">""</span>;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Topological Sort</span><span class="pill">graph-building</span></div>
+        </div></div>
+      </article>
+    </section>
+
+    <!-- ============ CATEGORY 5 ============ -->
+    <section class="cat-section" id="c5">
+      <div class="cat-head"><span class="cat-idx">05</span><h2>Shortest Path (Weighted)</h2></div>
+      <p class="cat-desc">Plain BFS only gives shortest paths when every edge weighs the same. Once weights differ, reach for Dijkstra (no negative weights) or Bellman-Ford (handles negatives / bounded hops).</p>
+
+      <article class="card" data-title="network delay time dijkstra priority queue" data-diff="medium" data-cat="shortest">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">12</span>
+          <div class="titles"><h3>Network Delay Time</h3><div class="lc">LeetCode 743</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">A signal starts at node k and travels through a weighted directed graph. Return the time for the signal to reach every node, or -1 if some node is unreachable.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">This is the textbook definition of "single-source shortest path with non-negative weights" — exactly what Dijkstra was designed for. Always expand the <b>closest unfinalized node next</b>, and a min-heap keeps that cheap.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Build a weighted adjacency list.</li>
+            <li>Min-heap of (distance, node), starting with (0, k). dist[] initialized to infinity.</li>
+            <li>Pop the smallest; if already finalized with a better distance, skip.</li>
+            <li>Relax all neighbors: if <b>dist[u] + weight &lt; dist[v]</b>, update and push.</li>
+            <li>Answer is the max value in dist[] (or -1 if any node stayed infinity).</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(E log V)</b></span><span class="cx">Space <b>O(V + E)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">int</span> networkDelayTime(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; times, <span class="kw">int</span> n, <span class="kw">int</span> k) {
+        <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="tp">pair</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt;&gt;&gt; adj(n+<span class="num">1</span>);
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; t : times) adj[t[<span class="num">0</span>]].push_back({t[<span class="num">1</span>], t[<span class="num">2</span>]});
+
+        <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; dist(n+<span class="num">1</span>, INT_MAX);
+        dist[k] = <span class="num">0</span>;
+        <span class="tp">priority_queue</span>&lt;<span class="tp">pair</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt;, <span class="tp">vector</span>&lt;<span class="tp">pair</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt;&gt;, <span class="tp">greater</span>&lt;&gt;&gt; pq;
+        pq.push({<span class="num">0</span>, k});
+
+        <span class="kw">while</span> (!pq.empty()) {
+            <span class="kw">auto</span> [d, u] = pq.top(); pq.pop();
+            <span class="kw">if</span> (d &gt; dist[u]) <span class="kw">continue</span>;
+            <span class="kw">for</span> (<span class="kw">auto</span>&amp; [v, w] : adj[u]) {
+                <span class="kw">if</span> (dist[u] + w &lt; dist[v]) {
+                    dist[v] = dist[u] + w;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+        <span class="kw">int</span> ans = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">1</span>;i&lt;=n;i++) ans = <span class="tp">max</span>(ans, dist[i]);
+        <span class="kw">return</span> ans == INT_MAX ? -<span class="num">1</span> : ans;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Dijkstra</span><span class="pill">priority_queue</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="cheapest flights within k stops bellman ford" data-diff="medium" data-cat="shortest">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">13</span>
+          <div class="titles"><h3>Cheapest Flights Within K Stops</h3><div class="lc">LeetCode 787</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Find the cheapest price from src to dst using at most k stops (i.e. at most k+1 edges), or -1 if not reachable within that limit.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Dijkstra optimizes for shortest path with <b>unlimited</b> hops, so it can't respect a hop limit correctly. Bellman-Ford's relax-all-edges-in-rounds structure naturally caps hops: doing exactly <b>k+1 rounds</b> of relaxation guarantees paths use at most k+1 edges.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>dist[] initialized to infinity except dist[src] = 0.</li>
+            <li>Repeat <b>k+1</b> times: using a <em>snapshot</em> of dist from the previous round, relax every edge.</li>
+            <li>The snapshot copy is essential — it stops a single round from chaining multiple hops together.</li>
+            <li>Return dist[dst], or -1 if still infinity.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(k · E)</b></span><span class="cx">Space <b>O(V)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">int</span> findCheapestPrice(<span class="kw">int</span> n, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; flights, <span class="kw">int</span> src, <span class="kw">int</span> dst, <span class="kw">int</span> k) {
+        <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; dist(n, INT_MAX);
+        dist[src] = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;=k;i++) {
+            <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; tmp = dist; <span class="cm">// snapshot: caps hops per round</span>
+            <span class="kw">for</span> (<span class="kw">auto</span>&amp; f : flights) {
+                <span class="kw">int</span> u=f[<span class="num">0</span>], v=f[<span class="num">1</span>], w=f[<span class="num">2</span>];
+                <span class="kw">if</span> (dist[u] != INT_MAX &amp;&amp; dist[u]+w &lt; tmp[v])
+                    tmp[v] = dist[u] + w;
+            }
+            dist = tmp;
+        }
+        <span class="kw">return</span> dist[dst]==INT_MAX ? -<span class="num">1</span> : dist[dst];
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Bellman-Ford</span><span class="pill">bounded-hops</span></div>
+        </div></div>
+      </article>
+    </section>
+
+    <!-- ============ CATEGORY 6 ============ -->
+    <section class="cat-section" id="c6">
+      <div class="cat-head"><span class="cat-idx">06</span><h2>Minimum Spanning Tree</h2></div>
+      <p class="cat-desc">Connect every node as cheaply as possible with no cycles. Prim's grows one tree outward; Kruskal's sorts edges and unions greedily. Either works — Prim's shines on dense graphs.</p>
+
+      <article class="card" data-title="min cost to connect all points mst prim kruskal" data-diff="medium" data-cat="mst">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">14</span>
+          <div class="titles"><h3>Min Cost to Connect All Points</h3><div class="lc">LeetCode 1584</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Given points on a 2D plane, connect all of them with edges weighted by Manhattan distance, minimizing total edge cost.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">The points form a complete graph — this is a pure MST problem in disguise. Prim's algorithm is a natural fit: grow one connected tree by always adding the <b>cheapest edge</b> that reaches a new point.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Track which points are in the MST with a visited array.</li>
+            <li>Min-heap of (cost, point), starting from point 0 with cost 0.</li>
+            <li>Pop the cheapest; if already visited, skip. Otherwise add its cost to the total and mark visited.</li>
+            <li>Push the Manhattan distance to every unvisited point as a candidate edge.</li>
+            <li>Stop once all points are visited.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(n² log n)</b></span><span class="cx">Space <b>O(n²)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">int</span> minCostConnectPoints(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; pts) {
+        <span class="kw">int</span> n = pts.size();
+        <span class="tp">vector</span>&lt;<span class="kw">bool</span>&gt; inMST(n, <span class="kw">false</span>);
+        <span class="tp">priority_queue</span>&lt;<span class="tp">pair</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt;, <span class="tp">vector</span>&lt;<span class="tp">pair</span>&lt;<span class="kw">int</span>,<span class="kw">int</span>&gt;&gt;, <span class="tp">greater</span>&lt;&gt;&gt; pq;
+        pq.push({<span class="num">0</span>, <span class="num">0</span>});
+        <span class="kw">int</span> total = <span class="num">0</span>, connected = <span class="num">0</span>;
+
+        <span class="kw">while</span> (connected &lt; n) {
+            <span class="kw">auto</span> [cost, u] = pq.top(); pq.pop();
+            <span class="kw">if</span> (inMST[u]) <span class="kw">continue</span>;
+            inMST[u] = <span class="kw">true</span>; total += cost; connected++;
+            <span class="kw">for</span> (<span class="kw">int</span> v=<span class="num">0</span>;v&lt;n;v++) {
+                <span class="kw">if</span> (!inMST[v]) {
+                    <span class="kw">int</span> d = <span class="tp">abs</span>(pts[u][<span class="num">0</span>]-pts[v][<span class="num">0</span>]) + <span class="tp">abs</span>(pts[u][<span class="num">1</span>]-pts[v][<span class="num">1</span>]);
+                    pq.push({d, v});
+                }
+            }
+        }
+        <span class="kw">return</span> total;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">MST</span><span class="pill">Prim's</span><span class="pill">priority_queue</span></div>
+        </div></div>
+      </article>
+    </section>
+
+    <!-- ============ CATEGORY 7 ============ -->
+    <section class="cat-section" id="c7">
+      <div class="cat-head"><span class="cat-idx">07</span><h2>Bipartite &amp; Two-Coloring</h2></div>
+      <p class="cat-desc">Can you split nodes into two groups so every edge crosses groups? Try to 2-color the graph with BFS/DFS — a coloring conflict means "no".</p>
+
+      <article class="card" data-title="is graph bipartite two coloring bfs dfs" data-diff="medium" data-cat="dfs bfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">15</span>
+          <div class="titles"><h3>Is Graph Bipartite?</h3><div class="lc">LeetCode 785</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Given an undirected graph as an adjacency list, determine if it's bipartite — nodes can be split into two sets so every edge goes between sets.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Try to color every node with one of two colors such that neighbors always differ. If you're ever forced to give a node the same color as a neighbor, the graph isn't bipartite. This is naturally a BFS/DFS with a color array.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>color[] initialized to 0 (uncolored). Iterate every node (graph may be disconnected).</li>
+            <li>If uncolored, BFS from it, assigning color 1.</li>
+            <li>For each neighbor: if uncolored, assign the opposite color and continue; if already colored the <b>same</b> as current node, return false.</li>
+            <li>If every component colors cleanly, return true.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(V + E)</b></span><span class="cx">Space <b>O(V)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">bool</span> isBipartite(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; graph) {
+        <span class="kw">int</span> n = graph.size();
+        <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; color(n, <span class="num">0</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>;i&lt;n;i++) {
+            <span class="kw">if</span> (color[i] != <span class="num">0</span>) <span class="kw">continue</span>;
+            <span class="tp">queue</span>&lt;<span class="kw">int</span>&gt; q; q.push(i); color[i] = <span class="num">1</span>;
+            <span class="kw">while</span> (!q.empty()) {
+                <span class="kw">int</span> u = q.front(); q.pop();
+                <span class="kw">for</span> (<span class="kw">int</span> v : graph[u]) {
+                    <span class="kw">if</span> (color[v] == <span class="num">0</span>) { color[v] = -color[u]; q.push(v); }
+                    <span class="kw">else if</span> (color[v] == color[u]) <span class="kw">return</span> <span class="kw">false</span>;
+                }
+            }
+        }
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">BFS</span><span class="pill">2-coloring</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="possible bipartition dfs graph coloring" data-diff="medium" data-cat="dfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">16</span>
+          <div class="titles"><h3>Possible Bipartition</h3><div class="lc">LeetCode 886</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">n people, and a list of "dislike" pairs. Split everyone into two groups such that no two people in the same group dislike each other.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">A "dislike" edge is just a constraint that both endpoints must be in different groups — that's precisely an edge in a bipartite-coloring problem. Build the dislike graph and reuse the exact same 2-coloring approach.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Build an adjacency list from the dislikes array (1-indexed people).</li>
+            <li>DFS/BFS coloring exactly as in "Is Graph Bipartite", starting fresh for every uncolored person.</li>
+            <li>Any color conflict on an edge → return false; otherwise true.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(n + d)</b> (d = dislikes)</span><span class="cx">Space <b>O(n + d)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">bool</span> dfs(<span class="kw">int</span> u, <span class="kw">int</span> c, <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&amp; color, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; adj) {
+        color[u] = c;
+        <span class="kw">for</span> (<span class="kw">int</span> v : adj[u]) {
+            <span class="kw">if</span> (color[v] == c) <span class="kw">return</span> <span class="kw">false</span>;
+            <span class="kw">if</span> (color[v] == <span class="num">0</span> &amp;&amp; !dfs(v, -c, color, adj)) <span class="kw">return</span> <span class="kw">false</span>;
+        }
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+    <span class="kw">bool</span> possibleBipartition(<span class="kw">int</span> n, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; dislikes) {
+        <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; adj(n+<span class="num">1</span>);
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; d : dislikes) { adj[d[<span class="num">0</span>]].push_back(d[<span class="num">1</span>]); adj[d[<span class="num">1</span>]].push_back(d[<span class="num">0</span>]); }
+        <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; color(n+<span class="num">1</span>, <span class="num">0</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">1</span>;i&lt;=n;i++)
+            <span class="kw">if</span> (color[i]==<span class="num">0</span> &amp;&amp; !dfs(i, <span class="num">1</span>, color, adj)) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">DFS</span><span class="pill">2-coloring</span></div>
+        </div></div>
+      </article>
+    </section>
+
+    <!-- ============ CATEGORY 8 ============ -->
+    <section class="cat-section" id="c8">
+      <div class="cat-head"><span class="cat-idx">08</span><h2>Advanced &amp; Special Techniques</h2></div>
+      <p class="cat-desc">Word ladder graphs, reverse flood-fill, Hierholzer's Eulerian trail, and Tarjan's bridge-finding algorithm.</p>
+
+      <article class="card" data-title="word ladder bfs shortest path" data-diff="hard" data-cat="bfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">17</span>
+          <div class="titles"><h3>Word Ladder</h3><div class="lc">LeetCode 127</div></div>
+          <span class="diff hard">Hard</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Given beginWord, endWord, and a wordList, return the minimum number of words in a transformation sequence from beginWord to endWord, changing one letter at a time.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Each word is a node; words differing by exactly one character share an unweighted edge. "Shortest transformation sequence" = "shortest path in unweighted graph" = <b>BFS</b>.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Store wordList in an unordered_set for O(1) existence checks.</li>
+            <li>Queue holds (current_word, current_level). Push beginWord with level 1.</li>
+            <li>For each word popped: try all 26 character replacements for each position. If a replacement exists in the set, erase it (to mark visited) and push it to the queue with level + 1.</li>
+            <li>If endWord is matched, return its level. If queue empties, return 0.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(N · L · 26)</b> (N words of length L)</span><span class="cx">Space <b>O(N · L)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">int</span> ladderLength(<span class="tp">string</span> beginWord, <span class="tp">string</span> endWord, <span class="tp">vector</span>&lt;<span class="tp">string</span>&gt;&amp; wordList) {
+        <span class="tp">unordered_set</span>&lt;<span class="tp">string</span>&gt; words(wordList.begin(), wordList.end());
+        <span class="kw">if</span> (!words.count(endWord)) <span class="kw">return</span> <span class="num">0</span>;
+        <span class="tp">queue</span>&lt;<span class="tp">pair</span>&lt;<span class="tp">string</span>,<span class="kw">int</span>&gt;&gt; q;
+        q.push({beginWord, <span class="num">1</span>});
+        <span class="kw">while</span> (!q.empty()) {
+            <span class="kw">auto</span> [w, steps] = q.front(); q.pop();
+            <span class="kw">if</span> (w == endWord) <span class="kw">return</span> steps;
+            <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; w.size(); i++) {
+                <span class="kw">char</span> orig = w[i];
+                <span class="kw">for</span> (<span class="kw">char</span> c = <span class="str">'a'</span>; c &lt;= <span class="str">'z'</span>; c++) {
+                    w[i] = c;
+                    <span class="kw">if</span> (words.count(w)) {
+                        words.erase(w); <span class="cm">// mark visited</span>
+                        q.push({w, steps + <span class="num">1</span>});
+                    }
+                }
+                w[i] = orig;
+            }
+        }
+        <span class="kw">return</span> <span class="num">0</span>;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">BFS</span><span class="pill">string-graph</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="pacific atlantic water flow reverse dfs" data-diff="medium" data-cat="dfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">18</span>
+          <div class="titles"><h3>Pacific Atlantic Water Flow</h3><div class="lc">LeetCode 417</div></div>
+          <span class="diff medium">Medium</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Return all coordinates where water can flow to <b>both</b> the Pacific Ocean (top/left) and Atlantic Ocean (bottom/right), flowing downhill or flat.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Checking every cell's path downhill to both oceans is slow. Reverse the flow: start from the ocean borders and flood-fill <b>uphill</b>. The intersection of cells reachable from the Pacific and Atlantic is the answer.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Create two boolean matrices: pacific[][] and atlantic[][].</li>
+            <li>Run DFS from Pacific borders (top/left) uphill (<span class="mono">heights[nr][nc] &gt;= heights[r][c]</span>).</li>
+            <li>Run DFS from Atlantic borders (bottom/right) uphill.</li>
+            <li>Any cell where both matrices are true can flow to both oceans.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(R·C)</b></span><span class="cx">Space <b>O(R·C)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="kw">int</span> R, C;
+    <span class="kw">int</span> dr[<span class="num">4</span>] = {<span class="num">1</span>,-<span class="num">1</span>,<span class="num">0</span>,<span class="num">0</span>}, dc[<span class="num">4</span>] = {<span class="num">0</span>,<span class="num">0</span>,<span class="num">1</span>,-<span class="num">1</span>};
+    <span class="kw">void</span> dfs(<span class="kw">int</span> r, <span class="kw">int</span> c, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">bool</span>&gt;&gt;&amp; vis, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; H) {
+        vis[r][c] = <span class="kw">true</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> d = <span class="num">0</span>; d &lt; <span class="num">4</span>; d++) {
+            <span class="kw">int</span> nr = r+dr[d], nc = c+dc[d];
+            <span class="kw">if</span> (nr&gt;=<span class="num">0</span> &amp;&amp; nc&gt;=<span class="num">0</span> &amp;&amp; nr&lt;R &amp;&amp; nc&lt;C &amp;&amp; !vis[nr][nc] &amp;&amp; H[nr][nc] &gt;= H[r][c])
+                dfs(nr, nc, vis, H);
+        }
+    }
+    <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; pacificAtlantic(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; H) {
+        R = H.size(); C = H[<span class="num">0</span>].size();
+        <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">bool</span>&gt;&gt; pac(R, <span class="tp">vector</span>&lt;<span class="kw">bool</span>&gt;(C, <span class="kw">false</span>)), atl(R, <span class="tp">vector</span>&lt;<span class="kw">bool</span>&gt;(C, <span class="kw">false</span>));
+        <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r &lt; R; r++) { dfs(r, <span class="num">0</span>, pac, H); dfs(r, C-<span class="num">1</span>, atl, H); }
+        <span class="kw">for</span> (<span class="kw">int</span> c = <span class="num">0</span>; c &lt; C; c++) { dfs(<span class="num">0</span>, c, pac, H); dfs(R-<span class="num">1</span>, c, atl, H); }
+        <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; res;
+        <span class="kw">for</span> (<span class="kw">int</span> r = <span class="num">0</span>; r &lt; R; r++)
+            <span class="kw">for</span> (<span class="kw">int</span> c = <span class="num">0</span>; c &lt; C; c++)
+                <span class="kw">if</span> (pac[r][c] &amp;&amp; atl[r][c]) res.push_back({r, c});
+        <span class="kw">return</span> res;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">DFS</span><span class="pill">reverse-flow</span><span class="pill">grid</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="reconstruct itinerary eulerian path hierholzer" data-diff="hard" data-cat="dfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">19</span>
+          <div class="titles"><h3>Reconstruct Itinerary</h3><div class="lc">LeetCode 332</div></div>
+          <span class="diff hard">Hard</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Given a list of flight tickets [from, to], find an itinerary starting at "JFK" that uses every single ticket exactly once in lexicographical order.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">Using every edge exactly once is finding an <b>Eulerian Path</b>. Hierholzer's algorithm: post-order DFS that consumes edges as it goes, then reversing the output path at the end.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>Build an adjacency map where each airport maps to a <b>min-priority-queue</b> (or multiset) of destinations.</li>
+            <li>DFS from "JFK": while current airport has unused tickets, pop the lexicographically smallest neighbor and recurse.</li>
+            <li>When stuck with no edges left, push current airport to the result array (post-order recording).</li>
+            <li>Reverse the result array before returning.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(E log E)</b> (heap sorting per edge)</span><span class="cx">Space <b>O(V + E)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="tp">unordered_map</span>&lt;<span class="tp">string</span>, <span class="tp">priority_queue</span>&lt;<span class="tp">string</span>, <span class="tp">vector</span>&lt;<span class="tp">string</span>&gt;, <span class="tp">greater</span>&lt;<span class="tp">string</span>&gt;&gt;&gt; adj;
+    <span class="tp">vector</span>&lt;<span class="tp">string</span>&gt; result;
+
+    <span class="kw">void</span> visit(<span class="tp">string</span> airport) {
+        <span class="kw">while</span> (!adj[airport].empty()) {
+            <span class="tp">string</span> next = adj[airport].top();
+            adj[airport].pop();
+            visit(next);
+        }
+        result.push_back(airport);
+    }
+
+    <span class="tp">vector</span>&lt;<span class="tp">string</span>&gt; findItinerary(<span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="tp">string</span>&gt;&gt;&amp; tickets) {
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; t : tickets) adj[t[<span class="num">0</span>]].push(t[<span class="num">1</span>]);
+        visit(<span class="str">"JFK"</span>);
+        <span class="tp">reverse</span>(result.begin(), result.end());
+        <span class="kw">return</span> result;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Eulerian Path</span><span class="pill">Hierholzer's</span></div>
+        </div></div>
+      </article>
+
+      <article class="card" data-title="critical connections network bridges tarjan" data-diff="hard" data-cat="dfs">
+        <div class="card-head" onclick="toggleCard(this)">
+          <span class="num">20</span>
+          <div class="titles"><h3>Critical Connections in a Network</h3><div class="lc">LeetCode 1192</div></div>
+          <span class="diff hard">Hard</span>
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="card-body"><div class="card-inner">
+          <p class="prompt">Given a connected undirected graph of servers, find all "bridges" — edges whose removal would disconnect the network.</p>
+          <div class="block-label">Intuition</div>
+          <p class="intuition">This is Tarjan's bridge-finding algorithm. During a DFS, track <b>discovery time</b> of each node and the <b>lowest discovery time reachable</b> from its subtree (via back-edges). An edge (u, v) is a bridge exactly when v's subtree can't reach back to u or anything earlier — <b>low[v] &gt; disc[u]</b>.</p>
+          <div class="block-label approach">Approach</div>
+          <div class="approach"><ol>
+            <li>DFS from any node, assigning each node a discovery time on first visit.</li>
+            <li>low[node] starts equal to disc[node], then gets minimized by children's low[] values and back-edges to ancestors.</li>
+            <li>Skip immediately re-visiting the parent.</li>
+            <li>After exploring child v from u: if <b>low[v] &gt; disc[u]</b>, edge (u, v) is a bridge — record it.</li>
+          </ol></div>
+          <div class="block-label cx">Complexity</div>
+          <div class="cx-row"><span class="cx">Time <b>O(V + E)</b></span><span class="cx">Space <b>O(V + E)</b></span></div>
+          <div class="block-label code">C++</div>
+          <div class="codewrap"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code><span class="kw">class</span> <span class="tp">Solution</span> {
+<span class="kw">public</span>:
+    <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; adj;
+    <span class="tp">vector</span>&lt;<span class="kw">int</span>&gt; disc, low;
+    <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; bridges;
+    <span class="kw">int</span> timer = <span class="num">0</span>;
+
+    <span class="kw">void</span> dfs(<span class="kw">int</span> u, <span class="kw">int</span> parentEdge) {
+        disc[u] = low[u] = timer++;
+        <span class="kw">for</span> (<span class="kw">int</span> v : adj[u]) {
+            <span class="kw">if</span> (v == parentEdge) { parentEdge = -<span class="num">1</span>; <span class="kw">continue</span>; } <span class="cm">// skip one parent edge only</span>
+            <span class="kw">if</span> (disc[v] == -<span class="num">1</span>) {
+                dfs(v, u);
+                low[u] = <span class="tp">min</span>(low[u], low[v]);
+                <span class="kw">if</span> (low[v] &gt; disc[u]) bridges.push_back({u, v});
+            } <span class="kw">else</span> {
+                low[u] = <span class="tp">min</span>(low[u], disc[v]);
+            }
+        }
+    }
+
+    <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt; criticalConnections(<span class="kw">int</span> n, <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="kw">int</span>&gt;&gt;&amp; connections) {
+        adj.assign(n, {});
+        <span class="kw">for</span> (<span class="kw">auto</span>&amp; c : connections) { adj[c[<span class="num">0</span>]].push_back(c[<span class="num">1</span>]); adj[c[<span class="num">1</span>]].push_back(c[<span class="num">0</span>]); }
+        disc.assign(n, -<span class="num">1</span>); low.assign(n, -<span class="num">1</span>);
+        dfs(<span class="num">0</span>, -<span class="num">1</span>);
+        <span class="kw">return</span> bridges;
+    }
+};</code></pre></div>
+          <div class="tags-row"><span class="pill">Tarjan's</span><span class="pill">bridges</span><span class="pill">DFS</span></div>
+        </div></div>
+      </article>
+    </section>
+
+    <!-- ============ QUIZ ============ -->
+    <section class="quiz-section" id="quiz">
+      <div class="cat-head"><span class="cat-idx">✓</span><h2>Quick-check Quiz (10 Questions)</h2></div>
+      <p class="quiz-intro">Test your intuition on the 8 core patterns. Pick an answer for each question, then click <b>Check Answers</b> for instant feedback and detailed explanations.</p>
+
+      <form id="quizForm">
+        <div class="qcard" data-answer="b">
+          <div class="qnum">Question 1</div>
+          <div class="qtext">You need the shortest path in an unweighted graph. What is the optimal tool?</div>
+          <label class="opt"><input type="radio" name="q1" value="a"> Depth-First Search</label>
+          <label class="opt"><input type="radio" name="q1" value="b"> Breadth-First Search</label>
+          <label class="opt"><input type="radio" name="q1" value="c"> Dijkstra's algorithm</label>
+          <label class="opt"><input type="radio" name="q1" value="d"> Union-Find</label>
+          <div class="qexplain">BFS explores level by level, so the first time it reaches a node is guaranteed to be via the fewest edges — exactly "shortest path" when every edge has equal weight (O(V+E)).</div>
+        </div>
+
+        <div class="qcard" data-answer="c">
+          <div class="qnum">Question 2</div>
+          <div class="qtext">Which algorithm is required once edge weights can be <b>negative</b>?</div>
+          <label class="opt"><input type="radio" name="q2" value="a"> Dijkstra</label>
+          <label class="opt"><input type="radio" name="q2" value="b"> Prim's</label>
+          <label class="opt"><input type="radio" name="q2" value="c"> Bellman-Ford</label>
+          <label class="opt"><input type="radio" name="q2" value="d"> BFS</label>
+          <div class="qexplain">Dijkstra's greedy "closest node is final" assumption breaks with negative weights. Bellman-Ford relaxes all edges repeatedly and correctly handles negatives (and detects negative cycles).</div>
+        </div>
+
+        <div class="qcard" data-answer="b">
+          <div class="qnum">Question 3</div>
+          <div class="qtext">Topological sort is only valid on graphs that are:</div>
+          <label class="opt"><input type="radio" name="q3" value="a"> Weighted and connected</label>
+          <label class="opt"><input type="radio" name="q3" value="b"> Directed and acyclic (a DAG)</label>
+          <label class="opt"><input type="radio" name="q3" value="c"> Undirected and bipartite</label>
+          <label class="opt"><input type="radio" name="q3" value="d"> Any graph with positive weights</label>
+          <div class="qexplain">A cycle would create a contradiction — "A before B before C before A" has no valid linear order. A DAG (Directed Acyclic Graph) is strictly required.</div>
+        </div>
+
+        <div class="qcard" data-answer="a">
+          <div class="qnum">Question 4</div>
+          <div class="qtext">In Union-Find, what does "path compression" achieve?</div>
+          <label class="opt"><input type="radio" name="q4" value="a"> Flattens the tree so future find() calls are close to O(1)</label>
+          <label class="opt"><input type="radio" name="q4" value="b"> Sorts the elements by value</label>
+          <label class="opt"><input type="radio" name="q4" value="c"> Detects cycles automatically without find</label>
+          <label class="opt"><input type="radio" name="q4" value="d"> Removes duplicate edges from memory</label>
+          <div class="qexplain">Path compression makes every node on a find() traversal point directly to the root, reducing the tree height and giving nearly O(1) amortized lookups.</div>
+        </div>
+
+        <div class="qcard" data-answer="c">
+          <div class="qnum">Question 5</div>
+          <div class="qtext">Rotting Oranges pushes <b>all initially rotten cells</b> into the BFS queue before starting. Why?</div>
+          <label class="opt"><input type="radio" name="q5" value="a"> Single-source BFS can't handle grids</label>
+          <label class="opt"><input type="radio" name="q5" value="b"> It would give the wrong final grid state</label>
+          <label class="opt"><input type="radio" name="q5" value="c"> Multiple oranges rot simultaneously in parallel each minute — one shared BFS models this wave correctly and efficiently</label>
+          <label class="opt"><input type="radio" name="q5" value="d"> BFS requires exactly one starting node by definition</label>
+          <div class="qexplain">All rotten oranges spread at the same time. A multi-source BFS models every "layer" as one minute passing for all of them simultaneously.</div>
+        </div>
+
+        <div class="qcard" data-answer="d">
+          <div class="qnum">Question 6</div>
+          <div class="qtext">What is the time complexity of Dijkstra's algorithm using a binary min-heap?</div>
+          <label class="opt"><input type="radio" name="q6" value="a"> O(V)</label>
+          <label class="opt"><input type="radio" name="q6" value="b"> O(V + E)</label>
+          <label class="opt"><input type="radio" name="q6" value="c"> O(V²)</label>
+          <label class="opt"><input type="radio" name="q6" value="d"> O((V + E) log V)</label>
+          <div class="qexplain">Each edge relaxation can push to the priority_queue (costing O(log V)), giving O((V + E) log V) with a binary heap implementation.</div>
+        </div>
+
+        <div class="qcard" data-answer="b">
+          <div class="qnum">Question 7</div>
+          <div class="qtext">In Course Schedule (cycle detection via Kahn's algorithm), how do you know a cycle exists?</div>
+          <label class="opt"><input type="radio" name="q7" value="a"> The queue never becomes empty</label>
+          <label class="opt"><input type="radio" name="q7" value="b"> Fewer nodes get processed than the total number of courses</label>
+          <label class="opt"><input type="radio" name="q7" value="c"> Some node has indegree greater than its neighbor count</label>
+          <label class="opt"><input type="radio" name="q7" value="d"> The adjacency list is empty</label>
+          <div class="qexplain">Nodes trapped in a cycle never drop to in-degree 0, so they are never enqueued. If the total processed count is less than numCourses, a cycle exists.</div>
+        </div>
+
+        <div class="qcard" data-answer="a">
+          <div class="qnum">Question 8</div>
+          <div class="qtext">A "bridge" in a graph (as in Critical Connections) is an edge that:</div>
+          <label class="opt"><input type="radio" name="q8" value="a"> Disconnects the graph into more components if removed</label>
+          <label class="opt"><input type="radio" name="q8" value="b"> Has the maximum weight in the graph</label>
+          <label class="opt"><input type="radio" name="q8" value="c"> Connects two nodes with the same color in a bipartite graph</label>
+          <label class="opt"><input type="radio" name="q8" value="d"> Is part of every possible spanning tree</label>
+          <div class="qexplain">A bridge is a critical edge whose removal increases the number of connected components because there is no alternative back-edge cycle connecting its endpoints.</div>
+        </div>
+
+        <div class="qcard" data-answer="c">
+          <div class="qnum">Question 9</div>
+          <div class="qtext">Prim's algorithm for MST is generally preferred over Kruskal's when the graph is:</div>
+          <label class="opt"><input type="radio" name="q9" value="a"> A tree already</label>
+          <label class="opt"><input type="radio" name="q9" value="b"> Disconnected</label>
+          <label class="opt"><input type="radio" name="q9" value="c"> Dense (many edges relative to nodes, e.g. complete graphs)</label>
+          <label class="opt"><input type="radio" name="q9" value="d"> Bipartite</label>
+          <div class="qexplain">Kruskal's sorts all E edges upfront (O(E log E)). Prim's grows outward from vertices and is especially efficient with adjacency matrices/dense complete graphs.</div>
+        </div>
+
+        <div class="qcard" data-answer="b">
+          <div class="qnum">Question 10</div>
+          <div class="qtext">Pacific Atlantic Water Flow runs DFS starting from the ocean borders inward rather than from every cell outward. Why?</div>
+          <label class="opt"><input type="radio" name="q10" value="a"> DFS cannot start from more than one cell</label>
+          <label class="opt"><input type="radio" name="q10" value="b"> Checking reachability per cell is quadratic — reversing direction solves reachability in a single linear pass per ocean</label>
+          <label class="opt"><input type="radio" name="q10" value="c"> Grid problems always require reverse traversal</label>
+          <label class="opt"><input type="radio" name="q10" value="d"> The ocean cells have a different data type</label>
+          <div class="qexplain">Flooding inward from the ocean boundaries uphill lets one single DFS pass mark all cells capable of reaching that ocean in O(R·C) time.</div>
+        </div>
+
+        <div class="quiz-actions">
+          <button type="button" class="btn" onclick="checkQuiz()">Check Answers</button>
+          <button type="button" class="btn ghost" onclick="resetQuiz()">Reset</button>
+          <span class="score-line" id="scoreLine"></span>
+        </div>
+      </form>
+    </section>
+
+    <footer>Graph Field Guide — built for C++ interview prep · traverse wisely</footer>
+  </main>
+</div>
+
+<!-- Floating Action Button for Scroll to Top -->
+<button class="fab-top" id="fabTop" title="Scroll to top" aria-label="Scroll to top">↑</button>
+
+<div class="toast-msg" id="toast-msg">Code copied to clipboard!</div>
+
+<script>
+  // ---------- Progress bar & Scrollspy ----------
+  const progressBar = document.getElementById('progress-bar');
+  const navLinks = Array.from(document.querySelectorAll('.spine-node'));
+  const targets = ['top','c1','c2','c3','c4','c5','c6','c7','c8','quiz'].map(id => document.getElementById(id)).filter(Boolean);
+
+  function onScroll(){
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    if(progressBar) progressBar.style.width = (docHeight > 0 ? (scrollTop / docHeight * 100) : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(l => l.classList.toggle('active', l.dataset.cat === (id === 'top' ? 'all' : id)));
+      }
+    });
+  }, { rootMargin: '-30% 0px -50% 0px' });
+  targets.forEach(t => io.observe(t));
+
+  // ---------- Accordion Card Toggle ----------
+  function toggleCard(headEl){
+    headEl.parentElement.classList.toggle('open');
+  }
+
+  // ---------- Expand All / Collapse All ----------
+  const expandAllBtn = document.getElementById('expandAllBtn');
+  const collapseAllBtn = document.getElementById('collapseAllBtn');
+  const allCards = document.querySelectorAll('.card');
+
+  if(expandAllBtn){
+    expandAllBtn.addEventListener('click', () => {
+      allCards.forEach(c => c.classList.add('open'));
+    });
+  }
+  if(collapseAllBtn){
+    collapseAllBtn.addEventListener('click', () => {
+      allCards.forEach(c => c.classList.remove('open'));
+    });
+  }
+
+  // ---------- Copy code with Toast ----------
+  function copyCode(btn){
+    const code = btn.parentElement.querySelector('code').innerText;
+    navigator.clipboard.writeText(code).then(()=>{
+      const toast = document.getElementById('toast-msg');
+      toast.textContent = 'Code copied to clipboard!';
+      toast.classList.add('show');
+      setTimeout(()=>{ toast.classList.remove('show'); }, 2000);
+      const old = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(()=>{ btn.textContent = old; }, 1400);
+    });
+  }
+
+  // ---------- Search filter ----------
+  const searchBox = document.getElementById('searchBox');
+  const cards = Array.from(document.querySelectorAll('.card'));
+  const sections = Array.from(document.querySelectorAll('.cat-section'));
+  const visibleCountEl = document.getElementById('visibleCount');
+
+  function filterCards(){
+    const q = searchBox ? searchBox.value.trim().toLowerCase() : '';
+    const activeChip = document.querySelector('.filter-chip.active');
+    const filterCat = activeChip ? activeChip.dataset.filter : 'all';
+
+    let visible = 0;
+    cards.forEach(card => {
+      const hay = (card.dataset.title || '') + ' ' + (card.querySelector('h3') ? card.querySelector('h3').innerText.toLowerCase() : '');
+      const matchSearch = hay.includes(q);
+      
+      let matchCat = true;
+      if(filterCat === 'easy' || filterCat === 'medium' || filterCat === 'hard'){
+        matchCat = (card.dataset.diff === filterCat);
+      } else if(filterCat !== 'all'){
+        matchCat = (card.dataset.cat && card.dataset.cat.includes(filterCat)) || (card.dataset.title && card.dataset.title.includes(filterCat));
+      }
+
+      const match = matchSearch && matchCat;
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+
+    sections.forEach(sec => {
+      const anyVisible = Array.from(sec.querySelectorAll('.card')).some(c => c.style.display !== 'none');
+      sec.style.display = anyVisible ? '' : 'none';
+    });
+    if(visibleCountEl) visibleCountEl.textContent = visible;
+  }
+
+  if(searchBox) searchBox.addEventListener('input', filterCards);
+
+  // ---------- Filter Chips ----------
+  const filterChips = document.querySelectorAll('.filter-chip');
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      filterCards();
+    });
+  });
+
+  // ---------- Mobile drawer ----------
+  const sidebar = document.getElementById('sidebar');
+  const hamburger = document.getElementById('hamburger');
+  const scrim = document.getElementById('scrim');
+  function openDrawer(){ sidebar.classList.add('open'); scrim.classList.add('show'); }
+  function closeDrawer(){ sidebar.classList.remove('open'); scrim.classList.remove('show'); }
+  if(hamburger) hamburger.addEventListener('click', () => sidebar.classList.contains('open') ? closeDrawer() : openDrawer());
+  if(scrim) scrim.addEventListener('click', closeDrawer);
+  navLinks.forEach(l => l.addEventListener('click', closeDrawer));
+
+  // ---------- Scroll to top FAB ----------
+  const fabTop = document.getElementById('fabTop');
+  if(fabTop){
+    fabTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // ---------- Hero graph BFS ripple animation ----------
+  (function(){
+    const order = ['n1','n2','n3','n4','n5','n6','n7','n8'];
+    const edgeOrder = ['e1','e2','e3','e4','e5','e6','e7','e8','e9','e10','e11'];
+    const colors = ['#5eead4','#6fb3ff','#b39dfb','#fbbf24','#fb7185'];
+    function ripple(){
+      order.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.setAttribute('stroke', '#2b3654'); el.setAttribute('fill', '#0d1119'); }
+      });
+      edgeOrder.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('stroke', '#233053');
+      });
+      let step = 0;
+      const iv = setInterval(() => {
+        if (step >= order.length) { clearInterval(iv); setTimeout(ripple, 2400); return; }
+        const el = document.getElementById(order[step]);
+        const c = colors[step % colors.length];
+        if (el) { el.setAttribute('stroke', c); el.setAttribute('fill', c + '22'); }
+        step++;
+      }, 250);
+    }
+    ripple();
+  })();
+
+  // ---------- Quiz ----------
+  window.checkQuiz = function(){
+    const qcards = document.querySelectorAll('.qcard');
+    let score = 0;
+    qcards.forEach((card, idx) => {
+      const name = 'q' + (idx+1);
+      const correct = card.dataset.answer;
+      const selected = card.querySelector('input[name="'+name+'"]:checked');
+      const opts = card.querySelectorAll('.opt');
+      opts.forEach(opt => {
+        opt.classList.remove('correct','wrong');
+        const val = opt.querySelector('input').value;
+        if (val === correct) opt.classList.add('correct');
+        else if (selected && val === selected.value) opt.classList.add('wrong');
+      });
+      if (selected && selected.value === correct) score++;
+      card.querySelector('.qexplain').classList.add('show');
+    });
+    const scoreLine = document.getElementById('scoreLine');
+    if(scoreLine) scoreLine.innerHTML = 'Score: <b>' + score + ' / ' + qcards.length + '</b>';
+  };
+
+  window.resetQuiz = function(){
+    const form = document.getElementById('quizForm');
+    if(form) form.reset();
+    document.querySelectorAll('.opt').forEach(o => o.classList.remove('correct','wrong'));
+    document.querySelectorAll('.qexplain').forEach(e => e.classList.remove('show'));
+    const scoreLine = document.getElementById('scoreLine');
+    if(scoreLine) scoreLine.innerHTML = '';
+  };
+</script>
+</body>
+</html>

@@ -1,5 +1,15 @@
 [
   {
+    "filename": "leetcode_graph_prep.html",
+    "title": "Graph Theory Field Guide — C++ / LeetCode Masterclass",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 125180,
+    "sizeFormatted": "122 KB",
+    "lastModified": "2026-08-29T21:29:00.000Z"
+  },
+  {
     "filename": "graphs-traced.html",
     "title": "Graphs, Traced — a C++ Field Guide & Visualizer",
     "extension": "HTML",
