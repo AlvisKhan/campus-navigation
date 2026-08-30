@@ -50,8 +50,11 @@ function getFileMeta(file, fullPath, stats) {
     title = base.replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim()
   }
 
+  const folder = path.dirname(file) !== '.' ? path.dirname(file) : ''
+
   return {
     filename: file,
+    folder: folder,
     title: title || file,
     extension: ext.toUpperCase(),
     category,
@@ -70,13 +73,30 @@ function alvisDirectoryPlugin() {
     if (!fs.existsSync(alvisDir)) return
 
     const ignoredFiles = new Set(['index.html', 'files.json', '.ds_store'])
-    const files = fs.readdirSync(alvisDir)
-      .filter((file) => !file.startsWith('.') && !ignoredFiles.has(file.toLowerCase()))
-      .map((file) => {
-        const fullPath = path.join(alvisDir, file)
-        const stats = fs.statSync(fullPath)
-        return getFileMeta(file, fullPath, stats)
-      })
+
+    const scanDirectory = (currentDir) => {
+      let results = []
+      try {
+        const entries = fs.readdirSync(currentDir, { withFileTypes: true })
+        for (const entry of entries) {
+          if (entry.name.startsWith('.')) continue
+          const fullPath = path.join(currentDir, entry.name)
+          if (entry.isDirectory()) {
+            results = results.concat(scanDirectory(fullPath))
+          } else if (entry.isFile()) {
+            if (ignoredFiles.has(entry.name.toLowerCase())) continue
+            const relPath = path.relative(alvisDir, fullPath).replace(/\\/g, '/')
+            const stats = fs.statSync(fullPath)
+            results.push(getFileMeta(relPath, fullPath, stats))
+          }
+        }
+      } catch (err) {
+        console.error('Error scanning directory:', currentDir, err)
+      }
+      return results
+    }
+
+    const files = scanDirectory(alvisDir)
       // Sort recently updated or alphabetical
       .sort((a, b) => b.lastModified.localeCompare(a.lastModified))
 

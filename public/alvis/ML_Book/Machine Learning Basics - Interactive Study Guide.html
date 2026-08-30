@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Machine Learning Basics — Interactive Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+<style>
+:root{
+  --bg:#0a0d14;
+  --panel:#10141e;
+  --panel-2:#151b29;
+  --panel-3:#1b2233;
+  --grid:rgba(111,168,255,0.055);
+  --line:rgba(238,241,248,0.09);
+  --line-soft:rgba(238,241,248,0.05);
+  --ink:#eef1f8;
+  --ink-dim:#98a4c2;
+  --ink-faint:#5b6683;
+  --blue:#6fa8ff;
+  --blue-dim:rgba(111,168,255,0.15);
+  --amber:#f2b134;
+  --amber-dim:rgba(242,177,52,0.15);
+  --green:#4fd6a5;
+  --green-dim:rgba(79,214,165,0.15);
+  --red:#ff6b7a;
+  --red-dim:rgba(255,107,122,0.15);
+  --violet:#b592ff;
+  --violet-dim:rgba(181,146,255,0.15);
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'Inter',-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  line-height:1.65;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:36px 36px;
+}
+::selection{background:var(--blue-dim); color:var(--ink);}
+a{color:var(--blue);}
+
+/* ---------- layout shell ---------- */
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:280px; flex-shrink:0; position:sticky; top:0; height:100vh; overflow-y:auto;
+  background:var(--panel); border-right:1px solid var(--line);
+  padding:22px 16px 40px;
+}
+.sidebar::-webkit-scrollbar{width:6px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px;}
+.brand{display:flex; align-items:center; gap:10px; padding:0 6px 18px; border-bottom:1px solid var(--line); margin-bottom:16px;}
+.brand-mark{width:30px; height:30px; flex-shrink:0;}
+.brand-text{font-family:var(--mono); font-size:11px; letter-spacing:.08em; color:var(--ink-dim); text-transform:uppercase; line-height:1.4;}
+.brand-text b{color:var(--ink); display:block; font-size:13px; letter-spacing:.02em;}
+
+.overall-progress{padding:10px 6px 18px; border-bottom:1px solid var(--line); margin-bottom:10px;}
+.overall-progress .label{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.08em; display:flex; justify-content:space-between; margin-bottom:8px;}
+.overall-progress .bar{height:6px; border-radius:4px; background:var(--panel-3); overflow:hidden;}
+.overall-progress .bar-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--blue),var(--green)); transition:width .5s ease;}
+
+.navlist{list-style:none;}
+.navlist a{
+  display:flex; align-items:center; gap:10px; text-decoration:none;
+  color:var(--ink-dim); font-size:13.5px; padding:8px 8px; border-radius:8px; margin-bottom:1px;
+  transition:background .15s, color .15s;
+}
+.navlist a:hover{background:var(--panel-2); color:var(--ink);}
+.navlist a.active{background:var(--blue-dim); color:var(--blue);}
+.nav-num{font-family:var(--mono); font-size:11px; color:var(--ink-faint); width:26px; flex-shrink:0;}
+.navlist a.active .nav-num{color:var(--blue);}
+.nav-dot{width:7px; height:7px; border-radius:50%; background:var(--panel-3); flex-shrink:0; margin-left:auto; transition:background .2s;}
+.nav-dot.done{background:var(--green); box-shadow:0 0 6px rgba(79,214,165,.6);}
+
+/* ---------- main content ---------- */
+.main{flex:1; min-width:0;}
+.wrap{max-width:760px; margin:0 auto; padding:0 28px;}
+
+/* hero */
+.hero{padding:88px 0 60px; position:relative;}
+.hero .kicker{font-family:var(--mono); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--amber); margin-bottom:18px; display:flex; align-items:center; gap:10px;}
+.hero .kicker::before{content:''; width:26px; height:1px; background:var(--amber);}
+.hero h1{font-family:var(--serif); font-weight:600; font-size:clamp(38px,5vw,58px); line-height:1.05; letter-spacing:-.01em; margin-bottom:22px;}
+.hero h1 em{font-style:italic; color:var(--blue); font-weight:500;}
+.hero p.lede{font-size:17px; color:var(--ink-dim); max-width:560px; margin-bottom:36px;}
+.hero-curve{margin:10px 0 40px;}
+.stat-row{display:flex; gap:28px; flex-wrap:wrap; padding-top:24px; border-top:1px solid var(--line);}
+.stat{}
+.stat .n{font-family:var(--serif); font-size:26px; color:var(--ink); font-weight:600;}
+.stat .l{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em;}
+
+/* section chrome */
+section.chapter{padding:64px 0; border-top:1px solid var(--line); scroll-margin-top:24px;}
+section.chapter:first-of-type{border-top:none;}
+.chapter-head{display:flex; gap:16px; align-items:baseline; margin-bottom:8px;}
+.chapter-num{font-family:var(--mono); font-size:14px; color:var(--blue); flex-shrink:0;}
+.chapter h2{font-family:var(--serif); font-weight:600; font-size:30px; letter-spacing:-.01em;}
+.chapter .deck{color:var(--ink-dim); font-size:15px; margin:10px 0 30px; max-width:600px;}
+
+h3.sub{font-family:var(--serif); font-weight:600; font-size:20px; margin:34px 0 12px; color:var(--ink);}
+h4.subsub{font-family:var(--mono); font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--amber); margin:24px 0 10px;}
+p{margin-bottom:14px; color:#d6dcec; font-size:15.5px;}
+ul.bullets, ol.steps{margin:14px 0 18px 0; padding-left:0; list-style:none;}
+ul.bullets li{position:relative; padding-left:22px; margin-bottom:9px; color:#d6dcec; font-size:15px;}
+ul.bullets li::before{content:'—'; position:absolute; left:0; color:var(--ink-faint);}
+ol.steps{counter-reset:step;}
+ol.steps li{position:relative; padding-left:34px; margin-bottom:12px; color:#d6dcec; font-size:15px;}
+ol.steps li::before{counter-increment:step; content:counter(step); position:absolute; left:0; top:0; width:22px; height:22px; border-radius:50%; background:var(--panel-3); color:var(--blue); font-family:var(--mono); font-size:11.5px; display:flex; align-items:center; justify-content:center;}
+strong{color:var(--ink); font-weight:600;}
+code{font-family:var(--mono); background:var(--panel-2); padding:1px 6px; border-radius:4px; font-size:.88em; color:var(--amber);}
+
+/* callouts */
+.callout{border-radius:12px; padding:18px 20px; margin:22px 0; border:1px solid var(--line); background:var(--panel-2);}
+.callout .tag{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; display:flex; align-items:center; gap:7px; margin-bottom:8px; font-weight:600;}
+.callout p{margin-bottom:0; font-size:14.5px; color:#c6cee4;}
+.callout.intuition{border-color:rgba(111,168,255,.3);} .callout.intuition .tag{color:var(--blue);}
+.callout.pitfall{border-color:rgba(255,107,122,.3);} .callout.pitfall .tag{color:var(--red);}
+.callout.matters{border-color:rgba(79,214,165,.3);} .callout.matters .tag{color:var(--green);}
+.callout .dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+
+/* equations */
+.eqbox{background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:20px 24px; margin:18px 0; overflow-x:auto;}
+.eqbox .eqlabel{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;}
+.katex{font-size:1.05em;}
+.katex-display{margin:6px 0 !important;}
+
+/* figures */
+figure.diagram{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:22px; margin:26px 0;}
+figure.diagram svg{width:100%; height:auto; display:block;}
+figcaption{font-size:13px; color:var(--ink-dim); margin-top:14px; padding-top:14px; border-top:1px solid var(--line-soft); line-height:1.55;}
+figcaption b{color:var(--ink);}
+.fig-tag{display:inline-block; font-family:var(--mono); font-size:10.5px; color:var(--amber); background:var(--amber-dim); padding:2px 8px; border-radius:5px; margin-bottom:10px;}
+
+/* interactive: capacity slider */
+.interactive{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:24px; margin:28px 0;}
+.interactive .ihead{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+.interactive .ihead .it{font-family:var(--serif); font-weight:600; font-size:16px;}
+.interactive .ihead .ib{font-family:var(--mono); font-size:10px; text-transform:uppercase; color:var(--violet); background:var(--violet-dim); padding:3px 8px; border-radius:5px;}
+.interactive p.idesc{font-size:13.5px; color:var(--ink-dim); margin-bottom:16px;}
+.slider-row{display:flex; align-items:center; gap:14px; margin-top:16px;}
+.slider-row input[type=range]{flex:1; accent-color:var(--blue); height:4px;}
+.slider-readout{font-family:var(--mono); font-size:13px; color:var(--blue); min-width:150px; text-align:right;}
+.regime-badge{display:inline-block; font-family:var(--mono); font-size:11px; padding:4px 10px; border-radius:6px; margin-top:12px;}
+.regime-badge.under{background:var(--amber-dim); color:var(--amber);}
+.regime-badge.good{background:var(--green-dim); color:var(--green);}
+.regime-badge.over{background:var(--red-dim); color:var(--red);}
+
+/* quiz */
+.quiz-block{margin:32px 0;}
+.quiz-card{background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:22px 24px; margin-bottom:14px;}
+.quiz-card .qmeta{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+.quiz-card .qmeta .qn{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em;}
+.quiz-card .qtext{font-size:15.5px; color:var(--ink); margin-bottom:16px; font-weight:500;}
+.qopts{display:flex; flex-direction:column; gap:8px;}
+.qopt{
+  text-align:left; background:var(--panel-3); border:1px solid var(--line); border-radius:9px;
+  padding:11px 14px; color:#d6dcec; font-size:14px; cursor:pointer; font-family:var(--sans);
+  transition:border-color .15s, background .15s;
+}
+.qopt:hover:not(:disabled){border-color:var(--blue);}
+.qopt:disabled{cursor:default;}
+.qopt.correct{background:var(--green-dim); border-color:var(--green); color:var(--green);}
+.qopt.incorrect{background:var(--red-dim); border-color:var(--red); color:var(--red);}
+.qopt.reveal{border-color:var(--green); color:var(--green);}
+.qexplain{display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--line-soft); font-size:13.5px; color:var(--ink-dim);}
+.qexplain.show{display:block;}
+.qexplain b{color:var(--ink);}
+
+.quiz-header{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+.quiz-header .qicon{width:20px; height:20px; flex-shrink:0;}
+.quiz-header h4{font-family:var(--mono); font-size:12.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--violet);}
+
+.section-score{
+  display:flex; align-items:center; gap:10px; margin-top:6px; font-family:var(--mono); font-size:12px; color:var(--ink-faint);
+}
+.section-score .pill{background:var(--panel-3); padding:3px 10px; border-radius:20px; color:var(--ink-dim);}
+.section-score .pill.complete{color:var(--green); background:var(--green-dim);}
+
+/* final quiz + footer */
+.final-score-card{
+  background:radial-gradient(circle at 30% 20%, rgba(111,168,255,.12), transparent 60%), var(--panel-2);
+  border:1px solid var(--line); border-radius:16px; padding:32px; text-align:center; margin-top:26px;
+}
+.final-score-card .big{font-family:var(--serif); font-size:56px; font-weight:700; color:var(--blue);}
+.final-score-card .sub{font-family:var(--mono); font-size:12px; color:var(--ink-dim); margin-top:6px; text-transform:uppercase; letter-spacing:.06em;}
+.final-score-card .verdict{margin-top:16px; font-size:14.5px; color:#c6cee4; max-width:420px; margin-left:auto; margin-right:auto;}
+.reset-btn{margin-top:20px; background:var(--panel-3); border:1px solid var(--line); color:var(--ink-dim); font-family:var(--mono); font-size:12px; padding:8px 16px; border-radius:8px; cursor:pointer;}
+.reset-btn:hover{color:var(--ink); border-color:var(--blue);}
+
+.footer{padding:60px 0 90px; text-align:center;}
+.footer p{color:var(--ink-faint); font-size:13px;}
+
+/* cheat sheet */
+.cheatgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px;}
+.cheat-card{background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px 18px;}
+.cheat-card h5{font-family:var(--serif); font-size:15px; margin-bottom:8px; color:var(--blue);}
+.cheat-card p{font-size:13px; color:var(--ink-dim); margin-bottom:0;}
+
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .wrap{padding:0 20px;}
+  .cheatgrid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ============ SIDEBAR ============ -->
+  <nav class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32"><path d="M3 25 Q10 8 16 8 Q22 8 29 25" fill="none" stroke="#6fa8ff" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="9.5" r="2.6" fill="#4fd6a5"/></svg>
+      <div class="brand-text"><b>Machine Learning Basics</b>Deep Learning, Ch. 5</div>
+    </div>
+    <div class="overall-progress">
+      <div class="label"><span>Mastery</span><span id="overallPct">0%</span></div>
+      <div class="bar"><div class="bar-fill" id="overallBar"></div></div>
+    </div>
+    <ul class="navlist" id="navlist">
+      <li><a href="#hero"><span class="nav-num">·</span>Overview<span class="nav-dot"></span></a></li>
+      <li><a href="#s1"><span class="nav-num">5.1</span>Learning Algorithms<span class="nav-dot" data-dot="s1"></span></a></li>
+      <li><a href="#s2"><span class="nav-num">5.2</span>Capacity & Fitting<span class="nav-dot" data-dot="s2"></span></a></li>
+      <li><a href="#s3"><span class="nav-num">5.3</span>Hyperparameters<span class="nav-dot" data-dot="s3"></span></a></li>
+      <li><a href="#s4"><span class="nav-num">5.4</span>Bias & Variance<span class="nav-dot" data-dot="s4"></span></a></li>
+      <li><a href="#s5"><span class="nav-num">5.5</span>Max. Likelihood<span class="nav-dot" data-dot="s5"></span></a></li>
+      <li><a href="#s6"><span class="nav-num">5.6</span>Bayesian Stats<span class="nav-dot" data-dot="s6"></span></a></li>
+      <li><a href="#s7"><span class="nav-num">5.7</span>Supervised Algos<span class="nav-dot" data-dot="s7"></span></a></li>
+      <li><a href="#s8"><span class="nav-num">5.8</span>Unsupervised / PCA<span class="nav-dot" data-dot="s8"></span></a></li>
+      <li><a href="#s9"><span class="nav-num">5.9</span>SGD<span class="nav-dot" data-dot="s9"></span></a></li>
+      <li><a href="#s10"><span class="nav-num">5.10</span>Building an Algo<span class="nav-dot" data-dot="s10"></span></a></li>
+      <li><a href="#s11"><span class="nav-num">5.11</span>Curse of Dim.<span class="nav-dot" data-dot="s11"></span></a></li>
+      <li><a href="#cheatsheet"><span class="nav-num">§</span>Cheat Sheet<span class="nav-dot"></span></a></li>
+      <li><a href="#final"><span class="nav-num">★</span>Mastery Check<span class="nav-dot" data-dot="final"></span></a></li>
+    </ul>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="wrap">
+
+      <!-- HERO -->
+      <section class="hero" id="hero">
+        <div class="kicker">Interactive study guide</div>
+        <h1>Machine Learning<br><em>Basics</em>, rebuilt for<br>fast learning.</h1>
+        <p class="lede">Every idea from Chapter 5 of Goodfellow, Bengio & Courville's <i>Deep Learning</i> — rewritten as intuition-first explanations, rebuilt diagrams, live demos you can drag, and a quiz after every section so you always know what actually stuck.</p>
+
+        <div class="hero-curve">
+          <svg viewBox="0 0 700 130" width="100%" height="130">
+            <line x1="40" y1="110" x2="660" y2="110" stroke="#5b6683" stroke-width="1"/>
+            <line x1="40" y1="10" x2="40" y2="110" stroke="#5b6683" stroke-width="1"/>
+            <path d="M50 20 C 150 100, 250 108, 350 109 C 450 108, 550 60, 650 15" fill="none" stroke="#ff6b7a" stroke-width="2.5"/>
+            <path d="M50 100 C 150 108, 250 109, 350 109.5 C 450 109.7, 550 109.8, 650 109.9" fill="none" stroke="#6fa8ff" stroke-width="2.5" stroke-dasharray="5 5"/>
+            <line x1="350" y1="14" x2="350" y2="112" stroke="#f2b134" stroke-width="1" stroke-dasharray="3 3"/>
+            <text x="270" y="20" fill="#f2b134" font-family="IBM Plex Mono" font-size="10">optimal capacity</text>
+            <text x="50" y="130" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10">underfitting</text>
+            <text x="560" y="130" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10">overfitting</text>
+          </svg>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><div class="n">11</div><div class="l">Core Sections</div></div>
+          <div class="stat"><div class="n">13</div><div class="l">Diagrams Rebuilt</div></div>
+          <div class="stat"><div class="n">3</div><div class="l">Live Demos</div></div>
+          <div class="stat"><div class="n">30+</div><div class="l">Quiz Questions</div></div>
+        </div>
+      </section>
+
+      <!-- ================= 5.1 ================= -->
+      <section class="chapter" id="s1">
+        <div class="chapter-head"><span class="chapter-num">5.1</span><h2>Learning Algorithms</h2></div>
+        <p class="deck">Before anything is "deep," it's a learning algorithm — something that gets better at a task by using data. This section pins down exactly what that means.</p>
+
+        <p>Tom Mitchell's classic definition: a program <strong>learns</strong> from experience <b>E</b> with respect to task <b>T</b> and performance measure <b>P</b>, if its performance on <b>T</b>, measured by <b>P</b>, improves with <b>E</b>. Every learning system you'll ever study is really just a specific choice of these three ingredients.</p>
+
+        <h3 class="sub">The Task, T</h3>
+        <p>The task is <em>never</em> "learning" itself — learning is the means, not the end. Common tasks: classification, regression, transcription, machine translation, anomaly detection, density estimation. An input is represented as a feature vector <span class="mathi">\(\boldsymbol{x} \in \mathbb{R}^n\)</span>, where each entry is one measured attribute of the example (e.g. one pixel's brightness).</p>
+
+        <h3 class="sub">The Performance Measure, P</h3>
+        <p>P is a task-specific, quantitative yardstick — <strong>accuracy</strong> for classification, or average <strong>log-probability</strong> for density estimation. The number that actually matters is performance on new, unseen data (a <strong>test set</strong>), not on the data the model trained on — otherwise a model could just memorize.</p>
+
+        <h3 class="sub">The Experience, E</h3>
+        <p>Most algorithms experience an entire <strong>dataset</strong>. This splits learning into two broad families:</p>
+        <ul class="bullets">
+          <li><strong>Unsupervised learning</strong> — the dataset has features only; the algorithm must find structure on its own (e.g. clustering, or learning the whole probability distribution <span class="mathi">\(p(\boldsymbol{x})\)</span>).</li>
+          <li><strong>Supervised learning</strong> — each example is paired with a <strong>label</strong> or <strong>target</strong>; the algorithm learns to predict the target from the features, i.e. <span class="mathi">\(p(y \mid \boldsymbol{x})\)</span>.</li>
+        </ul>
+        <div class="callout intuition"><div class="tag"><span class="dot"></span>Intuition</div><p>The supervised/unsupervised line is blurry, not fundamental — you can always factor a joint distribution into conditionals via the chain rule, turning an "unsupervised" density-estimation problem into a sequence of supervised ones, and vice versa. Reinforcement learning sits outside this dataset-with-a-fixed-distribution picture entirely: the experience comes from interacting with an environment.</p></div>
+
+        <h3 class="sub">Worked example: Linear Regression</h3>
+        <p>Linear regression takes a vector <span class="mathi">\(\boldsymbol{x}\)</span> and predicts a scalar <span class="mathi">\(y\)</span> as a linear function of the input:</p>
+        <div class="eqbox"><div class="eqlabel">Model</div><div class="mathd">\[\hat{y} = \boldsymbol{w}^\top \boldsymbol{x}\]</div></div>
+        <p>Here <span class="mathi">\(\boldsymbol{w} \in \mathbb{R}^n\)</span> is the vector of learned <strong>weights</strong>. We measure performance on a test set via <strong>mean squared error</strong>:</p>
+        <div class="eqbox"><div class="eqlabel">Performance measure</div><div class="mathd">\[\text{MSE}_{\text{test}} = \frac{1}{m}\sum_i (\hat{\boldsymbol{y}}^{(\text{test})} - \boldsymbol{y}^{(\text{test})})_i^2\]</div></div>
+        <p>Training means picking <span class="mathi">\(\boldsymbol{w}\)</span> to minimize <span class="mathi">\(\text{MSE}_{\text{train}}\)</span>. Because MSE is a smooth, convex quadratic in <span class="mathi">\(\boldsymbol{w}\)</span>, setting its gradient to zero gives a closed-form solution — the <strong>normal equations</strong>:</p>
+        <div class="eqbox"><div class="eqlabel">Closed-form solution</div><div class="mathd">\[\boldsymbol{w} = \left(\boldsymbol{X}^{(\text{train})\top}\boldsymbol{X}^{(\text{train})}\right)^{-1}\boldsymbol{X}^{(\text{train})\top}\boldsymbol{y}^{(\text{train})}\]</div></div>
+
+        <figure class="diagram">
+          <span class="fig-tag">Rebuilt · Fig 5.1</span>
+          <svg viewBox="0 0 640 260">
+            <!-- left plot -->
+            <g transform="translate(20,10)">
+              <text x="110" y="14" fill="#eef1f8" font-family="Fraunces" font-size="14" text-anchor="middle">Fitting the line</text>
+              <line x1="30" y1="200" x2="230" y2="200" stroke="#5b6683"/>
+              <line x1="30" y1="30" x2="30" y2="200" stroke="#5b6683"/>
+              <text x="125" y="222" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">x1</text>
+              <text x="12" y="115" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle" transform="rotate(-90 12 115)">y</text>
+              <line x1="45" y1="175" x2="215" y2="55" stroke="#6fa8ff" stroke-width="2.4"/>
+              <g fill="#6fa8ff">
+                <circle cx="60" cy="150" r="4"/><circle cx="75" cy="140" r="4"/><circle cx="90" cy="120" r="4"/>
+                <circle cx="105" cy="128" r="4"/><circle cx="120" cy="105" r="4"/><circle cx="130" cy="160" r="4"/>
+                <circle cx="150" cy="95" r="4"/><circle cx="160" cy="90" r="4"/><circle cx="180" cy="75" r="4"/><circle cx="195" cy="70" r="4"/>
+              </g>
+            </g>
+            <!-- right plot -->
+            <g transform="translate(320,10)">
+              <text x="130" y="14" fill="#eef1f8" font-family="Fraunces" font-size="14" text-anchor="middle">Minimizing MSE over w</text>
+              <line x1="30" y1="200" x2="260" y2="200" stroke="#5b6683"/>
+              <line x1="30" y1="30" x2="30" y2="200" stroke="#5b6683"/>
+              <text x="145" y="222" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">w1</text>
+              <text x="12" y="115" fill="#98a4c2" font-family="IBM Plex Mono" font-size="9" text-anchor="middle" transform="rotate(-90 12 115)">MSE(train)</text>
+              <path d="M40 60 Q 150 220 260 60" fill="none" stroke="#f2b134" stroke-width="2.4"/>
+              <circle cx="150" cy="176" r="5" fill="#4fd6a5"/>
+              <text x="150" y="195" fill="#4fd6a5" font-family="IBM Plex Mono" font-size="9" text-anchor="middle">w* (normal eqs)</text>
+            </g>
+          </svg>
+          <figcaption><b>Left:</b> ten training points with one feature; the line <span class="mathi">\(\hat y = w_1 x\)</span> that best fits them. <b>Right:</b> training MSE as a function of the single weight <span class="mathi">\(w_1\)</span> — a smooth bowl whose minimum is exactly the normal-equations solution.</figcaption>
+        </figure>
+
+        <div class="callout matters"><div class="tag"><span class="dot"></span>Why it matters</div><p>Linear regression is the simplest possible instance of the T / P / E recipe — and it's the seed every later model in the book grows from: add a nonlinearity and stack a few of these together, and you have a neural network layer.</p></div>
+
+        <div class="quiz-block" data-quiz="s1"></div>
+      </section>
+
+      <!-- ================= 5.2 ================= -->
+      <section class="chapter" id="s2">
+        <div class="chapter-head"><span class="chapter-num">5.2</span><h2>Capacity, Overfitting & Underfitting</h2></div>
+        <p class="deck">The single most important idea in the whole chapter: a model's real job is <em>generalization</em> — doing well on inputs it never trained on.</p>
+
+        <p>We assume train and test data are drawn independently from the same underlying distribution — the <strong>i.i.d. assumption</strong>. This lets us reason about a model's <strong>generalization (test) error</strong> even though we can only directly optimize its <strong>training error</strong>.</p>
+        <p>A model's <strong>capacity</strong> is, loosely, how wide a variety of functions it's able to represent. Two failure modes bracket every model:</p>
+        <ul class="bullets">
+          <li><strong>Underfitting</strong> — capacity too low to even get the training error down. The model can't capture the true pattern.</li>
+          <li><strong>Overfitting</strong> — the gap between training and test error is too large. The model has partly memorized the training set's noise instead of learning the general pattern.</li>
+        </ul>
+
+        <div class="interactive" id="capacityDemo">
+          <div class="ihead"><span class="it">Live demo — drag the capacity dial</span><span class="ib">Interactive</span></div>
+          <p class="idesc">Same ten training points every time. Only the polynomial degree (capacity) changes. Watch the fitted curve swing from a stiff straight line to a wild, wiggling curve that hits every point but generalizes terribly.</p>
+          <svg viewBox="0 0 400 220" id="capSvg" style="width:100%; max-width:420px; display:block; margin:0 auto;">
+            <line x1="30" y1="190" x2="370" y2="190" stroke="#5b6683"/>
+            <line x1="30" y1="20" x2="30" y2="190" stroke="#5b6683"/>
+            <text x="200" y="210" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">x0</text>
+            <path id="capPath" d="" fill="none" stroke="#6fa8ff" stroke-width="2.6"/>
+            <g fill="#eef1f8" id="capPoints">
+              <circle cx="55" cy="140" r="4"/><circle cx="90" cy="95" r="4"/><circle cx="110" cy="80" r="4"/>
+              <circle cx="150" cy="70" r="4"/><circle cx="190" cy="75" r="4"/><circle cx="230" cy="95" r="4"/>
+              <circle cx="270" cy="120" r="4"/><circle cx="300" cy="150" r="4"/><circle cx="330" cy="160" r="4"/><circle cx="350" cy="150" r="4"/>
+            </g>
+          </svg>
+          <div class="slider-row">
+            <input type="range" min="1" max="15" value="1" id="capSlider">
+            <div class="slider-readout" id="capReadout">degree 1</div>
+          </div>
+          <div id="capBadge"></div>
+        </div>
+
+        <figure class="diagram">
+          <span class="fig-tag">Rebuilt · Fig 5.2 / 5.5</span>
+          <svg viewBox="0 0 640 200">
+            <g transform="translate(10,10)"><text x="95" y="14" fill="#f2b134" font-family="Fraunces" font-size="13" text-anchor="middle">Underfitting</text>
+              <rect x="10" y="26" width="180" height="140" fill="none" stroke="#5b6683"/>
+              <path d="M20 130 L 180 105" stroke="#f2b134" stroke-width="2.2" fill="none"/>
+              <g fill="#eef1f8"><circle cx="30" cy="150" r="3.5"/><circle cx="80" cy="110" r="3.5"/><circle cx="88" cy="105" r="3.5"/><circle cx="150" cy="80" r="3.5"/><circle cx="160" cy="90" r="3.5"/><circle cx="170" cy="95" r="3.5"/></g>
+            </g>
+            <g transform="translate(230,10)"><text x="95" y="14" fill="#4fd6a5" font-family="Fraunces" font-size="13" text-anchor="middle">Appropriate capacity</text>
+              <rect x="10" y="26" width="180" height="140" fill="none" stroke="#5b6683"/>
+              <path d="M20 150 Q 100 60 180 100" stroke="#4fd6a5" stroke-width="2.2" fill="none"/>
+              <g fill="#eef1f8"><circle cx="30" cy="150" r="3.5"/><circle cx="80" cy="75" r="3.5"/><circle cx="88" cy="70" r="3.5"/><circle cx="150" cy="90" r="3.5"/><circle cx="160" cy="93" r="3.5"/><circle cx="170" cy="97" r="3.5"/></g>
+            </g>
+            <g transform="translate(450,10)"><text x="95" y="14" fill="#ff6b7a" font-family="Fraunces" font-size="13" text-anchor="middle">Overfitting</text>
+              <rect x="10" y="26" width="180" height="140" fill="none" stroke="#5b6683"/>
+              <path d="M20 160 C 40 30, 60 165, 80 72 S 130 60, 150 88 S 170 100, 180 95" stroke="#ff6b7a" stroke-width="2.2" fill="none"/>
+              <g fill="#eef1f8"><circle cx="30" cy="150" r="3.5"/><circle cx="80" cy="72" r="3.5"/><circle cx="88" cy="70" r="3.5"/><circle cx="150" cy="88" r="3.5"/><circle cx="160" cy="93" r="3.5"/><circle cx="170" cy="95" r="3.5"/></g>
+            </g>
+          </svg>
+          <figcaption>The same ten points, fit with a linear model (underfits — misses the curvature), a quadratic model (about right), and a degree-9 polynomial (overfits — passes through every point but oscillates wildly between them). <strong>Weight decay</strong> (§5.2.1, penalizing <span class="mathi">\(\lambda \boldsymbol w^\top\boldsymbol w\)</span>) can tame the degree-9 model back toward the "appropriate" curve without changing its raw representational capacity.</figcaption>
+        </figure>
+
+        <figure class="diagram">
+          <span class="fig-tag">Rebuilt · Fig 5.3</span>
+          <svg viewBox="0 0 640 220">
+            <line x1="60" y1="190" x2="600" y2="190" stroke="#5b6683"/>
+            <line x1="60" y1="20" x2="60" y2="190" stroke="#5b6683"/>
+            <line x1="270" y1="16" x2="270" y2="190" stroke="#ff6b7a" stroke-width="1" stroke-dasharray="4 4"/>
+            <text x="150" y="34" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">underfitting zone</text>
+            <text x="420" y="34" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">overfitting zone</text>
+            <path d="M70 30 C 120 160, 180 175, 270 178 S 480 178, 600 130" fill="none" stroke="#4fd6a5" stroke-width="2.4"/>
+            <path d="M70 60 C 130 175, 220 182, 270 183 S 500 183, 600 183" fill="none" stroke="#6fa8ff" stroke-width="2.4" stroke-dasharray="6 5"/>
+            <text x="580" y="123" fill="#4fd6a5" font-family="IBM Plex Mono" font-size="10" text-anchor="end">generalization error</text>
+            <text x="580" y="196" fill="#6fa8ff" font-family="IBM Plex Mono" font-size="10" text-anchor="end">training error</text>
+            <text x="270" y="12" fill="#ff6b7a" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">optimal capacity</text>
+            <text x="330" y="205" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10">Capacity →</text>
+          </svg>
+          <figcaption>The generalization gap — the space between the dashed training-error curve and the solid generalization-error curve — <strong>widens</strong> as capacity grows past the optimum, even while training error keeps falling. This U-shape is the single chart to internalize from this whole chapter.</figcaption>
+        </figure>
+
+        <h3 class="sub">The No Free Lunch Theorem</h3>
+        <p>Averaged over <em>every possible</em> data-generating distribution, every classification algorithm achieves the same test error on unseen points — no algorithm is universally better. In practice this isn't discouraging: we don't care about every conceivable universe, only the distributions that resemble the real world, and for those, some algorithms genuinely do better than others.</p>
+
+        <h3 class="sub">Regularization</h3>
+        <p>Rather than only adding/removing functions from a model's hypothesis space, we can express a <em>preference</em> for some functions over others. <strong>Weight decay</strong> is the classic example: add <span class="mathi">\(\lambda \boldsymbol{w}^\top \boldsymbol{w}\)</span> to the training objective so the optimizer trades off fitting the data against keeping weights small.</p>
+        <div class="callout pitfall"><div class="tag"><span class="dot"></span>Common pitfall</div><p>Regularization is <em>not</em> "reducing capacity" in a simple counting sense. A degree-9 polynomial with strong weight decay still has 9 coefficients — but the effective family of functions it will realistically settle on is far smaller and smoother than its raw representational capacity would suggest.</p></div>
+
+        <div class="quiz-block" data-quiz="s2"></div>
+      </section>
+
+      <!-- ================= 5.3 ================= -->
+      <section class="chapter" id="s3">
+        <div class="chapter-head"><span class="chapter-num">5.3</span><h2>Hyperparameters & Validation Sets</h2></div>
+        <p class="deck">Some settings can't be learned by the training algorithm itself — they have to be chosen from outside it.</p>
+        <p><strong>Hyperparameters</strong> control the model or algorithm's behavior (e.g. polynomial degree, or the weight-decay coefficient <span class="mathi">\(\lambda\)</span>). We can't just learn them by minimizing training error the normal way — the optimizer would always pick maximum capacity and zero regularization, guaranteeing overfitting.</p>
+        <p>The fix: carve a <strong>validation set</strong> out of the training data (never the test set) that the training algorithm never sees directly. Hyperparameters are tuned to minimize error on this held-out slice, typically ~80/20 train/validation.</p>
+        <div class="callout pitfall"><div class="tag"><span class="dot"></span>Common pitfall</div><p>The test set must stay completely untouched during model/hyperparameter selection. The moment you tune anything based on test performance, your test error stops being an honest estimate of generalization — you've effectively turned the test set into a validation set.</p></div>
+        <h3 class="sub">Cross-Validation</h3>
+        <p>When a dataset is too small to reserve a stable validation split, <strong>k-fold cross-validation</strong> partitions the data into k folds, trains k times (holding out a different fold each time), and averages the test error across folds — trading extra compute for a lower-variance error estimate.</p>
+        <div class="quiz-block" data-quiz="s3"></div>
+      </section>
+
+      <!-- ================= 5.4 ================= -->
+      <section class="chapter" id="s4">
+        <div class="chapter-head"><span class="chapter-num">5.4</span><h2>Estimators, Bias and Variance</h2></div>
+        <p class="deck">Statistics gives us precise vocabulary for <em>why</em> a model over- or under-fits: bias and variance.</p>
+
+        <h3 class="sub">Point Estimation & Bias</h3>
+        <p>A <strong>point estimator</strong> <span class="mathi">\(\hat{\boldsymbol\theta}_m\)</span> is any function of m data samples that tries to approximate a true parameter <span class="mathi">\(\boldsymbol\theta\)</span>. Its <strong>bias</strong> is:</p>
+        <div class="eqbox"><div class="eqlabel">Bias of an estimator</div><div class="mathd">\[\text{bias}(\hat{\boldsymbol\theta}_m) = \mathbb{E}[\hat{\boldsymbol\theta}_m] - \boldsymbol\theta\]</div></div>
+        <p>An estimator is <strong>unbiased</strong> when this is exactly zero. The sample mean is an unbiased estimator of a Gaussian's true mean; the sample variance <span class="mathi">\(\frac{1}{m}\sum (x_i-\hat\mu)^2\)</span> is actually <em>biased</em> — dividing by <span class="mathi">\(m-1\)</span> instead fixes it.</p>
+
+        <h3 class="sub">Variance & Standard Error</h3>
+        <p>Variance measures how much the estimate would fluctuate if you re-ran training on a different sample from the same distribution. Low variance means the estimator is stable across datasets; high variance means it's sensitive to the specific data it happened to see.</p>
+
+        <h3 class="sub">The Bias-Variance Tradeoff</h3>
+        <p>Bias and variance measure two different sources of error, and they trade off against each other as capacity changes:</p>
+        <div class="eqbox"><div class="eqlabel">Mean squared error decomposition</div><div class="mathd">\[\text{MSE} = \text{bias}(\hat\theta_m)^2 + \text{Var}(\hat\theta_m)\]</div></div>
+
+        <div class="interactive">
+          <div class="ihead"><span class="it">Dartboard analogy</span><span class="ib">Beyond the book</span></div>
+          <p class="idesc">Not in the original text — but this is the fastest way anyone learns bias vs. variance. The bullseye is the true parameter; each dart is one trained model's estimate from one dataset.</p>
+          <svg viewBox="0 0 460 240" style="width:100%; max-width:480px; display:block; margin:0 auto;">
+            <g transform="translate(0,0)">
+              <text x="75" y="16" fill="#4fd6a5" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">low bias / low variance</text>
+              <circle cx="75" cy="90" r="55" fill="none" stroke="#3a4258"/><circle cx="75" cy="90" r="35" fill="none" stroke="#3a4258"/><circle cx="75" cy="90" r="15" fill="none" stroke="#3a4258"/>
+              <g fill="#4fd6a5"><circle cx="73" cy="88" r="3"/><circle cx="77" cy="91" r="3"/><circle cx="75" cy="85" r="3"/><circle cx="78" cy="87" r="3"/><circle cx="72" cy="92" r="3"/></g>
+
+              <text x="235" y="16" fill="#f2b134" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">high bias / low variance</text>
+              <circle cx="235" cy="90" r="55" fill="none" stroke="#3a4258"/><circle cx="235" cy="90" r="35" fill="none" stroke="#3a4258"/><circle cx="235" cy="90" r="15" fill="none" stroke="#3a4258"/>
+              <g fill="#f2b134"><circle cx="278" cy="60" r="3"/><circle cx="282" cy="64" r="3"/><circle cx="280" cy="58" r="3"/><circle cx="284" cy="62" r="3"/><circle cx="277" cy="65" r="3"/></g>
+
+              <text x="75" y="146" fill="#f2b134" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">low bias / high variance</text>
+              <circle cx="75" cy="220" r="55" fill="none" stroke="#3a4258" transform="translate(0,-10)"/>
+              <circle cx="75" cy="210" r="55" fill="none" stroke="#3a4258"/><circle cx="75" cy="210" r="35" fill="none" stroke="#3a4258"/><circle cx="75" cy="210" r="15" fill="none" stroke="#3a4258"/>
+              <g fill="#f2b134"><circle cx="76" cy="208" r="3"/><circle cx="95" cy="230" r="3"/><circle cx="55" cy="190" r="3"/><circle cx="90" cy="185" r="3"/><circle cx="58" cy="228" r="3"/></g>
+
+              <text x="235" y="146" fill="#ff6b7a" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">high bias / high variance</text>
+              <circle cx="235" cy="210" r="55" fill="none" stroke="#3a4258"/><circle cx="235" cy="210" r="35" fill="none" stroke="#3a4258"/><circle cx="235" cy="210" r="15" fill="none" stroke="#3a4258"/>
+              <g fill="#ff6b7a"><circle cx="285" cy="165" r="3"/><circle cx="300" cy="190" r="3"/><circle cx="270" cy="150" r="3"/><circle cx="310" cy="170" r="3"/><circle cx="265" cy="180" r="3"/></g>
+            </g>
+          </svg>
+        </div>
+
+        <figure class="diagram">
+          <span class="fig-tag">Rebuilt · Fig 5.6</span>
+          <svg viewBox="0 0 640 200">
+            <line x1="60" y1="180" x2="600" y2="180" stroke="#5b6683"/>
+            <line x1="60" y1="20" x2="60" y2="180" stroke="#5b6683"/>
+            <line x1="330" y1="16" x2="330" y2="180" stroke="#5b6683" stroke-dasharray="3 3"/>
+            <text x="180" y="34" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">underfitting zone</text>
+            <text x="470" y="34" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">overfitting zone</text>
+            <path d="M70 30 Q 250 165 330 168 T 600 175" fill="none" stroke="#6fa8ff" stroke-width="2.2" stroke-dasharray="6 4"/>
+            <path d="M70 172 Q 250 160 330 158 T 600 100" fill="none" stroke="#4fd6a5" stroke-width="2.2" stroke-dasharray="2 5"/>
+            <path d="M70 45 Q 200 160 330 163 T 600 130" fill="none" stroke="#ff6b7a" stroke-width="2.6"/>
+            <text x="130" y="55" fill="#6fa8ff" font-family="IBM Plex Mono" font-size="10">bias</text>
+            <text x="555" y="95" fill="#4fd6a5" font-family="IBM Plex Mono" font-size="10">variance</text>
+            <text x="500" y="118" fill="#ff6b7a" font-family="IBM Plex Mono" font-size="10">generalization error</text>
+            <text x="335" y="192" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10">optimal capacity</text>
+          </svg>
+          <figcaption>As capacity rises, <strong>bias falls</strong> (the model can represent the true function better) while <strong>variance rises</strong> (small changes in the training set swing the fitted model more). Their sum — generalization error — is U-shaped, which is exactly the same U-curve from Figure 5.3, now explained mechanistically.</figcaption>
+        </figure>
+
+        <div class="quiz-block" data-quiz="s4"></div>
+      </section>
+
+      <!-- ================= 5.5 ================= -->
+      <section class="chapter" id="s5">
+        <div class="chapter-head"><span class="chapter-num">5.5</span><h2>Maximum Likelihood Estimation</h2></div>
+        <p class="deck">Where do "good" estimators like MSE actually come from? MLE is the principle that derives most of them from first principles.</p>
+        <p>Given data <span class="mathi">\(\mathbb{X}=\{\boldsymbol x^{(1)},\dots,\boldsymbol x^{(m)}\}\)</span> drawn i.i.d. from the true (unknown) distribution <span class="mathi">\(p_{\text{data}}\)</span>, and a family of candidate distributions <span class="mathi">\(p_{\text{model}}(\boldsymbol x;\boldsymbol\theta)\)</span>, the <strong>maximum likelihood estimator</strong> picks the <span class="mathi">\(\boldsymbol\theta\)</span> that makes the observed data most probable:</p>
+        <div class="eqbox"><div class="eqlabel">Maximum likelihood estimator</div><div class="mathd">\[\boldsymbol\theta_{\text{ML}} = \arg\max_{\boldsymbol\theta} \sum_{i=1}^m \log p_{\text{model}}(\boldsymbol x^{(i)}; \boldsymbol\theta)\]</div></div>
+        <p>Taking logs turns a product of probabilities into a sum (numerically stable, easier to differentiate) without changing the arg max. Dividing by <span class="mathi">\(m\)</span> reframes this as minimizing the <strong>KL divergence</strong> between the empirical data distribution and the model — i.e. MLE is exactly the estimator that pulls the model distribution as close as possible to the true data distribution.</p>
+        <div class="callout intuition"><div class="tag"><span class="dot"></span>Intuition</div><p>Under a Gaussian noise assumption, maximizing likelihood for a regression model turns out to be <em>mathematically identical</em> to minimizing mean squared error. MSE wasn't an arbitrary choice — it falls straight out of MLE with a Gaussian assumption.</p></div>
+        <h3 class="sub">Properties of Maximum Likelihood</h3>
+        <p>Under mild conditions, MLE is the <strong>consistent</strong> estimator with the best possible convergence rate as the number of examples grows — which is exactly why it's the default starting point for so many estimators in machine learning.</p>
+        <div class="quiz-block" data-quiz="s5"></div>
+      </section>
+
+      <!-- ================= 5.6 ================= -->
+      <section class="chapter" id="s6">
+        <div class="chapter-head"><span class="chapter-num">5.6</span><h2>Bayesian Statistics</h2></div>
+        <p class="deck">MLE treats the true parameter as one fixed unknown number. Bayesian statistics treats it as a whole distribution of belief.</p>
+        <p>Before seeing any data, we specify a <strong>prior distribution</strong> <span class="mathi">\(p(\boldsymbol\theta)\)</span> — typically fairly high-entropy, reflecting genuine uncertainty. After observing data, Bayes' rule combines the prior with the likelihood to get a <strong>posterior</strong>:</p>
+        <div class="eqbox"><div class="eqlabel">Bayes' rule for parameters</div><div class="mathd">\[p(\boldsymbol\theta \mid \boldsymbol x^{(1)},\dots,\boldsymbol x^{(m)}) \propto p(\boldsymbol x^{(1)},\dots,\boldsymbol x^{(m)} \mid \boldsymbol\theta)\, p(\boldsymbol\theta)\]</div></div>
+        <p>Two practical differences from MLE matter a lot:</p>
+        <ul class="bullets">
+          <li>Predictions are made by <strong>averaging over the full posterior</strong> rather than plugging in a single point estimate — this naturally reduces overfitting on small datasets, since uncertainty in <span class="mathi">\(\boldsymbol\theta\)</span> is propagated into the prediction.</li>
+          <li>The prior lets you inject useful bias, e.g. preferring simpler or smoother models before seeing any data — which is precisely how weight decay can be re-derived as a Gaussian prior on the weights.</li>
+        </ul>
+        <h3 class="sub">Maximum A Posteriori (MAP) Estimation</h3>
+        <p>Fully Bayesian inference is often too expensive for high-dimensional <span class="mathi">\(\boldsymbol\theta\)</span>. MAP is a practical compromise: still use a prior, but collapse the posterior back down to a single point estimate at its peak:</p>
+        <div class="eqbox"><div class="eqlabel">MAP estimate</div><div class="mathd">\[\boldsymbol\theta_{\text{MAP}} = \arg\max_{\boldsymbol\theta} \log p(\boldsymbol x \mid \boldsymbol\theta) + \log p(\boldsymbol\theta)\]</div></div>
+        <div class="callout matters"><div class="tag"><span class="dot"></span>Why it matters</div><p>Weight decay is not a separate ad-hoc trick — it is exactly the log-prior term you get from putting a zero-mean Gaussian prior on the weights and doing MAP estimation. Regularization and Bayesian priors are the same idea wearing two different names.</p></div>
+        <div class="quiz-block" data-quiz="s6"></div>
+      </section>
+
+      <!-- ================= 5.7 ================= -->
+      <section class="chapter" id="s7">
+        <div class="chapter-head"><span class="chapter-num">5.7</span><h2>Supervised Learning Algorithms</h2></div>
+        <p class="deck">Four classic non-deep algorithms — worth knowing because deep learning was built explicitly to overcome their limits.</p>
+
+        <h4 class="subsub">Logistic Regression</h4>
+        <p>Despite the name, this is a <em>classifier</em>. It squashes a linear function through the logistic sigmoid to output a valid probability:</p>
+        <div class="eqbox"><div class="eqlabel">Binary logistic regression</div><div class="mathd">\[p(y=1 \mid \boldsymbol x;\boldsymbol\theta) = \sigma(\boldsymbol\theta^\top \boldsymbol x)\]</div></div>
+        <p>Unlike linear regression, there's no closed form — it's trained by numerically maximizing likelihood (gradient-based search).</p>
+
+        <h4 class="subsub">Support Vector Machines (SVM)</h4>
+        <p>Similar to logistic regression — driven by a linear function <span class="mathi">\(\boldsymbol w^\top\boldsymbol x + b\)</span> — but outputs a hard class identity, not a probability. Its key trick: the decision function can be rewritten purely in terms of dot products between examples:</p>
+        <div class="eqbox"><div class="eqlabel">Kernelized decision function</div><div class="mathd">\[f(\boldsymbol x) = b + \sum_i \alpha_i\, k(\boldsymbol x, \boldsymbol x^{(i)})\]</div></div>
+        <p>This is the <strong>kernel trick</strong>: replace the dot product with a kernel function <span class="mathi">\(k\)</span> and you get a decision boundary that's <em>nonlinear in x</em> while the underlying optimization stays convex and efficient. The most common choice, the <strong>Gaussian / RBF kernel</strong>, effectively does template-matching against training examples. The cost: prediction time scales with the number of <strong>support vectors</strong> (nonzero <span class="mathi">\(\alpha_i\)</span>), which grows with dataset size — a limitation deep networks were designed to avoid.</p>
+
+        <h4 class="subsub">k-Nearest Neighbors</h4>
+        <p>A genuinely non-parametric method — no training phase at all. At test time, find the k closest training points and average their targets. Capacity is essentially unbounded (it grows with the dataset), but it can't tell which input features actually matter, so it degrades badly when most features are irrelevant noise.</p>
+
+        <h4 class="subsub">Decision Trees</h4>
+        <p>Recursively splits input space into axis-aligned boxes; each leaf outputs a constant. Cheap and interpretable, but decision boundaries that aren't axis-aligned (e.g. a diagonal line) require many nodes to approximate — a structural weakness plain logistic regression doesn't have.</p>
+
+        <figure class="diagram">
+          <span class="fig-tag">Rebuilt · Fig 5.7</span>
+          <svg viewBox="0 0 640 320">
+            <g id="tree" font-family="IBM Plex Mono" font-size="10" fill="#eef1f8">
+              <line x1="320" y1="30" x2="200" y2="70" stroke="#5b6683"/><line x1="320" y1="30" x2="440" y2="70" stroke="#5b6683"/>
+              <line x1="200" y1="70" x2="140" y2="110" stroke="#5b6683"/><line x1="200" y1="70" x2="260" y2="110" stroke="#5b6683"/>
+              <line x1="440" y1="70" x2="380" y2="110" stroke="#5b6683"/><line x1="440" y1="70" x2="500" y2="110" stroke="#5b6683"/>
+              <line x1="500" y1="110" x2="470" y2="150" stroke="#5b6683"/><line x1="500" y1="110" x2="540" y2="150" stroke="#5b6683"/>
+              <circle cx="320" cy="30" r="13" fill="#151b29" stroke="#6fa8ff" stroke-width="1.6"/>
+              <circle cx="200" cy="70" r="13" fill="#151b29" stroke="#6fa8ff" stroke-width="1.6"/><text x="200" y="74" text-anchor="middle">0</text>
+              <circle cx="440" cy="70" r="13" fill="#151b29" stroke="#6fa8ff" stroke-width="1.6"/><text x="440" y="74" text-anchor="middle">1</text>
+              <rect x="118" y="102" width="44" height="24" fill="#151b29" stroke="#f2b134" stroke-width="1.4"/><text x="140" y="118" text-anchor="middle">00</text>
+              <circle cx="260" cy="110" r="13" fill="#151b29" stroke="#6fa8ff" stroke-width="1.6"/><text x="260" y="114" text-anchor="middle">01</text>
+              <rect x="238" y="142" width="44" height="24" fill="#151b29" stroke="#f2b134" stroke-width="1.4"/><text x="260" y="158" text-anchor="middle">010</text>
+              <rect x="298" y="142" width="44" height="24" fill="#151b29" stroke="#f2b134" stroke-width="1.4"/><text x="320" y="158" text-anchor="middle">011</text>
+              <line x1="260" y1="110" x2="260" y2="142" stroke="#5b6683"/><line x1="260" y1="110" x2="320" y2="142" stroke="#5b6683"/>
+              <rect x="358" y="102" width="44" height="24" fill="#151b29" stroke="#f2b134" stroke-width="1.4"/><text x="380" y="118" text-anchor="middle">10</text>
+              <circle cx="500" cy="110" r="13" fill="#151b29" stroke="#6fa8ff" stroke-width="1.6"/><text x="500" y="114" text-anchor="middle">11</text>
+              <rect x="448" y="142" width="44" height="24" fill="#151b29" stroke="#f2b134" stroke-width="1.4"/><text x="470" y="158" text-anchor="middle">110</text>
+              <circle cx="540" cy="150" r="12" fill="#151b29" stroke="#6fa8ff" stroke-width="1.6"/><text x="540" y="154" text-anchor="middle" font-size="9">111</text>
+              <line x1="540" y1="150" x2="515" y2="185" stroke="#5b6683"/><line x1="540" y1="150" x2="565" y2="185" stroke="#5b6683"/>
+              <rect x="493" y="185" width="44" height="22" fill="#151b29" stroke="#f2b134" stroke-width="1.4"/><text x="515" y="200" text-anchor="middle" font-size="9">1110</text>
+              <rect x="543" y="185" width="44" height="22" fill="#151b29" stroke="#f2b134" stroke-width="1.4"/><text x="565" y="200" text-anchor="middle" font-size="9">1111</text>
+            </g>
+            <g transform="translate(60,240)">
+              <rect x="0" y="0" width="220" height="70" fill="none" stroke="#5b6683"/>
+              <line x1="90" y1="0" x2="90" y2="45" stroke="#f2b134"/><line x1="90" y1="45" x2="220" y2="45" stroke="#f2b134"/>
+              <line x1="0" y1="45" x2="90" y2="45" stroke="#98a4c2" stroke-dasharray="2 2"/>
+              <text x="45" y="30" fill="#eef1f8" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">00</text>
+              <text x="135" y="25" fill="#eef1f8" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">01</text>
+              <text x="45" y="60" fill="#eef1f8" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">10</text>
+              <text x="155" y="60" fill="#eef1f8" font-size="9" font-family="IBM Plex Mono" text-anchor="middle">11</text>
+            </g>
+            <text x="60" y="235" fill="#98a4c2" font-size="10" font-family="IBM Plex Mono">input space, carved by the same tree →</text>
+          </svg>
+          <figcaption>Circles are internal (splitting) nodes; squares are leaves, each owning one axis-aligned region of input space and outputting one constant value. <strong>Bottom:</strong> the same tree drawn as a partition of a 2D input space — a piecewise-constant function, one piece per leaf.</figcaption>
+        </figure>
+
+        <figure class="diagram">
+          <span class="fig-tag">Rebuilt · Fig 5.10 — Voronoi regions</span>
+          <svg viewBox="0 0 400 220">
+            <circle cx="200" cy="130" r="3" fill="none"/>
+            <line x1="200" y1="130" x2="130" y2="60" stroke="#5b6683" stroke-width="1.6"/>
+            <line x1="200" y1="130" x2="280" y2="60" stroke="#5b6683" stroke-width="1.6"/>
+            <line x1="200" y1="130" x2="200" y2="210" stroke="#5b6683" stroke-width="1.6"/>
+            <circle cx="190" cy="45" r="6" fill="none" stroke="#6fa8ff" stroke-width="2"/>
+            <circle cx="90" cy="105" r="6" fill="none" stroke="#6fa8ff" stroke-width="2"/>
+            <circle cx="300" cy="105" r="6" fill="none" stroke="#6fa8ff" stroke-width="2"/>
+          </svg>
+          <figcaption>Nearest-neighbor prediction implicitly carves input space into a <strong>Voronoi diagram</strong>: each training example "owns" the region of test points closest to it, and the number of distinguishable regions can never exceed the number of training examples.</figcaption>
+        </figure>
+
+        <div class="quiz-block" data-quiz="s7"></div>
+      </section>
+
+      <!-- ================= 5.8 ================= -->
+      <section class="chapter" id="s8">
+        <div class="chapter-head"><span class="chapter-num">5.8</span><h2>Unsupervised Learning: PCA</h2></div>
+        <p class="deck">Unsupervised algorithms find structure in unlabeled data. Principal Components Analysis is the clearest classic example: it learns a representation.</p>
+        <p>PCA finds a linear, orthogonal transformation <span class="mathi">\(\boldsymbol z = \boldsymbol x^\top \boldsymbol W\)</span> of the data such that the new coordinates <span class="mathi">\(\boldsymbol z\)</span> are <strong>decorrelated</strong> — no linear relationship remains between any two output dimensions. The new axes are chosen to align with the directions of greatest variance in the original data.</p>
+        <figure class="diagram">
+          <span class="fig-tag">Rebuilt · Fig 5.8</span>
+          <svg viewBox="0 0 640 220">
+            <g transform="translate(20,10)"><text x="120" y="14" fill="#eef1f8" font-family="Fraunces" font-size="13" text-anchor="middle">Original data (x)</text>
+              <line x1="20" y1="180" x2="240" y2="180" stroke="#5b6683"/><line x1="20" y1="30" x2="20" y2="180" stroke="#5b6683"/>
+              <line x1="45" y1="165" x2="220" y2="45" stroke="#f2b134" stroke-width="1" stroke-dasharray="4 3"/>
+              <g fill="#6fa8ff" opacity="0.9">
+                <circle cx="55" cy="150" r="3.5"/><circle cx="70" cy="140" r="3.5"/><circle cx="80" cy="130" r="3.5"/><circle cx="90" cy="120" r="3.5"/>
+                <circle cx="100" cy="118" r="3.5"/><circle cx="110" cy="105" r="3.5"/><circle cx="120" cy="100" r="3.5"/><circle cx="130" cy="95" r="3.5"/>
+                <circle cx="140" cy="85" r="3.5"/><circle cx="150" cy="82" r="3.5"/><circle cx="160" cy="72" r="3.5"/><circle cx="175" cy="65" r="3.5"/>
+                <circle cx="190" cy="58" r="3.5"/><circle cx="200" cy="50" r="3.5"/>
+              </g>
+            </g>
+            <g transform="translate(340,10)"><text x="120" y="14" fill="#eef1f8" font-family="Fraunces" font-size="13" text-anchor="middle">After PCA (z)</text>
+              <line x1="20" y1="180" x2="240" y2="180" stroke="#5b6683"/><line x1="20" y1="30" x2="20" y2="180" stroke="#5b6683"/>
+              <line x1="20" y1="108" x2="240" y2="108" stroke="#4fd6a5" stroke-width="1" stroke-dasharray="4 3"/>
+              <g fill="#4fd6a5" opacity="0.9">
+                <circle cx="45" cy="112" r="3.5"/><circle cx="65" cy="105" r="3.5"/><circle cx="80" cy="110" r="3.5"/><circle cx="95" cy="104" r="3.5"/>
+                <circle cx="110" cy="112" r="3.5"/><circle cx="125" cy="107" r="3.5"/><circle cx="140" cy="103" r="3.5"/><circle cx="155" cy="110" r="3.5"/>
+                <circle cx="170" cy="106" r="3.5"/><circle cx="185" cy="112" r="3.5"/><circle cx="200" cy="104" r="3.5"/><circle cx="215" cy="109" r="3.5"/>
+              </g>
+            </g>
+          </svg>
+          <figcaption><b>Left:</b> raw data varies most along a diagonal direction, not an axis. <b>Right:</b> after PCA's rotation, most of the variance lines up with the first axis <span class="mathi">\(z_1\)</span>, and the spread along <span class="mathi">\(z_2\)</span> is much smaller — a lower-dimensional summary can now discard <span class="mathi">\(z_2\)</span> with minimal information loss.</figcaption>
+        </figure>
+        <p>Formally, PCA diagonalizes the covariance matrix of the data: it finds the rotation <span class="mathi">\(\boldsymbol W\)</span> (the matrix of eigenvectors of <span class="mathi">\(\text{Var}[\boldsymbol x]=\frac{1}{m-1}\boldsymbol X^\top\boldsymbol X\)</span>) such that the covariance of <span class="mathi">\(\boldsymbol z\)</span> is diagonal — i.e. its dimensions are uncorrelated. This makes PCA a simple, effective dimensionality-reduction and feature-decorrelation tool, and a first step (though not a complete solution) toward learning fully statistically independent representations.</p>
+        <div class="quiz-block" data-quiz="s8"></div>
+      </section>
+
+      <!-- ================= 5.9 ================= -->
+      <section class="chapter" id="s9">
+        <div class="chapter-head"><span class="chapter-num">5.9</span><h2>Stochastic Gradient Descent</h2></div>
+        <p class="deck">The optimization workhorse behind almost every deep learning model ever trained.</p>
+        <p>Ordinary gradient descent needs the gradient of the cost <em>summed over the entire training set</em> at every step — for a dataset with millions of examples, that's prohibitively slow per update. The cost function for most ML models decomposes as a sum/average over per-example losses, so its gradient is itself an average over per-example gradients:</p>
+        <div class="eqbox"><div class="eqlabel">Gradient of the cost</div><div class="mathd">\[\nabla_{\boldsymbol\theta}\, J(\boldsymbol\theta) = \frac{1}{m}\sum_{i=1}^m \nabla_{\boldsymbol\theta}\, L(\boldsymbol x^{(i)}, y^{(i)}, \boldsymbol\theta)\]</div></div>
+        <p><strong>Stochastic (minibatch) gradient descent</strong> approximates this average using a small, randomly-sampled <strong>minibatch</strong> of examples (often 1 to a few hundred) instead of the whole dataset, then updates:</p>
+        <div class="eqbox"><div class="eqlabel">SGD update rule</div><div class="mathd">\[\boldsymbol\theta \leftarrow \boldsymbol\theta - \epsilon\, \boldsymbol g \qquad \text{where } \boldsymbol g = \frac{1}{m'}\sum_{i=1}^{m'} \nabla_{\boldsymbol\theta}\, L(\boldsymbol x^{(i)}, y^{(i)}, \boldsymbol\theta)\]</div></div>
+        <p>where <span class="mathi">\(\epsilon\)</span> is the <strong>learning rate</strong>. Because each step's cost no longer scales with total dataset size, SGD lets training cost grow with model complexity rather than with the size of the training set — the property that makes training on today's massive datasets computationally feasible at all.</p>
+        <div class="callout matters"><div class="tag"><span class="dot"></span>Why it matters</div><p>SGD isn't just an optimizer — the book flags it as one of the handful of ingredients (alongside distributed/large datasets and flexible model families) that make modern deep learning practical at all.</p></div>
+        <div class="quiz-block" data-quiz="s9"></div>
+      </section>
+
+      <!-- ================= 5.10 ================= -->
+      <section class="chapter" id="s10">
+        <div class="chapter-head"><span class="chapter-num">5.10</span><h2>Building a Machine Learning Algorithm</h2></div>
+        <p class="deck">Nearly every algorithm in this book — deep or shallow — is built from the same four interchangeable Lego bricks.</p>
+        <ol class="steps">
+          <li><strong>A dataset</strong> — the experience E.</li>
+          <li><strong>A cost function</strong> — typically a data term (e.g. negative log-likelihood) plus a regularization term.</li>
+          <li><strong>An optimization procedure</strong> — closed-form solving where possible, otherwise iterative methods like SGD.</li>
+          <li><strong>A model</strong> — the family of functions being searched over, e.g. linear, or (later in the book) a deep network.</li>
+        </ol>
+        <p>Swap the model from linear to a neural net, and the cost from linear regression's MSE to negative log-likelihood, and the same recipe assembles logistic regression. Swap the optimizer from closed-form to SGD and you get most of modern deep learning. Recognizing these four pieces in any new algorithm is often the fastest way to actually understand it.</p>
+        <div class="quiz-block" data-quiz="s10"></div>
+      </section>
+
+      <!-- ================= 5.11 ================= -->
+      <section class="chapter" id="s11">
+        <div class="chapter-head"><span class="chapter-num">5.11</span><h2>Challenges Motivating Deep Learning</h2></div>
+        <p class="deck">Why wasn't 1990s-style shallow machine learning enough? Three structural problems — and deep learning's answer to each.</p>
+
+        <h3 class="sub">The Curse of Dimensionality</h3>
+        <p>Many algorithms behave well when the number of relevant variables is small, then degrade sharply as dimensionality grows. The number of distinct regions you need to distinguish grows <strong>exponentially</strong> with dimension.</p>
+        <figure class="diagram">
+          <span class="fig-tag">Rebuilt · Fig 5.9</span>
+          <svg viewBox="0 0 640 170">
+            <g transform="translate(20,50)"><text x="55" y="-20" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">1D: 10 regions</text>
+              <g>
+                <rect x="0" y="0" width="10" height="20" fill="#6fa8ff"/><rect x="12" y="0" width="10" height="20" fill="#4fd6a5"/><rect x="24" y="0" width="10" height="20" fill="#f2b134"/>
+                <rect x="36" y="0" width="10" height="20" fill="#b592ff"/><rect x="48" y="0" width="10" height="20" fill="#ff6b7a"/><rect x="60" y="0" width="10" height="20" fill="#6fa8ff"/>
+                <rect x="72" y="0" width="10" height="20" fill="#4fd6a5"/><rect x="84" y="0" width="10" height="20" fill="#f2b134"/><rect x="96" y="0" width="10" height="20" fill="#b592ff"/><rect x="108" y="0" width="10" height="20" fill="#ff6b7a"/>
+              </g>
+            </g>
+            <g transform="translate(260,10)"><text x="55" y="-6" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">2D: 10×10 = 100 regions</text>
+              <g id="grid2d"></g>
+            </g>
+            <g transform="translate(460,0)"><text x="70" y="6" fill="#98a4c2" font-family="IBM Plex Mono" font-size="10" text-anchor="middle">3D: 10³ = 1000 regions</text>
+              <g transform="translate(20,30) skewX(-20)" id="grid3dA"></g>
+              <g transform="translate(65,55) skewX(-20)" id="grid3dB"></g>
+              <g transform="translate(110,80) skewX(-20)" id="grid3dC"></g>
+            </g>
+          </svg>
+          <figcaption>As dimensionality goes from 1 → 2 → 3, the grid of distinguishable regions explodes: <span class="mathi">\(10 \to 100 \to 1000\)</span>. In general, <span class="mathi">\(v\)</span> values per axis and <span class="mathi">\(d\)</span> dimensions require on the order of <span class="mathi">\(O(v^d)\)</span> regions and examples — far more than any realistic dataset can cover once <span class="mathi">\(d\)</span> gets large.</figcaption>
+        </figure>
+
+        <h3 class="sub">Local Constancy & Smoothness Regularization</h3>
+        <p>Most traditional algorithms implicitly rely on a <strong>smoothness prior</strong> (a.k.a. local constancy): the learned function shouldn't change much within a small neighborhood, so a new point can be predicted mainly from nearby training points. This works fine in low dimensions but breaks down once you need to distinguish exponentially many regions — you simply can't have a training example in every neighborhood. Deep architectures instead encode much stronger, more targeted priors (e.g. convolutional weight-sharing, distributed representations) that let them generalize well without needing that dense local coverage.</p>
+
+        <h3 class="sub">Manifold Learning</h3>
+        <p>Real-world high-dimensional data (images, audio) is not spread uniformly through its raw coordinate space — it concentrates near a much lower-dimensional <strong>manifold</strong> embedded in that space. E.g. among all possible pixel-grids, only a tiny sliver look like plausible photographs; random pixel noise almost never resembles a real image. The <strong>manifold hypothesis</strong> — that the data of interest lies on such a low-dimensional manifold — is a key structural assumption that lets deep learning avoid a literal fight with the curse of dimensionality: the model only needs to be accurate on (and near) the manifold, not everywhere in the ambient space.</p>
+
+        <div class="quiz-block" data-quiz="s11"></div>
+      </section>
+
+      <!-- ================= CHEAT SHEET ================= -->
+      <section class="chapter" id="cheatsheet">
+        <div class="chapter-head"><span class="chapter-num">§</span><h2>Cheat Sheet</h2></div>
+        <p class="deck">One line each — the chapter compressed for a five-minute pre-exam skim.</p>
+        <div class="cheatgrid">
+          <div class="cheat-card"><h5>Task · Perf · Experience</h5><p>Every learner = a task T, a performance measure P, and an experience E (supervised = has labels, unsupervised = doesn't).</p></div>
+          <div class="cheat-card"><h5>Capacity</h5><p>Too low → underfits. Too high → overfits. Sweet spot minimizes the gap between train and test error.</p></div>
+          <div class="cheat-card"><h5>Regularization</h5><p>Express a preference over functions (e.g. weight decay) rather than just restricting the hypothesis space.</p></div>
+          <div class="cheat-card"><h5>Validation set</h5><p>A slice of training data used to pick hyperparameters — never touch the test set for this.</p></div>
+          <div class="cheat-card"><h5>Bias vs. Variance</h5><p>Bias = systematically wrong on average. Variance = wildly different across resamples. MSE = bias² + variance.</p></div>
+          <div class="cheat-card"><h5>MLE</h5><p>Pick parameters that make the observed data most probable — MSE for regression falls out of MLE + Gaussian noise.</p></div>
+          <div class="cheat-card"><h5>Bayesian / MAP</h5><p>Keep a full posterior over parameters (Bayesian) or its peak (MAP). Weight decay = Gaussian prior + MAP.</p></div>
+          <div class="cheat-card"><h5>SVM / kernel trick</h5><p>Rewrite a linear model with dot products, swap in a kernel → nonlinear boundary, convex optimization.</p></div>
+          <div class="cheat-card"><h5>k-NN & decision trees</h5><p>Non/semi-parametric, carve input space into regions; both struggle outside axis-aligned or locally-smooth structure.</p></div>
+          <div class="cheat-card"><h5>PCA</h5><p>Linear rotation that decorrelates features and concentrates variance in the first few dimensions.</p></div>
+          <div class="cheat-card"><h5>SGD</h5><p>Estimate the true gradient from a small random minibatch — makes training cost independent of dataset size.</p></div>
+          <div class="cheat-card"><h5>Curse of dimensionality</h5><p>Regions needed grow as O(v^d). The manifold hypothesis is deep learning's escape hatch.</p></div>
+        </div>
+      </section>
+
+      <!-- ================= FINAL QUIZ ================= -->
+      <section class="chapter" id="final">
+        <div class="chapter-head"><span class="chapter-num">★</span><h2>Chapter Mastery Check</h2></div>
+        <p class="deck">Ten questions spanning the whole chapter. This is the one to retake until it's green across the board.</p>
+        <div class="quiz-block" data-quiz="final"></div>
+        <div class="final-score-card">
+          <div class="big" id="finalScoreBig">0/10</div>
+          <div class="sub">final score</div>
+          <div class="verdict" id="finalVerdict">Answer the questions above to see your mastery verdict.</div>
+          <button class="reset-btn" id="resetBtn">Reset all progress</button>
+        </div>
+      </section>
+
+      <div class="footer"><p>Built from Ch. 5, <i>Deep Learning</i> — Goodfellow, Bengio & Courville · explanations rewritten for this study guide.</p></div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ============ QUIZ DATA ============ */
+const QUIZZES = {
+  s1: [
+    {q:"In Mitchell's definition, what counts as the \"task\" for a spam classifier?",
+     opts:["Gradient descent","Classifying an email as spam or not spam","Collecting more training emails","Computing accuracy on the test set"], correct:1,
+     exp:"The task T is what the system does with an example at deployment time — here, classification. Learning is the means, never the task itself."},
+    {q:"Why do we ultimately care about test error rather than training error?",
+     opts:["Test error is cheaper to compute","Training error can be trivially minimized by memorizing the data, so it doesn't measure generalization","Test sets are always larger","Training error is a Bayesian quantity"], correct:1,
+     exp:"A model can drive training error to zero by memorizing — what we actually want is good performance on new, unseen inputs, which only test error estimates."},
+    {q:"What makes the normal-equations solution for linear regression possible in closed form?",
+     opts:["The MSE cost is a smooth, convex quadratic in w","Neural networks are involved","The data must be Gaussian-distributed","w must be one-dimensional"], correct:0,
+     exp:"Because MSE is quadratic and convex in w, setting its gradient to zero yields one unique, directly solvable minimum — no iterative search needed."}
+  ],
+  s2: [
+    {q:"A model gets 2% training error but 25% test error. What's happening?",
+     opts:["Underfitting","Overfitting","The model has zero capacity","The performance measure is broken"], correct:1,
+     exp:"A large train/test gap with low training error is the signature of overfitting: the model has partly memorized training-set-specific noise."},
+    {q:"What does the No Free Lunch theorem actually tell a practicing ML engineer?",
+     opts:["No algorithm can ever be chosen over another","Averaged over literally all possible distributions, no algorithm dominates — but real-world data isn't drawn from 'all possible distributions', so specialization still helps","Deep learning violates the theorem","Regularization is mathematically impossible"], correct:1,
+     exp:"NFL is a statement about a uniform average over every conceivable problem. Since real-world tasks share structure, algorithms tuned to that structure genuinely outperform others in practice."},
+    {q:"Weight decay adds λwᵀw to the cost. What happens as λ → 0?",
+     opts:["The model is forced toward a constant function","The regularization term vanishes and the model is free to overfit (as in the plain degree-9 fit)","Training becomes impossible","Bias drops to exactly zero"], correct:1,
+     exp:"λ=0 removes the preference for small weights entirely, so a high-capacity model reverts to whatever unconstrained fit minimizes training error alone — typically overfitting."}
+  ],
+  s3: [
+    {q:"Why can't you just choose hyperparameters by minimizing training error directly?",
+     opts:["Training error is undefined for hyperparameters","The optimizer would always pick maximum capacity / zero regularization, guaranteeing overfitting","Hyperparameters aren't real numbers","It's computationally impossible"], correct:1,
+     exp:"Training error keeps falling as capacity rises and regularization falls, so directly optimizing it over hyperparameters would always chase overfitting."},
+    {q:"What's the cardinal sin regarding the test set during model development?",
+     opts:["Using it at all","Tuning any hyperparameter or model choice based on test performance","Making it too small","Shuffling it"], correct:1,
+     exp:"The moment test performance informs any decision, it stops being an unbiased estimate of generalization — that's exactly what the validation set exists to prevent."},
+    {q:"When is k-fold cross-validation most useful?",
+     opts:["When you have unlimited data","When the dataset is too small to reserve a stable validation split","When training is extremely expensive","Only for unsupervised learning"], correct:1,
+     exp:"Cross-validation trades extra compute (training k times) for a lower-variance error estimate — valuable precisely when data is scarce."}
+  ],
+  s4: [
+    {q:"An estimator has bias(θ̂) = 0. What does that mean?",
+     opts:["It always returns the exact true value","Its expected value over many datasets equals the true parameter","It has zero variance","It's a Bayesian estimator"], correct:1,
+     exp:"Zero bias means the expectation of the estimator matches θ — individual estimates can still vary from dataset to dataset (that's variance, a separate quantity)."},
+    {q:"High-variance, low-bias models tend to:",
+     opts:["Underfit consistently","Fit the training set well but swing wildly between different training samples (overfit)","Never converge","Have no capacity"], correct:1,
+     exp:"Low bias means the model can represent the truth; high variance means small changes in the training data produce very different fitted models — the classic overfitting signature."},
+    {q:"MSE = bias² + variance. As capacity increases from very low to very high, what typically happens?",
+     opts:["Both rise together forever","Bias tends to fall while variance tends to rise, producing a U-shaped MSE","Both fall to zero","Neither changes"], correct:1,
+     exp:"This is exactly Figure 5.6's story: falling bias and rising variance combine into the same U-shaped generalization curve as Figure 5.3."}
+  ],
+  s5: [
+    {q:"What does maximum likelihood estimation actually maximize?",
+     opts:["The model's training speed","The probability the model assigns to the observed data","The number of parameters","The validation accuracy directly"], correct:1,
+     exp:"MLE picks parameters θ that make the observed dataset as probable as possible under the model — nothing about speed or parameter count."},
+    {q:"Why is minimizing MSE for regression a special case of MLE?",
+     opts:["It isn't related to MLE at all","Under a Gaussian noise assumption, maximizing likelihood is mathematically identical to minimizing MSE","MSE is only used in classification","MLE requires infinite data"], correct:1,
+     exp:"Assume Gaussian-distributed prediction errors, write out the log-likelihood, and the arg max reduces exactly to minimizing squared error."}
+  ],
+  s6: [
+    {q:"How does the Bayesian approach differ fundamentally from MLE?",
+     opts:["It ignores the data entirely","It treats the parameter as a full probability distribution (updated via a prior) rather than one fixed unknown number to estimate","It never uses probability","It's identical to MLE"], correct:1,
+     exp:"Bayesian inference keeps a prior belief and updates it into a posterior distribution over θ, instead of collapsing straight to a single point estimate."},
+    {q:"MAP estimation is best described as:",
+     opts:["Full Bayesian inference with no compromises","A practical compromise: keep the prior's regularizing effect, but still return a single point estimate at the posterior's peak","Identical to plain MLE","Only usable for classification"], correct:1,
+     exp:"MAP adds the log-prior to the log-likelihood and maximizes — cheaper than full Bayesian averaging, but still prior-informed, unlike vanilla MLE."},
+    {q:"Weight decay can be re-derived as:",
+     opts:["A kernel trick","MAP estimation with a zero-mean Gaussian prior on the weights","A validation set","An unsupervised algorithm"], correct:1,
+     exp:"A Gaussian prior on w, combined via MAP, produces exactly a squared-weight penalty term in the objective — i.e. weight decay."}
+  ],
+  s7: [
+    {q:"What does the kernel trick actually buy an SVM?",
+     opts:["Guaranteed zero training error","A nonlinear decision boundary in x while keeping the underlying optimization convex and tractable","Removal of all support vectors","Elimination of the need for training data"], correct:1,
+     exp:"By expressing the decision function via dot products and swapping in a kernel, SVMs get nonlinear boundaries without losing the convex-optimization guarantees of the linear formulation."},
+    {q:"Why does k-nearest neighbors struggle when only 1 of 100 features is actually relevant?",
+     opts:["It can't compute distances in high dimensions","It weighs all features equally in the distance metric, so irrelevant features dominate the notion of \"nearest\"","It has too few parameters","It requires labeled data to work at all"], correct:1,
+     exp:"Nearest-neighbor distance is computed over all features equally; with 99 irrelevant dimensions swamping the 1 relevant one, the 'nearest' point is essentially random."},
+    {q:"Why do decision trees struggle with a diagonal decision boundary like x2 > x1?",
+     opts:["Trees can only be trained with SGD","Trees split via axis-aligned cuts, so approximating a diagonal boundary requires many small staircase-like splits","Trees have no leaves","Decision trees can't do classification"], correct:1,
+     exp:"Every split is perpendicular to one axis, so a diagonal boundary can only be approximated by a jagged staircase of many axis-aligned cuts."}
+  ],
+  s8: [
+    {q:"What property does PCA guarantee about the transformed features z?",
+     opts:["They are statistically independent in every case","They are linearly decorrelated (no linear relationship between dimensions)","They are always binary","They have the same scale as the raw pixels"], correct:1,
+     exp:"PCA diagonalizes the covariance matrix, which removes linear correlation between output dimensions — full statistical independence would additionally require removing nonlinear relationships, which PCA does not do."},
+    {q:"PCA's new axes are chosen to align with:",
+     opts:["Random directions","The directions of greatest variance in the data","The directions of least variance","The original feature axes, unchanged"], correct:1,
+     exp:"The first principal component captures the direction along which the data varies most; each subsequent component captures the next-largest remaining variance, orthogonal to the rest."}
+  ],
+  s9: [
+    {q:"What's the core computational problem SGD solves versus full-batch gradient descent?",
+     opts:["SGD gets a more accurate gradient","SGD approximates the true gradient using a small minibatch, so per-step cost doesn't scale with total dataset size","SGD removes the need for a learning rate","SGD only works for convex problems"], correct:1,
+     exp:"Full-batch gradient descent needs every example at every step; SGD swaps that for a small random sample, making training cost independent of how large the dataset is."},
+    {q:"In the SGD update θ ← θ − ε g, what is ε?",
+     opts:["The minibatch size","The learning rate, controlling the step size","The number of training epochs","The regularization strength"], correct:1,
+     exp:"ε is the learning rate — it scales how far each parameter update moves along the estimated gradient direction."}
+  ],
+  s10: [
+    {q:"Which four components combine to build essentially any ML algorithm in this framework?",
+     opts:["A GPU, a dataset, a browser, and a loss function","A dataset, a cost function, an optimization procedure, and a model","A validation set, a test set, a kernel, and a tree","A prior, a posterior, a likelihood, and evidence"], correct:1,
+     exp:"Dataset (experience), cost function, optimization procedure, and model family are the four interchangeable building blocks the book uses to assemble nearly every algorithm."}
+  ],
+  s11: [
+    {q:"Why is the curse of dimensionality called a 'curse'?",
+     opts:["It only affects unsupervised learning","The number of regions needed to cover input space grows exponentially with dimension, quickly outstripping any realistic training set","It makes gradient descent diverge","It only matters for kernel methods"], correct:1,
+     exp:"With v values per axis and d dimensions, you need roughly O(v^d) regions/examples — a number that becomes astronomically larger than any real dataset as d grows."},
+    {q:"What is the 'manifold hypothesis'?",
+     opts:["All data is uniformly distributed across its full coordinate space","High-dimensional real-world data (like images) concentrates near a much lower-dimensional manifold within that space","Manifolds only exist in unsupervised learning","It's another name for the kernel trick"], correct:1,
+     exp:"Because real data (e.g. natural images) occupies only a thin, structured sliver of all possible pixel configurations, a model only needs to be accurate on/near that manifold — not everywhere in the ambient space."}
+  ],
+  final: [
+    {q:"A model with very high capacity and almost no regularization will most likely:",
+     opts:["Underfit","Overfit","Have zero variance","Be unsupervised"], correct:1,
+     exp:"High capacity with no constraint on function choice is the textbook overfitting setup — training error keeps dropping as the generalization gap widens."},
+    {q:"The validation set exists primarily to:",
+     opts:["Replace the test set","Tune hyperparameters without contaminating the test set's honesty","Increase training speed","Store extra labels"], correct:1,
+     exp:"It's the mechanism that lets you tune capacity/regularization/etc. while keeping the test set's error estimate unbiased."},
+    {q:"MSE decomposes into which two components?",
+     opts:["Precision and recall","Bias² and variance","Kernel and prior","Capacity and regularization"], correct:1,
+     exp:"MSE = bias(θ̂)² + Var(θ̂) — the chapter's central statistical decomposition of estimator error."},
+    {q:"Maximum likelihood estimation for regression under Gaussian noise is equivalent to:",
+     opts:["k-nearest neighbors","Minimizing mean squared error","Maximizing entropy","PCA"], correct:1,
+     exp:"The Gaussian log-likelihood reduces algebraically to (negative) squared error, so MLE and MSE-minimization coincide in this setting."},
+    {q:"MAP estimation differs from plain MLE by:",
+     opts:["Ignoring the likelihood entirely","Adding a log-prior term, injecting bias toward preferred parameter values before seeing data","Requiring infinite data","Being purely unsupervised"], correct:1,
+     exp:"MAP = argmax [log-likelihood + log-prior]; the prior is exactly what plain MLE lacks."},
+    {q:"The kernel trick lets a linear-style algorithm like SVM:",
+     opts:["Learn nonlinear decision boundaries while keeping training convex","Avoid using any training data","Become unsupervised","Guarantee zero test error"], correct:0,
+     exp:"Swapping the dot product for a kernel function implicitly maps inputs into a richer feature space, without ever computing that mapping explicitly."},
+    {q:"k-Nearest Neighbors is described as non-parametric mainly because:",
+     opts:["It has zero accuracy","Its effective complexity grows with the size of the training set rather than being fixed in advance","It only works on images","It requires a validation set"], correct:1,
+     exp:"There's no fixed-size parameter vector learned ahead of time — behavior is defined directly by the (growing) training data itself."},
+    {q:"PCA's transformed axes are ordered by:",
+     opts:["Alphabetical feature name","Amount of variance captured, most to least","Training example index","Class label"], correct:1,
+     exp:"The first principal component explains the most variance, the second explains the next most (orthogonal to the first), and so on."},
+    {q:"SGD's minibatch gradient is best understood as:",
+     opts:["An exact gradient, always identical to full-batch","A noisy but unbiased-in-expectation estimate of the true gradient over the full dataset","A completely random direction unrelated to the true gradient","Only usable when the dataset fits in memory"], correct:1,
+     exp:"Each minibatch gradient is a Monte Carlo estimate of the true full-dataset gradient — noisier per step, but far cheaper, and it averages out correctly over many steps."},
+    {q:"The manifold hypothesis helps deep learning cope with the curse of dimensionality because:",
+     opts:["It removes the need for any training data","Real data concentrates on a low-dimensional manifold, so the model only needs accuracy there rather than across the full high-dimensional space","It converts unsupervised problems into supervised ones","It eliminates the need for regularization entirely"], correct:1,
+     exp:"Instead of needing to cover an astronomically large ambient space, the model effectively only needs to model the thin manifold where real data actually lives."}
+  ]
+};
+
+/* ============ STATE ============ */
+const state = {}; // { s1: {0:true/false, 1:..}, ... }
+Object.keys(QUIZZES).forEach(k => state[k] = {});
+
+function sectionTotal(key){ return QUIZZES[key].length; }
+function sectionAnswered(key){ return Object.keys(state[key]).length; }
+function sectionCorrect(key){ return Object.values(state[key]).filter(Boolean).length; }
+function sectionDone(key){ return sectionAnswered(key) === sectionTotal(key); }
+
+function renderQuiz(container, key){
+  const items = QUIZZES[key];
+  const wrap = document.createElement('div');
+  const header = document.createElement('div');
+  header.className = 'quiz-header';
+  header.innerHTML = `<svg class="qicon" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="none" stroke="#b592ff" stroke-width="1.6"/><path d="M7 9a3 3 0 1 1 4 2.8V13" stroke="#b592ff" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="10" cy="15.4" r="0.9" fill="#b592ff"/></svg><h4>${key==='final' ? 'Final mastery quiz' : 'Check your understanding'}</h4>`;
+  wrap.appendChild(header);
+
+  items.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    const opts = item.opts.map((o,i)=>`<button class="qopt" data-i="${i}">${o}</button>`).join('');
+    card.innerHTML = `
+      <div class="qmeta"><span class="qn">Question ${idx+1} of ${items.length}</span></div>
+      <div class="qtext">${item.q}</div>
+      <div class="qopts">${opts}</div>
+      <div class="qexplain"><b>Explanation —</b> ${item.exp}</div>
+    `;
+    wrap.appendChild(card);
+    const btns = card.querySelectorAll('.qopt');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if(btn.disabled) return;
+        const chosen = parseInt(btn.dataset.i);
+        const correct = item.correct;
+        btns.forEach(b=>{
+          b.disabled = true;
+          const bi = parseInt(b.dataset.i);
+          if(bi === correct) b.classList.add('correct');
+          else if(bi === chosen) b.classList.add('incorrect');
+        });
+        card.querySelector('.qexplain').classList.add('show');
+        state[key][idx] = (chosen === correct);
+        updateProgress();
+      });
+    });
+  });
+
+  const scoreLine = document.createElement('div');
+  scoreLine.className = 'section-score';
+  scoreLine.innerHTML = `<span class="pill" id="scorepill-${key}">0 / ${items.length} answered</span>`;
+  wrap.appendChild(scoreLine);
+
+  container.appendChild(wrap);
+}
+
+function updateProgress(){
+  let totalQ = 0, totalAnswered = 0, totalCorrect = 0;
+  Object.keys(QUIZZES).forEach(key=>{
+    totalQ += sectionTotal(key);
+    totalAnswered += sectionAnswered(key);
+    totalCorrect += sectionCorrect(key);
+    const pill = document.getElementById('scorepill-'+key);
+    if(pill){
+      const ans = sectionAnswered(key), corr = sectionCorrect(key), tot = sectionTotal(key);
+      pill.textContent = `${corr} / ${tot} correct`;
+      pill.classList.toggle('complete', ans===tot);
+    }
+    const dot = document.querySelector(`.nav-dot[data-dot="${key}"]`);
+    if(dot) dot.classList.toggle('done', sectionDone(key));
+  });
+  const pct = totalQ ? Math.round((totalCorrect/totalQ)*100) : 0;
+  document.getElementById('overallPct').textContent = pct + '%';
+  document.getElementById('overallBar').style.width = pct + '%';
+
+  // final card
+  const fCorrect = sectionCorrect('final'), fTotal = sectionTotal('final');
+  document.getElementById('finalScoreBig').textContent = `${fCorrect}/${fTotal}`;
+  const verdictEl = document.getElementById('finalVerdict');
+  const fAnswered = sectionAnswered('final');
+  if(fAnswered === 0){
+    verdictEl.textContent = 'Answer the questions above to see your mastery verdict.';
+  } else if(fAnswered < fTotal){
+    verdictEl.textContent = `${fTotal - fAnswered} question(s) left to answer.`;
+  } else if(fCorrect === fTotal){
+    verdictEl.textContent = "Perfect score — you've genuinely internalized this chapter.";
+  } else if(fCorrect >= fTotal*0.7){
+    verdictEl.textContent = 'Solid grasp. Revisit the sections tied to your missed questions above.';
+  } else {
+    verdictEl.textContent = 'Worth another pass — scroll back through the sections whose quizzes you missed.';
+  }
+}
+
+/* build all quizzes */
+document.querySelectorAll('.quiz-block').forEach(el=>{
+  renderQuiz(el, el.dataset.quiz);
+});
+updateProgress();
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  Object.keys(QUIZZES).forEach(k=> state[k] = {});
+  document.querySelectorAll('.quiz-block').forEach(el=>{
+    el.innerHTML = '';
+    renderQuiz(el, el.dataset.quiz);
+  });
+  updateProgress();
+});
+
+/* ============ CAPACITY DEMO ============ */
+(function(){
+  const pts = [[55,140],[90,95],[110,80],[150,70],[190,75],[230,95],[270,120],[300,150],[330,160],[350,150]];
+  const presets = {
+    low: "M55 160 L 350 100",
+    mid: "M55 150 C 120 60, 220 55, 300 90 S 340 135, 350 150",
+    high: "M55 165 C 70 40, 95 190, 115 60 C 135 200, 165 30, 190 100 C 210 40, 235 170, 260 90 C 285 150, 310 60, 350 150"
+  };
+  const slider = document.getElementById('capSlider');
+  const path = document.getElementById('capPath');
+  const readout = document.getElementById('capReadout');
+  const badge = document.getElementById('capBadge');
+  function render(){
+    const v = parseInt(slider.value);
+    readout.textContent = 'degree ' + v;
+    let d, cls, label;
+    if(v <= 2){ d = presets.low; cls='under'; label='Underfitting — too rigid to capture the curve'; }
+    else if(v <= 7){ d = presets.mid; cls='good'; label='Appropriate capacity — smooth fit, generalizes well'; }
+    else { d = presets.high; cls='over'; label='Overfitting — chases every point, wild between them'; }
+    path.setAttribute('d', d);
+    badge.innerHTML = `<span class="regime-badge ${cls}">${label}</span>`;
+  }
+  slider.addEventListener('input', render);
+  render();
+})();
+
+/* ============ curse-of-dimensionality mini grids ============ */
+(function(){
+  const colors = ['#6fa8ff','#4fd6a5','#f2b134','#b592ff','#ff6b7a'];
+  function grid(id, n, size, offX, offY){
+    const g = document.getElementById(id);
+    if(!g) return;
+    let i=0;
+    for(let r=0;r<n;r++){
+      for(let c=0;c<n;c++){
+        const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+        rect.setAttribute('x', offX + c*size);
+        rect.setAttribute('y', offY + r*size);
+        rect.setAttribute('width', size-1.5);
+        rect.setAttribute('height', size-1.5);
+        rect.setAttribute('fill', colors[i % colors.length]);
+        rect.setAttribute('opacity', '0.85');
+        g.appendChild(rect);
+        i++;
+      }
+    }
+  }
+  grid('grid2d', 6, 15, 0, 0);
+  grid('grid3dA', 4, 12, 0, 0);
+  grid('grid3dB', 4, 12, 0, 0);
+  grid('grid3dC', 4, 12, 0, 0);
+})();
+
+/* ============ scrollspy for sidebar ============ */
+(function(){
+  const links = Array.from(document.querySelectorAll('.navlist a'));
+  const targets = links.map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+  function onScroll(){
+    let idx = 0;
+    const y = window.scrollY + 120;
+    targets.forEach((t,i)=>{ if(t.offsetTop <= y) idx = i; });
+    links.forEach(l=>l.classList.remove('active'));
+    links[idx].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+})();
+
+/* ============ KaTeX render ============ */
+document.addEventListener('DOMContentLoaded', function(){
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '\\[', right: '\\]', display: true},
+      {left: '\\(', right: '\\)', display: false}
+    ]
+  });
+});
+if(document.readyState !== 'loading'){
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: '\\[', right: '\\]', display: true},
+      {left: '\\(', right: '\\)', display: false}
+    ]
+  });
+}
+</script>
+</body>
+</html>

@@ -1,26 +1,51 @@
 [
   {
+    "filename": "ML_Book/Machine Learning Basics - Interactive Study Guide.html",
+    "folder": "ML_Book",
+    "title": "Machine Learning Basics — Interactive Study Guide",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 95116,
+    "sizeFormatted": "93 KB",
+    "lastModified": "2026-08-30T18:26:42.237Z"
+  },
+  {
+    "filename": "ML_Book/Deep_Feedforward_Networks_Study_Guide.html",
+    "folder": "ML_Book",
+    "title": "The Feedforward Field Guide — Chapter 6",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 89655,
+    "sizeFormatted": "88 KB",
+    "lastModified": "2026-08-30T18:26:15.323Z"
+  },
+  {
+    "filename": "graphs-traced.html",
+    "folder": "",
+    "title": "Graphs, Traced — a C++ field guide &amp; live visualizer",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 117277,
+    "sizeFormatted": "115 KB",
+    "lastModified": "2026-08-29T20:46:20.041Z"
+  },
+  {
     "filename": "leetcode_graph_prep.html",
+    "folder": "",
     "title": "Graph Theory Field Guide — C++ / LeetCode Masterclass",
     "extension": "HTML",
     "category": "web",
     "icon": "📄",
-    "sizeBytes": 125180,
+    "sizeBytes": 124611,
     "sizeFormatted": "122 KB",
-    "lastModified": "2026-08-29T21:29:00.000Z"
-  },
-  {
-    "filename": "graphs-traced.html",
-    "title": "Graphs, Traced — a C++ Field Guide & Visualizer",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 117760,
-    "sizeFormatted": "115 KB",
-    "lastModified": "2026-08-30T02:16:00.000Z"
+    "lastModified": "2026-08-29T15:59:55.611Z"
   },
   {
     "filename": "SNB_frontend_architecture_guide.html",
+    "folder": "",
     "title": "SQL RAG App — Frontend Architecture & Presentation Guide",
     "extension": "HTML",
     "category": "web",
@@ -31,6 +56,7 @@
   },
   {
     "filename": "kafka-notebook.html",
+    "folder": "",
     "title": "Kafka Interview Notebook — Order Tracker Edition",
     "extension": "HTML",
     "category": "web",
@@ -41,6 +67,7 @@
   },
   {
     "filename": "ip-addressing-notebook_CN.html",
+    "folder": "",
     "title": "IP Addressing — Rainy Day Notes",
     "extension": "HTML",
     "category": "web",
@@ -51,6 +78,7 @@
   },
   {
     "filename": "ML_ClassNotes_till25Aug.html",
+    "folder": "",
     "title": "ML Class Notes",
     "extension": "HTML",
     "category": "web",
@@ -61,6 +89,7 @@
   },
   {
     "filename": "supply-chain-interview-prep.html",
+    "folder": "",
     "title": "Supply Chain Interview Prep — Manifest",
     "extension": "HTML",
     "category": "web",
@@ -71,6 +100,7 @@
   },
   {
     "filename": "sorting_study_guide.html",
+    "folder": "",
     "title": "Sorting, Sorted — Interview Prep",
     "extension": "HTML",
     "category": "web",
@@ -81,6 +111,7 @@
   },
   {
     "filename": "greedy-algorithms-guide.html",
+    "folder": "",
     "title": "Greedy Algorithms — Interview Field Guide",
     "extension": "HTML",
     "category": "web",
@@ -91,6 +122,7 @@
   },
   {
     "filename": "sql-interview-prep.html",
+    "folder": "",
     "title": "sql://interview_prep",
     "extension": "HTML",
     "category": "web",
@@ -101,6 +133,7 @@
   },
   {
     "filename": "stack_queue_masterclass.html",
+    "folder": "",
     "title": "Stack & Queue — C++ Masterclass",
     "extension": "HTML",
     "category": "web",
@@ -111,6 +144,7 @@
   },
   {
     "filename": "nn12.html",
+    "folder": "",
     "title": "Neural Networks · Unit I & II Study Guide",
     "extension": "HTML",
     "category": "web",
@@ -121,6 +155,7 @@
   },
   {
     "filename": "esl_study_material.html",
+    "folder": "",
     "title": "Elements of Statistical Learning — Study Guide",
     "extension": "HTML",
     "category": "web",
@@ -131,6 +166,7 @@
   },
   {
     "filename": "OS_Interview_Prep.html",
+    "folder": "",
     "title": "OS // Interview Prep",
     "extension": "HTML",
     "category": "web",
@@ -141,6 +177,7 @@
   },
   {
     "filename": "DBMS_GATE_Study_Material.html",
+    "folder": "",
     "title": "DBMS – GATE CSE Complete Study Material",
     "extension": "HTML",
     "category": "web",

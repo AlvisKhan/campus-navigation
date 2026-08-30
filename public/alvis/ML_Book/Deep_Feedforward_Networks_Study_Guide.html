@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Feedforward Field Guide — Chapter 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F4F7;
+  --paper-2:#E8EBF0;
+  --card:#FFFFFF;
+  --ink:#101825;
+  --ink-soft:#4A5568;
+  --ink-faint:#8592A6;
+  --line:rgba(16,24,37,0.10);
+  --line-strong:rgba(16,24,37,0.20);
+  --signal:#2E5EAA;
+  --signal-soft:#DCE6F7;
+  --relu:#E0642A;
+  --relu-soft:#FBE3D3;
+  --sigmoid:#7C5CBF;
+  --sigmoid-soft:#E9E2F8;
+  --softmax:#1C8F79;
+  --softmax-soft:#D8EFEA;
+  --amber:#C6820A;
+  --amber-soft:#F7E7C4;
+  --ink-navy:#0D1520;
+  --radius:14px;
+  --shadow: 0 1px 2px rgba(16,24,37,0.06), 0 8px 24px -12px rgba(16,24,37,0.18);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+}
+body{
+  margin:0;
+  background:
+    linear-gradient(var(--paper-2) 1px, transparent 1px) 0 0/100% 32px,
+    var(--paper);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Fraunces',serif; margin:0 0 0.4em; letter-spacing:-0.01em; font-weight:600;}
+.mono{font-family:'JetBrains Mono',monospace;}
+code, .eq{font-family:'JetBrains Mono',monospace; background:var(--paper-2); padding:0.1em 0.4em; border-radius:5px; font-size:0.92em;}
+a{color:var(--signal);}
+button{font-family:inherit;}
+.visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+
+/* ===== Layout shell ===== */
+.shell{display:grid; grid-template-columns:252px 1fr; min-height:100vh;}
+@media (max-width:900px){ .shell{grid-template-columns:1fr;} }
+
+/* ===== Sidebar ===== */
+.sidebar{
+  position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+  background:var(--ink-navy); color:#DCE3EE;
+  padding:22px 18px 24px;
+  border-right:1px solid rgba(255,255,255,0.06);
+}
+@media (max-width:900px){
+  .sidebar{position:relative; height:auto; overflow:visible; display:flex; flex-direction:column;}
+}
+.brand{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+.brand-mark{
+  width:34px; height:34px; border-radius:9px; flex:none;
+  background:conic-gradient(from 210deg, var(--relu), var(--signal), var(--softmax), var(--relu));
+  position:relative;
+}
+.brand-mark::after{content:""; position:absolute; inset:5px; background:var(--ink-navy); border-radius:6px;}
+.brand-title{font-family:'Fraunces',serif; font-weight:700; font-size:15.5px; line-height:1.15; color:#fff;}
+.brand-sub{font-size:11px; color:#8FA0BE; letter-spacing:0.04em; text-transform:uppercase; margin-top:2px;}
+
+.mastery-pill{
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.09);
+  border-radius:11px; padding:12px 13px; margin-bottom:18px;
+}
+.mastery-pill .label{font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:#8FA0BE; margin-bottom:6px;}
+.mastery-pill .value{font-family:'Fraunces',serif; font-size:26px; color:#fff; font-weight:600;}
+.mastery-pill .sub{font-size:11.5px; color:#8FA0BE; margin-top:2px;}
+.bar-track{height:6px; border-radius:4px; background:rgba(255,255,255,0.09); margin-top:9px; overflow:hidden;}
+.bar-fill{height:100%; width:0%; background:linear-gradient(90deg, var(--relu), var(--signal)); border-radius:4px; transition:width .6s ease;}
+
+nav.toc{display:flex; flex-direction:column; gap:2px; margin-bottom:16px;}
+nav.toc a{
+  display:flex; align-items:center; gap:9px;
+  color:#B7C2D6; text-decoration:none; font-size:13.2px; padding:8px 9px; border-radius:8px;
+  transition:background .15s ease, color .15s ease;
+}
+nav.toc a:hover{background:rgba(255,255,255,0.06); color:#fff;}
+nav.toc a.active{background:rgba(255,255,255,0.09); color:#fff; font-weight:600;}
+.toc-num{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:#6C7C9B; width:22px; flex:none;}
+.dot{width:8px; height:8px; border-radius:50%; flex:none; background:#3B4A63; box-shadow:0 0 0 3px rgba(255,255,255,0.03);}
+.dot.partial{background:var(--amber); animation:pulse 1.8s ease-in-out infinite;}
+.dot.good{background:var(--softmax);}
+.dot.mid{background:var(--amber);}
+.dot.low{background:#D3572D;}
+@keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.4;}}
+
+.reset-btn{
+  margin-top:auto; background:transparent; border:1px solid rgba(255,255,255,0.14); color:#9AA9C2;
+  font-size:12px; padding:8px 10px; border-radius:8px; cursor:pointer; width:100%;
+}
+.reset-btn:hover{background:rgba(255,255,255,0.06); color:#fff;}
+
+/* ===== Main content ===== */
+main{padding:0 0 100px;}
+.hero{
+  padding:64px 8vw 52px; position:relative; overflow:hidden;
+  background:
+    radial-gradient(600px 300px at 85% -10%, rgba(46,94,170,0.13), transparent 60%),
+    radial-gradient(500px 260px at 5% 0%, rgba(224,100,42,0.10), transparent 60%);
+}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--ink-faint); margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.eyebrow .line{width:26px; height:1px; background:var(--line-strong);}
+.hero h1{font-size:clamp(32px,5vw,54px); line-height:1.04; max-width:14ch;}
+.hero h1 em{font-style:normal; color:var(--relu);}
+.hero p.lede{max-width:56ch; font-size:17px; color:var(--ink-soft); margin-top:16px;}
+.hero-meta{display:flex; gap:22px; margin-top:30px; flex-wrap:wrap;}
+.hero-meta .item{font-size:12.5px; color:var(--ink-faint);}
+.hero-meta .item b{display:block; font-family:'Fraunces',serif; font-size:20px; color:var(--ink); font-weight:600;}
+
+/* signature diagram in hero */
+.signal-strip{margin-top:38px; display:flex; align-items:center; gap:0;}
+
+.panel{
+  padding:52px 8vw; border-top:1px solid var(--line); scroll-margin-top:20px;
+}
+.panel[data-accent="signal"]{--accent:var(--signal); --accent-soft:var(--signal-soft);}
+.panel[data-accent="relu"]{--accent:var(--relu); --accent-soft:var(--relu-soft);}
+.panel[data-accent="sigmoid"]{--accent:var(--sigmoid); --accent-soft:var(--sigmoid-soft);}
+.panel[data-accent="softmax"]{--accent:var(--softmax); --accent-soft:var(--softmax-soft);}
+.panel[data-accent="amber"]{--accent:var(--amber); --accent-soft:var(--amber-soft);}
+
+.panel-head{display:flex; align-items:baseline; gap:12px; margin-bottom:8px;}
+.panel-num{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent); font-weight:600;}
+.panel h2{font-size:clamp(24px,3vw,32px);}
+.panel .dek{color:var(--ink-soft); max-width:62ch; margin-bottom:28px; font-size:15.5px;}
+
+.content-grid{display:grid; grid-template-columns:1.15fr 0.85fr; gap:34px; align-items:start;}
+@media (max-width:980px){ .content-grid{grid-template-columns:1fr;} }
+
+.prose p{margin:0 0 14px; font-size:15.3px;}
+.prose ul, .prose ol{margin:0 0 14px; padding-left:20px; font-size:15.3px;}
+.prose li{margin-bottom:6px;}
+.prose h4{font-size:15px; margin-top:22px; color:var(--ink);}
+.callout{
+  background:var(--accent-soft); border-left:3px solid var(--accent); border-radius:0 10px 10px 0;
+  padding:12px 15px; font-size:14px; margin:16px 0; color:var(--ink);
+}
+.callout b{color:var(--accent); font-family:'JetBrains Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; display:block; margin-bottom:4px;}
+
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:20px;
+}
+.card + .card{margin-top:18px;}
+.card h3{font-size:15px; display:flex; align-items:center; gap:8px;}
+.card h3 .tag{font-family:'JetBrains Mono',monospace; font-size:10.5px; background:var(--accent-soft); color:var(--accent); padding:2px 7px; border-radius:5px; font-weight:700;}
+
+table.compare{width:100%; border-collapse:collapse; font-size:13.3px; margin:14px 0;}
+table.compare th, table.compare td{text-align:left; padding:8px 9px; border-bottom:1px solid var(--line); vertical-align:top;}
+table.compare th{font-family:'JetBrains Mono',monospace; font-size:10.8px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-faint); font-weight:600;}
+
+/* ===== Interactive widgets shared ===== */
+.widget{background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px;}
+.widget-title{font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin-bottom:4px; font-weight:700;}
+.widget h4{margin:0 0 14px; font-size:17px;}
+.toggle-row{display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+.toggle-btn{
+  border:1.5px solid var(--line-strong); background:#fff; color:var(--ink);
+  padding:8px 16px; border-radius:9px; cursor:pointer; font-size:14px; font-weight:600; font-family:'JetBrains Mono',monospace;
+  transition:all .15s ease;
+}
+.toggle-btn:hover{border-color:var(--accent);}
+.toggle-btn.active{background:var(--ink-navy); color:#fff; border-color:var(--ink-navy);}
+
+.select-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+.chip{
+  border:1.5px solid var(--line-strong); background:#fff; padding:6px 13px; border-radius:20px; cursor:pointer;
+  font-size:12.5px; font-weight:600; color:var(--ink-soft); transition:all .15s ease;
+}
+.chip:hover{border-color:var(--accent); color:var(--ink);}
+.chip.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+
+svg text{font-family:'JetBrains Mono',monospace;}
+.flow-num{font-family:'JetBrains Mono',monospace; font-weight:700;}
+
+.step-values{display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-top:16px;}
+.step-values .box{background:var(--paper); border:1px solid var(--line); border-radius:9px; padding:10px 12px;}
+.step-values .box .k{font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); font-family:'JetBrains Mono',monospace;}
+.step-values .box .v{font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700; margin-top:2px;}
+.result-banner{margin-top:16px; padding:12px 15px; border-radius:10px; font-size:14px; font-weight:600; display:flex; justify-content:space-between; align-items:center;}
+.result-banner.correct{background:var(--softmax-soft); color:#136353;}
+.result-banner.wrong{background:#FBE2DA; color:#A6371A;}
+
+canvas{width:100%; display:block; border-radius:10px; background:#fff;}
+.slider-row{display:flex; align-items:center; gap:12px; margin:14px 0 6px;}
+.slider-row input[type=range]{flex:1; accent-color:var(--accent);}
+.slider-row .val{font-family:'JetBrains Mono',monospace; font-size:13px; min-width:64px; text-align:right; color:var(--accent); font-weight:700;}
+
+/* ===== Quiz ===== */
+.quiz{
+  margin-top:36px; border:1.5px dashed var(--line-strong); border-radius:16px; padding:24px 24px 20px;
+  background:repeating-linear-gradient(135deg, rgba(16,24,37,0.015) 0 10px, transparent 10px 20px);
+}
+.quiz-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
+.quiz-head h3{font-size:17px; margin:0; display:flex; align-items:center; gap:9px;}
+.quiz-head h3 .icon{width:26px; height:26px; border-radius:7px; background:var(--accent); display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:13px; font-weight:800; font-family:'JetBrains Mono',monospace;}
+.quiz-score{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--ink-soft); background:#fff; border:1px solid var(--line); padding:5px 10px; border-radius:20px;}
+.q-block{background:#fff; border:1px solid var(--line); border-radius:11px; padding:16px 18px; margin-bottom:12px;}
+.q-block .q-prompt{font-weight:600; font-size:14.5px; margin-bottom:11px;}
+.q-options{display:flex; flex-direction:column; gap:7px;}
+.q-opt{
+  text-align:left; border:1.5px solid var(--line-strong); background:#fff; border-radius:9px; padding:9px 12px;
+  font-size:13.7px; cursor:pointer; color:var(--ink); transition:all .12s ease;
+}
+.q-opt:hover:not(:disabled){border-color:var(--accent); background:var(--accent-soft);}
+.q-opt:disabled{cursor:default;}
+.q-opt.correct{background:var(--softmax-soft); border-color:var(--softmax); color:#136353; font-weight:600;}
+.q-opt.incorrect{background:#FBE2DA; border-color:#D3572D; color:#A6371A; font-weight:600;}
+.q-explain{font-size:13px; color:var(--ink-soft); margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); display:none;}
+.q-explain.show{display:block;}
+
+/* ===== Timeline (history section) ===== */
+.timeline{position:relative; padding-left:26px; margin-top:10px;}
+.timeline::before{content:""; position:absolute; left:6px; top:4px; bottom:4px; width:2px; background:var(--line-strong);}
+.t-item{position:relative; padding-bottom:22px;}
+.t-item::before{content:""; position:absolute; left:-26px; top:3px; width:11px; height:11px; border-radius:50%; background:var(--accent); border:2px solid #fff; box-shadow:0 0 0 2px var(--accent);}
+.t-year{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--accent); font-size:13px;}
+.t-text{font-size:14px; color:var(--ink-soft); margin-top:2px;}
+
+footer{padding:44px 8vw; text-align:center; color:var(--ink-faint); font-size:12.5px;}
+
+/* section-heading number badges reused in mastery dashboard */
+.dash-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:18px;}
+.dash-item{background:#fff; border:1px solid var(--line); border-radius:11px; padding:14px;}
+.dash-item .name{font-size:12px; color:var(--ink-soft); margin-bottom:8px; font-weight:600;}
+.dash-item .pct{font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700;}
+.dash-item .track{height:5px; background:var(--paper-2); border-radius:3px; margin-top:8px; overflow:hidden;}
+.dash-item .fill{height:100%; border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <div class="brand-title">Feedforward<br>Field&nbsp;Guide</div>
+        <div class="brand-sub">Goodfellow Ch. 6</div>
+      </div>
+    </div>
+
+    <div class="mastery-pill">
+      <div class="label">Mastery so far</div>
+      <div class="value" id="overallPct">—</div>
+      <div class="sub" id="overallSub">Answer a checkpoint to begin</div>
+      <div class="bar-track"><div class="bar-fill" id="overallBar"></div></div>
+    </div>
+
+    <nav class="toc" id="tocNav">
+      <a href="#hero"><span class="toc-num">·</span><span>Start here</span></a>
+      <a href="#sec-intro"><span class="toc-num">6.0</span><span>What is a feedforward net</span><span class="dot" id="dot-intro" style="margin-left:auto"></span></a>
+      <a href="#sec-xor"><span class="toc-num">6.1</span><span>Learning XOR (live)</span><span class="dot" id="dot-xor" style="margin-left:auto"></span></a>
+      <a href="#sec-gradient"><span class="toc-num">6.2</span><span>Cost &amp; output units</span><span class="dot" id="dot-gradient" style="margin-left:auto"></span></a>
+      <a href="#sec-hidden"><span class="toc-num">6.3</span><span>Hidden units</span><span class="dot" id="dot-hidden" style="margin-left:auto"></span></a>
+      <a href="#sec-architecture"><span class="toc-num">6.4</span><span>Architecture design</span><span class="dot" id="dot-architecture" style="margin-left:auto"></span></a>
+      <a href="#sec-backprop"><span class="toc-num">6.5</span><span>Backpropagation</span><span class="dot" id="dot-backprop" style="margin-left:auto"></span></a>
+      <a href="#sec-history"><span class="toc-num">6.6</span><span>Historical notes</span><span class="dot" id="dot-history" style="margin-left:auto"></span></a>
+      <a href="#sec-final"><span class="toc-num">★</span><span>Final gauntlet</span><span class="dot" id="dot-final" style="margin-left:auto"></span></a>
+    </nav>
+
+    <button class="reset-btn" id="resetBtn">↺ Reset all progress</button>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main>
+    <section class="hero" id="hero">
+      <div class="eyebrow"><span class="line"></span> Deep Learning · Chapter 6 · pp. 168–227</div>
+      <h1>How a stack of simple functions learns to bend space until <em>XOR</em> becomes easy.</h1>
+      <p class="lede">This is a hands-on rebuild of Goodfellow, Bengio &amp; Courville's chapter on deep feedforward networks — same ideas, but every worked example is now a dial you can turn. Read a bit, poke a diagram, take a two-minute checkpoint, move on.</p>
+      <div class="hero-meta">
+        <div class="item"><b>8</b>sections</div>
+        <div class="item"><b>~28</b>checkpoint questions</div>
+        <div class="item"><b>5</b>interactive diagrams</div>
+        <div class="item"><b>0</b>passive reading required</div>
+      </div>
+
+      <!-- signature diagram: mini live network preview -->
+      <div class="signal-strip">
+        <svg viewBox="0 0 720 130" style="width:100%; max-width:640px; height:auto;" id="heroSvg" aria-label="Preview of a two layer network">
+          <line x1="70" y1="35" x2="230" y2="30" stroke="var(--line-strong)" stroke-width="2"/>
+          <line x1="70" y1="35" x2="230" y2="95" stroke="var(--line-strong)" stroke-width="2"/>
+          <line x1="70" y1="95" x2="230" y2="30" stroke="var(--line-strong)" stroke-width="2"/>
+          <line x1="70" y1="95" x2="230" y2="95" stroke="var(--line-strong)" stroke-width="2"/>
+          <line x1="230" y1="30" x2="390" y2="62" stroke="var(--line-strong)" stroke-width="2"/>
+          <line x1="230" y1="95" x2="390" y2="62" stroke="var(--line-strong)" stroke-width="2"/>
+          <circle id="hp1" cx="70" cy="35" r="15" fill="#fff" stroke="var(--signal)" stroke-width="2.5"/>
+          <circle id="hp2" cx="70" cy="95" r="15" fill="#fff" stroke="var(--signal)" stroke-width="2.5"/>
+          <circle id="hh1" cx="230" cy="30" r="15" fill="#fff" stroke="var(--relu)" stroke-width="2.5"/>
+          <circle id="hh2" cx="230" cy="95" r="15" fill="#fff" stroke="var(--relu)" stroke-width="2.5"/>
+          <circle id="hy" cx="390" cy="62" r="17" fill="#fff" stroke="var(--softmax)" stroke-width="2.5"/>
+          <text x="70" y="40" text-anchor="middle" font-size="12" fill="var(--ink)">x</text>
+          <text x="70" y="100" text-anchor="middle" font-size="12" fill="var(--ink)">x</text>
+          <text x="230" y="35" text-anchor="middle" font-size="12" fill="var(--ink)">h</text>
+          <text x="230" y="100" text-anchor="middle" font-size="12" fill="var(--ink)">h</text>
+          <text x="390" y="67" text-anchor="middle" font-size="12" fill="var(--ink)">ŷ</text>
+          <text x="450" y="40" font-size="13" fill="var(--ink-faint)">input layer → hidden layer (ReLU) → output</text>
+          <text x="450" y="60" font-size="13" fill="var(--ink-faint)">jump to §6.1 to drive this yourself →</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ================= 6.0 INTRO ================= -->
+    <section class="panel" id="sec-intro" data-accent="signal">
+      <div class="panel-head"><span class="panel-num">§6.0</span><h2>What is a feedforward network, really?</h2></div>
+      <p class="dek">Before any equations: the one-sentence idea, the vocabulary you'll need for the rest of the chapter, and why the field ended up calling this whole family "deep learning."</p>
+
+      <div class="content-grid">
+        <div class="prose">
+          <p>A feedforward network is a function-approximation machine. It's handed some input <span class="eq">x</span> and asked to output something close to the true, unknown target <span class="eq">y = f*(x)</span> — a category for a photo, a price for a house, whatever the task needs. The network itself computes <span class="eq">y = f(x; θ)</span>, and training is the process of nudging the parameters <span class="eq">θ</span> until <span class="eq">f</span> imitates <span class="eq">f*</span> closely.</p>
+          <p>The "feedforward" part is a topology claim: information moves strictly forward — input → intermediate computations → output — with no path that loops a later value back into an earlier computation. The moment you add that kind of loop, you've left this chapter and entered <b>recurrent</b> networks (Chapter 10).</p>
+          <p>Structurally, these models are chains of functions: <span class="eq">f(x) = f⁽³⁾(f⁽²⁾(f⁽¹⁾(x)))</span>. Each link in the chain is a <b>layer</b>. The number of links is the network's <b>depth</b> — the word that literally gave "deep learning" its name. The width of a layer is just the dimensionality of the vector it outputs.</p>
+          <div class="callout"><b>Why "hidden"</b>The training data tells the network exactly what the final, output layer should produce. It says nothing about what any interior layer should compute — the optimizer has to invent useful intermediate representations on its own. Since the desired values for those layers are never observed, they're "hidden."</div>
+          <p>"Neural" is the loosest word in the name. Each hidden layer is a vector, and each entry behaves a bit like a neuron: it takes many inputs and produces one activation. But the field is guided far more by math and engineering than by neuroscience these days — think of these as function approximators that occasionally borrow a metaphor from biology, not brain simulators.</p>
+          <h4>Three ways to get a nonlinear feature map</h4>
+          <p>Linear models are easy to fit but can't capture interactions between input variables. The fix is to apply a linear model not to <span class="eq">x</span> directly but to some transformed <span class="eq">φ(x)</span>. The whole chapter is really about how to pick <span class="eq">φ</span>:</p>
+          <table class="compare">
+            <tr><th>Strategy</th><th>How</th><th>Trade-off</th></tr>
+            <tr><td><b>Generic φ</b></td><td>e.g. the infinite-dimensional map implicit in an RBF kernel</td><td>Enough capacity to fit training data, but weak inductive bias → often generalizes poorly</td></tr>
+            <tr><td><b>Hand-engineered φ</b></td><td>Domain experts design features (classic pre-2012 pipeline)</td><td>Works well but needs years of specialist effort per task, little transfer</td></tr>
+            <tr><td><b>Learned φ</b></td><td><span class="eq">y = φ(x;θ)w</span> — a hidden layer <em>is</em> φ, learned jointly with the output weights <span class="eq">w</span></td><td>Gives up convexity of the training problem, but the flexibility more than pays for it</td></tr>
+          </table>
+          <p>That third row is deep learning's whole strategy in one line, and it's the thread every later section pulls on.</p>
+        </div>
+
+        <div>
+          <div class="widget">
+            <div class="widget-title">Diagram</div>
+            <h4>The chain, visualised</h4>
+            <svg viewBox="0 0 320 220" style="width:100%; height:auto;">
+              <text x="20" y="30" font-size="13" fill="var(--ink-soft)">x</text>
+              <rect x="10" y="45" width="60" height="34" rx="8" fill="var(--signal-soft)" stroke="var(--signal)"/>
+              <text x="40" y="66" text-anchor="middle" font-size="12" fill="var(--signal)">input</text>
+              <line x1="70" y1="62" x2="120" y2="62" stroke="var(--line-strong)" stroke-width="2" marker-end="url(#arrow1)"/>
+              <rect x="120" y="45" width="80" height="34" rx="8" fill="var(--relu-soft)" stroke="var(--relu)"/>
+              <text x="160" y="60" text-anchor="middle" font-size="11" fill="var(--relu)">f⁽¹⁾(x)</text>
+              <text x="160" y="72" text-anchor="middle" font-size="9.5" fill="var(--relu)">hidden layer 1</text>
+              <line x1="160" y1="79" x2="160" y2="105" stroke="var(--line-strong)" stroke-width="2" marker-end="url(#arrow1)"/>
+              <rect x="120" y="105" width="80" height="34" rx="8" fill="var(--sigmoid-soft)" stroke="var(--sigmoid)"/>
+              <text x="160" y="120" text-anchor="middle" font-size="11" fill="var(--sigmoid)">f⁽²⁾(h)</text>
+              <text x="160" y="132" text-anchor="middle" font-size="9.5" fill="var(--sigmoid)">hidden layer 2</text>
+              <line x1="160" y1="139" x2="160" y2="165" stroke="var(--line-strong)" stroke-width="2" marker-end="url(#arrow1)"/>
+              <rect x="120" y="165" width="80" height="34" rx="8" fill="var(--softmax-soft)" stroke="var(--softmax)"/>
+              <text x="160" y="180" text-anchor="middle" font-size="11" fill="var(--softmax)">f⁽³⁾(h)</text>
+              <text x="160" y="192" text-anchor="middle" font-size="9.5" fill="var(--softmax)">output layer</text>
+              <line x1="200" y1="182" x2="250" y2="182" stroke="var(--line-strong)" stroke-width="2" marker-end="url(#arrow1)"/>
+              <text x="258" y="187" font-size="13" fill="var(--ink-soft)">ŷ</text>
+              <defs><marker id="arrow1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--line-strong)"/></marker></defs>
+            </svg>
+            <p style="font-size:12.5px; color:var(--ink-faint); margin-top:6px;">Depth = 3 here (three composed functions). Only the last box's target is ever in the training labels.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz" id="quiz-intro"></div>
+    </section>
+
+    <!-- ================= 6.1 XOR INTERACTIVE ================= -->
+    <section class="panel" id="sec-xor" data-accent="relu">
+      <div class="panel-head"><span class="panel-num">§6.1</span><h2>Learning XOR — drive the network yourself</h2></div>
+      <p class="dek">The book's smallest possible example, but it's the one that shows <em>why</em> a hidden layer is necessary at all. Toggle the two inputs below and watch every number in the forward pass update live.</p>
+
+      <div class="content-grid">
+        <div class="prose">
+          <p>XOR outputs 1 when exactly one input is 1, and 0 otherwise. It's a tiny dataset — only four points — but a plain linear model <span class="eq">f(x;w,b) = xw + b</span> cannot represent it. Solve the normal equations and you get <span class="eq">w = 0, b = 0.5</span>: the "best" linear model just outputs 0.5 everywhere, which is wrong on all four points. Geometrically, the two positive examples and the two negative examples can't be separated by any straight line in <span class="eq">x</span>-space.</p>
+          <p>The fix is to first warp the input into a new space where a straight line <em>does</em> work. That warp is exactly what a hidden layer computes: <span class="eq">h = g(Wx + c)</span>, followed by a linear output <span class="eq">ŷ = w·h + b</span>. Crucially, <span class="eq">g</span> must be nonlinear — stack two linear layers and the composition is still just one linear function, so nothing is gained.</p>
+          <p>The book hand-picks a solution using ReLU, <span class="eq">g(z) = max(0, z)</span>, that reaches zero training error exactly:</p>
+          <div class="callout"><b>The hand-picked weights</b>
+            <span class="eq">W = [[1,1],[1,1]]</span>, &nbsp; <span class="eq">c = [0, −1]</span>, &nbsp; <span class="eq">w = [1, −2]</span>, &nbsp; <span class="eq">b = 0</span>
+          </div>
+          <p>What ReLU does here is fold the input space: after the transform, the two points that must output 1 — <span class="eq">(1,0)</span> and <span class="eq">(0,1)</span> — get mapped onto the <em>same</em> point in hidden space, while the two points that must output 0 land elsewhere. Once they coincide, a single linear read-out can separate them from the rest.</p>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">Interactive · forward pass</div>
+          <h4>Pick x₁, x₂</h4>
+          <div class="toggle-row">
+            <button class="toggle-btn" data-x1="0" data-x2="0">x = (0, 0)</button>
+            <button class="toggle-btn" data-x1="0" data-x2="1">x = (0, 1)</button>
+            <button class="toggle-btn" data-x1="1" data-x2="0">x = (1, 0)</button>
+            <button class="toggle-btn" data-x1="1" data-x2="1">x = (1, 1)</button>
+          </div>
+
+          <svg viewBox="0 0 340 190" style="width:100%; height:auto;">
+            <line id="xw-e1" x1="60" y1="45" x2="190" y2="35" stroke="var(--line-strong)" stroke-width="2"/>
+            <line id="xw-e2" x1="60" y1="45" x2="190" y2="105" stroke="var(--line-strong)" stroke-width="2"/>
+            <line id="xw-e3" x1="60" y1="130" x2="190" y2="35" stroke="var(--line-strong)" stroke-width="2"/>
+            <line id="xw-e4" x1="60" y1="130" x2="190" y2="105" stroke="var(--line-strong)" stroke-width="2"/>
+            <line id="hw-e1" x1="190" y1="35" x2="300" y2="70" stroke="var(--line-strong)" stroke-width="2"/>
+            <line id="hw-e2" x1="190" y1="105" x2="300" y2="70" stroke="var(--line-strong)" stroke-width="2"/>
+
+            <circle cx="60" cy="45" r="17" fill="#fff" stroke="var(--signal)" stroke-width="2.5"/>
+            <text id="valx1" x="60" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="var(--signal)">0</text>
+            <text x="60" y="20" text-anchor="middle" font-size="11" fill="var(--ink-faint)">x₁</text>
+
+            <circle cx="60" cy="130" r="17" fill="#fff" stroke="var(--signal)" stroke-width="2.5"/>
+            <text id="valx2" x="60" y="135" text-anchor="middle" font-size="13" font-weight="700" fill="var(--signal)">0</text>
+            <text x="60" y="160" text-anchor="middle" font-size="11" fill="var(--ink-faint)">x₂</text>
+
+            <circle id="node-h1" cx="190" cy="35" r="19" fill="#fff" stroke="var(--relu)" stroke-width="2.5"/>
+            <text id="valh1" x="190" y="40" text-anchor="middle" font-size="13" font-weight="700" fill="var(--relu)">0</text>
+            <text x="190" y="12" text-anchor="middle" font-size="11" fill="var(--ink-faint)">h₁ = ReLU</text>
+
+            <circle id="node-h2" cx="190" cy="105" r="19" fill="#fff" stroke="var(--relu)" stroke-width="2.5"/>
+            <text id="valh2" x="190" y="110" text-anchor="middle" font-size="13" font-weight="700" fill="var(--relu)">0</text>
+            <text x="190" y="132" text-anchor="middle" font-size="10.5" fill="var(--ink-faint)">h₂ = ReLU</text>
+
+            <circle cx="300" cy="70" r="21" fill="#fff" stroke="var(--softmax)" stroke-width="2.5"/>
+            <text id="valy" x="300" y="76" text-anchor="middle" font-size="15" font-weight="700" fill="var(--softmax)">0</text>
+            <text x="300" y="102" text-anchor="middle" font-size="11" fill="var(--ink-faint)">ŷ</text>
+          </svg>
+
+          <div class="step-values">
+            <div class="box"><div class="k">Wx + c</div><div class="v" id="stepWxc">[0, −1]</div></div>
+            <div class="box"><div class="k">h = ReLU(Wx+c)</div><div class="v" id="stepH">[0, 0]</div></div>
+            <div class="box"><div class="k">w·h + b</div><div class="v" id="stepOut">0</div></div>
+            <div class="box"><div class="k">target XOR(x₁,x₂)</div><div class="v" id="stepTarget">0</div></div>
+          </div>
+          <div class="result-banner correct" id="xorBanner">✓ matches the target — zero error on this point</div>
+        </div>
+      </div>
+
+      <div class="quiz" id="quiz-xor"></div>
+    </section>
+
+    <!-- ================= 6.2 GRADIENT-BASED LEARNING ================= -->
+    <section class="panel" id="sec-gradient" data-accent="softmax">
+      <div class="panel-head"><span class="panel-num">§6.2</span><h2>Cost functions &amp; output units</h2></div>
+      <p class="dek">Training a network needs three ingredients: an optimizer, a cost function, and an output representation. The chapter's real insight is that the last two are joined at the hip.</p>
+
+      <div class="content-grid">
+        <div class="prose">
+          <p>Almost every modern network is trained by <b>maximum likelihood</b>: define a conditional distribution <span class="eq">p(y|x;θ)</span> and minimize its negative log-likelihood, i.e. the cross-entropy between the data and the model. This single recipe removes the chore of hand-designing a bespoke loss for every architecture — pick the output distribution, and the cost function falls out automatically.</p>
+          <p>One recurring worry in network design: the gradient has to stay large enough to actually guide learning. Activation functions that <b>saturate</b> (go flat) starve the optimizer of signal. Cross-entropy is popular precisely because its <span class="eq">log</span> tends to cancel the <span class="eq">exp</span> buried inside common output units, undoing that saturation — mean squared error offers no such cancellation.</p>
+          <h4>Three standard output units</h4>
+          <table class="compare">
+            <tr><th>Unit</th><th>Distribution</th><th>Formula</th><th>Use it for</th></tr>
+            <tr><td><b>Linear</b></td><td>Gaussian</td><td><span class="eq">ŷ = Wh + b</span></td><td>Predicting a real-valued mean; doesn't saturate, plays nicely with any optimizer</td></tr>
+            <tr><td><b>Sigmoid</b></td><td>Bernoulli</td><td><span class="eq">ŷ = σ(wᵀh + b)</span></td><td>Binary classification; always pair with cross-entropy, never raw thresholding</td></tr>
+            <tr><td><b>Softmax</b></td><td>Multinoulli</td><td><span class="eq">softmax(z)ᵢ = exp(zᵢ)/Σⱼexp(zⱼ)</span></td><td>k-way classification; a direct generalisation of the sigmoid</td></tr>
+          </table>
+          <p>A subtlety worth internalising: softmax is shift-invariant — <span class="eq">softmax(z) = softmax(z + c)</span> for any constant <span class="eq">c</span> — which is exactly what lets you subtract <span class="eq">max(z)</span> before exponentiating for numerical stability without changing the answer. And when maximum likelihood trains a softmax, the negative-log-likelihood gradient with respect to the logits collapses to the strikingly simple <span class="eq">qᵢ − pᵢ</span> (predicted minus true probability) — one of the rare cases where a human can spot a simplification that plain backprop, applied mechanically, would never find on its own.</p>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">Interactive · softmax</div>
+          <h4>Drag the logits, watch the probabilities</h4>
+          <div id="softmaxSliders"></div>
+          <div id="softmaxBars" style="display:flex; gap:10px; align-items:flex-end; height:120px; margin-top:16px; border-bottom:1.5px solid var(--line-strong); padding-bottom:2px;"></div>
+          <p style="font-size:12px; color:var(--ink-faint); margin-top:10px;">Notice: sliding <em>all three</em> logits up by the same amount changes nothing — softmax only sees differences.</p>
+        </div>
+      </div>
+
+      <div class="quiz" id="quiz-gradient"></div>
+    </section>
+
+    <!-- ================= 6.3 HIDDEN UNITS ================= -->
+    <section class="panel" id="sec-hidden" data-accent="relu">
+      <div class="panel-head"><span class="panel-num">§6.3</span><h2>Hidden units — the activation function zoo</h2></div>
+      <p class="dek">There's no grand theory for which activation to use — this is one of the most trial-and-error corners of network design. But a few defaults and a few cautionary tales dominate practice.</p>
+
+      <div class="content-grid">
+        <div class="prose">
+          <p><b>ReLU, <span class="eq">g(z) = max(0, z)</span>, is the default.</b> It behaves like a linear unit everywhere it's active, so gradients stay large and consistent instead of shrinking — the second derivative is zero almost everywhere, so there's no curvature to fight. Its one weakness: a unit that's stuck outputting zero gets no gradient at all. That motivates a family of generalisations that keep a nonzero slope <span class="eq">α</span> below zero: <span class="eq">g(z) = max(0,z) + α·min(0,z)</span>.</p>
+          <ul>
+            <li><b>Absolute value rectification</b> — fixes <span class="eq">α = −1</span>, giving <span class="eq">g(z) = |z|</span>. Useful when you want invariance to a flipped sign in the input.</li>
+            <li><b>Leaky ReLU</b> — fixes <span class="eq">α</span> to a small constant like 0.01.</li>
+            <li><b>Parametric ReLU (PReLU)</b> — makes <span class="eq">α</span> itself a learned parameter.</li>
+            <li><b>Maxout</b> — the most general: splits the pre-activations into groups of <span class="eq">k</span> and outputs the max of each group, effectively <em>learning</em> a piecewise-linear activation shape (up to k pieces) instead of fixing one in advance. Needs more regularisation since each unit now owns k weight vectors.</li>
+          </ul>
+          <p><b>Sigmoid and tanh</b> dominated the 1980s–2000s but saturate across almost their whole domain, which chokes gradient-based learning — they're now discouraged as <em>hidden</em> units (sigmoid remains fine as an <em>output</em> unit paired with cross-entropy, where the saturation gets cancelled). If you must use a sigmoidal hidden unit, prefer tanh: since <span class="eq">tanh(0)=0</span> while <span class="eq">σ(0)=0.5</span>, tanh behaves more like the identity near the origin, which keeps early training closer to a well-behaved linear model.</p>
+          <div class="callout"><b>Counterintuitive result</b>Softplus, <span class="eq">ζ(a) = log(1+eᵃ)</span>, is a smooth version of ReLU — differentiable everywhere, saturates less. You'd expect it to beat plain ReLU. Empirically it doesn't. It's a good reminder that intuitions about activation functions need to be checked against experiments.</div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">Interactive · activation grapher</div>
+          <h4>Compare the curves</h4>
+          <div class="select-row" id="actChips"></div>
+          <canvas id="actCanvas" width="560" height="280"></canvas>
+          <div class="slider-row">
+            <span style="font-size:12.5px; color:var(--ink-faint); font-family:'JetBrains Mono',monospace;">z</span>
+            <input type="range" id="actSlider" min="-5" max="5" step="0.1" value="1.2">
+            <span class="val" id="actSliderVal">1.20</span>
+          </div>
+          <div class="step-values">
+            <div class="box"><div class="k">g(z)</div><div class="v" id="actGVal">—</div></div>
+            <div class="box"><div class="k">g′(z) (slope)</div><div class="v" id="actGPrime">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz" id="quiz-hidden"></div>
+    </section>
+
+    <!-- ================= 6.4 ARCHITECTURE ================= -->
+    <section class="panel" id="sec-architecture" data-accent="signal">
+      <div class="panel-head"><span class="panel-num">§6.4</span><h2>Architecture design: depth vs. width</h2></div>
+      <p class="dek">Once you've chosen a hidden unit type, you still have to decide how many layers and how many units per layer — and whether "layers" even has to mean "one long chain."</p>
+
+      <div class="content-grid">
+        <div class="prose">
+          <p>The <b>universal approximation theorem</b> (Hornik et al. 1989; Cybenko 1989) is often misquoted. What it actually says: a feedforward network with one hidden layer, a squashing (or ReLU-like) activation, and <em>enough</em> hidden units can approximate any well-behaved (Borel measurable) function to any desired accuracy. What it does <em>not</em> say:</p>
+          <ul>
+            <li>How large "enough" is — in the worst case it can be exponential in the input dimension.</li>
+            <li>That an optimizer will actually <em>find</em> those parameters.</li>
+            <li>That the learned function will generalize to unseen data.</li>
+          </ul>
+          <p>So the theorem guarantees representability, not learnability or generalization — those are separate battles.</p>
+          <h4>Why go deep instead of just wide?</h4>
+          <p>Montúfar et al. (2014) showed that a deep rectifier network can carve the input space into a number of distinct linear regions that grows <em>exponentially</em> with depth, while a shallow network with a comparable unit count grows only polynomially. Intuitively: each layer can "fold" the space (much like an absolute-value unit mirrors its input around a hyperplane), and composing many folds multiplies the number of regions rather than adding to it.</p>
+          <p>This isn't just theory. Empirically, on tasks like transcribing multi-digit numbers from photographs, test accuracy climbs steadily as depth increases from a few layers to ten-plus — and a separate control shows that simply adding more parameters to a <em>shallow</em> network does not reproduce the same gain. Depth itself is doing the work.</p>
+          <p>Choosing a deep model is really a statement of prior belief: that the target function is naturally a composition of simpler sub-functions (edges → corners → shapes → objects), or a multi-step program where each step reuses the last one's output.</p>
+          <h4>Beyond simple chains</h4>
+          <p>Real architectures often deviate from a pure chain: <b>skip connections</b> feed layer <span class="eq">i</span>'s output directly into layer <span class="eq">i+2</span> or beyond, giving gradients a shorter path back to early layers. <b>Sparse connectivity</b> — where each unit only sees a subset of the previous layer — cuts parameters and computation dramatically; convolutional networks (Chapter 9) are the canonical example.</p>
+        </div>
+
+        <div>
+          <div class="widget">
+            <div class="widget-title">Diagram</div>
+            <h4>Folding the input space</h4>
+            <svg viewBox="0 0 300 200" style="width:100%; height:auto;">
+              <text x="10" y="18" font-size="11" fill="var(--ink-faint)">1 fold (shallow)</text>
+              <polyline points="10,60 150,60" stroke="var(--line-strong)" stroke-width="2"/>
+              <polyline points="150,30 150,90" stroke="var(--relu)" stroke-width="2" stroke-dasharray="3,3"/>
+              <path d="M10,60 L150,60 L80,120" fill="none" stroke="var(--signal)" stroke-width="2.5"/>
+              <text x="10" y="42" font-size="10" fill="var(--ink-soft)">a single fold ≈ 2 linear regions</text>
+
+              <text x="10" y="150" font-size="11" fill="var(--ink-faint)">2 folds (deeper)</text>
+              <path d="M10,190 L80,190 L110,160 L150,190 L220,150" fill="none" stroke="var(--relu)" stroke-width="2.5"/>
+              <text x="10" y="172" font-size="10" fill="var(--ink-soft)">composed folds ≈ 4+ regions, same unit budget</text>
+            </svg>
+            <p style="font-size:12.5px; color:var(--ink-faint); margin-top:8px;">Each extra fold (layer) can multiply — not just add to — the number of regions the network can carve out.</p>
+          </div>
+          <div class="widget" style="margin-top:18px;">
+            <div class="widget-title">Illustrative trend</div>
+            <h4>Depth vs. test accuracy</h4>
+            <canvas id="depthChart" width="300" height="170"></canvas>
+            <p style="font-size:12px; color:var(--ink-faint); margin-top:6px;">Stylised recreation of the qualitative pattern reported for a street-number transcription task: deeper (at fixed-ish parameter budget) keeps helping well past 5–6 layers.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz" id="quiz-architecture"></div>
+    </section>
+
+    <!-- ================= 6.5 BACKPROP ================= -->
+    <section class="panel" id="sec-backprop" data-accent="amber">
+      <div class="panel-head"><span class="panel-num">§6.5</span><h2>Backpropagation, one value at a time</h2></div>
+      <p class="dek">Backprop is not a learning algorithm — it's a bookkeeping trick for computing a gradient without paying an exponential price. Here's the trick, made concrete.</p>
+
+      <div class="content-grid">
+        <div class="prose">
+          <p>Every network computation can be drawn as a <b>computational graph</b>: nodes are variables, edges are operations. The <b>chain rule</b> lets you compute the derivative of an output with respect to any node feeding into it — for scalars, <span class="eq">dz/dx = (dz/dy)(dy/dx)</span>; for vectors/tensors, that becomes a sum over a Jacobian.</p>
+          <p>The trap: applying the chain rule <em>naively</em> and recursively can recompute the same sub-expression exponentially many times as a graph gets deep. Backprop avoids this with <b>dynamic programming</b> — it fills a table of already-computed values once, in reverse topological order, and every later computation just looks up what it needs instead of recomputing it. That's the entire trick.</p>
+          <div class="callout"><b>Important distinction</b>Backprop only computes the <em>gradient</em>. A separate algorithm — typically stochastic gradient descent — actually uses that gradient to update the parameters. "Backprop" and "the learning algorithm" are not the same thing, even though people often say "backprop" to mean the whole training loop.</div>
+          <p>Two implementation philosophies exist: <b>symbol-to-number</b> differentiation plugs in numeric values and returns numeric gradients directly (e.g. classic Torch/Caffe); <b>symbol-to-symbol</b> differentiation instead builds new graph nodes that <em>symbolically</em> describe the gradient computation (Theano/TensorFlow-style) — which has the nice side effect that you can differentiate the derivative again, straightforwardly getting higher-order derivatives.</p>
+          <p>Cost-wise, for a graph with <span class="eq">n</span> nodes, backprop never needs more than <span class="eq">O(n²)</span> operations in general, and for the roughly chain-structured graphs typical of neural network cost functions, the real cost is closer to <span class="eq">O(n)</span> — about one Jacobian–vector product per edge, computed exactly once.</p>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">Interactive · reverse-mode demo</div>
+          <h4>z = f(f(f(w))), one f = sigmoid</h4>
+          <div class="slider-row">
+            <span style="font-size:12.5px; color:var(--ink-faint); font-family:'JetBrains Mono',monospace;">w</span>
+            <input type="range" id="bpSlider" min="-3" max="3" step="0.1" value="0.6">
+            <span class="val" id="bpSliderVal">0.60</span>
+          </div>
+          <div class="toggle-row">
+            <button class="toggle-btn active" id="bpForwardBtn">① Forward pass</button>
+            <button class="toggle-btn" id="bpBackwardBtn">② Backward pass</button>
+          </div>
+          <svg viewBox="0 0 340 90" style="width:100%; height:auto;">
+            <line x1="35" y1="45" x2="100" y2="45" stroke="var(--line-strong)" stroke-width="2" marker-end="url(#arrow2)"/>
+            <line x1="140" y1="45" x2="205" y2="45" stroke="var(--line-strong)" stroke-width="2" marker-end="url(#arrow2)"/>
+            <line x1="245" y1="45" x2="300" y2="45" stroke="var(--line-strong)" stroke-width="2" marker-end="url(#arrow2)"/>
+            <defs><marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--line-strong)"/></marker></defs>
+            <circle cx="20" cy="45" r="17" fill="#fff" stroke="var(--signal)" stroke-width="2.5"/>
+            <text id="bpW" x="20" y="50" text-anchor="middle" font-size="11" font-weight="700" fill="var(--signal)">w</text>
+            <rect x="100" y="28" width="40" height="34" rx="7" fill="var(--amber-soft)" stroke="var(--amber)"/>
+            <text x="120" y="49" text-anchor="middle" font-size="11" fill="var(--amber)">f</text>
+            <circle id="bpXNode" cx="180" cy="45" r="17" fill="#fff" stroke="var(--relu)" stroke-width="2.5"/>
+            <text id="bpX" x="180" y="50" text-anchor="middle" font-size="10" font-weight="700" fill="var(--relu)">x</text>
+            <rect x="205" y="28" width="40" height="34" rx="7" fill="var(--amber-soft)" stroke="var(--amber)"/>
+            <text x="225" y="49" text-anchor="middle" font-size="11" fill="var(--amber)">f</text>
+            <circle id="bpYNode" cx="280" cy="45" r="17" fill="#fff" stroke="var(--sigmoid)" stroke-width="2.5"/>
+            <text id="bpY" x="280" y="50" text-anchor="middle" font-size="10" font-weight="700" fill="var(--sigmoid)">y</text>
+            <rect x="245" y="28" width="0" height="0"/>
+            <text x="316" y="50" font-size="11" fill="var(--ink-faint)"> </text>
+          </svg>
+          <div class="step-values" id="bpValues">
+            <div class="box"><div class="k">x = f(w)</div><div class="v" id="bpVX">—</div></div>
+            <div class="box"><div class="k">y = f(x)</div><div class="v" id="bpVY">—</div></div>
+            <div class="box"><div class="k">z = f(y)</div><div class="v" id="bpVZ">—</div></div>
+          </div>
+          <div class="step-values" id="bpGradValues" style="display:none;">
+            <div class="box"><div class="k">dz/dy</div><div class="v" id="bpG1">—</div></div>
+            <div class="box"><div class="k">dy/dx</div><div class="v" id="bpG2">—</div></div>
+            <div class="box"><div class="k">dx/dw</div><div class="v" id="bpG3">—</div></div>
+            <div class="box"><div class="k">dz/dw (product)</div><div class="v" id="bpG4">—</div></div>
+          </div>
+          <p style="font-size:12px; color:var(--ink-faint); margin-top:10px;">Each of x, y, z is computed once and reused for the backward pass — no value is ever recomputed.</p>
+        </div>
+      </div>
+
+      <div class="quiz" id="quiz-backprop"></div>
+    </section>
+
+    <!-- ================= 6.6 HISTORY ================= -->
+    <section class="panel" id="sec-history" data-accent="sigmoid">
+      <div class="panel-head"><span class="panel-num">§6.6</span><h2>How we got here</h2></div>
+      <p class="dek">The math in this chapter is mostly decades old. What actually changed performance since the 1980s is a short list — and it's worth knowing which two items are on it.</p>
+
+      <div class="content-grid">
+        <div>
+          <div class="timeline">
+            <div class="t-item"><div class="t-year">1670s</div><div class="t-text">Leibniz and later L'Hôpital formalise the chain rule — the mathematical seed of backprop, three centuries early.</div></div>
+            <div class="t-item"><div class="t-year">1847</div><div class="t-text">Cauchy introduces gradient descent as an iterative way to approximate optimization solutions.</div></div>
+            <div class="t-item"><div class="t-year">1940s–50s</div><div class="t-text">Early linear models like the perceptron emerge; Minsky and others point out they provably cannot learn XOR, triggering a backlash against neural networks.</div></div>
+            <div class="t-item"><div class="t-year">1960s–70s</div><div class="t-text">Efficient chain-rule bookkeeping (dynamic-programming style) appears in control theory and sensitivity analysis — the technical precursor to backprop.</div></div>
+            <div class="t-item"><div class="t-year">1986</div><div class="t-text">Rumelhart, Hinton &amp; Williams popularise backpropagation for training multilayer networks; the <em>Parallel Distributed Processing</em> book ignites a wave of connectionist research.</div></div>
+            <div class="t-item"><div class="t-year">Early 1990s</div><div class="t-text">Neural network research peaks, then loses ground to other machine learning methods for over a decade.</div></div>
+            <div class="t-item"><div class="t-year">2006</div><div class="t-text">The modern deep learning renaissance begins — though feedforward nets are initially still seen as needing help from probabilistic models.</div></div>
+            <div class="t-item"><div class="t-year">~2009–2011</div><div class="t-text">Jarrett et al. and Glorot et al. show rectified linear units outperform sigmoid hidden units — one of the two big algorithmic wins of the era, alongside cross-entropy replacing MSE as the standard loss.</div></div>
+            <div class="t-item"><div class="t-year">2012 →</div><div class="t-text">Feedforward, gradient-based learning stops being "the thing other models lean on" and becomes a powerful tool in its own right — later even powering generative models like VAEs and GANs.</div></div>
+          </div>
+        </div>
+        <div class="prose">
+          <p>Zoom out and the field's own retrospective is refreshingly humble: the core algorithm hasn't changed much since the 1980s. What actually moved performance from 1986 to the mid-2010s breaks down to roughly:</p>
+          <ol>
+            <li><b>Bigger datasets</b>, which reduced how much generalization had to be squeezed out of clever modeling.</li>
+            <li><b>Bigger networks</b>, enabled by faster hardware and better software infrastructure.</li>
+            <li><b>Two specific algorithmic swaps:</b> mean squared error → cross-entropy loss, and sigmoid hidden units → piecewise-linear units like ReLU.</li>
+          </ol>
+          <p>Interesting footnote: rectification itself is not new — it traces back to the Cognitron/Neocognitron in the 1970s–80s. It fell out of favor for decades partly on a now-debunked worry that non-differentiable points (like ReLU's kink at zero) would break gradient-based training in practice. They don't, because training almost never lands exactly on that single point, and one-sided derivatives are a perfectly serviceable convention when it does.</p>
+        </div>
+      </div>
+
+      <div class="quiz" id="quiz-history"></div>
+    </section>
+
+    <!-- ================= FINAL GAUNTLET ================= -->
+    <section class="panel" id="sec-final" data-accent="signal">
+      <div class="panel-head"><span class="panel-num">★</span><h2>Final gauntlet &amp; mastery dashboard</h2></div>
+      <p class="dek">A mixed set pulling from every section, plus a live breakdown of where your understanding is solid and where it's shaky.</p>
+
+      <div class="quiz" id="quiz-final" style="margin-top:0;"></div>
+
+      <div class="widget" style="margin-top:30px;">
+        <div class="widget-title">Dashboard</div>
+        <h4>Mastery by section</h4>
+        <div class="dash-grid" id="dashGrid"></div>
+      </div>
+    </section>
+
+    <footer>Built from Goodfellow, Bengio &amp; Courville, <i>Deep Learning</i>, Chapter 6 — rewritten and restructured for active recall. Not a replacement for the source text, a companion to it.</footer>
+  </main>
+</div>
+
+<script>
+/* =========================================================
+   STATE / MASTERY ENGINE
+========================================================= */
+const SECTIONS = ["intro","xor","gradient","hidden","architecture","backprop","history","final"];
+const state = {};
+SECTIONS.forEach(s=> state[s] = {answered:[], correct:[]});
+
+function updateDot(section){
+  const arr = state[section];
+  const dot = document.getElementById('dot-'+section);
+  if(!dot) return;
+  const answeredCount = arr.answered.filter(Boolean).length;
+  const total = arr.answered.length;
+  dot.classList.remove('partial','good','mid','low');
+  if(answeredCount === 0){ return; }
+  if(answeredCount < total){ dot.classList.add('partial'); return; }
+  const correctCount = arr.correct.filter(Boolean).length;
+  const pct = correctCount/total;
+  if(pct >= 0.75) dot.classList.add('good');
+  else if(pct >= 0.5) dot.classList.add('mid');
+  else dot.classList.add('low');
+}
+
+function updateOverall(){
+  let totalAnswered=0, totalCorrect=0, totalQ=0;
+  SECTIONS.forEach(s=>{
+    const arr = state[s];
+    totalQ += arr.answered.length;
+    totalAnswered += arr.answered.filter(Boolean).length;
+    totalCorrect += arr.correct.filter(Boolean).length;
+  });
+  const pctEl = document.getElementById('overallPct');
+  const subEl = document.getElementById('overallSub');
+  const barEl = document.getElementById('overallBar');
+  if(totalAnswered===0){
+    pctEl.textContent = '—';
+    subEl.textContent = 'Answer a checkpoint to begin';
+    barEl.style.width = '0%';
+  } else {
+    const pct = Math.round(100*totalCorrect/totalAnswered);
+    pctEl.textContent = pct+'%';
+    subEl.textContent = totalAnswered+' of '+totalQ+' questions answered';
+    barEl.style.width = pct+'%';
+  }
+  renderDashboard();
+}
+
+function renderDashboard(){
+  const grid = document.getElementById('dashGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  const names = {intro:'§6.0 Intro', xor:'§6.1 XOR', gradient:'§6.2 Output units', hidden:'§6.3 Hidden units', architecture:'§6.4 Architecture', backprop:'§6.5 Backprop', history:'§6.6 History', final:'★ Final gauntlet'};
+  SECTIONS.forEach(s=>{
+    const arr = state[s];
+    const answered = arr.answered.filter(Boolean).length;
+    const total = arr.answered.length;
+    const correct = arr.correct.filter(Boolean).length;
+    const pct = answered>0 ? Math.round(100*correct/answered) : null;
+    const div = document.createElement('div');
+    div.className='dash-item';
+    const color = pct===null ? '#C7CEDA' : (pct>=75?'#1C8F79':pct>=50?'#C6820A':'#D3572D');
+    div.innerHTML = `<div class="name">${names[s]}</div>
+      <div class="pct" style="color:${color}">${pct===null?'–':pct+'%'}</div>
+      <div style="font-size:11px;color:var(--ink-faint);margin-top:2px;">${answered}/${total} answered</div>
+      <div class="track"><div class="fill" style="width:${pct||0}%; background:${color}"></div></div>`;
+    grid.appendChild(div);
+  });
+}
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  SECTIONS.forEach(s=>{ state[s]={answered:[],correct:[]}; updateDot(s); });
+  document.querySelectorAll('.q-block').forEach(block=>{
+    block.querySelectorAll('.q-opt').forEach(b=>{ b.disabled=false; b.classList.remove('correct','incorrect'); });
+    const ex = block.querySelector('.q-explain'); if(ex) ex.classList.remove('show');
+  });
+  document.querySelectorAll('.quiz-score').forEach(el=> el.textContent = '0 / '+el.dataset.total+' correct');
+  updateOverall();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* =========================================================
+   QUIZ RENDERER
+========================================================= */
+function renderQuiz(containerId, sectionKey, title, questions){
+  const container = document.getElementById(containerId);
+  state[sectionKey].answered = new Array(questions.length).fill(false);
+  state[sectionKey].correct = new Array(questions.length).fill(false);
+
+  const head = document.createElement('div');
+  head.className='quiz-head';
+  head.innerHTML = `<h3><span class="icon">?</span>${title}</h3><span class="quiz-score" data-total="${questions.length}">0 / ${questions.length} correct</span>`;
+  container.appendChild(head);
+  const scoreEl = head.querySelector('.quiz-score');
+
+  questions.forEach((q, qi)=>{
+    const block = document.createElement('div');
+    block.className='q-block';
+    block.innerHTML = `<div class="q-prompt">${qi+1}. ${q.q}</div>
+      <div class="q-options"></div>
+      <div class="q-explain">${q.explain}</div>`;
+    const optsWrap = block.querySelector('.q-options');
+    q.options.forEach((opt, oi)=>{
+      const btn = document.createElement('button');
+      btn.className='q-opt';
+      btn.textContent = opt;
+      btn.addEventListener('click', ()=>{
+        optsWrap.querySelectorAll('.q-opt').forEach(b=>b.disabled=true);
+        const isCorrect = oi === q.correct;
+        btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+        if(!isCorrect){
+          optsWrap.children[q.correct].classList.add('correct');
+        }
+        block.querySelector('.q-explain').classList.add('show');
+        state[sectionKey].answered[qi] = true;
+        state[sectionKey].correct[qi] = isCorrect;
+        const c = state[sectionKey].correct.filter(Boolean).length;
+        scoreEl.textContent = c+' / '+questions.length+' correct';
+        updateDot(sectionKey);
+        updateOverall();
+      });
+      optsWrap.appendChild(btn);
+    });
+    container.appendChild(block);
+  });
+}
+
+/* =========================================================
+   QUIZ CONTENT
+========================================================= */
+renderQuiz('quiz-intro','intro','Checkpoint — §6.0',[
+  {q:"What structurally separates a feedforward network from a recurrent one?", options:["Feedforward nets use ReLU, recurrent nets use sigmoid","Feedforward nets have no connections that feed a later output back into an earlier computation","Feedforward nets only have one layer","Recurrent nets can't be trained with gradient descent"], correct:1, explain:"Feedforward = strictly forward flow of information through a directed acyclic graph. Add a feedback loop and it becomes recurrent (Ch. 10)."},
+  {q:"The 'depth' of a network refers to:", options:["The number of training examples used","The dimensionality of the widest hidden layer","The length of the chain of composed functions (number of layers)","The number of parameters"], correct:2, explain:"Depth counts layers in the chain, e.g. f(x)=f⁽³⁾(f⁽²⁾(f⁽¹⁾(x))) has depth 3. Width is a separate, per-layer property."},
+  {q:"Why are interior layers called 'hidden' layers?", options:["They use unpublished activation functions","Their weights can't be printed or visualized","The training data specifies no target value for what they should compute","They're hidden from the loss function entirely and get no gradient"], correct:2, explain:"The dataset only labels the final output. The optimizer must invent whatever intermediate representation is useful — nothing tells it directly what each hidden unit 'should' represent."}
+]);
+
+renderQuiz('quiz-xor','xor','Checkpoint — §6.1',[
+  {q:"Why can't a linear model f(x;w,b) = xw + b solve XOR?", options:["It has too many parameters and overfits","The four XOR points aren't linearly separable, so no single line/plane can split the classes correctly","XOR isn't a function of two variables","Linear models can't be trained with gradient descent"], correct:1, explain:"Solving the normal equations for this problem yields w=0, b=0.5 — the model just predicts 0.5 everywhere, since no linear boundary separates the two classes."},
+  {q:"In the book's hand-picked solution, what is the essential job of the ReLU nonlinearity?", options:["To make the network faster to evaluate","To fold/warp the input space so the two 'output 1' points become linearly separable from the rest","To normalize the output between 0 and 1","To prevent overfitting on only 4 data points"], correct:1, explain:"ReLU maps (1,0) and (0,1) onto the same point in hidden space while keeping (0,0) and (1,1) elsewhere — after the fold, a linear read-out layer can finish the job."},
+  {q:"If you stacked two purely linear layers instead (no nonlinearity at all), what would happen?", options:["The network would solve XOR even better", "The composition would still be equivalent to a single linear function — no extra representational power gained", "Training would fail to converge", "It would become a recurrent network"], correct:1, explain:"Composing linear maps yields another linear map: f(x) = w·(Wx) = (wW)x. Depth without nonlinearity buys you nothing extra in representational power."}
+]);
+
+renderQuiz('quiz-gradient','gradient','Checkpoint — §6.2',[
+  {q:"Under the maximum likelihood framework, what determines the cost function?", options:["It must always be mean squared error","Whatever conditional distribution p(y|x;θ) you choose for the output automatically determines it (as the negative log-likelihood)","It's chosen independently of the output unit","Cost functions are hand-designed per architecture with no general principle"], correct:1, explain:"Specify p(y|x;θ) and the cost falls out as −log p(y|x;θ). This is exactly why output-unit choice and cost-function choice are inseparable."},
+  {q:"Why is cross-entropy generally preferred over MSE when the output unit is a sigmoid or softmax?", options:["Cross-entropy is always numerically smaller","The log in cross-entropy tends to undo the exp inside sigmoid/softmax, preventing the vanishing-gradient effect of saturation that MSE suffers from","MSE cannot be differentiated","Cross-entropy doesn't require probabilities to sum to 1"], correct:1, explain:"MSE combined with a saturating sigmoid/softmax can produce tiny gradients regardless of whether the prediction is right or wrong. Cross-entropy's log cancels the exp and keeps gradients informative."},
+  {q:"The softmax function is best described as:", options:["A generalization of the sigmoid to n>2 discrete outcomes","A regularization technique","A way to make hidden units sparse","A loss function"], correct:0, explain:"Sigmoid handles 2 outcomes (Bernoulli); softmax generalizes the same idea — exponentiate and normalize unnormalized log-probabilities — to n outcomes (multinoulli)."},
+  {q:"softmax(z) = softmax(z + c) for any constant c added to every logit. Why does this matter in practice?", options:["It means softmax outputs are always exactly 0 or 1","It lets implementations subtract max(z) before exponentiating for numerical stability, without changing the result","It proves softmax is a linear function","It means the logits don't need to be learned"], correct:1, explain:"This shift-invariance is exactly what the numerically-stable softmax(z) = softmax(z − max(z)) implementation exploits."}
+]);
+
+renderQuiz('quiz-hidden','hidden','Checkpoint — §6.3',[
+  {q:"What is the default recommended hidden unit in modern networks?", options:["Sigmoid", "Softplus", "ReLU", "RBF unit"], correct:2, explain:"ReLU, g(z)=max(0,z), is the default: it behaves almost linearly where active, so gradients stay large and consistent."},
+  {q:"What problem does Leaky ReLU / PReLU specifically try to fix, relative to plain ReLU?", options:["ReLU is too slow to compute","A ReLU unit whose input is always negative gets zero gradient and stops learning; a small nonzero slope below 0 keeps some gradient flowing","ReLU outputs values that are too large","ReLU can't be used in the output layer"], correct:1, explain:"By setting g(z) = max(0,z) + α·min(0,z) with a small nonzero α, units that would otherwise be permanently 'dead' still receive a (small) gradient."},
+  {q:"Why are sigmoid/tanh now discouraged specifically as HIDDEN units (though sigmoid is still fine as an output unit)?", options:["They're too computationally expensive","They saturate across most of their domain, which chokes gradient-based learning when stacked in deep chains","They can only represent binary values","They were never used historically"], correct:1, explain:"Widespread saturation shrinks gradients everywhere except near the origin — a serious problem once you're propagating gradients back through many hidden layers."},
+  {q:"What did Glorot et al. find, surprisingly, when comparing softplus (smooth ReLU) to plain ReLU?", options:["Softplus performed better as theory would predict","Despite being differentiable everywhere and saturating less, softplus performed WORSE than plain ReLU empirically","They performed identically in all cases","Softplus can't be used with backprop"], correct:1, explain:"A good reminder that hidden-unit performance is often counterintuitive and needs empirical validation, not just theoretical appeal."}
+]);
+
+renderQuiz('quiz-architecture','architecture','Checkpoint — §6.4',[
+  {q:"The universal approximation theorem guarantees that a wide-enough single hidden layer can represent almost any function. What does it NOT guarantee?", options:["That the function is continuous","That training will actually find the right parameters, or that the model will generalize to new data","That the output is bounded","That the network has at least one layer"], correct:1, explain:"Representability ≠ learnability ≠ generalization. The theorem is silent on optimization difficulty, required network size, and test-set performance."},
+  {q:"Why can deeper networks sometimes represent certain functions with far fewer total units than shallow ones?", options:["Deeper networks always have more parameters overall","Composed 'folding' operations across layers can multiply the number of representable linear regions, growing exponentially with depth rather than just linearly","Depth makes optimization convex","Shallow networks cannot use ReLU"], correct:1, explain:"Montúfar et al. (2014): the number of linear regions a rectifier network can carve out grows exponentially in depth, polynomially in width — depth is doing structural work width alone can't."},
+  {q:"Which of these is an example of an architecture that deviates from a pure layer-by-layer chain?", options:["A skip connection from layer i to layer i+2", "Using more hidden units in one layer", "Increasing the learning rate", "Switching from sigmoid to ReLU"], correct:0, explain:"Skip connections add extra edges outside the simple chain structure, shortening the path gradients must travel back to early layers."}
+]);
+
+renderQuiz('quiz-backprop','backprop','Checkpoint — §6.5',[
+  {q:"What specific inefficiency does backpropagation's dynamic-programming (table-filling) approach avoid?", options:["Storing too many parameters","Recomputing the same shared sub-expressions many times, which could otherwise blow up exponentially with graph depth","Using too much disk space","Having to define a cost function"], correct:1, explain:"Naively expanding the chain rule recursively can revisit the same partial derivative repeatedly. Backprop fills a table once, in reverse order, and reuses stored values."},
+  {q:"True or false: 'backpropagation' is the same thing as 'the neural network training algorithm.'", options:["True — they're interchangeable terms","False — backprop only computes the gradient; a separate algorithm like SGD uses that gradient to update parameters","True, but only for convolutional networks","False — backprop computes the cost, not the gradient"], correct:1, explain:"This mix-up is common enough that the chapter calls it out explicitly. Backprop = gradient computation. SGD (or similar) = the actual learning update."},
+  {q:"What extra capability does the 'symbol-to-symbol' style of automatic differentiation (used by Theano/TensorFlow-style systems) offer over 'symbol-to-number'?", options:["It runs on GPUs while symbol-to-number cannot","Because gradients are themselves represented as graph nodes, you can differentiate the derivative again to get higher-order derivatives","It never needs a computational graph","It eliminates the need for a cost function"], correct:1, explain:"Since the gradient computation is just more graph, you can run back-propagation again on that graph — straightforward access to second derivatives and beyond."},
+  {q:"For the roughly chain-structured graphs typical of neural network cost functions, backprop's practical cost is closest to:", options:["O(1), constant regardless of network size","O(n), roughly one Jacobian–vector product per edge","O(2ⁿ), exponential in the number of nodes","O(n!), factorial in depth"], correct:1, explain:"The general worst-case bound is O(n²), but for the common chain-like structure of feedforward cost graphs, the effective cost is close to linear in the number of edges/nodes."}
+]);
+
+renderQuiz('quiz-history','history','Checkpoint — §6.6',[
+  {q:"Which two algorithmic changes are singled out as the biggest contributors to improved feedforward network performance since the 1980s?", options:["Bigger batch sizes and Adam optimizer","Cross-entropy replacing MSE as the standard loss, and ReLU replacing sigmoid as the standard hidden unit","Dropout and batch normalization","Convolutional layers and attention"], correct:1, explain:"Alongside bigger data and bigger models, these two swaps are called out specifically as algorithmic (not just scale) improvements."},
+  {q:"Who is historically credited with highlighting that a simple linear perceptron cannot learn functions like XOR, contributing to a research backlash?", options:["Geoffrey Hinton", "Marvin Minsky", "Ian Goodfellow", "Alan Turing"], correct:1, explain:"Minsky's critique of the limitations of linear models like the perceptron is credited with cooling enthusiasm for neural networks for years."},
+  {q:"Roughly when did rectified linear units begin regaining favor over sigmoid hidden units, after decades of relative neglect?", options:["1950s", "1986, immediately with backprop's popularization", "Around 2009–2011", "Never — sigmoid is still the default today"], correct:2, explain:"Work like Jarrett et al. (2009) and Glorot et al. (2011) demonstrated rectifying nonlinearities substantially outperform sigmoids, reviving ReLU-style units."}
+]);
+
+renderQuiz('quiz-final','final','The final gauntlet — mixed review',[
+  {q:"A feedforward network with 4 composed functions has a depth of:", options:["1","2","4","It depends on the width"], correct:2, explain:"Depth simply counts the number of composed functions/layers in the chain."},
+  {q:"Which output unit pairs naturally with a Bernoulli (binary) target distribution?", options:["Linear", "Sigmoid", "Softmax", "ReLU"], correct:1, explain:"Sigmoid squashes a logit into (0,1), matching the single parameter of a Bernoulli distribution."},
+  {q:"The XOR example needed a hidden layer chiefly because:", options:["The dataset was too large for a linear model","The classes are not linearly separable in the original input space","XOR requires more than 2 input variables","Gradient descent doesn't work on 2D data"], correct:1, explain:"A nonlinear feature map (learned via the hidden layer) is required to make the classes separable by a subsequent linear read-out."},
+  {q:"Maxout units generalize ReLU-family activations by:", options:["Always outputting zero for negative inputs","Taking the max over a group of k linear pieces, effectively learning the activation shape itself","Applying softmax to the hidden layer","Removing the need for a bias term"], correct:1, explain:"With enough pieces k, maxout can approximate ReLU, leaky ReLU, absolute value rectification, or genuinely novel convex shapes — it's learned, not fixed."},
+  {q:"The universal approximation theorem is a statement about:", options:["Learnability via gradient descent","Generalization to a held-out test set","Representational capacity only — existence of suitable parameters, not whether they can be found or will generalize","Computational efficiency of training"], correct:2, explain:"It's purely an existence result about what a large-enough network can represent, silent on optimization or generalization."},
+  {q:"Backpropagation's core efficiency trick is:", options:["Skipping layers during training","Reusing previously computed values (dynamic programming) instead of recomputing shared sub-expressions", "Rounding all gradients to zero below a threshold","Only computing gradients for the output layer"], correct:1, explain:"Storing and reusing intermediate results avoids the exponential blow-up a naive recursive chain-rule expansion would suffer."},
+  {q:"Historically, why was ReLU avoided in the early 2000s despite dating back decades earlier?", options:["It was patented","A now-debunked worry that its non-differentiable point at z=0 would break gradient-based training","It was too computationally expensive","It hadn't been invented yet"], correct:1, explain:"In practice, training essentially never lands exactly on the kink, and one-sided derivatives handle the rare case fine — the concern didn't hold up."},
+  {q:"Deeper (vs. wider-but-shallow) networks tend to generalize better in the book's empirical examples primarily because:", options:["Depth alone always reduces parameter count to zero","Depth allows exponentially more representable regions/compositional structure for a similar parameter budget, not just because they're bigger","Shallow networks cannot use gradient descent","Deeper networks always train faster"], correct:1, explain:"A control experiment (adding parameters to shallow nets without adding depth) fails to reproduce the accuracy gains — depth specifically, not just size, is doing the work."}
+]);
+
+updateOverall();
+
+/* =========================================================
+   XOR INTERACTIVE WIDGET
+========================================================= */
+(function(){
+  const W = [[1,1],[1,1]]; // row i = input i's weights to [h1,h2]
+  const c = [0,-1];
+  const w = [1,-2];
+  const b = 0;
+  function relu(v){ return Math.max(0,v); }
+  function compute(x1,x2){
+    const wxc1 = x1*W[0][0] + x2*W[1][0] + c[0];
+    const wxc2 = x1*W[0][1] + x2*W[1][1] + c[1];
+    const h1 = relu(wxc1), h2 = relu(wxc2);
+    const out = w[0]*h1 + w[1]*h2 + b;
+    const target = (x1 !== x2) ? 1 : 0;
+    return {wxc1,wxc2,h1,h2,out,target};
+  }
+  function paint(x1,x2){
+    const r = compute(x1,x2);
+    document.getElementById('valx1').textContent = x1;
+    document.getElementById('valx2').textContent = x2;
+    document.getElementById('valh1').textContent = r.h1;
+    document.getElementById('valh2').textContent = r.h2;
+    document.getElementById('valy').textContent = r.out;
+    document.getElementById('stepWxc').textContent = `[${r.wxc1}, ${r.wxc2}]`;
+    document.getElementById('stepH').textContent = `[${r.h1}, ${r.h2}]`;
+    document.getElementById('stepOut').textContent = r.out;
+    document.getElementById('stepTarget').textContent = r.target;
+    document.getElementById('node-h1').setAttribute('fill', r.h1>0 ? 'var(--relu-soft)' : '#fff');
+    document.getElementById('node-h2').setAttribute('fill', r.h2>0 ? 'var(--relu-soft)' : '#fff');
+    ['xw-e1','xw-e2','xw-e3','xw-e4'].forEach(id=>{
+      document.getElementById(id).setAttribute('stroke-width', '2');
+    });
+    const banner = document.getElementById('xorBanner');
+    if(r.out === r.target){
+      banner.className = 'result-banner correct';
+      banner.textContent = '✓ matches the target — zero error on this point';
+    } else {
+      banner.className = 'result-banner wrong';
+      banner.textContent = '✗ mismatch (shouldn\\'t happen with the book\\'s exact weights!)';
+    }
+  }
+  const btns = document.querySelectorAll('#sec-xor .toggle-btn');
+  btns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      btns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      paint(Number(btn.dataset.x1), Number(btn.dataset.x2));
+    });
+  });
+  btns[0].classList.add('active');
+  paint(0,0);
+})();
+
+/* =========================================================
+   SOFTMAX INTERACTIVE WIDGET
+========================================================= */
+(function(){
+  const sliderWrap = document.getElementById('softmaxSliders');
+  const barsWrap = document.getElementById('softmaxBars');
+  const labels = ['z₁ (cat)','z₂ (dog)','z₃ (bird)'];
+  const colors = ['var(--relu)','var(--signal)','var(--softmax)'];
+  let logits = [1.5, 0.2, -0.8];
+
+  logits.forEach((v,i)=>{
+    const row = document.createElement('div');
+    row.className='slider-row';
+    row.innerHTML = `<span style="font-size:12px;font-family:'JetBrains Mono',monospace;color:${colors[i]};min-width:64px;">${labels[i]}</span>
+      <input type="range" min="-5" max="5" step="0.1" value="${v}" data-idx="${i}">
+      <span class="val" id="smval${i}">${v.toFixed(1)}</span>`;
+    sliderWrap.appendChild(row);
+  });
+  labels.forEach((l,i)=>{
+    const bar = document.createElement('div');
+    bar.style.flex='1'; bar.style.display='flex'; bar.style.flexDirection='column'; bar.style.alignItems='center'; bar.style.justifyContent='flex-end'; bar.style.height='100%';
+    bar.innerHTML = `<div id="smpct${i}" style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:${colors[i]};margin-bottom:4px;">0%</div>
+      <div id="smbar${i}" style="width:70%; background:${colors[i]}; border-radius:6px 6px 0 0; transition:height .25s ease;"></div>
+      <div style="font-size:10.5px;color:var(--ink-faint);margin-top:5px;">${l}</div>`;
+    barsWrap.appendChild(bar);
+  });
+
+  function render(){
+    const mx = Math.max(...logits);
+    const exps = logits.map(v=>Math.exp(v-mx));
+    const sum = exps.reduce((a,b)=>a+b,0);
+    const probs = exps.map(e=>e/sum);
+    probs.forEach((p,i)=>{
+      document.getElementById('smbar'+i).style.height = Math.max(3,p*96)+'px';
+      document.getElementById('smpct'+i).textContent = Math.round(p*100)+'%';
+    });
+  }
+  sliderWrap.querySelectorAll('input[type=range]').forEach(inp=>{
+    inp.addEventListener('input', (e)=>{
+      const idx = Number(e.target.dataset.idx);
+      logits[idx] = Number(e.target.value);
+      document.getElementById('smval'+idx).textContent = logits[idx].toFixed(1);
+      render();
+    });
+  });
+  render();
+})();
+
+/* =========================================================
+   ACTIVATION FUNCTION GRAPHER
+========================================================= */
+(function(){
+  const fns = {
+    relu:   {label:'ReLU', color:'#E0642A', f:z=>Math.max(0,z), fp:z=> z>0?1: (z<0?0:0.5)},
+    leaky:  {label:'Leaky ReLU', color:'#C6820A', f:z=> z>0?z:0.01*z, fp:z=> z>0?1:0.01},
+    abs:    {label:'|z| rectification', color:'#1C8F79', f:z=>Math.abs(z), fp:z=> z>0?1:(z<0?-1:0)},
+    sigmoid:{label:'Sigmoid', color:'#7C5CBF', f:z=>1/(1+Math.exp(-z)), fp:z=>{const s=1/(1+Math.exp(-z)); return s*(1-s);}},
+    tanh:   {label:'Tanh', color:'#2E5EAA', f:z=>Math.tanh(z), fp:z=>1-Math.tanh(z)*Math.tanh(z)},
+    softplus:{label:'Softplus', color:'#A6371A', f:z=>Math.log(1+Math.exp(z)), fp:z=>1/(1+Math.exp(-z))},
+    hardtanh:{label:'Hard tanh', color:'#136353', f:z=>Math.max(-1,Math.min(1,z)), fp:z=> (z>-1 && z<1)?1:0}
+  };
+  const chipsWrap = document.getElementById('actChips');
+  let active = ['relu','sigmoid'];
+  Object.keys(fns).forEach(key=>{
+    const chip = document.createElement('button');
+    chip.className='chip'+(active.includes(key)?' active':'');
+    chip.textContent = fns[key].label;
+    chip.dataset.key = key;
+    chip.addEventListener('click', ()=>{
+      if(active.includes(key)){
+        if(active.length>1) active = active.filter(k=>k!==key);
+      } else {
+        if(active.length>=3) active.shift();
+        active.push(key);
+      }
+      chipsWrap.querySelectorAll('.chip').forEach(c=> c.classList.toggle('active', active.includes(c.dataset.key)));
+      draw();
+    });
+    chipsWrap.appendChild(chip);
+  });
+
+  const canvas = document.getElementById('actCanvas');
+  const ctx = canvas.getContext('2d');
+  const W_ = canvas.width, H_ = canvas.height;
+  const xMin=-5,xMax=5,yMin=-2,yMax=4;
+  function toPx(x,y){
+    return [ (x-xMin)/(xMax-xMin)*W_, H_ - (y-yMin)/(yMax-yMin)*H_ ];
+  }
+  const slider = document.getElementById('actSlider');
+  const sliderVal = document.getElementById('actSliderVal');
+
+  function draw(){
+    ctx.clearRect(0,0,W_,H_);
+    // grid
+    ctx.strokeStyle = 'rgba(16,24,37,0.08)'; ctx.lineWidth=1;
+    for(let gx=xMin; gx<=xMax; gx++){ const [px] = toPx(gx,0); ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,H_); ctx.stroke(); }
+    for(let gy=yMin; gy<=yMax; gy++){ const [,py] = toPx(0,gy); ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(W_,py); ctx.stroke(); }
+    // axes
+    ctx.strokeStyle = 'rgba(16,24,37,0.35)'; ctx.lineWidth=1.5;
+    const [zx,zy] = toPx(0,0);
+    ctx.beginPath(); ctx.moveTo(0,zy); ctx.lineTo(W_,zy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(zx,0); ctx.lineTo(zx,H_); ctx.stroke();
+
+    active.forEach(key=>{
+      const fn = fns[key];
+      ctx.strokeStyle = fn.color; ctx.lineWidth=2.5; ctx.beginPath();
+      for(let i=0;i<=400;i++){
+        const x = xMin + (xMax-xMin)*i/400;
+        const y = fn.f(x);
+        const [px,py] = toPx(x,Math.max(yMin,Math.min(yMax,y)));
+        if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+      }
+      ctx.stroke();
+    });
+
+    // marker at slider z for the first active function
+    const zVal = Number(slider.value);
+    const primary = fns[active[0]];
+    const gz = primary.f(zVal);
+    const [mx,my] = toPx(zVal, Math.max(yMin,Math.min(yMax,gz)));
+    ctx.fillStyle = primary.color;
+    ctx.beginPath(); ctx.arc(mx,my,5,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+
+    document.getElementById('actGVal').textContent = gz.toFixed(3);
+    document.getElementById('actGPrime').textContent = primary.fp(zVal).toFixed(3);
+    document.getElementById('actGVal').parentElement.querySelector('.k').textContent = `g(z) — ${primary.label}`;
+  }
+  slider.addEventListener('input', ()=>{ sliderVal.textContent = Number(slider.value).toFixed(2); draw(); });
+  sliderVal.textContent = Number(slider.value).toFixed(2);
+  draw();
+})();
+
+/* =========================================================
+   DEPTH VS ACCURACY ILLUSTRATIVE CHART
+========================================================= */
+(function(){
+  const canvas = document.getElementById('depthChart');
+  const ctx = canvas.getContext('2d');
+  const W_=canvas.width, H_=canvas.height;
+  const depths = [3,4,5,6,7,8,9,10,11];
+  const accs   = [92.0,93.0,93.9,94.6,95.1,95.5,95.9,96.2,96.5]; // illustrative, qualitative recreation
+  const pad = {l:34,r:12,t:14,b:26};
+  function toPx(d,a){
+    const x = pad.l + (d-3)/(11-3)*(W_-pad.l-pad.r);
+    const y = H_-pad.b - (a-91)/(97-91)*(H_-pad.t-pad.b);
+    return [x,y];
+  }
+  ctx.clearRect(0,0,W_,H_);
+  ctx.strokeStyle='rgba(16,24,37,0.15)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,H_-pad.b); ctx.lineTo(W_-pad.r,H_-pad.b); ctx.stroke();
+  ctx.fillStyle='var(--ink-faint)'; ctx.font='9.5px JetBrains Mono';
+  ctx.fillText('92%', 2, toPx(3,92)[1]+3);
+  ctx.fillText('96%', 2, toPx(3,96)[1]+3);
+  ctx.fillText('depth 3', pad.l-6, H_-8);
+  ctx.fillText('depth 11', W_-46, H_-8);
+  ctx.strokeStyle='#2E5EAA'; ctx.lineWidth=2.5; ctx.beginPath();
+  depths.forEach((d,i)=>{ const [x,y]=toPx(d,accs[i]); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+  ctx.stroke();
+  ctx.fillStyle='#E0642A';
+  depths.forEach((d,i)=>{ const [x,y]=toPx(d,accs[i]); ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill(); });
+})();
+
+/* =========================================================
+   BACKPROP CHAIN DEMO
+========================================================= */
+(function(){
+  const slider = document.getElementById('bpSlider');
+  const sliderVal = document.getElementById('bpSliderVal');
+  const fwdBtn = document.getElementById('bpForwardBtn');
+  const bwdBtn = document.getElementById('bpBackwardBtn');
+  const gradBox = document.getElementById('bpGradValues');
+  const valBox = document.getElementById('bpValues');
+
+  function sigmoid(v){ return 1/(1+Math.exp(-v)); }
+  function dsigmoid(v){ const s=sigmoid(v); return s*(1-s); }
+
+  function compute(w){
+    const x = sigmoid(w);
+    const y = sigmoid(x);
+    const z = sigmoid(y);
+    const dzdy = dsigmoid(y);
+    const dydx = dsigmoid(x);
+    const dxdw = dsigmoid(w);
+    const dzdw = dzdy*dydx*dxdw;
+    return {x,y,z,dzdy,dydx,dxdw,dzdw};
+  }
+
+  function paintForward(){
+    const w = Number(slider.value);
+    const r = compute(w);
+    document.getElementById('bpW').textContent = w.toFixed(2);
+    document.getElementById('bpX').textContent = r.x.toFixed(2);
+    document.getElementById('bpY').textContent = r.y.toFixed(2);
+    document.getElementById('bpVX').textContent = r.x.toFixed(4);
+    document.getElementById('bpVY').textContent = r.y.toFixed(4);
+    document.getElementById('bpVZ').textContent = r.z.toFixed(4);
+    valBox.style.display='grid';
+    gradBox.style.display='none';
+    fwdBtn.classList.add('active'); bwdBtn.classList.remove('active');
+  }
+  function paintBackward(){
+    const w = Number(slider.value);
+    const r = compute(w);
+    document.getElementById('bpG1').textContent = r.dzdy.toFixed(4);
+    document.getElementById('bpG2').textContent = r.dydx.toFixed(4);
+    document.getElementById('bpG3').textContent = r.dxdw.toFixed(4);
+    document.getElementById('bpG4').textContent = r.dzdw.toFixed(4);
+    valBox.style.display='grid';
+    gradBox.style.display='grid';
+    bwdBtn.classList.add('active'); fwdBtn.classList.remove('active');
+  }
+  slider.addEventListener('input', ()=>{
+    sliderVal.textContent = Number(slider.value).toFixed(2);
+    if(bwdBtn.classList.contains('active')) paintBackward(); else paintForward();
+  });
+  fwdBtn.addEventListener('click', paintForward);
+  bwdBtn.addEventListener('click', paintBackward);
+  paintForward();
+})();
+
+/* =========================================================
+   NAV ACTIVE STATE ON SCROLL
+========================================================= */
+(function(){
+  const sections = document.querySelectorAll('main section[id]');
+  const links = document.querySelectorAll('nav.toc a');
+  const map = {};
+  links.forEach(l=> map[l.getAttribute('href').slice(1)] = l);
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        const l = map[en.target.id];
+        if(l) l.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-40% 0px -50% 0px', threshold:0});
+  sections.forEach(s=>obs.observe(s));
+})();
+</script>
+</body>
+</html>
