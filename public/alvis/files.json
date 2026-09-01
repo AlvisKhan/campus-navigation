@@ -1,5 +1,27 @@
 [
   {
+    "filename": "rag-interview-prep.html",
+    "folder": "",
+    "title": "RAG — Interview Field Notes",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 39584,
+    "sizeFormatted": "39 KB",
+    "lastModified": "2026-09-01T19:12:21.560Z"
+  },
+  {
+    "filename": "rate_limiter_study.html",
+    "folder": "",
+    "title": "Rate Limiter — Interview Study Guide",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 34379,
+    "sizeFormatted": "34 KB",
+    "lastModified": "2026-09-01T19:12:08.289Z"
+  },
+  {
     "filename": "systems-biology-notes.html",
     "folder": "",
     "title": "From Big Data to Knowledge Discovery — Systems Biology Study Notes",

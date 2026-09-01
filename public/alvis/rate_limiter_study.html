@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rate Limiter — Interview Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D1117;
+    --bg-panel:#141A22;
+    --bg-panel-2:#1B222C;
+    --border:#262E39;
+    --text:#E6E9EF;
+    --text-dim:#8D97A6;
+    --amber:#E8A33D;
+    --amber-dim:#7A5A26;
+    --teal:#4FD1C5;
+    --red:#F2545B;
+    --radius:3px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    font-size:15.5px;
+    line-height:1.55;
+  }
+  h1,h2,h3,h4{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    margin:0 0 0.5em 0;
+    letter-spacing:-0.01em;
+  }
+  a{color:var(--amber);}
+  code, .mono{font-family:'JetBrains Mono',monospace;}
+  :focus-visible{outline:2px solid var(--teal); outline-offset:2px;}
+
+  /* ---------- layout shell ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns:220px 1fr;
+    max-width:1180px;
+    margin:0 auto;
+  }
+  nav.side{
+    position:sticky;
+    top:0;
+    align-self:start;
+    height:100vh;
+    overflow-y:auto;
+    padding:28px 18px 28px 24px;
+    border-right:1px solid var(--border);
+  }
+  .brand{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    color:var(--amber);
+    margin-bottom:24px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal);}
+  nav.side ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+  nav.side a{
+    display:block;
+    color:var(--text-dim);
+    text-decoration:none;
+    font-size:13.5px;
+    padding:7px 10px;
+    border-radius:var(--radius);
+    border-left:2px solid transparent;
+  }
+  nav.side a:hover{color:var(--text); background:var(--bg-panel);}
+  nav.side a.active{color:var(--amber); border-left:2px solid var(--amber); background:var(--bg-panel);}
+
+  main{padding:0 32px 80px 32px; min-width:0;}
+  section{padding-top:52px; scroll-margin-top:20px;}
+  .kicker{color:var(--text-dim); font-size:13px; margin-bottom:6px;}
+  p{color:var(--text);}
+  .dim{color:var(--text-dim);}
+
+  /* ---------- hero ---------- */
+  .hero{padding:44px 0 20px 0;}
+  .hero h1{font-size:34px; line-height:1.15; max-width:11ch;}
+  .hero .sub{color:var(--text-dim); max-width:46ch; font-size:15.5px; margin-top:10px;}
+
+  .sim{
+    margin-top:32px;
+    border:1px solid var(--border);
+    background:var(--bg-panel);
+    border-radius:var(--radius);
+    padding:22px;
+    display:grid;
+    grid-template-columns:140px 1fr 220px;
+    gap:26px;
+    align-items:center;
+  }
+  .bucket-wrap{display:flex; flex-direction:column; align-items:center; gap:8px;}
+  .bucket{
+    width:90px; height:130px;
+    border:2px solid var(--border);
+    border-top:none;
+    border-radius:0 0 10px 10px;
+    position:relative;
+    overflow:hidden;
+    background:#0A0D12;
+  }
+  .bucket .fill{
+    position:absolute; bottom:0; left:0; right:0;
+    background:linear-gradient(180deg, #F4C572, var(--amber));
+    transition:height 0.25s linear;
+  }
+  .bucket .fill::after{
+    content:"";
+    position:absolute; top:-4px; left:0; right:0; height:6px;
+    background:rgba(255,255,255,0.25);
+  }
+  .token-count{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dim);}
+  .token-count strong{color:var(--amber); font-size:15px;}
+
+  .sim-mid{display:flex; flex-direction:column; gap:12px;}
+  .sim-controls{display:flex; gap:10px; flex-wrap:wrap;}
+  button.btn{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    padding:9px 15px;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    background:var(--bg-panel-2);
+    color:var(--text);
+    cursor:pointer;
+  }
+  button.btn:hover{border-color:var(--amber); color:var(--amber);}
+  button.btn.primary{background:var(--amber); color:#1A1206; border-color:var(--amber);}
+  button.btn.primary:hover{opacity:0.9; color:#1A1206;}
+  button.btn.ghost{background:transparent;}
+  .sim-meta{display:flex; gap:18px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim);}
+  .sim-meta b{color:var(--text);}
+
+  .sim-log{
+    border-left:1px solid var(--border);
+    padding-left:20px;
+    height:130px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column-reverse;
+    gap:6px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+  }
+  .sim-log .entry{display:flex; justify-content:space-between; gap:8px;}
+  .sim-log .allowed{color:var(--teal);}
+  .sim-log .denied{color:var(--red);}
+  .sim-log .t{color:var(--text-dim);}
+
+  @keyframes flashAllow{0%{box-shadow:0 0 0 0 rgba(79,209,197,0.5);}100%{box-shadow:0 0 0 14px rgba(79,209,197,0);}}
+  @keyframes flashDeny{0%{box-shadow:0 0 0 0 rgba(242,84,91,0.6);}100%{box-shadow:0 0 0 14px rgba(242,84,91,0);}}
+  .bucket.flash-allow{animation:flashAllow 0.5s ease-out;}
+  .bucket.flash-deny{animation:flashDeny 0.5s ease-out;}
+
+  /* ---------- why ---------- */
+  .why-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--border);
+    border:1px solid var(--border);
+    margin-top:16px;
+  }
+  .why-cell{background:var(--bg-panel); padding:18px;}
+  .why-cell .stat{font-family:'Space Grotesk',sans-serif; font-size:22px; color:var(--amber); font-weight:600;}
+  .why-cell p{font-size:13.5px; color:var(--text-dim); margin:6px 0 0 0;}
+
+  /* ---------- tabs ---------- */
+  .tabbar{display:flex; gap:4px; flex-wrap:wrap; border-bottom:1px solid var(--border); margin-top:18px;}
+  .tabbar button{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    background:none;
+    border:none;
+    color:var(--text-dim);
+    padding:10px 14px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    margin-bottom:-1px;
+  }
+  .tabbar button:hover{color:var(--text);}
+  .tabbar button.active{color:var(--amber); border-bottom:2px solid var(--amber);}
+  .tabpanel{display:none; padding:22px 0 6px 0;}
+  .tabpanel.active{display:block;}
+  .algo-head{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  .algo-head h3{font-size:19px;}
+  .badge{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); border:1px solid var(--border); padding:3px 8px; border-radius:20px;}
+  .algo-body{display:grid; grid-template-columns:1.1fr 0.9fr; gap:28px; margin-top:14px;}
+  .algo-body ol{margin:0; padding-left:20px; font-size:14px;}
+  .algo-body ol li{margin-bottom:6px;}
+  .pc-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;}
+  .pc-grid h4{font-size:12px; text-transform:none; margin-bottom:6px; color:var(--text-dim); font-family:'Inter',sans-serif; font-weight:600;}
+  .pc-grid ul{margin:0; padding-left:16px; font-size:13.5px;}
+  .pc-grid ul li{margin-bottom:4px;}
+  .pc-grid .pros h4{color:var(--teal);}
+  .pc-grid .cons h4{color:var(--red);}
+
+  .diagram{
+    border:1px solid var(--border);
+    background:#0A0D12;
+    border-radius:var(--radius);
+    padding:16px;
+    min-height:160px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  /* leaky bucket diagram */
+  .leak-wrap{display:flex; flex-direction:column; align-items:center; gap:0;}
+  .leak-funnel{width:0; height:0; border-left:35px solid transparent; border-right:35px solid transparent; border-top:40px solid var(--bg-panel-2); border:1px solid var(--border); border-top-color:var(--bg-panel-2);}
+  .leak-drops{display:flex; flex-direction:column; align-items:center; gap:6px; height:50px; justify-content:flex-start; padding-top:6px;}
+  .drop{width:6px; height:6px; border-radius:50%; background:var(--amber); animation:drip 1.4s linear infinite;}
+  .drop:nth-child(2){animation-delay:0.45s;}
+  .drop:nth-child(3){animation-delay:0.9s;}
+  @keyframes drip{0%{opacity:0; transform:translateY(-6px);}20%{opacity:1;}100%{opacity:0; transform:translateY(40px);}}
+  .leak-out{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); margin-top:4px;}
+
+  /* fixed window diagram */
+  .fw-track{display:flex; width:100%; gap:2px;}
+  .fw-win{flex:1; border:1px solid var(--border); height:70px; position:relative; display:flex; align-items:flex-end; padding:4px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim);}
+  .fw-bar{position:absolute; bottom:0; left:4px; right:4px; background:var(--amber-dim);}
+  .fw-spike{background:var(--red) !important;}
+  .fw-note{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--red); text-align:center; margin-top:8px;}
+
+  /* sliding log diagram */
+  .sl-track{position:relative; width:100%; height:60px; border-bottom:1px solid var(--border);}
+  .sl-dot{position:absolute; bottom:0; width:5px; height:5px; border-radius:50%; background:var(--amber);}
+  .sl-window{position:absolute; top:0; bottom:0; background:rgba(79,209,197,0.12); border-left:1px dashed var(--teal); border-right:1px dashed var(--teal);}
+  .sl-label{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--teal); position:absolute; top:-16px;}
+
+  /* sliding counter diagram */
+  .sc-track{display:flex; align-items:flex-end; gap:8px; height:70px;}
+  .sc-bar{flex:1; background:var(--bg-panel-2); border:1px solid var(--border); position:relative; display:flex; align-items:flex-end;}
+  .sc-fill{width:100%; background:var(--amber);}
+  .sc-fill.partial{background:linear-gradient(90deg, var(--amber) 0 70%, transparent 70%); opacity:0.6;}
+  .sc-cap{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim); text-align:center; margin-top:6px;}
+
+  /* ---------- compare table ---------- */
+  table.cmp{width:100%; border-collapse:collapse; margin-top:16px; font-size:13.5px;}
+  table.cmp th, table.cmp td{border:1px solid var(--border); padding:10px 12px; text-align:left;}
+  table.cmp th{background:var(--bg-panel); font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:12.5px; color:var(--text-dim);}
+  table.cmp td{color:var(--text);}
+  table.cmp tr td:first-child{font-family:'JetBrains Mono',monospace; color:var(--amber); font-size:13px;}
+
+  /* ---------- distributed / http ---------- */
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:14px;}
+  ul.tight{margin:0; padding-left:18px;}
+  ul.tight li{margin-bottom:8px; font-size:14px;}
+  pre{
+    background:#0A0D12;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    overflow-x:auto;
+    color:var(--teal);
+    line-height:1.6;
+  }
+  pre .k{color:var(--text-dim);}
+  pre .v{color:var(--amber);}
+
+  /* ---------- accordion ---------- */
+  .acc-item{border-bottom:1px solid var(--border);}
+  .acc-q{
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    color:var(--text);
+    font-family:'Space Grotesk',sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    padding:16px 4px;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+  }
+  .acc-q:hover{color:var(--amber);}
+  .acc-q .plus{font-family:'JetBrains Mono',monospace; color:var(--text-dim); font-weight:400; flex-shrink:0;}
+  .acc-a{max-height:0; overflow:hidden; transition:max-height 0.25s ease;}
+  .acc-a-inner{padding:0 4px 18px 4px; color:var(--text-dim); font-size:14px;}
+  .acc-item.open .acc-a{max-height:400px;}
+  .acc-item.open .acc-q{color:var(--amber);}
+
+  footer{border-top:1px solid var(--border); margin-top:60px; padding:24px 0; color:var(--text-dim); font-size:12.5px;}
+
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr;}
+    nav.side{position:static; height:auto; border-right:none; border-bottom:1px solid var(--border); padding:16px 20px;}
+    nav.side ul{flex-direction:row; flex-wrap:wrap;}
+    main{padding:0 20px 60px 20px;}
+    .sim{grid-template-columns:1fr; text-align:center;}
+    .sim-log{border-left:none; border-top:1px solid var(--border); padding-left:0; padding-top:14px;}
+    .algo-body{grid-template-columns:1fr;}
+    .why-grid{grid-template-columns:1fr;}
+    .two-col{grid-template-columns:1fr;}
+    table.cmp{display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; width:100%; font-size:12px;}
+    table.cmp th, table.cmp td{white-space:nowrap;}
+  }
+
+  @media (max-width:600px){
+    main{padding:0 16px 50px 16px;}
+    nav.side{padding:14px 16px;}
+    .hero{padding:28px 0 16px 0;}
+    .hero h1{font-size:26px; max-width:100%;}
+    .hero .sub{font-size:14.5px; max-width:100%;}
+    .sim{padding:16px 14px; gap:18px;}
+    .sim-controls{justify-content:center;}
+    .sim-meta{justify-content:center; flex-wrap:wrap; gap:8px 14px;}
+    .pc-grid{grid-template-columns:1fr;}
+    .tabbar button{padding:8px 10px; font-size:11.5px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="side">
+    <div class="brand"><span class="dot"></span>RATE LIMITER</div>
+    <ul id="navlist">
+      <li><a href="#why" class="navlink">Why rate limit</a></li>
+      <li><a href="#algorithms" class="navlink">Algorithms</a></li>
+      <li><a href="#compare" class="navlink">Compare</a></li>
+      <li><a href="#distributed" class="navlink">Distributed</a></li>
+      <li><a href="#http" class="navlink">HTTP contract</a></li>
+      <li><a href="#interview" class="navlink">Interview Q&A</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="kicker">System design — interview prep</div>
+      <h1>Rate limiting, understood by watching it work.</h1>
+      <p class="sub">A rate limiter caps how many requests a client can make in a window of time, protecting a system from overload, abuse, and runaway cost. Send requests below and watch the bucket allow or deny them in real time.</p>
+
+      <div class="sim">
+        <div class="bucket-wrap">
+          <div class="bucket" id="bucket"><div class="fill" id="bucketFill" style="height:100%"></div></div>
+          <div class="token-count"><strong id="tokenNum">10</strong> / 10 tokens</div>
+        </div>
+        <div class="sim-mid">
+          <div class="sim-controls">
+            <button class="btn primary" id="btnSend">Send request</button>
+            <button class="btn" id="btnBurst">Burst × 5</button>
+            <button class="btn ghost" id="btnReset">Reset</button>
+          </div>
+          <div class="sim-meta">
+            <span>capacity: <b>10</b></span>
+            <span>refill: <b>2/sec</b></span>
+            <span id="rateReadout">allowed: <b>0</b> · denied: <b>0</b></span>
+          </div>
+          <p class="dim" style="font-size:13px;margin-top:4px;">This is a <b style="color:var(--text)">token bucket</b> — tokens refill continuously; a request is allowed only if a token is available. Burst 5 quickly to drain it, then watch it refill.</p>
+        </div>
+        <div class="sim-log" id="simLog"></div>
+      </div>
+    </section>
+
+    <section id="why">
+      <h2>Why systems need rate limiting</h2>
+      <p class="dim">Three reasons this comes up in almost every system design interview:</p>
+      <div class="why-grid">
+        <div class="why-cell"><div class="stat">Protect</div><p>Shields backends and databases from traffic spikes, retries storms, and denial-of-service style abuse.</p></div>
+        <div class="why-cell"><div class="stat">Fair share</div><p>Stops one noisy client from starving capacity that other tenants or users depend on.</p></div>
+        <div class="why-cell"><div class="stat">Cost control</div><p>Caps spend on metered downstream calls — third-party APIs, LLM tokens, SMS, compute.</p></div>
+      </div>
+    </section>
+
+    <section id="algorithms">
+      <h2>The five algorithms</h2>
+      <p class="dim">Every interview answer comes down to one of these. Know the mechanism, the trade-off, and one real system that uses it.</p>
+
+      <div class="tabbar" id="tabbar">
+        <button class="active" data-tab="tb">Token Bucket</button>
+        <button data-tab="lb">Leaky Bucket</button>
+        <button data-tab="fw">Fixed Window</button>
+        <button data-tab="sl">Sliding Log</button>
+        <button data-tab="sc">Sliding Counter</button>
+      </div>
+
+      <div class="tabpanel active" id="panel-tb">
+        <div class="algo-head"><h3>Token Bucket</h3><span class="badge">O(1) memory per key</span></div>
+        <div class="algo-body">
+          <div>
+            <ol>
+              <li>Each key (user, IP, API key) owns a bucket holding up to <code>capacity</code> tokens.</li>
+              <li>Tokens refill continuously at a fixed rate, up to the capacity ceiling.</li>
+              <li>A request consumes one token if available and proceeds; otherwise it's rejected (or queued).</li>
+            </ol>
+            <div class="pc-grid">
+              <div class="pros"><h4>Pros</h4><ul><li>Allows short bursts up to capacity — good UX</li><li>Cheap: one counter + timestamp per key</li><li>Simple to reason about and tune</li></ul></div>
+              <div class="cons"><h4>Cons</h4><ul><li>Burst can still momentarily exceed the "average" rate</li><li>Two knobs to tune (capacity, refill rate)</li></ul></div>
+            </div>
+            <p class="dim" style="font-size:13px;">Used by: AWS API Gateway, Stripe API.</p>
+          </div>
+          <div class="diagram"><div class="bucket-wrap"><div class="bucket" style="width:70px;height:100px;"><div class="fill" style="height:60%"></div></div><div class="token-count" style="margin-top:8px;">refills over time →</div></div></div>
+        </div>
+      </div>
+
+      <div class="tabpanel" id="panel-lb">
+        <div class="algo-head"><h3>Leaky Bucket</h3><span class="badge">O(1) memory per key</span></div>
+        <div class="algo-body">
+          <div>
+            <ol>
+              <li>Incoming requests join a fixed-size queue (the "bucket").</li>
+              <li>Requests are processed — "leaked" — at a constant fixed rate, regardless of arrival rate.</li>
+              <li>If the queue is full when a request arrives, it's dropped.</li>
+            </ol>
+            <div class="pc-grid">
+              <div class="pros"><h4>Pros</h4><ul><li>Output rate is perfectly smooth — great for protecting downstream systems</li><li>Predictable processing rate</li></ul></div>
+              <div class="cons"><h4>Cons</h4><ul><li>Adds queueing latency, even for isolated requests</li><li>Bursts get delayed, not admitted — worse UX than token bucket</li></ul></div>
+            </div>
+            <p class="dim" style="font-size:13px;">Used by: network traffic shaping, some payment processors.</p>
+          </div>
+          <div class="diagram">
+            <div class="leak-wrap">
+              <div class="leak-drops"><div class="drop"></div><div class="drop"></div><div class="drop"></div></div>
+              <div class="leak-funnel"></div>
+              <div class="leak-out">leaks out at fixed rate</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpanel" id="panel-fw">
+        <div class="algo-head"><h3>Fixed Window Counter</h3><span class="badge">O(1) memory per key</span></div>
+        <div class="algo-body">
+          <div>
+            <ol>
+              <li>Time is split into fixed windows (e.g. every 60s wall-clock minute).</li>
+              <li>A counter increments per request within the current window.</li>
+              <li>If the counter exceeds the limit, reject; the counter resets to zero at the window boundary.</li>
+            </ol>
+            <div class="pc-grid">
+              <div class="pros"><h4>Pros</h4><ul><li>Trivially simple — one counter + expiry per key</li><li>Very cheap, easy to implement with Redis INCR + EXPIRE</li></ul></div>
+              <div class="cons"><h4>Cons</h4><ul><li>Boundary burst: up to <b>2×</b> the limit can slip through across a window edge</li><li>Not smooth — bursty by construction</li></ul></div>
+            </div>
+            <p class="dim" style="font-size:13px;">Used by: simple API quota systems, coarse-grained throttles.</p>
+          </div>
+          <div class="diagram" style="flex-direction:column;">
+            <div class="fw-track">
+              <div class="fw-win"><div class="fw-bar" style="height:35%;">W1</div></div>
+              <div class="fw-win"><div class="fw-bar fw-spike" style="height:95%;">edge</div></div>
+              <div class="fw-win"><div class="fw-bar" style="height:30%;">W2</div></div>
+            </div>
+            <div class="fw-note">requests cluster at the window edge → limit is briefly doubled</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpanel" id="panel-sl">
+        <div class="algo-head"><h3>Sliding Window Log</h3><span class="badge">O(n) memory — n = requests in window</span></div>
+        <div class="algo-body">
+          <div>
+            <ol>
+              <li>Store the timestamp of every request per key (e.g. a Redis sorted set).</li>
+              <li>On a new request, evict timestamps older than <code>now − window</code>.</li>
+              <li>If the remaining count is below the limit, allow and record the new timestamp.</li>
+            </ol>
+            <div class="pc-grid">
+              <div class="pros"><h4>Pros</h4><ul><li>Perfectly accurate — no boundary bug</li><li>Window slides continuously, not in discrete steps</li></ul></div>
+              <div class="cons"><h4>Cons</h4><ul><li>Memory scales with request volume, not just key count</li><li>Costlier at high throughput — pruning on every request</li></ul></div>
+            </div>
+            <p class="dim" style="font-size:13px;">Used by: precise per-user throttles at moderate traffic.</p>
+          </div>
+          <div class="diagram" style="flex-direction:column; align-items:stretch;">
+            <div class="sl-track">
+              <div class="sl-window" style="left:40%; width:35%;"><span class="sl-label">window</span></div>
+              <div class="sl-dot" style="left:8%;"></div><div class="sl-dot" style="left:20%;"></div>
+              <div class="sl-dot" style="left:47%;"></div><div class="sl-dot" style="left:58%;"></div><div class="sl-dot" style="left:68%;"></div>
+              <div class="sl-dot" style="left:85%;"></div>
+            </div>
+            <div class="leak-out" style="margin-top:8px;">only timestamps inside the window count</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabpanel" id="panel-sc">
+        <div class="algo-head"><h3>Sliding Window Counter</h3><span class="badge">O(1) memory per key</span></div>
+        <div class="algo-body">
+          <div>
+            <ol>
+              <li>Keep two fixed-window counters: the current window and the previous one.</li>
+              <li>Estimate the sliding count as a weighted blend: <code>prev_count × overlap% + curr_count</code>.</li>
+              <li>Allow the request if the estimate is under the limit.</li>
+            </ol>
+            <div class="pc-grid">
+              <div class="pros"><h4>Pros</h4><ul><li>Smooths the fixed-window boundary problem cheaply</li><li>Still just two counters — O(1) memory</li></ul></div>
+              <div class="cons"><h4>Cons</h4><ul><li>Approximate, not exact (assumes uniform distribution within the window)</li><li>Slightly more logic than plain fixed window</li></ul></div>
+            </div>
+            <p class="dim" style="font-size:13px;">Used by: Cloudflare, many API gateways — the practical default.</p>
+          </div>
+          <div class="diagram" style="flex-direction:column; align-items:stretch;">
+            <div class="sc-track">
+              <div class="sc-bar" style="height:100%;"><div class="sc-fill partial" style="height:70%;"></div></div>
+              <div class="sc-bar" style="height:100%;"><div class="sc-fill" style="height:45%;"></div></div>
+            </div>
+            <div class="sc-cap">prev window (weighted by overlap) &nbsp;+&nbsp; current window</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="compare">
+      <h2>Quick comparison</h2>
+      <table class="cmp">
+        <tr><th>Algorithm</th><th>Memory</th><th>Handles bursts</th><th>Accuracy</th><th>Complexity</th></tr>
+        <tr><td>Token Bucket</td><td>O(1)</td><td>Yes, up to capacity</td><td>High</td><td>Low</td></tr>
+        <tr><td>Leaky Bucket</td><td>O(1)</td><td>No — smooths to fixed rate</td><td>High</td><td>Low</td></tr>
+        <tr><td>Fixed Window</td><td>O(1)</td><td>Poorly — 2× edge burst</td><td>Low</td><td>Very low</td></tr>
+        <tr><td>Sliding Log</td><td>O(n)</td><td>Yes</td><td>Exact</td><td>Medium</td></tr>
+        <tr><td>Sliding Counter</td><td>O(1)</td><td>Mostly</td><td>Approximate</td><td>Low</td></tr>
+      </table>
+    </section>
+
+    <section id="distributed">
+      <h2>Distributed rate limiting</h2>
+      <div class="two-col">
+        <div>
+          <h4 style="font-size:13px;color:var(--text-dim);">The core problem</h4>
+          <ul class="tight">
+            <li>With multiple app servers, in-memory counters per instance don't share state — a client could get N× the limit by hitting N servers.</li>
+            <li>Solution: a shared, fast store (typically Redis) holding the counter or token bucket per key.</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="font-size:13px;color:var(--text-dim);">Making it correct & fast</h4>
+          <ul class="tight">
+            <li>Use atomic ops (<code>INCR</code> + <code>EXPIRE</code>) or a Lua script to avoid check-then-increment race conditions.</li>
+            <li>For very high scale, layer a coarse local limiter in front of a stricter global Redis-backed one.</li>
+            <li>Shard by key (hash the user/IP to a Redis node) so no single node becomes a hotspot.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="http">
+      <h2>The HTTP contract</h2>
+      <p class="dim">A rate limiter should communicate its state, not just fail silently.</p>
+      <pre>HTTP/1.1 <span class="v">429</span> Too Many Requests
+<span class="k">X-RateLimit-Limit:</span>     <span class="v">100</span>
+<span class="k">X-RateLimit-Remaining:</span> <span class="v">0</span>
+<span class="k">X-RateLimit-Reset:</span>     <span class="v">1735689600</span>
+<span class="k">Retry-After:</span>           <span class="v">42</span></pre>
+    </section>
+
+    <section id="interview">
+      <h2>Interview Q&A</h2>
+      <p class="dim">Click a question to reveal a tight, interview-ready answer.</p>
+      <div id="accordion">
+        <div class="acc-item">
+          <button class="acc-q">Token bucket vs sliding window — which do you pick, and when?<span class="plus">+</span></button>
+          <div class="acc-a"><div class="acc-a-inner">Token bucket when you want to allow natural bursts (e.g. a user loading a dashboard that fires several calls at once) with cheap O(1) state. Sliding window (log or counter) when you need tighter guarantees against burst-at-the-edge abuse and can afford slightly more memory or a small accuracy trade-off. In practice: token bucket for client-facing APIs, sliding window counter for abuse/security throttles.</div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q">How do you rate limit across a fleet of stateless servers?<span class="plus">+</span></button>
+          <div class="acc-a"><div class="acc-a-inner">Move the counter out of process into a shared store like Redis, and make the check-and-increment atomic (Lua script or Redis's built-in atomic commands) so concurrent requests from different servers can't race past the limit. For scale, add a local, slightly looser limiter per server as a first-line filter to cut Redis load, backed by the authoritative global limiter.</div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q">What should the limiter key on — user ID, API key, or IP?<span class="plus">+</span></button>
+          <div class="acc-a"><div class="acc-a-inner">Depends on the threat model. IP-based limiting is the first line of defense against anonymous abuse but breaks down behind NAT or shared proxies. User/API-key-based limiting is fairer and more precise for authenticated traffic. Many production systems layer both: a loose IP limit plus a tighter per-account limit.</div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q">How would you rate limit a public API gateway serving millions of users?<span class="plus">+</span></button>
+          <div class="acc-a"><div class="acc-a-inner">Sharded Redis (or a purpose-built store) holding a token bucket per API key, checked via an atomic Lua script at the edge/gateway layer before the request reaches backend services. Add tiered limits (per-second burst + per-day quota), return 429 with Retry-After, and keep a local in-memory fallback limiter for when Redis is briefly unavailable, so the system fails safe rather than open.</div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q">What's the fixed window's "boundary problem" and how do you fix it?<span class="plus">+</span></button>
+          <div class="acc-a"><div class="acc-a-inner">Because the window resets sharply at a clock boundary, a client can send the full limit right at the end of one window and again right at the start of the next — up to 2× the intended rate in a short span. Fix it with a sliding window counter (weight the previous window by overlap) or a full sliding log for exact correctness.</div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-q">Local (in-memory) vs centralized (Redis) limiter — what's the trade-off?<span class="plus">+</span></button>
+          <div class="acc-a"><div class="acc-a-inner">Local is fast and has zero network cost but is per-instance, so the effective limit multiplies with server count and resets on deploys. Centralized is accurate and consistent across the fleet but adds a network hop and a dependency whose failure needs a fallback plan. Most real systems use local as a cheap first filter and centralized as the source of truth.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>Rate limiter study guide — built for fast interview review.</footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  // ---------- token bucket simulator ----------
+  const capacity = 10, refillRate = 2; // tokens per second
+  let tokens = capacity, allowed = 0, denied = 0;
+  const fillEl = document.getElementById('bucketFill');
+  const numEl = document.getElementById('tokenNum');
+  const bucketEl = document.getElementById('bucket');
+  const logEl = document.getElementById('simLog');
+  const rateReadout = document.getElementById('rateReadout');
+  const startTime = Date.now();
+
+  function render(){
+    fillEl.style.height = Math.max(0,(tokens/capacity*100)) + '%';
+    numEl.textContent = Math.floor(tokens);
+    rateReadout.innerHTML = 'allowed: <b>'+allowed+'</b> · denied: <b>'+denied+'</b>';
+  }
+  function log(ok){
+    const t = ((Date.now()-startTime)/1000).toFixed(1)+'s';
+    const div = document.createElement('div');
+    div.className = 'entry';
+    div.innerHTML = '<span class="'+(ok?'allowed':'denied')+'">'+(ok?'ALLOWED':'DENIED')+'</span><span class="t">'+t+'</span>';
+    logEl.prepend(div);
+    while(logEl.children.length > 8) logEl.removeChild(logEl.lastChild);
+  }
+  function sendOne(){
+    if(tokens >= 1){
+      tokens -= 1; allowed++;
+      bucketEl.classList.remove('flash-deny'); void bucketEl.offsetWidth; bucketEl.classList.add('flash-allow');
+      log(true);
+    } else {
+      denied++;
+      bucketEl.classList.remove('flash-allow'); void bucketEl.offsetWidth; bucketEl.classList.add('flash-deny');
+      log(false);
+    }
+    render();
+  }
+  document.getElementById('btnSend').addEventListener('click', sendOne);
+  document.getElementById('btnBurst').addEventListener('click', function(){
+    let i=0;
+    const iv = setInterval(function(){ sendOne(); i++; if(i>=5) clearInterval(iv); }, 90);
+  });
+  document.getElementById('btnReset').addEventListener('click', function(){
+    tokens = capacity; allowed=0; denied=0; logEl.innerHTML=''; render();
+  });
+  setInterval(function(){
+    tokens = Math.min(capacity, tokens + refillRate*0.2);
+    render();
+  }, 200);
+  render();
+
+  // ---------- algorithm tabs ----------
+  const tabBtns = document.querySelectorAll('#tabbar button');
+  tabBtns.forEach(btn=>{
+    btn.addEventListener('click', function(){
+      tabBtns.forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------- accordion ----------
+  document.querySelectorAll('.acc-item').forEach(item=>{
+    item.querySelector('.acc-q').addEventListener('click', function(){
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.acc-item').forEach(i=>i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // ---------- scroll spy ----------
+  const links = document.querySelectorAll('.navlink');
+  const sections = Array.from(links).map(l=>document.querySelector(l.getAttribute('href')));
+  const io = new IntersectionObserver(function(entries){
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        const active = document.querySelector('.navlink[href="#'+entry.target.id+'"]');
+        if(active) active.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-20% 0px -70% 0px'});
+  sections.forEach(s=>{ if(s) io.observe(s); });
+})();
+</script>
+</body>
+</html>

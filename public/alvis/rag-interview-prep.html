@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG — Interview Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF1EF;
+    --panel:#FAFBF9;
+    --ink:#151E1C;
+    --muted:#5B6660;
+    --line:#D2D9D3;
+    --line-strong:#AEB8B0;
+    --retrieval:#1D7874;
+    --retrieval-soft:#E3F0EE;
+    --generation:#A9711F;
+    --generation-soft:#F5ECDA;
+    --warn:#9C3B2E;
+    --warn-soft:#F6E6E2;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:16px;
+    line-height:1.55;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; margin:0; letter-spacing:-0.01em;}
+  code, .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:var(--retrieval);}
+
+  /* ---------- layout shell ---------- */
+  .shell{display:flex; max-width:1280px; margin:0 auto;}
+  nav.sidebar{
+    width:230px; flex-shrink:0; position:sticky; top:0; height:100vh;
+    overflow-y:auto; padding:28px 18px 28px 24px; border-right:1px solid var(--line);
+  }
+  nav.sidebar .brand{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.05rem;
+    margin-bottom:4px;
+  }
+  nav.sidebar .brand small{display:block; font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:.72rem; color:var(--muted); margin-top:2px;}
+  nav.sidebar ol{list-style:none; margin:22px 0 0; padding:0; counter-reset:navsec;}
+  nav.sidebar li{counter-increment:navsec; margin-bottom:2px;}
+  nav.sidebar a{
+    display:flex; gap:8px; text-decoration:none; color:var(--muted);
+    font-size:.86rem; padding:6px 8px; border-radius:3px; border-left:2px solid transparent;
+  }
+  nav.sidebar a::before{
+    content:counter(navsec,decimal-leading-zero); font-family:'IBM Plex Mono',monospace;
+    font-size:.72rem; color:var(--line-strong); padding-top:1px;
+  }
+  nav.sidebar a.active{color:var(--ink); border-left-color:var(--retrieval); background:var(--retrieval-soft); font-weight:500;}
+  nav.sidebar a:hover{color:var(--ink);}
+  .progress-wrap{margin-top:26px; padding-top:16px; border-top:1px solid var(--line);}
+  .progress-label{font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--muted); display:flex; justify-content:space-between; margin-bottom:6px;}
+  .progress-bar{height:4px; background:var(--line); border-radius:2px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:var(--retrieval); transition:width .3s ease;}
+
+  main{flex:1; min-width:0; padding:36px 48px 90px;}
+  header.hero{padding-bottom:30px; margin-bottom:38px; border-bottom:1px solid var(--line);}
+  header.hero h1{font-size:2.5rem; font-weight:700;}
+  header.hero .tag{font-family:'IBM Plex Mono',monospace; color:var(--retrieval); font-size:.82rem; margin-bottom:10px; display:block;}
+  header.hero p{max-width:640px; color:var(--muted); font-size:1.02rem; margin-top:12px;}
+  header.hero .defbox{
+    margin-top:20px; display:inline-block; padding:14px 18px; background:var(--panel);
+    border:1px solid var(--line); border-left:3px solid var(--retrieval); font-size:.95rem; max-width:640px;
+  }
+
+  section{margin-bottom:56px; scroll-margin-top:18px;}
+  section > .sechead{display:flex; align-items:baseline; gap:12px; margin-bottom:16px;}
+  section > .sechead .n{font-family:'IBM Plex Mono',monospace; color:var(--line-strong); font-size:1.4rem;}
+  section > .sechead h2{font-size:1.5rem;}
+  section > .sechead .check{
+    margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted);
+    cursor:pointer; user-select:none; padding:4px 9px; border:1px solid var(--line); border-radius:3px;
+  }
+  section > .sechead .check.done{background:var(--retrieval); color:#fff; border-color:var(--retrieval);}
+  section > p.lead{color:var(--muted); max-width:680px; margin:0 0 18px;}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+  .card{background:var(--panel); border:1px solid var(--line); padding:16px 18px;}
+  .card h4{font-family:'IBM Plex Mono',monospace; font-size:.82rem; text-transform:none; color:var(--retrieval); margin-bottom:8px; font-weight:600;}
+  .card p{margin:0; font-size:.9rem; color:var(--ink);}
+  .card ul{margin:8px 0 0; padding-left:18px; font-size:.87rem;}
+  .card.gen h4{color:var(--generation);}
+
+  table{width:100%; border-collapse:collapse; font-size:.88rem; background:var(--panel);}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line);}
+  th{font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted); font-weight:500; border-bottom:1px solid var(--line-strong);}
+  tr:last-child td{border-bottom:none;}
+
+  svg{width:100%; height:auto; display:block;}
+  .diagram-wrap{background:var(--panel); border:1px solid var(--line); padding:16px; margin:14px 0;}
+  .diagram-cap{font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted); margin-top:8px;}
+
+  details{background:var(--panel); border:1px solid var(--line); margin-bottom:8px;}
+  details summary{
+    cursor:pointer; padding:11px 16px; font-size:.9rem; font-weight:500;
+    display:flex; align-items:center; justify-content:space-between; list-style:none;
+  }
+  details summary::-webkit-details-marker{display:none;}
+  details summary::after{content:'+ expand'; font-family:'IBM Plex Mono',monospace; font-size:.7rem; color:var(--muted); font-weight:400;}
+  details[open] summary::after{content:'– collapse';}
+  details .inner{padding:0 16px 16px; font-size:.89rem; color:var(--ink); border-top:1px solid var(--line);}
+  details .inner{padding-top:12px;}
+
+  .pillrow{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;}
+  .pill{font-family:'IBM Plex Mono',monospace; font-size:.72rem; padding:3px 9px; border:1px solid var(--line-strong); border-radius:20px; color:var(--muted);}
+
+  .warn-box{background:var(--warn-soft); border:1px solid #E3BEB4; border-left:3px solid var(--warn); padding:12px 16px; font-size:.87rem; margin-top:14px;}
+  .warn-box strong{color:var(--warn);}
+
+  /* flashcards */
+  .fc-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  .fc{perspective:1000px; height:160px; cursor:pointer;}
+  .fc-inner{position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d;}
+  .fc.flipped .fc-inner{transform:rotateY(180deg);}
+  .fc-face{position:absolute; inset:0; backface-visibility:hidden; border:1px solid var(--line); padding:14px; display:flex; align-items:center; background:var(--panel);}
+  .fc-face p{margin:0; font-size:.85rem;}
+  .fc-front{font-weight:500;}
+  .fc-front .qmark{font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--retrieval); display:block; margin-bottom:6px;}
+  .fc-back{transform:rotateY(180deg); background:var(--retrieval-soft); border-color:var(--retrieval); font-size:.83rem;}
+
+  footer{padding:26px 48px; border-top:1px solid var(--line); font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--muted); display:flex; justify-content:space-between;}
+
+  .toc-hint{font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--muted); margin-top:26px;}
+
+  @media(max-width:900px){
+    .shell{flex-direction:column;}
+    nav.sidebar{
+      width:100%;
+      position:static;
+      height:auto;
+      border-right:none;
+      border-bottom:1px solid var(--line);
+      padding:16px 20px;
+    }
+    nav.sidebar ol{
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      margin-top:12px;
+    }
+    nav.sidebar li{margin-bottom:0;}
+    .progress-wrap{margin-top:16px; padding-top:12px;}
+    .toc-hint{display:none;}
+    main{padding:28px 20px 60px;}
+    header.hero h1{font-size:2rem;}
+    .grid2,.grid3{grid-template-columns:1fr;}
+    .fc-grid{grid-template-columns:repeat(2,1fr);}
+    table{display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; width:100%;}
+    table th, table td{min-width:110px;}
+    footer{padding:20px; flex-direction:column; gap:8px;}
+  }
+
+  @media(max-width:600px){
+    nav.sidebar{padding:14px 16px;}
+    main{padding:20px 16px 50px;}
+    header.hero{padding-bottom:20px; margin-bottom:28px;}
+    header.hero h1{font-size:1.65rem;}
+    header.hero p{font-size:.92rem;}
+    header.hero .defbox{font-size:.88rem; padding:12px 14px;}
+    section{margin-bottom:42px;}
+    section > .sechead{flex-wrap:wrap;}
+    section > .sechead h2{font-size:1.3rem;}
+    .diagram-wrap{padding:12px 8px; overflow-x:auto;}
+    .fc-grid{grid-template-columns:1fr;}
+    .fc{height:auto; min-height:160px;}
+    footer{padding:18px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="sidebar">
+    <div class="brand">RAG<small>interview field notes</small></div>
+    <ol id="navlist">
+      <li><a href="#what">What & why</a></li>
+      <li><a href="#pipeline">The pipeline</a></li>
+      <li><a href="#chunking">Chunking</a></li>
+      <li><a href="#retrieval">Retrieval methods</a></li>
+      <li><a href="#advanced">Advanced RAG</a></li>
+      <li><a href="#eval">Evaluation</a></li>
+      <li><a href="#failures">Failure modes</a></li>
+      <li><a href="#recall">Rapid recall</a></li>
+    </ol>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>reviewed</span><span id="progtext">0/8</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progfill"></div></div>
+    </div>
+    <div class="toc-hint">check off ✓ a section once<br>you can explain it cold.</div>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <span class="tag">// retrieval-augmented generation</span>
+      <h1>Everything they'll ask about RAG</h1>
+      <p>A compressed reference for interview prep — the pipeline, the trade-offs, the terms that get dropped in casually, and the questions that actually get asked. Expand any panel for depth; skip it for the fast pass.</p>
+      <div class="defbox">
+        <strong>RAG</strong> = give an LLM an external, searchable knowledge source at inference time, so it answers using retrieved evidence instead of only what it memorized during training.
+      </div>
+    </header>
+
+    <!-- 1. WHAT & WHY -->
+    <section id="what">
+      <div class="sechead"><span class="n">01</span><h2>What problem RAG solves</h2><span class="check" data-key="what">mark reviewed</span></div>
+      <p class="lead">Three LLM limitations, one fix each:</p>
+      <div class="grid3">
+        <div class="card"><h4>Stale knowledge</h4><p>Model weights are frozen at training time. RAG injects current or private facts without retraining.</p></div>
+        <div class="card"><h4>Hallucination</h4><p>Grounding generation in retrieved passages gives the model something real to cite instead of guessing.</p></div>
+        <div class="card"><h4>No source of truth</h4><p>Answers can point back to the exact document/chunk they came from — auditable, unlike parametric memory.</p></div>
+      </div>
+      <details>
+        <summary>RAG vs. fine-tuning — when to pick which</summary>
+        <div class="inner">
+          <table>
+            <tr><th></th><th>RAG</th><th>Fine-tuning</th></tr>
+            <tr><td>Best for</td><td>Fast-changing or proprietary facts</td><td>Teaching a style, format, or skill</td></tr>
+            <tr><td>Update cost</td><td>Re-index a document (cheap)</td><td>Retrain (expensive)</td></tr>
+            <tr><td>Traceability</td><td>High — cite the source chunk</td><td>Low — baked into weights</td></tr>
+            <tr><td>Failure mode</td><td>Bad retrieval → bad answer</td><td>Overfitting / catastrophic forgetting</td></tr>
+          </table>
+          <p style="margin-top:10px;">Interview line: <em>"they're not mutually exclusive — fine-tune the model to follow instructions and use tools well, RAG to keep it factually current."</em></p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 2. PIPELINE -->
+    <section id="pipeline">
+      <div class="sechead"><span class="n">02</span><h2>The pipeline, end to end</h2><span class="check" data-key="pipeline">mark reviewed</span></div>
+      <p class="lead">Two phases: <strong>indexing</strong> (offline, done once per document) and <strong>query time</strong> (online, done per user question).</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 980 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- indexing row -->
+          <text x="10" y="24" font-family="IBM Plex Mono" font-size="12" fill="#5B6660">INDEXING (offline)</text>
+          <g font-family="IBM Plex Sans" font-size="13">
+            <rect x="10" y="40" width="120" height="48" fill="#FAFBF9" stroke="#1D7874" stroke-width="1.5"/>
+            <text x="70" y="69" text-anchor="middle" fill="#151E1C">Raw documents</text>
+            <rect x="180" y="40" width="120" height="48" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.5"/>
+            <text x="240" y="63" text-anchor="middle" fill="#151E1C">Chunk</text>
+            <text x="240" y="78" text-anchor="middle" font-size="10" fill="#5B6660">split into passages</text>
+            <rect x="350" y="40" width="120" height="48" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.5"/>
+            <text x="410" y="63" text-anchor="middle" fill="#151E1C">Embed</text>
+            <text x="410" y="78" text-anchor="middle" font-size="10" fill="#5B6660">text → vector</text>
+            <rect x="520" y="40" width="140" height="48" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.5"/>
+            <text x="590" y="63" text-anchor="middle" fill="#151E1C">Vector store</text>
+            <text x="590" y="78" text-anchor="middle" font-size="10" fill="#5B6660">index for ANN search</text>
+          </g>
+          <g stroke="#5B6660" stroke-width="1.3" marker-end="url(#arrow)">
+            <line x1="130" y1="64" x2="178" y2="64"/>
+            <line x1="300" y1="64" x2="348" y2="64"/>
+            <line x1="470" y1="64" x2="518" y2="64"/>
+          </g>
+
+          <line x1="0" y1="118" x2="980" y2="118" stroke="#D2D9D3" stroke-dasharray="3,3"/>
+
+          <!-- query row -->
+          <text x="10" y="140" font-family="IBM Plex Mono" font-size="12" fill="#5B6660">QUERY TIME (per request)</text>
+          <g font-family="IBM Plex Sans" font-size="13">
+            <rect x="10" y="156" width="110" height="48" fill="#FAFBF9" stroke="#151E1C" stroke-width="1.5"/>
+            <text x="65" y="185" text-anchor="middle">User query</text>
+
+            <rect x="170" y="156" width="110" height="48" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.5"/>
+            <text x="225" y="179" text-anchor="middle">Embed</text>
+            <text x="225" y="194" text-anchor="middle" font-size="10" fill="#5B6660">same encoder</text>
+
+            <rect x="330" y="156" width="130" height="48" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.5"/>
+            <text x="395" y="179" text-anchor="middle">Retrieve top-k</text>
+            <text x="395" y="194" text-anchor="middle" font-size="10" fill="#5B6660">similarity search</text>
+
+            <rect x="510" y="156" width="110" height="48" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="565" y="179" text-anchor="middle">Rerank</text>
+            <text x="565" y="194" text-anchor="middle" font-size="10" fill="#5B6660">optional, precise</text>
+
+            <rect x="670" y="156" width="130" height="48" fill="#F5ECDA" stroke="#A9711F" stroke-width="1.5"/>
+            <text x="735" y="179" text-anchor="middle">Augment prompt</text>
+            <text x="735" y="194" text-anchor="middle" font-size="10" fill="#5B6660">query + context</text>
+
+            <rect x="850" y="156" width="120" height="48" fill="#F5ECDA" stroke="#A9711F" stroke-width="1.5"/>
+            <text x="910" y="179" text-anchor="middle">LLM</text>
+            <text x="910" y="194" text-anchor="middle" font-size="10" fill="#5B6660">grounded answer</text>
+          </g>
+          <g stroke="#5B6660" stroke-width="1.3" marker-end="url(#arrow)">
+            <line x1="120" y1="180" x2="168" y2="180"/>
+            <line x1="280" y1="180" x2="328" y2="180"/>
+            <line x1="460" y1="180" x2="508" y2="180"/>
+            <line x1="620" y1="180" x2="668" y2="180"/>
+            <line x1="800" y1="180" x2="848" y2="180"/>
+          </g>
+          <!-- link vector store to retrieve -->
+          <path d="M590 88 L590 130 L395 130 L395 154" fill="none" stroke="#1D7874" stroke-width="1.3" stroke-dasharray="2,2" marker-end="url(#arrowteal)"/>
+          <text x="600" y="128" font-size="10" fill="#1D7874" font-family="IBM Plex Mono">looks up here</text>
+
+          <text x="490" y="250" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" fill="#9C3B2E">answer quality is bounded by retrieval quality — garbage in, confident garbage out</text>
+
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5B6660"/></marker>
+            <marker id="arrowteal" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1D7874"/></marker>
+          </defs>
+        </svg>
+        <div class="diagram-cap">fig.1 — indexing builds the index once; every query re-runs the bottom row only.</div>
+      </div>
+
+      <details>
+        <summary>What each stage actually does under the hood</summary>
+        <div class="inner">
+          <ul>
+            <li><strong>Chunking</strong> — splits documents into passages small enough to embed meaningfully and fit in the context window, large enough to keep coherent meaning.</li>
+            <li><strong>Embedding</strong> — a bi-encoder maps text to a dense vector where semantic similarity ≈ vector closeness (cosine / dot product).</li>
+            <li><strong>Vector store</strong> — indexes vectors for approximate nearest-neighbor (ANN) search at scale (HNSW, IVF, etc.) instead of brute-force comparison.</li>
+            <li><strong>Retrieval</strong> — embeds the query with the same model, pulls the top-k nearest chunks.</li>
+            <li><strong>Reranking</strong> — a slower, more accurate cross-encoder re-scores the top-k against the query for precision (optional but common in production).</li>
+            <li><strong>Augmentation</strong> — retrieved chunks get inserted into the prompt template alongside the user query and instructions.</li>
+            <li><strong>Generation</strong> — the LLM produces the final answer conditioned on that context.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- 3. CHUNKING -->
+    <section id="chunking">
+      <div class="sechead"><span class="n">03</span><h2>Chunking strategy</h2><span class="check" data-key="chunking">mark reviewed</span></div>
+      <p class="lead">The highest-leverage, most-underrated design decision in a RAG system.</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 900 130" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="16" font-family="IBM Plex Mono" font-size="11" fill="#5B6660">source text ──────────────────────────────────────────────────────────────────</text>
+          <rect x="0" y="30" width="900" height="18" fill="#F0F0EC" stroke="#D2D9D3"/>
+          <!-- chunk 1 -->
+          <rect x="0" y="60" width="240" height="26" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.3"/>
+          <text x="120" y="77" text-anchor="middle" font-size="11" font-family="IBM Plex Mono">chunk 1</text>
+          <!-- chunk 2 overlapping -->
+          <rect x="200" y="92" width="240" height="26" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.3" opacity="0.9"/>
+          <text x="320" y="109" text-anchor="middle" font-size="11" font-family="IBM Plex Mono">chunk 2</text>
+          <!-- chunk 3 -->
+          <rect x="400" y="60" width="240" height="26" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.3"/>
+          <text x="520" y="77" text-anchor="middle" font-size="11" font-family="IBM Plex Mono">chunk 3</text>
+          <!-- overlap markers -->
+          <rect x="200" y="60" width="40" height="26" fill="none" stroke="#A9711F" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <rect x="400" y="92" width="40" height="26" fill="none" stroke="#A9711F" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="220" y="52" text-anchor="middle" font-size="9.5" font-family="IBM Plex Mono" fill="#A9711F">overlap</text>
+          <text x="420" y="52" text-anchor="middle" font-size="9.5" font-family="IBM Plex Mono" fill="#A9711F">overlap</text>
+        </svg>
+        <div class="diagram-cap">fig.2 — overlap between neighboring chunks prevents an answer-bearing sentence from being severed at a boundary.</div>
+      </div>
+
+      <div class="grid2">
+        <div class="card"><h4>Fixed-size</h4><p>Split every N tokens/characters, with overlap. Simple, fast, ignores structure — can cut a sentence in half.</p></div>
+        <div class="card"><h4>Recursive / structure-aware</h4><p>Split on paragraph → sentence → word boundaries in order, only falling back to a smaller unit when needed. The default in most frameworks.</p></div>
+        <div class="card"><h4>Semantic chunking</h4><p>Split where embedding similarity between adjacent sentences drops — keeps topically coherent chunks, costs extra compute.</p></div>
+        <div class="card"><h4>Parent-child (small-to-big)</h4><p>Embed small chunks for precise retrieval, but return the larger parent chunk to the LLM for full context. Best of both worlds.</p></div>
+      </div>
+      <div class="warn-box"><strong>Interview trap —</strong> "bigger chunks = better answers." False: bigger chunks dilute the embedding (topic drift) and blow the context budget. The real lever is matching chunk size to query granularity.</div>
+    </section>
+
+    <!-- 4. RETRIEVAL METHODS -->
+    <section id="retrieval">
+      <div class="sechead"><span class="n">04</span><h2>Retrieval methods</h2><span class="check" data-key="retrieval">mark reviewed</span></div>
+      <p class="lead">Sparse and dense retrieval fail in complementary ways — hybrid search exists to cancel out each one's blind spot.</p>
+
+      <div class="grid2">
+        <div class="card"><h4>Sparse (BM25 / TF-IDF)</h4>
+          <p>Keyword / term-frequency matching. Great at exact terms, IDs, acronyms, rare words. Blind to synonyms and paraphrase.</p>
+        </div>
+        <div class="card"><h4>Dense (embeddings)</h4>
+          <p>Semantic vector similarity. Great at paraphrase and meaning. Can miss exact codes, numbers, or unusual proper nouns it wasn't trained to represent well.</p>
+        </div>
+      </div>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 760 190" xmlns="http://www.w3.org/2000/svg">
+          <text x="30" y="20" font-family="IBM Plex Mono" font-size="12" fill="#151E1C">query</text>
+          <rect x="10" y="30" width="90" height="30" fill="#FAFBF9" stroke="#151E1C"/>
+          <text x="55" y="50" text-anchor="middle" font-size="11">"reset MFA"</text>
+
+          <line x1="100" y1="45" x2="180" y2="45" stroke="#5B6660" marker-end="url(#a3)"/>
+          <path d="M100,45 L140,45 L140,20" fill="none" stroke="#5B6660"/>
+
+          <rect x="180" y="10" width="150" height="34" fill="#F0F0EC" stroke="#1D7874"/>
+          <text x="255" y="31" text-anchor="middle" font-size="11" font-family="IBM Plex Mono">BM25 (sparse)</text>
+
+          <rect x="180" y="60" width="150" height="34" fill="#E3F0EE" stroke="#1D7874"/>
+          <text x="255" y="81" text-anchor="middle" font-size="11" font-family="IBM Plex Mono">dense vector search</text>
+
+          <line x1="140" y1="45" x2="140" y2="77" stroke="#5B6660"/>
+          <line x1="140" y1="77" x2="178" y2="77" stroke="#5B6660" marker-end="url(#a3)"/>
+          <line x1="330" y1="27" x2="380" y2="27" stroke="#5B6660" marker-end="url(#a3)"/>
+          <line x1="330" y1="77" x2="380" y2="77" stroke="#5B6660" marker-end="url(#a3)"/>
+
+          <rect x="380" y="35" width="150" height="55" fill="#F5ECDA" stroke="#A9711F"/>
+          <text x="455" y="58" text-anchor="middle" font-size="11" font-family="IBM Plex Mono">fusion (RRF)</text>
+          <text x="455" y="74" text-anchor="middle" font-size="9.5" fill="#5B6660">merge &amp; re-rank both lists</text>
+
+          <line x1="530" y1="62" x2="600" y2="62" stroke="#5B6660" marker-end="url(#a3)"/>
+          <rect x="600" y="40" width="150" height="45" fill="#FAFBF9" stroke="#151E1C"/>
+          <text x="675" y="66" text-anchor="middle" font-size="11">final top-k</text>
+
+          <text x="255" y="130" font-size="10" fill="#5B6660" font-family="IBM Plex Mono">catches: exact IDs, jargon, acronyms</text>
+          <text x="255" y="145" font-size="10" fill="#5B6660" font-family="IBM Plex Mono">misses: paraphrase, synonyms</text>
+          <text x="255" y="165" font-size="10" fill="#5B6660" font-family="IBM Plex Mono">catches: meaning, paraphrase</text>
+          <text x="255" y="180" font-size="10" fill="#5B6660" font-family="IBM Plex Mono">misses: rare exact tokens</text>
+
+          <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5B6660"/></marker></defs>
+        </svg>
+        <div class="diagram-cap">fig.3 — hybrid search: run both, merge ranked lists with <strong>Reciprocal Rank Fusion (RRF)</strong>, then optionally rerank.</div>
+      </div>
+
+      <details>
+        <summary>Reranking — why bother if retrieval already ranks results?</summary>
+        <div class="inner">
+          <p>The retriever (bi-encoder) embeds query and document <em>independently</em> for speed — it has to, to search millions of vectors fast. A reranker (cross-encoder) looks at the query and each candidate document <em>together</em>, so it captures interaction between them and is far more accurate — but too slow to run over the whole corpus. Standard pattern: retrieve top 50–100 cheaply, rerank down to top 3–5 precisely.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 5. ADVANCED RAG -->
+    <section id="advanced">
+      <div class="sechead"><span class="n">05</span><h2>Advanced RAG techniques</h2><span class="check" data-key="advanced">mark reviewed</span></div>
+      <p class="lead">Namedrop-worthy patterns interviewers use to probe whether you've gone past a tutorial.</p>
+
+      <details>
+        <summary>Query rewriting / expansion</summary>
+        <div class="inner">Rewrite or expand the raw user query before embedding it — fixes ambiguous, underspecified, or conversational queries ("what about the second one?") so retrieval has something concrete to match against.</div>
+      </details>
+      <details>
+        <summary>HyDE (Hypothetical Document Embeddings)</summary>
+        <div class="inner">Ask the LLM to write a hypothetical answer to the query first, then embed <em>that</em> instead of the raw query. A fake answer is often closer in embedding space to a real answer-bearing chunk than the terse question is.</div>
+      </details>
+      <details>
+        <summary>Multi-query retrieval</summary>
+        <div class="inner">Generate several paraphrased versions of the query, retrieve for each, and union/dedupe the results. Reduces the risk that one phrasing misses the relevant chunk.</div>
+      </details>
+      <details>
+        <summary>Self-RAG / Corrective RAG (CRAG)</summary>
+        <div class="inner">The model critiques its own retrieved context before generating — grading relevance, deciding whether to retrieve again, fall back to web search, or answer without retrieval at all. Adds a control loop on top of the basic pipeline.</div>
+      </details>
+      <details>
+        <summary>Graph RAG</summary>
+        <div class="inner">Build a knowledge graph (entities + relations) alongside or instead of a vector index. Better for multi-hop questions ("who reports to the person who approved X?") that pure similarity search handles poorly.</div>
+      </details>
+      <details>
+        <summary>Agentic RAG</summary>
+        <div class="inner">The model decides <em>if</em>, <em>when</em>, and <em>what</em> to retrieve as a tool call mid-reasoning, possibly across multiple retrieval steps, rather than a single fixed retrieve-then-generate pass.</div>
+      </details>
+    </section>
+
+    <!-- 6. EVAL -->
+    <section id="eval">
+      <div class="sechead"><span class="n">06</span><h2>Evaluation</h2><span class="check" data-key="eval">mark reviewed</span></div>
+      <p class="lead">Evaluate retrieval and generation <em>separately</em> — a bad final answer could be either stage's fault.</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 780 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="50" width="180" height="50" fill="#E3F0EE" stroke="#1D7874" stroke-width="1.5"/>
+          <text x="100" y="80" text-anchor="middle" font-family="IBM Plex Mono" font-size="12">retrieval quality</text>
+          <rect x="300" y="50" width="180" height="50" fill="#F5ECDA" stroke="#A9711F" stroke-width="1.5"/>
+          <text x="390" y="80" text-anchor="middle" font-family="IBM Plex Mono" font-size="12">generation quality</text>
+          <line x1="190" y1="75" x2="298" y2="75" stroke="#5B6660" marker-end="url(#a4)"/>
+
+          <text x="100" y="40" text-anchor="middle" font-size="10.5" fill="#1D7874" font-family="IBM Plex Mono">context precision · context recall</text>
+          <text x="390" y="40" text-anchor="middle" font-size="10.5" fill="#A9711F" font-family="IBM Plex Mono">faithfulness · answer relevancy</text>
+
+          <rect x="590" y="50" width="180" height="50" fill="#FAFBF9" stroke="#151E1C" stroke-width="1.5"/>
+          <text x="680" y="80" text-anchor="middle" font-family="IBM Plex Mono" font-size="12">end-to-end (human/LLM judge)</text>
+          <line x1="480" y1="75" x2="588" y2="75" stroke="#5B6660" marker-end="url(#a4)"/>
+          <defs><marker id="a4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5B6660"/></marker></defs>
+        </svg>
+        <div class="diagram-cap">fig.4 — the RAGAS-style split: diagnose which half of the pipeline is actually broken.</div>
+      </div>
+
+      <table>
+        <tr><th>Metric</th><th>Measures</th><th>Stage</th></tr>
+        <tr><td>Context precision</td><td>Of retrieved chunks, how many are actually relevant?</td><td>Retrieval</td></tr>
+        <tr><td>Context recall</td><td>Of all relevant chunks that exist, how many were retrieved?</td><td>Retrieval</td></tr>
+        <tr><td>Faithfulness</td><td>Is the answer supported by the retrieved context, or is it hallucinating beyond it?</td><td>Generation</td></tr>
+        <tr><td>Answer relevancy</td><td>Does the answer actually address the question asked?</td><td>Generation</td></tr>
+      </table>
+      <p style="font-size:.85rem; color:var(--muted); margin-top:10px;">Common frameworks to name-drop: <span class="mono">RAGAS</span>, <span class="mono">TruLens</span>, <span class="mono">DeepEval</span>. All lean heavily on an LLM-as-judge for faithfulness/relevancy since there's no clean ground truth.</p>
+    </section>
+
+    <!-- 7. FAILURE MODES -->
+    <section id="failures">
+      <div class="sechead"><span class="n">07</span><h2>Failure modes & fixes</h2><span class="check" data-key="failures">mark reviewed</span></div>
+      <table>
+        <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+        <tr><td>Right doc exists, never retrieved</td><td>Chunking split the answer across boundaries, or embedding model mismatch with domain vocabulary</td><td>Add overlap, try parent-child chunking, or fine-tune/swap the embedding model</td></tr>
+        <tr><td>Retrieved context looks right, answer still wrong</td><td>Generation ignoring context / hallucinating</td><td>Tighten prompt ("answer only from context"), lower temperature, add faithfulness check</td></tr>
+        <tr><td>Works for short docs, fails on long reports</td><td>"Lost in the middle" — LLMs weight the start/end of context more</td><td>Rerank so the most relevant chunk is first/last, or summarize before generation</td></tr>
+        <tr><td>Great on FAQ-style queries, bad on comparisons</td><td>Single-hop retrieval can't do multi-hop reasoning</td><td>Query decomposition, multi-query retrieval, or graph RAG</td></tr>
+        <tr><td>Latency too high</td><td>Reranking or multi-query adds sequential LLM/model calls</td><td>Cache embeddings, batch calls, reduce top-k before reranking</td></tr>
+      </table>
+      <div class="warn-box"><strong>Classic gotcha —</strong> the embedding model used at query time must match (or be compatible with) the one used at indexing time. Swapping embedding models silently breaks retrieval until you re-index everything.</div>
+    </section>
+
+    <!-- 8. RAPID RECALL -->
+    <section id="recall">
+      <div class="sechead"><span class="n">08</span><h2>Rapid recall — flip to check</h2><span class="check" data-key="recall">mark reviewed</span></div>
+      <p class="lead">Click a card to reveal the answer. Good for a last-pass drill before the interview.</p>
+      <div class="fc-grid" id="fcgrid">
+        <div class="fc"><div class="fc-inner">
+          <div class="fc-face fc-front"><p><span class="qmark">Q</span>Why chunk documents instead of embedding whole files?</p></div>
+          <div class="fc-face fc-back"><p>Embeddings degrade at capturing fine-grained meaning over long text (topic dilution), and most encoders have a token limit. Smaller chunks give more precise, addressable retrieval units.</p></div>
+        </div></div>
+        <div class="fc"><div class="fc-inner">
+          <div class="fc-face fc-front"><p><span class="qmark">Q</span>Bi-encoder vs. cross-encoder — what's the difference?</p></div>
+          <div class="fc-face fc-back"><p>Bi-encoder embeds query/doc separately (fast, scalable, used for retrieval). Cross-encoder scores query+doc jointly (slow, accurate, used for reranking a small candidate set).</p></div>
+        </div></div>
+        <div class="fc"><div class="fc-inner">
+          <div class="fc-face fc-front"><p><span class="qmark">Q</span>What is RRF?</p></div>
+          <div class="fc-face fc-back"><p>Reciprocal Rank Fusion — merges multiple ranked lists (e.g. sparse + dense) by scoring each doc as the sum of 1/(k+rank) across lists, without needing comparable raw scores.</p></div>
+        </div></div>
+        <div class="fc"><div class="fc-inner">
+          <div class="fc-face fc-front"><p><span class="qmark">Q</span>Name two causes of hallucination even with RAG.</p></div>
+          <div class="fc-face fc-back"><p>1) Retrieval returns irrelevant/no chunks and the model fills the gap anyway. 2) The model ignores correct retrieved context and answers from parametric memory instead.</p></div>
+        </div></div>
+        <div class="fc"><div class="fc-inner">
+          <div class="fc-face fc-front"><p><span class="qmark">Q</span>What does "top-k" control, and what's the trade-off?</p></div>
+          <div class="fc-face fc-back"><p>Number of chunks retrieved. Higher k = more recall but more noise, higher cost, and risk of exceeding/diluting the context window.</p></div>
+        </div></div>
+        <div class="fc"><div class="fc-inner">
+          <div class="fc-face fc-front"><p><span class="qmark">Q</span>When would you choose Graph RAG over vector RAG?</p></div>
+          <div class="fc-face fc-back"><p>Multi-hop, relational questions (who → connected to → what) where similarity search over isolated chunks can't traverse relationships between entities.</p></div>
+        </div></div>
+        <div class="fc"><div class="fc-inner">
+          <div class="fc-face fc-front"><p><span class="qmark">Q</span>What is "lost in the middle"?</p></div>
+          <div class="fc-face fc-back"><p>LLMs attend more strongly to information at the start and end of a long context window, and are more likely to miss relevant facts placed in the middle.</p></div>
+        </div></div>
+        <div class="fc"><div class="fc-inner">
+          <div class="fc-face fc-front"><p><span class="qmark">Q</span>How do you evaluate RAG without labeled ground truth?</p></div>
+          <div class="fc-face fc-back"><p>Use an LLM-as-judge to score faithfulness (grounded in context?) and relevancy (answers the question?), often synthesized against a small hand-curated eval set.</p></div>
+        </div></div>
+        <div class="fc"><div class="fc-inner">
+          <div class="fc-face fc-front"><p><span class="qmark">Q</span>Why re-embed the query with the same model used for documents?</p></div>
+          <div class="fc-face fc-back"><p>Vector similarity is only meaningful within the same embedding space — mismatched models place query and document vectors in incomparable geometries.</p></div>
+        </div></div>
+      </div>
+      <div class="pillrow" style="margin-top:20px;">
+        <span class="pill">bi-encoder</span><span class="pill">cross-encoder</span><span class="pill">HNSW</span><span class="pill">RRF</span><span class="pill">HyDE</span>
+        <span class="pill">context precision/recall</span><span class="pill">faithfulness</span><span class="pill">Self-RAG</span><span class="pill">CRAG</span><span class="pill">agentic RAG</span>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <span>RAG field notes — single-file reference, no external state saved</span>
+  <span id="footprog">0/8 sections reviewed</span>
+</footer>
+
+<script>
+  // active-section highlighting
+  const links = Array.from(document.querySelectorAll('nav.sidebar a'));
+  const sections = links.map(l => document.querySelector(l.getAttribute('href')));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        const idx = sections.indexOf(e.target);
+        links.forEach(l => l.classList.remove('active'));
+        if(idx > -1) links[idx].classList.add('active');
+      }
+    });
+  }, {rootMargin: '-15% 0px -70% 0px'});
+  sections.forEach(s => s && io.observe(s));
+
+  // progress checklist
+  const total = document.querySelectorAll('.check').length;
+  const reviewed = new Set();
+  function updateProgress(){
+    document.getElementById('progtext').textContent = reviewed.size + '/' + total;
+    document.getElementById('footprog').textContent = reviewed.size + '/' + total + ' sections reviewed';
+    document.getElementById('progfill').style.width = (reviewed.size/total*100) + '%';
+  }
+  document.querySelectorAll('.check').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.key;
+      if(reviewed.has(key)){ reviewed.delete(key); btn.classList.remove('done'); btn.textContent='mark reviewed'; }
+      else { reviewed.add(key); btn.classList.add('done'); btn.textContent='reviewed ✓'; }
+      updateProgress();
+    });
+  });
+  updateProgress();
+
+  // flashcards
+  document.querySelectorAll('.fc').forEach(card => {
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+  });
+</script>
+</body>
+</html>
