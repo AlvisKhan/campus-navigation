@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Big Data to Knowledge Discovery — Systems Biology Study Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F2E7;
+    --panel:#ECE5D3;
+    --ink:#20291F;
+    --ink-soft:#4A5449;
+    --moss:#3E6B4A;
+    --moss-deep:#28472F;
+    --moss-pale:#DCE7DD;
+    --amber:#B96A1E;
+    --amber-pale:#F3DFC4;
+    --rule:#D8CFB6;
+    --white:#FFFDF8;
+    --wrong:#A6432F;
+    --wrong-pale:#F3DAD3;
+    --max:740px;
+    --radius:3px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Source Sans 3', sans-serif;
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    color:var(--ink);
+    margin:0;
+  }
+
+  a{color:var(--moss-deep);}
+  button{font-family:inherit;}
+  ::selection{background:var(--amber); color:var(--white);}
+
+  /* ---------- Progress bar ---------- */
+  #progress-track{
+    position:fixed; top:0; left:0; right:0; height:3px;
+    background:var(--rule); z-index:80;
+  }
+  #progress-fill{
+    height:100%; width:0%;
+    background:var(--amber);
+    transition:width .08s linear;
+  }
+
+  /* ---------- Top bar / nav ---------- */
+  .topbar{
+    position:sticky; top:3px; z-index:50;
+    background:rgba(246,242,231,0.94);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--rule);
+  }
+  .topbar-inner{
+    max-width:1080px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px;
+  }
+  .brand{
+    font-family:'Fraunces', serif; font-weight:600; font-size:17px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .nav-links{display:flex; gap:20px; list-style:none; margin:0; padding:0;}
+  .nav-links a{
+    text-decoration:none; color:var(--ink-soft); font-size:14px;
+    padding:6px 0; border-bottom:1px solid transparent;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .nav-links a:hover, .nav-links a.active{color:var(--moss-deep); border-color:var(--moss);}
+  .menu-toggle{display:none;}
+  .menu-btn{display:none;}
+
+  @media (max-width:780px){
+    .nav-links{
+      position:absolute; top:100%; left:0; right:0;
+      background:var(--white); flex-direction:column; gap:0;
+      border-bottom:1px solid var(--rule);
+      max-height:0; overflow:hidden; transition:max-height .25s ease;
+    }
+    .nav-links a{padding:14px 24px; border-bottom:1px solid var(--rule); width:100%;}
+    .menu-toggle:checked ~ .nav-links{max-height:520px;}
+    .menu-btn{
+      display:block; background:none; border:1px solid var(--rule);
+      border-radius:var(--radius); width:38px; height:34px; position:relative; cursor:pointer;
+    }
+    .menu-btn span, .menu-btn::before, .menu-btn::after{
+      content:""; position:absolute; left:9px; right:9px; height:2px; background:var(--ink);
+    }
+    .menu-btn span{top:16px;} .menu-btn::before{top:11px;} .menu-btn::after{top:21px;}
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{max-width:var(--max); margin:0 auto; padding:56px 24px 40px;}
+  .kicker{font-size:14px; color:var(--moss-deep); margin-bottom:18px; display:flex; align-items:center; gap:10px;}
+  .kicker .line{height:1px; width:32px; background:var(--moss);}
+  .hero h1{font-size:clamp(2.1rem, 5vw, 3.1rem); line-height:1.12; letter-spacing:-0.01em;}
+  .hero .subtitle{margin-top:18px; font-size:19px; color:var(--ink-soft); max-width:56ch;}
+  .hero .howto{
+    margin-top:22px; padding:12px 16px; background:var(--moss-pale);
+    border-radius:var(--radius); font-size:14.5px; color:var(--moss-deep);
+    display:flex; gap:10px; align-items:center;
+  }
+  .speaker-card{
+    margin-top:32px; display:flex; gap:16px; align-items:flex-start;
+    padding-top:26px; border-top:1px solid var(--rule);
+  }
+  .speaker-mark{
+    flex:none; width:44px; height:44px; border-radius:50%; background:var(--moss-deep);
+    display:flex; align-items:center; justify-content:center; color:var(--white);
+    font-family:'Fraunces',serif; font-weight:600;
+  }
+  .speaker-meta p{margin:0; font-size:14.5px; color:var(--ink-soft);}
+  .speaker-meta .name{color:var(--ink); font-weight:600; font-size:16px; margin-bottom:2px;}
+  .speaker-meta a{font-size:14px;}
+
+  /* ---------- Section shell ---------- */
+  section.topic{max-width:var(--max); margin:0 auto; padding:52px 24px; border-top:1px solid var(--rule);}
+  section.topic.alt{max-width:none; background:var(--panel);}
+  section.topic.alt > .inner{max-width:var(--max); margin:0 auto;}
+  .topic-head{display:flex; gap:18px; align-items:baseline; margin-bottom:20px;}
+  .topic-num{font-family:'Fraunces', serif; font-size:15px; color:var(--amber); font-weight:600; flex:none; min-width:28px;}
+  .topic-head h2{font-size:clamp(1.4rem, 3vw, 1.85rem); line-height:1.25;}
+  .topic-body{padding-left:46px;}
+  .topic-body p{margin:0 0 16px; color:var(--ink);}
+  .topic-body p.lede{font-size:18px; color:var(--ink-soft);}
+  .topic-body ul{margin:0 0 16px; padding-left:20px;}
+  .topic-body li{margin-bottom:8px;}
+  @media (max-width:600px){ .topic-body{padding-left:0;} .topic-head{gap:10px;} }
+
+  .pullquote{border-left:3px solid var(--moss); padding:4px 0 4px 20px; margin:24px 0;}
+  .pullquote p{font-family:'Fraunces', serif; font-style:italic; font-size:20px; color:var(--moss-deep); margin:0 0 6px; line-height:1.5;}
+  .pullquote cite{font-style:normal; font-size:14px; color:var(--ink-soft);}
+
+  .factbox{background:var(--white); border:1px solid var(--rule); border-radius:var(--radius); padding:18px 20px; margin:20px 0;}
+  .factbox .label{font-size:13px; color:var(--amber); font-weight:600; margin-bottom:6px;}
+  .factbox p{margin:0; font-size:15.5px; color:var(--ink-soft);}
+
+  .flow-list{list-style:none; margin:20px 0; padding:0;}
+  .flow-list li{display:flex; gap:14px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--rule);}
+  .flow-list li:last-child{border-bottom:none;}
+  .flow-dot{flex:none; width:8px; height:8px; border-radius:50%; background:var(--moss); margin-top:8px;}
+  .flow-list strong{display:block; font-size:15.5px; color:var(--ink); margin-bottom:2px;}
+  .flow-list span{font-size:14.5px; color:var(--ink-soft);}
+
+  details{margin:0;}
+  details > summary{list-style:none; cursor:pointer;}
+  details > summary::-webkit-details-marker{display:none;}
+
+  /* ---------- Interactive: elephant ---------- */
+  .elephant-panel{
+    background:var(--white); border:1px solid var(--rule); border-radius:var(--radius);
+    padding:20px; margin:24px 0;
+  }
+  .elephant-instructions{font-size:14.5px; color:var(--ink-soft); margin:0 0 14px;}
+  .elephant-stage{position:relative; width:100%; max-width:420px; margin:0 auto;}
+  .elephant-stage svg{width:100%; height:auto; display:block;}
+  .hotspot{
+    position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px;
+    border-radius:50%; border:2px solid var(--amber); background:var(--amber-pale);
+    color:var(--amber); font-family:'Fraunces',serif; font-weight:700; font-size:12px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .hotspot:hover{transform:scale(1.12);}
+  .hotspot.visited{background:var(--moss); border-color:var(--moss-deep); color:var(--white);}
+  .elephant-callout{
+    margin-top:16px; padding:14px 16px; border-radius:var(--radius);
+    background:var(--amber-pale); border:1px solid var(--amber);
+    font-size:15px; color:var(--ink); min-height:24px;
+  }
+  .elephant-callout.reveal{background:var(--moss-pale); border-color:var(--moss);}
+  .elephant-progress{margin-top:10px; font-size:13px; color:var(--ink-soft);}
+
+  /* ---------- Interactive: central dogma ---------- */
+  .dogma-panel{background:var(--white); border:1px solid var(--rule); border-radius:var(--radius); padding:22px 20px; margin:24px 0;}
+  .dogma-track{position:relative; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px;}
+  .dogma-node{
+    flex:1; text-align:center; padding:14px 6px; border:1.5px solid var(--rule);
+    border-radius:var(--radius); cursor:pointer; background:var(--paper);
+    transition:border-color .15s ease, background .15s ease;
+    font-size:14.5px; font-weight:600;
+  }
+  .dogma-node:hover{border-color:var(--moss);}
+  .dogma-node.active{border-color:var(--moss-deep); background:var(--moss-pale); color:var(--moss-deep);}
+  .dogma-arrow{flex:none; font-size:20px; color:var(--amber); position:relative; width:28px; text-align:center;}
+  .dogma-pulse{
+    position:absolute; top:50%; left:0; width:10px; height:10px; border-radius:50%;
+    background:var(--amber); transform:translate(-50%,-50%); opacity:0;
+  }
+  .dogma-pulse.playing{animation:dogma-run 2.4s ease-in-out;}
+  @keyframes dogma-run{
+    0%{left:16.5%; opacity:1;}
+    45%{left:50%; opacity:1;}
+    50%{left:50%; opacity:1;}
+    95%{left:83.5%; opacity:1;}
+    100%{left:83.5%; opacity:0;}
+  }
+  .dogma-controls{display:flex; align-items:center; gap:12px; margin-top:16px;}
+  .btn{
+    font-size:14px; font-weight:600; padding:9px 16px; border-radius:var(--radius);
+    border:1px solid var(--moss-deep); background:var(--moss-deep); color:var(--white);
+    cursor:pointer; transition:opacity .15s ease;
+  }
+  .btn:hover{opacity:.88;}
+  .btn.ghost{background:transparent; color:var(--moss-deep);}
+  .dogma-detail{font-size:14.5px; color:var(--ink-soft); margin-top:14px; min-height:22px;}
+
+  /* ---------- Interactive: pyramid ---------- */
+  .pyramid-wrap{display:flex; gap:28px; align-items:flex-start; margin:24px 0 8px; flex-wrap:wrap;}
+  .pyramid-svg{flex:none; width:min(230px, 100%); cursor:pointer;}
+  .pyramid-svg polygon, .pyramid-svg rect{transition:fill .15s ease;}
+  .pyramid-band{fill:transparent;}
+  .pyramid-band:hover, .pyramid-band.active{fill:var(--moss-pale);}
+  .pyramid-legend{flex:1; min-width:230px;}
+  .pyramid-toggle{display:flex; gap:8px; margin-bottom:14px;}
+  .toggle-btn{
+    flex:1; font-size:13.5px; padding:8px 10px; border-radius:var(--radius);
+    border:1px solid var(--rule); background:var(--paper); color:var(--ink-soft); cursor:pointer;
+  }
+  .toggle-btn.on{border-color:var(--moss-deep); background:var(--moss-pale); color:var(--moss-deep); font-weight:600;}
+  .pyramid-detail{font-size:14.5px; color:var(--ink-soft); min-height:56px;}
+  .pyramid-detail strong{color:var(--ink);}
+  .flow-arrow{opacity:0;}
+  .flow-arrow.on{opacity:1; animation:flow-pulse 1.4s ease-in-out infinite;}
+  @keyframes flow-pulse{0%,100%{opacity:.35;} 50%{opacity:1;}}
+
+  /* ---------- Interactive: cycle ---------- */
+  .cycle-diagram{margin:26px 0; display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;}
+  .cycle-node{
+    background:var(--white); border:1.5px solid var(--rule); border-radius:var(--radius);
+    padding:16px 12px; text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease;
+  }
+  .cycle-node:hover{border-color:var(--moss);}
+  .cycle-node.active{border-color:var(--moss-deep); background:var(--moss-pale);}
+  .cycle-node .icon{font-size:22px; margin-bottom:8px; display:block;}
+  .cycle-node .title{font-size:13.5px; font-weight:600; color:var(--ink);}
+  .cycle-center{grid-column:1 / -1; text-align:center; margin-top:6px; padding:16px; border-top:2px dashed var(--moss);}
+  .cycle-center .big{font-family:'Fraunces', serif; font-weight:700; font-size:22px; color:var(--moss-deep); letter-spacing:0.02em;}
+  .cycle-detail{font-size:14.5px; color:var(--ink-soft); margin-top:10px; min-height:22px;}
+  .cycle-controls{margin-top:14px;}
+  @media (max-width:600px){ .cycle-diagram{grid-template-columns:1fr 1fr;} }
+
+  /* ---------- Omics accordion ---------- */
+  .omics-grid{display:grid; gap:12px; margin:20px 0;}
+  .omics-card{background:var(--white); border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden;}
+  .omics-card summary{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 16px; font-weight:600; font-size:15.5px; color:var(--ink);
+  }
+  .omics-card summary .plus{color:var(--amber); font-size:18px; font-weight:400; transition:transform .15s ease;}
+  .omics-card[open] summary .plus{transform:rotate(45deg);}
+  .omics-card .omics-body{padding:0 16px 16px; font-size:14.5px; color:var(--ink-soft);}
+  .omics-card .omics-body p{margin:0 0 8px;}
+
+  /* ---------- Timeline accordion ---------- */
+  .timeline{margin:24px 0 0; position:relative; padding-left:22px;}
+  .timeline::before{content:""; position:absolute; left:6px; top:6px; bottom:6px; width:1px; background:var(--rule);}
+  .timeline-item{position:relative; padding-bottom:20px;}
+  .timeline-item:last-child{padding-bottom:0;}
+  .timeline-item::before{
+    content:""; position:absolute; left:-22px; top:9px; width:9px; height:9px;
+    border-radius:50%; background:var(--amber); border:2px solid var(--paper);
+  }
+  .timeline-item summary{cursor:pointer; display:flex; align-items:center; gap:8px;}
+  .timeline-item .era{font-size:14.5px; color:var(--amber); font-weight:600;}
+  .timeline-item .plus{color:var(--ink-soft); font-size:15px; margin-left:auto;}
+  .timeline-item .desc{font-size:15px; color:var(--ink-soft); margin-top:8px;}
+
+  /* ---------- Quiz ---------- */
+  .quiz-panel{background:var(--white); border:1px solid var(--rule); border-radius:var(--radius); padding:22px 20px; margin:24px 0;}
+  .quiz-q{margin-bottom:22px; padding-bottom:20px; border-bottom:1px solid var(--rule);}
+  .quiz-q:last-of-type{border-bottom:none; margin-bottom:8px;}
+  .quiz-q p.qtext{font-weight:600; margin:0 0 10px; font-size:15.5px;}
+  .quiz-options{display:flex; flex-direction:column; gap:8px;}
+  .quiz-option{
+    display:flex; align-items:center; gap:10px; padding:10px 12px;
+    border:1px solid var(--rule); border-radius:var(--radius); cursor:pointer; font-size:14.5px;
+  }
+  .quiz-option:hover{border-color:var(--moss);}
+  .quiz-option input{accent-color:var(--moss-deep);}
+  .quiz-option.correct{border-color:var(--moss-deep); background:var(--moss-pale);}
+  .quiz-option.incorrect{border-color:var(--wrong); background:var(--wrong-pale);}
+  .quiz-actions{display:flex; align-items:center; gap:14px; margin-top:6px;}
+  .quiz-score{font-size:15px; font-weight:600; color:var(--moss-deep);}
+
+  footer{max-width:var(--max); margin:0 auto; padding:48px 24px 80px; border-top:1px solid var(--rule);}
+  footer p{font-size:13.5px; color:var(--ink-soft); line-height:1.7;}
+  footer a{color:var(--moss-deep);}
+  .visually-quiet{color:var(--ink-soft);}
+
+  a:focus-visible, button:focus-visible, .hotspot:focus-visible, .cycle-node:focus-visible, summary:focus-visible{
+    outline:2px solid var(--moss-deep); outline-offset:2px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .nav-links{transition:none;}
+    .dogma-pulse.playing{animation:none;}
+    .flow-arrow.on{animation:none; opacity:1;}
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-track"><div id="progress-fill"></div></div>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2C6 2 4 6 4 10c0 5 3 8 6 8s6-3 6-8c0-4-2-8-6-8Z" stroke="#3E6B4A" stroke-width="1.4"/>
+        <path d="M4 8h12M4 12h12" stroke="#B96A1E" stroke-width="1.2"/>
+      </svg>
+      Systems Biology Notes
+    </div>
+    <input type="checkbox" id="menu-toggle" class="menu-toggle">
+    <label for="menu-toggle" class="menu-btn" aria-label="Toggle menu"><span></span></label>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#systems">Systems</a></li>
+      <li><a href="#synthetic-life">Synthetic life</a></li>
+      <li><a href="#what-is-life">What is life</a></li>
+      <li><a href="#complexity">Complexity</a></li>
+      <li><a href="#one-health">One Health</a></li>
+      <li><a href="#sysbio">Systems biology</a></li>
+      <li><a href="#omics">Omics & sequencing</a></li>
+      <li><a href="#quiz">Test yourself</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="kicker"><span class="line"></span> Lecture notes · Day 1</div>
+  <h1>From Big Data to Knowledge Discovery</h1>
+  <p class="subtitle">Systems biology workflows for multi&#8209;omics data integration and analysis — how biologists move from mountains of sequencing data to an understanding of how living systems actually work.</p>
+  <div class="howto">🖱️ This page is interactive — click the diagrams, expand the cards, and try the quiz at the end to check what stuck.</div>
+
+  <div class="speaker-card">
+    <div class="speaker-mark">PB</div>
+    <div class="speaker-meta">
+      <p class="name">Dr. Pankaj Barah</p>
+      <p>Assistant Professor, Department of Molecular Biology &amp; Biotechnology, Tezpur University</p>
+      <p>Indian National Young Academy of Sciences · <a href="https://sites.google.com/site/pankajbarah/" target="_blank" rel="noopener">sites.google.com/site/pankajbarah</a></p>
+    </div>
+  </div>
+</header>
+
+<!-- 1. Blind men and elephant -->
+<section class="topic" id="systems">
+  <div class="topic-head">
+    <span class="topic-num">01</span>
+    <h2>The blind men and the elephant</h2>
+  </div>
+  <div class="topic-body">
+    <p class="lede">A lecture on systems biology opens, fittingly, with a parable about partial views.</p>
+    <p>In John Godfrey Saxe's 19th-century poem, six blind men each touch a different part of an elephant and confidently describe the whole animal from that one part alone. None of them is entirely wrong, and none of them is right either.</p>
+    <div class="elephant-panel">
+      <p class="elephant-instructions">Try it yourself — tap each numbered spot to feel what one blind man felt.</p>
+      <div class="elephant-stage">
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="210" cy="140" rx="110" ry="66" fill="#ECE5D3" stroke="#D8CFB6"/>
+          <ellipse cx="100" cy="140" rx="42" ry="48" fill="#ECE5D3" stroke="#D8CFB6"/>
+          <ellipse cx="112" cy="102" rx="46" ry="54" fill="#F3DFC4" stroke="#D8CFB6"/>
+          <path d="M72 155 C 50 175, 45 205, 58 232" fill="none" stroke="#D8CFB6" stroke-width="16" stroke-linecap="round"/>
+          <path d="M80 172 C 70 182, 68 190, 74 196" fill="none" stroke="#FFFDF8" stroke-width="6" stroke-linecap="round"/>
+          <rect x="152" y="190" width="22" height="60" rx="8" fill="#ECE5D3" stroke="#D8CFB6"/>
+          <rect x="196" y="196" width="22" height="60" rx="8" fill="#ECE5D3" stroke="#D8CFB6"/>
+          <rect x="240" y="196" width="22" height="60" rx="8" fill="#ECE5D3" stroke="#D8CFB6"/>
+          <rect x="284" y="190" width="22" height="60" rx="8" fill="#ECE5D3" stroke="#D8CFB6"/>
+          <path d="M312 130 C 335 145, 338 175, 322 198" fill="none" stroke="#D8CFB6" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="320" cy="198" r="5" fill="#D8CFB6"/>
+        </svg>
+        <button class="hotspot" style="left:28%; top:39%;" data-part="ear" aria-label="Ear">1</button>
+        <button class="hotspot" style="left:14%; top:75%;" data-part="trunk" aria-label="Trunk">2</button>
+        <button class="hotspot" style="left:20%; top:66%;" data-part="tusk" aria-label="Tusk">3</button>
+        <button class="hotspot" style="left:41%; top:85%;" data-part="leg" aria-label="Leg">4</button>
+        <button class="hotspot" style="left:50%; top:54%;" data-part="side" aria-label="Side">5</button>
+        <button class="hotspot" style="left:81%; top:74%;" data-part="tail" aria-label="Tail">6</button>
+      </div>
+      <div class="elephant-callout" id="elephant-callout">Tap a numbered spot above to hear one blind man's guess.</div>
+      <div class="elephant-progress" id="elephant-progress">0 of 6 parts explored</div>
+    </div>
+    <div class="factbox">
+      <div class="label">Why it opens this lecture</div>
+      <p>Biology has traditionally been studied one molecule, one pathway, or one gene at a time — a genomics group touching the trunk, a metabolomics group touching the leg. Systems biology exists because no single "part" explains a living organism. The whole only becomes visible when the partial views are integrated.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. What is a system -->
+<section class="topic alt">
+  <div class="inner">
+    <div class="topic-head">
+      <span class="topic-num">02</span>
+      <h2>What is a system?</h2>
+    </div>
+    <div class="topic-body">
+      <p>A system is a set of things that interact with one another within an environment to form a larger pattern — one that is different from, and not predictable from, any of its individual parts. This is the core idea behind "the whole is more than the sum of its parts."</p>
+      <p><strong>A man-made example:</strong> the Boeing 787 Dreamliner is built from roughly 2.3 million individual parts. No single bolt, wire, or panel can fly — flight is a property that emerges only once every part is interacting correctly with every other part, inside the right environment (air, fuel, control software).</p>
+      <p>Living organisms are systems in exactly this sense — except vastly more complex, self-repairing, self-replicating, and shaped by billions of years of evolution rather than a design blueprint.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Synthetic life -->
+<section class="topic" id="synthetic-life">
+  <div class="topic-head">
+    <span class="topic-num">03</span>
+    <h2>Can life be built from scratch?</h2>
+  </div>
+  <div class="topic-body">
+    <p class="lede">If a system can be engineered, can a living system be engineered too?</p>
+    <ul>
+      <li><strong>The Miller–Urey experiment (1950s)</strong> — simulated early-Earth conditions in a flask and showed that simple organic molecules, including amino acids, could form spontaneously from inorganic starting materials.</li>
+      <li><strong>Mycoplasma laboratorium — "Synthia" (2010)</strong> — the product of a fifteen-year, roughly $30 million effort led by geneticist Craig Venter, widely reported as the first cell controlled by a chemically synthesized genome.</li>
+    </ul>
+    <div class="pullquote">
+      <p>"We created a new cell. It's alive. But we didn't create life from scratch — we created it, as all life on this planet is, out of a living cell."</p>
+      <cite>— Craig Venter, responding to CNN's question of whether he had created new life (2010)</cite>
+    </div>
+    <p class="visually-quiet">The distinction matters: Venter's team rewrote a genome, but they still needed an existing living cell to boot that genome up. True "from scratch" synthetic life — assembled from non-living chemistry alone — remains unachieved.</p>
+  </div>
+</section>
+
+<!-- 4. What is life -->
+<section class="topic alt" id="what-is-life">
+  <div class="inner">
+    <div class="topic-head">
+      <span class="topic-num">04</span>
+      <h2>What is life?</h2>
+    </div>
+    <div class="topic-body">
+      <div class="pullquote">
+        <p>Life is a relationship among molecules, not a property of any one molecule.</p>
+        <cite>— Linus Pauling</cite>
+      </div>
+      <p>No single protein, strand of DNA, or metabolite is "alive" on its own. Life emerges from the relationships between these molecules — how DNA is copied, how it is read out into RNA and protein, and how those proteins act back on the DNA and on each other.</p>
+      <p><strong>One useful lens: life is a flow of information.</strong> The central dogma below is the most famous version of that flow — click each stage, then press play to watch the flow move.</p>
+
+      <div class="dogma-panel">
+        <div class="dogma-track">
+          <div class="dogma-node active" data-node="dna">DNA</div>
+          <div class="dogma-arrow">→<div class="dogma-pulse" id="dogma-pulse"></div></div>
+          <div class="dogma-node" data-node="rna">RNA</div>
+          <div class="dogma-arrow">→</div>
+          <div class="dogma-node" data-node="protein">Protein</div>
+        </div>
+        <p class="dogma-detail" id="dogma-detail">DNA stores the instructions — a stable, long-term archive of genetic information kept safely in the nucleus.</p>
+        <div class="dogma-controls">
+          <button class="btn" id="dogma-play">▶ Play the flow</button>
+          <span class="visually-quiet" style="font-size:13.5px;">DNA is transcribed into RNA, then RNA is translated into protein.</span>
+        </div>
+      </div>
+
+      <p style="margin-top:20px;">This molecular flow runs alongside several other kinds of information flow in a living system:</p>
+      <ul class="flow-list">
+        <li><span class="flow-dot"></span><div><strong>Metabolic pathways</strong><span>The chemical flux of small molecules being built up and broken down to generate energy and building blocks.</span></div></li>
+        <li><span class="flow-dot"></span><div><strong>Signalling pathways</strong><span>Communication within a species and between species — cells "talking" to each other and to their environment.</span></div></li>
+        <li><span class="flow-dot"></span><div><strong>Electrical signals</strong><span>The nervous system's rapid, wire-like transmission of information.</span></div></li>
+        <li><span class="flow-dot"></span><div><strong>Evolution</strong><span>The flow of genetic information across generations, edited slowly by selection.</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Complexity pyramid -->
+<section class="topic" id="complexity">
+  <div class="topic-head">
+    <span class="topic-num">05</span>
+    <h2>Complexity in biological systems</h2>
+  </div>
+  <div class="topic-body">
+    <p>Living systems are distinguished from most engineered systems by having <strong>two-way</strong> flows of information across their levels of organization — not just one direction of cause and effect. Click a band of the pyramid, or use the toggles, to explore both directions.</p>
+    <div class="pyramid-wrap">
+      <svg class="pyramid-svg" viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg">
+        <polygon class="pyramid-band" data-level="organism" points="110,14 146,64 74,64" stroke="#3E6B4A" stroke-width="1.4"/>
+        <polygon class="pyramid-band" data-level="tissue" points="74,64 146,64 168,104 52,104" stroke="#3E6B4A" stroke-width="1.4"/>
+        <polygon class="pyramid-band" data-level="cell" points="52,104 168,104 186,144 34,144" stroke="#3E6B4A" stroke-width="1.4"/>
+        <polygon class="pyramid-band" data-level="molecule" points="34,144 186,144 202,184 18,184" stroke="#3E6B4A" stroke-width="1.4"/>
+        <text x="110" y="42" text-anchor="middle" font-family="Source Sans 3" font-size="9.5" fill="#20291F">Organism</text>
+        <text x="110" y="87" text-anchor="middle" font-family="Source Sans 3" font-size="9.5" fill="#20291F">Tissue / Organ</text>
+        <text x="110" y="127" text-anchor="middle" font-family="Source Sans 3" font-size="9.5" fill="#20291F">Cell</text>
+        <text x="110" y="167" text-anchor="middle" font-family="Source Sans 3" font-size="9.5" fill="#20291F">Molecule / Gene</text>
+        <text class="flow-arrow" id="arrow-up" x="206" y="110" font-size="16" fill="#3E6B4A">↑</text>
+        <text class="flow-arrow" id="arrow-down" x="6" y="110" font-size="16" fill="#B96A1E">↓</text>
+      </svg>
+      <div class="pyramid-legend">
+        <div class="pyramid-toggle">
+          <button class="toggle-btn" id="toggle-up">↑ Bottom-up flow</button>
+          <button class="toggle-btn" id="toggle-down">↓ Top-down flow</button>
+        </div>
+        <p class="pyramid-detail" id="pyramid-detail">Click a band of the pyramid on the left, or a flow toggle above, to see what it means.</p>
+      </div>
+    </div>
+    <p class="visually-quiet">This bidirectional pyramid is why a purely reductionist approach — study the gene, then the protein, then stop — misses so much of biology. Systems biology tries to model both directions at once.</p>
+  </div>
+</section>
+
+<!-- 6. One health -->
+<section class="topic alt" id="one-health">
+  <div class="inner">
+    <div class="topic-head">
+      <span class="topic-num">06</span>
+      <h2>One Health: why it matters</h2>
+    </div>
+    <div class="topic-body">
+      <p>The complexity pyramid does not stop at the individual organism. The <strong>One Health</strong> framework — promoted by agencies such as the USGS — recognises that human health, animal health, and environmental health are interconnected systems, not separate silos.</p>
+      <p>A pathogen that jumps from wildlife to livestock to humans, or a pollutant that moves from soil to water to the food chain, is the same "flow of information and matter" idea from the previous section, scaled up from a single body to entire ecosystems.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7. Systems biology definitions -->
+<section class="topic" id="sysbio">
+  <div class="topic-head">
+    <span class="topic-num">07</span>
+    <h2>Systems biology and systems medicine</h2>
+  </div>
+  <div class="topic-body">
+    <div class="pullquote">
+      <p>Systems biology is the study of the interaction between the components of a biological system, and how these interactions give rise to the function and behaviour of that system.</p>
+      <cite>— Nir Friedman</cite>
+    </div>
+    <div class="pullquote">
+      <p>The goal is to construct models of complex biological systems and diseases.</p>
+      <cite>— Trey Ideker</cite>
+    </div>
+    <p><strong>Systems medicine</strong> is simply what happens when these systems biology approaches — network modelling, multi-omics integration, computational simulation — are applied directly to human disease and clinical practice.</p>
+  </div>
+</section>
+
+<!-- 8. Iterative approach -->
+<section class="topic alt">
+  <div class="inner">
+    <div class="topic-head">
+      <span class="topic-num">08</span>
+      <h2>Systems biology as an iterative cycle</h2>
+    </div>
+    <div class="topic-body">
+      <p>Systems biology is not a single experiment; it's a loop. Click a stage below, or press play to watch the cycle run through once on its own.</p>
+      <div class="cycle-diagram" id="cycle-diagram">
+        <div class="cycle-node active" data-stage="experiments"><span class="icon">🧪</span><span class="title">Experiments</span></div>
+        <div class="cycle-node" data-stage="assays"><span class="icon">🧬</span><span class="title">High-throughput assays</span></div>
+        <div class="cycle-node" data-stage="data"><span class="icon">📊</span><span class="title">Data handling</span></div>
+        <div class="cycle-node" data-stage="modelling"><span class="icon">🧮</span><span class="title">Mathematical modelling</span></div>
+        <div class="cycle-center">
+          <p class="visually-quiet" style="margin-bottom:6px;">All of it integrates knowledge from multiple experiment types into one thing:</p>
+          <div class="big">BIG DATA</div>
+          <p class="cycle-detail" id="cycle-detail">Researchers run wet-lab experiments to generate biological samples and observations.</p>
+          <div class="cycle-controls"><button class="btn ghost" id="cycle-play">▶ Play the cycle</button></div>
+        </div>
+      </div>
+      <p class="visually-quiet">Each pass around this cycle — model, test, measure, remodel — brings the model of the system closer to biological reality.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Omics revolution -->
+<section class="topic" id="omics">
+  <div class="topic-head">
+    <span class="topic-num">09</span>
+    <h2>The omics revolution</h2>
+  </div>
+  <div class="topic-body">
+    <p class="lede">"Omics" technologies feed the high-throughput assay stage of the cycle above — each one profiling a different molecular layer of the system at once. Expand each card for a worked detail.</p>
+    <div class="omics-grid">
+      <details class="omics-card">
+        <summary>Genomics<span class="plus">+</span></summary>
+        <div class="omics-body"><p>The complete DNA sequence — the fixed blueprint shared by (nearly) every cell in an organism, largely unchanged across its lifetime.</p></div>
+      </details>
+      <details class="omics-card">
+        <summary>Transcriptomics<span class="plus">+</span></summary>
+        <div class="omics-body"><p>Which genes are being actively read into RNA, and how much — a snapshot that changes by cell type, condition, and time.</p></div>
+      </details>
+      <details class="omics-card">
+        <summary>Proteomics<span class="plus">+</span></summary>
+        <div class="omics-body"><p>The full set of proteins actually present and doing work — the molecular machines built from the transcriptome's instructions.</p></div>
+      </details>
+      <details class="omics-card">
+        <summary>Metabolomics<span class="plus">+</span></summary>
+        <div class="omics-body"><p>The small-molecule end products of all that activity — sugars, lipids, and other metabolites that reflect the system's current state.</p></div>
+      </details>
+    </div>
+    <div class="factbox">
+      <div class="label">Worked example from the literature</div>
+      <p>Integrative multi-omics studies of schizophrenia have combined genetic, transcriptomic, and other molecular layers to move from genetic risk factors toward clinical classification and prediction — illustrating exactly why no single omics layer tells the full clinical story on its own.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10. Sequencing evolution -->
+<section class="topic alt">
+  <div class="inner">
+    <div class="topic-head">
+      <span class="topic-num">10</span>
+      <h2>Evolution of sequencing technologies</h2>
+    </div>
+    <div class="topic-body">
+      <p>The omics revolution was only possible because DNA sequencing itself went through several technological generations. Tap each generation to expand it.</p>
+      <div class="timeline">
+        <details class="timeline-item" open>
+          <summary><span class="era">First generation</span><span class="plus">+</span></summary>
+          <div class="desc">Sanger sequencing — accurate but slow and low-throughput; the workhorse that produced the first reference genomes.</div>
+        </details>
+        <details class="timeline-item">
+          <summary><span class="era">Second generation</span><span class="plus">+</span></summary>
+          <div class="desc">Short-read, massively parallel sequencing (e.g. Illumina) — a dramatic jump in throughput and cost efficiency, enabling population- and cohort-scale sequencing.</div>
+        </details>
+        <details class="timeline-item">
+          <summary><span class="era">Third generation</span><span class="plus">+</span></summary>
+          <div class="desc">Long-read, single-molecule platforms (e.g. PacBio) — reads spanning much longer stretches of DNA, resolving repeats and structural variation that short reads miss.</div>
+        </details>
+        <details class="timeline-item">
+          <summary><span class="era">Ongoing evolution</span><span class="plus">+</span></summary>
+          <div class="desc">Genome sequencing continues to move toward greater accuracy, lower cost, and portability — pushing multi-omics integration from specialised labs toward routine, everyday practice.</div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. Quiz -->
+<section class="topic" id="quiz">
+  <div class="topic-head">
+    <span class="topic-num">11</span>
+    <h2>Test yourself</h2>
+  </div>
+  <div class="topic-body">
+    <p class="lede">Six quick questions to check what stuck. Pick an answer for each, then check your results.</p>
+    <div class="quiz-panel">
+      <form id="quiz-form">
+
+        <div class="quiz-q" data-answer="b">
+          <p class="qtext">1. What best defines a "system" as used in this lecture?</p>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> Any large collection of parts</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> Parts that interact to form a pattern different from any single part</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> A machine with moving components</label>
+          </div>
+        </div>
+
+        <div class="quiz-q" data-answer="c">
+          <p class="qtext">2. What did Craig Venter's team actually achieve with "Synthia"?</p>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> Built a living cell entirely from non-living chemicals</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Discovered the first amino acids in a lab flask</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> Booted a chemically synthesized genome inside an existing living cell</label>
+          </div>
+        </div>
+
+        <div class="quiz-q" data-answer="a">
+          <p class="qtext">3. According to Linus Pauling's quote, where does "life" actually reside?</p>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> In the relationships among molecules, not in any single molecule</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> Entirely within the DNA molecule</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> In the electrical activity of the nervous system alone</label>
+          </div>
+        </div>
+
+        <div class="quiz-q" data-answer="b">
+          <p class="qtext">4. What makes the complexity pyramid of biological systems distinctive?</p>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> Information only ever flows upward, from molecule to organism</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> Information flows both bottom-up and top-down between levels</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> Each level operates completely independently of the others</label>
+          </div>
+        </div>
+
+        <div class="quiz-q" data-answer="c">
+          <p class="qtext">5. Which omics layer measures the small-molecule end products of cellular activity?</p>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> Genomics</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> Proteomics</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> Metabolomics</label>
+          </div>
+        </div>
+
+        <div class="quiz-q" data-answer="a">
+          <p class="qtext">6. What was the major advantage second-generation sequencing brought over Sanger sequencing?</p>
+          <div class="quiz-options">
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> Massively parallel, higher-throughput, lower-cost sequencing</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> The ability to read much longer single DNA molecules</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> No need for any computational analysis afterward</label>
+          </div>
+        </div>
+
+        <div class="quiz-actions">
+          <button type="submit" class="btn" id="quiz-check">Check my answers</button>
+          <button type="button" class="btn ghost" id="quiz-reset" style="display:none;">Try again</button>
+          <span class="quiz-score" id="quiz-score"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Source</strong>: Adapted from lecture slides by Dr. Pankaj Barah, "From Big Data to Knowledge Discovery: Systems Biology Workflows for Multi-Omics Data Integration and Analysis," Department of Molecular Biology and Biotechnology, Tezpur University. Study notes compiled for personal revision.</p>
+</footer>
+
+<script>
+(function(){
+  /* Progress bar */
+  var fill = document.getElementById('progress-fill');
+  function updateProgress(){
+    var h = document.documentElement;
+    var scrolled = h.scrollTop || document.body.scrollTop;
+    var height = (h.scrollHeight || document.body.scrollHeight) - h.clientHeight;
+    var pct = height > 0 ? (scrolled / height) * 100 : 0;
+    fill.style.width = pct + '%';
+  }
+  document.addEventListener('scroll', updateProgress, {passive:true});
+  updateProgress();
+
+  /* Scrollspy */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#nav-links a'));
+  var sections = navLinks.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if('IntersectionObserver' in window){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          var id = '#' + entry.target.id;
+          navLinks.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === id); });
+        }
+      });
+    }, {rootMargin:'-40% 0px -50% 0px'});
+    sections.forEach(function(s){ obs.observe(s); });
+  }
+
+  /* Mobile menu auto-close on link click */
+  var menuToggle = document.getElementById('menu-toggle');
+  navLinks.forEach(function(a){ a.addEventListener('click', function(){ menuToggle.checked = false; }); });
+
+  /* Elephant interactive */
+  var elephantFacts = {
+    ear:   "This must be some kind of fan! Broad, thin, always moving.",
+    trunk: "This is clearly like a thick snake — long, muscular, and it moves on its own.",
+    tusk:  "No, it's smooth, hard, and curved — like a spear.",
+    leg:   "You're both wrong. It's a pillar, round and solid, like a tree trunk.",
+    side:  "It's simply a wall — flat, wide, and impossible to get around.",
+    tail:  "It's just a bit of rope, nothing more."
+  };
+  var visited = {};
+  var callout = document.getElementById('elephant-callout');
+  var progressEl = document.getElementById('elephant-progress');
+  document.querySelectorAll('.hotspot').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var part = btn.getAttribute('data-part');
+      callout.classList.remove('reveal');
+      callout.textContent = elephantFacts[part];
+      btn.classList.add('visited');
+      visited[part] = true;
+      var count = Object.keys(visited).length;
+      progressEl.textContent = count + ' of 6 parts explored';
+      if(count === 6){
+        callout.classList.add('reveal');
+        callout.textContent = "Each guess was true to what was felt — and each one was incomplete. Put together, the six partial answers describe one elephant. That's exactly the problem systems biology exists to solve: no single omics layer or single experiment reveals the whole organism.";
+      }
+    });
+  });
+
+  /* Central dogma interactive */
+  var dogmaFacts = {
+    dna: "DNA stores the instructions — a stable, long-term archive of genetic information kept safely in the nucleus.",
+    rna: "RNA is the working copy — transcribed from DNA, it carries instructions out to where proteins are built.",
+    protein: "Protein is the functional output — translated from RNA, proteins do the actual work: structure, enzymes, signalling."
+  };
+  var dogmaNodes = document.querySelectorAll('.dogma-node');
+  var dogmaDetail = document.getElementById('dogma-detail');
+  dogmaNodes.forEach(function(node){
+    node.addEventListener('click', function(){
+      dogmaNodes.forEach(function(n){ n.classList.remove('active'); });
+      node.classList.add('active');
+      dogmaDetail.textContent = dogmaFacts[node.getAttribute('data-node')];
+    });
+  });
+  var dogmaPlay = document.getElementById('dogma-play');
+  var dogmaPulse = document.getElementById('dogma-pulse');
+  dogmaPlay.addEventListener('click', function(){
+    dogmaPulse.classList.remove('playing');
+    void dogmaPulse.offsetWidth; /* reflow to restart animation */
+    dogmaPulse.classList.add('playing');
+  });
+
+  /* Pyramid interactive */
+  var pyramidFacts = {
+    organism:{title:'Organism', text:'The whole living being — its physiology, behaviour, and health are what we ultimately want to explain or treat.'},
+    tissue:{title:'Tissue / Organ', text:'Groups of specialised cells working together — a tissue\'s state depends on the cells inside it, and constrains how the whole organism functions.'},
+    cell:{title:'Cell', text:'The basic living unit — its behaviour is shaped by the molecules inside it, and by signals arriving from the tissue and organism around it.'},
+    molecule:{title:'Molecule / Gene', text:'DNA, RNA, proteins, and metabolites — the base layer that bottom-up effects (like a mutation) originate from, and that top-down signals ultimately act on.'}
+  };
+  var bands = document.querySelectorAll('.pyramid-band');
+  var pyramidDetail = document.getElementById('pyramid-detail');
+  bands.forEach(function(band){
+    band.addEventListener('click', function(){
+      bands.forEach(function(b){ b.classList.remove('active'); });
+      band.classList.add('active');
+      var f = pyramidFacts[band.getAttribute('data-level')];
+      pyramidDetail.innerHTML = '<strong>' + f.title + '.</strong> ' + f.text;
+    });
+  });
+  var toggleUp = document.getElementById('toggle-up');
+  var toggleDown = document.getElementById('toggle-down');
+  var arrowUp = document.getElementById('arrow-up');
+  var arrowDown = document.getElementById('arrow-down');
+  toggleUp.addEventListener('click', function(){
+    var on = toggleUp.classList.toggle('on');
+    toggleDown.classList.remove('on'); arrowDown.classList.remove('on');
+    arrowUp.classList.toggle('on', on);
+    pyramidDetail.innerHTML = on ? '<strong>Bottom-up.</strong> A molecular change — a mutation, a shift in gene expression — propagates upward and can alter cell, tissue, and whole-organism behaviour.' : 'Click a band of the pyramid on the left, or a flow toggle above, to see what it means.';
+  });
+  toggleDown.addEventListener('click', function(){
+    var on = toggleDown.classList.toggle('on');
+    toggleUp.classList.remove('on'); arrowUp.classList.remove('on');
+    arrowDown.classList.toggle('on', on);
+    pyramidDetail.innerHTML = on ? '<strong>Top-down.</strong> The organism\'s environment and physiology feed back down and constrain which molecular events are even possible.' : 'Click a band of the pyramid on the left, or a flow toggle above, to see what it means.';
+  });
+
+  /* Cycle interactive */
+  var cycleFacts = {
+    experiments: "Researchers run wet-lab experiments to generate biological samples and observations.",
+    assays: "High-throughput assays (sequencing, mass spectrometry, and similar tools) profile thousands of molecules from those samples at once.",
+    data: "Data handling cleans, normalises, and organises the resulting measurements so they can be compared and combined.",
+    modelling: "Mathematical modelling integrates the data into a working model of the system — which then suggests the next experiment to run."
+  };
+  var cycleOrder = ['experiments','assays','data','modelling'];
+  var cycleNodes = document.querySelectorAll('.cycle-node');
+  var cycleDetail = document.getElementById('cycle-detail');
+  function setCycleStage(stage){
+    cycleNodes.forEach(function(n){ n.classList.toggle('active', n.getAttribute('data-stage') === stage); });
+    cycleDetail.textContent = cycleFacts[stage];
+  }
+  cycleNodes.forEach(function(node){
+    node.addEventListener('click', function(){ setCycleStage(node.getAttribute('data-stage')); });
+  });
+  var cyclePlaying = false;
+  document.getElementById('cycle-play').addEventListener('click', function(){
+    if(cyclePlaying) return;
+    cyclePlaying = true;
+    var i = 0;
+    var timer = setInterval(function(){
+      setCycleStage(cycleOrder[i]);
+      i++;
+      if(i >= cycleOrder.length){ clearInterval(timer); cyclePlaying = false; }
+    }, 1100);
+    setCycleStage(cycleOrder[0]);
+  });
+
+  /* Quiz */
+  var quizForm = document.getElementById('quiz-form');
+  var quizScore = document.getElementById('quiz-score');
+  var quizReset = document.getElementById('quiz-reset');
+  var quizCheck = document.getElementById('quiz-check');
+  quizForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var qs = document.querySelectorAll('.quiz-q');
+    var correctCount = 0;
+    qs.forEach(function(q){
+      var answer = q.getAttribute('data-answer');
+      var name = q.querySelector('input').getAttribute('name');
+      var selected = q.querySelector('input[name="' + name + '"]:checked');
+      var options = q.querySelectorAll('.quiz-option');
+      options.forEach(function(opt){
+        var input = opt.querySelector('input');
+        opt.classList.remove('correct','incorrect');
+        input.disabled = true;
+        if(input.value === answer){ opt.classList.add('correct'); }
+        else if(selected && input.value === selected.value){ opt.classList.add('incorrect'); }
+      });
+      if(selected && selected.value === answer){ correctCount++; }
+    });
+    quizScore.textContent = 'Score: ' + correctCount + ' / ' + qs.length;
+    quizCheck.style.display = 'none';
+    quizReset.style.display = 'inline-block';
+  });
+  quizReset.addEventListener('click', function(){
+    quizForm.reset();
+    document.querySelectorAll('.quiz-option').forEach(function(opt){
+      opt.classList.remove('correct','incorrect');
+      opt.querySelector('input').disabled = false;
+    });
+    quizScore.textContent = '';
+    quizReset.style.display = 'none';
+    quizCheck.style.display = 'inline-block';
+  });
+})();
+</script>
+
+</body>
+</html>
