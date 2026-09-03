@@ -1,7 +1,7 @@
 import React from "react";
 import "./LandingPage.css";
 
-export default function LandingPage({ onNavigateToCampus, onNavigateToFreshers }) {
+export default function LandingPage({ onNavigateToCampus, onNavigateToFreshers, onOpenContact }) {
   return (
     <div className="landing-container">
       {/* Ambient background glow effects */}
@@ -21,9 +21,21 @@ export default function LandingPage({ onNavigateToCampus, onNavigateToFreshers }
           </div>
         </div>
 
-        <div className="landing-sys-badge">
-          <span className="landing-live-dot"></span>
-          <span className="landing-sys-text">PORTAL ONLINE // BATCH 2026–30</span>
+        <div className="landing-header-right">
+          <div className="landing-sys-badge">
+            <span className="landing-live-dot"></span>
+            <span className="landing-sys-text">PORTAL ONLINE // BATCH 2026–30</span>
+          </div>
+          {onOpenContact && (
+            <button 
+              className="landing-contact-pill-btn" 
+              onClick={onOpenContact}
+              title="Suggestions & Connect with Alvis Khan"
+            >
+              <span className="pill-sparkle">💬</span>
+              <span className="pill-text">SUGGESTIONS</span>
+            </button>
+          )}
         </div>
       </header>
 
@@ -182,8 +194,64 @@ export default function LandingPage({ onNavigateToCampus, onNavigateToFreshers }
         </div>
       </main>
 
-      {/* Minimal Footer */}
+      {/* Interactive Footer & Connect Section */}
       <footer className="landing-footer">
+        <div className="footer-connect-banner">
+          <div className="connect-prompt">
+            <span className="connect-icon">💡</span>
+            <div className="connect-texts">
+              <span className="connect-title">Have suggestions, feedback, or ideas?</span>
+              <span className="connect-subtitle">Help improve the campus guide, suggest missing locations, or report any inaccurate info!</span>
+            </div>
+          </div>
+          <div className="connect-actions">
+            {onOpenContact && (
+              <button 
+                className="footer-connect-btn"
+                onClick={onOpenContact}
+                title="Open Suggestion & Contact Box"
+              >
+                <span>Contact me</span>
+                <span className="btn-arrow">→</span>
+              </button>
+            )}
+            <div className="footer-social-shortcuts">
+              <a 
+                href="https://wa.me/916002495526" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="footer-shortcut-chip chip-wa"
+                title="Chat on WhatsApp (+91 6002495526)"
+              >
+                <span>💬 WhatsApp</span>
+              </a>
+              <a 
+                href="https://instagram.com/lvis.khn" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="footer-shortcut-chip chip-ig"
+                title="Instagram @lvis.khn"
+              >
+                <span>📸 @lvis.khn</span>
+              </a>
+              <a 
+                href="https://mail.google.com/mail/?view=cm&fs=1&to=code.alvis@gmail.com" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-shortcut-chip chip-mail"
+                title="Send Email via Gmail (code.alvis@gmail.com)"
+                onClick={() => {
+                  try {
+                    navigator.clipboard.writeText("code.alvis@gmail.com");
+                  } catch (err) {}
+                }}
+              >
+                <span>✉️ Email</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div className="footer-inner">
           <div className="footer-left">
             <span>National Institute of Technology Silchar (NITS)</span>

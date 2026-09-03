@@ -37,6 +37,7 @@ import DestinationCard from "./components/DestinationCard";
 import GoogleMapsHandoffCard from "./components/GoogleMapsHandoffCard";
 import FreshersGuide from "./components/FreshersGuide";
 import LandingPage from "./components/LandingPage";
+import ContactModal from "./components/ContactModal";
 
 // Custom Leaflet Pin Icons
 
@@ -391,6 +392,8 @@ function ActiveRouteHud({
   onClearRoute,
   onViewDetails,
   onShowGmapsPopup,
+  isFullMapMode,
+  onToggleFullMap,
 }) {
   if (!routeStats) return null;
 
@@ -430,6 +433,15 @@ function ActiveRouteHud({
               🗺️ GMAPS
             </button>
           )}
+          {onToggleFullMap && (
+            <button
+              className={`route-hud-fullmap-btn ${isFullMapMode ? "is-active" : ""}`}
+              onClick={onToggleFullMap}
+              title={isFullMapMode ? "Restore standard view" : "Maximize map space"}
+            >
+              {isFullMapMode ? "🗗 EXIT" : "⛶ FULL MAP"}
+            </button>
+          )}
           {destination && (
             <button
               className="route-hud-details-btn"
@@ -444,7 +456,7 @@ function ActiveRouteHud({
             onClick={onClearRoute}
             title="End navigation and clear route"
           >
-            ✕ CLEAR ROUTE
+            ✕ CLEAR
           </button>
         </div>
       </div>
@@ -492,6 +504,9 @@ function App() {
   const [routeStats, setRouteStats] = useState(null);
   const [isRouting, setIsRouting] = useState(false);
   const [showGoogleMapsPopup, setShowGoogleMapsPopup] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isFullMapMode, setIsFullMapMode] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   const verifiedLocations = getVerifiedLocations();
 
@@ -539,8 +554,9 @@ function App() {
     []
   );
 
-  const handleSelectDestination = (loc) => {
-    setSelectedDestination(loc);
+  const handleSelectDestination = (destination) => {
+    setSelectedDestination(destination);
+    setIsSearchExpanded(false);
   };
 
   const handleSelectMapLocationFromGuide = (locationId) => {
@@ -556,6 +572,8 @@ function App() {
     setRouteStats(null);
     setActiveDestination(null);
     setShowGoogleMapsPopup(false);
+    setIsFullMapMode(false);
+    setIsSearchExpanded(false);
   };
 
   const handleCloseCard = () => {
@@ -625,28 +643,42 @@ function App() {
   // Render clean, minimal Landing Page at root URL (/) or /home
   if (currentPath === "/" || currentPath === "" || currentPath === "/home") {
     return (
-      <LandingPage
-        onNavigateToCampus={() => navigateTo("/map")}
-        onNavigateToFreshers={() => navigateTo("/freshers")}
-      />
+      <>
+        <LandingPage
+          onNavigateToCampus={() => navigateTo("/map")}
+          onNavigateToFreshers={() => navigateTo("/freshers")}
+          onOpenContact={() => setIsContactModalOpen(true)}
+        />
+        <ContactModal
+          isOpen={isContactModalOpen}
+          onClose={() => setIsContactModalOpen(false)}
+        />
+      </>
     );
   }
 
   // Render dedicated Freshers Guide page if path is /freshers
   if (currentPath === "/freshers" || currentPath.startsWith("/freshers")) {
     return (
-      <FreshersGuide
-        onNavigateToMap={() => navigateTo("/map")}
-        onNavigateToHome={() => navigateTo("/")}
-        onSelectMapLocation={handleSelectMapLocationFromGuide}
-      />
+      <>
+        <FreshersGuide
+          onNavigateToMap={() => navigateTo("/map")}
+          onNavigateToHome={() => navigateTo("/")}
+          onSelectMapLocation={handleSelectMapLocationFromGuide}
+          onOpenContact={() => setIsContactModalOpen(true)}
+        />
+        <ContactModal
+          isOpen={isContactModalOpen}
+          onClose={() => setIsContactModalOpen(false)}
+        />
+      </>
     );
   }
 
   return (
     <div className="app">
       {/* Top Telemetry & Header Bar */}
-      <header className="header">
+      <header className={`header ${route.length > 0 ? "nav-route-active" : ""} ${isFullMapMode ? "nav-full-map-hidden" : ""}`}>
         <div className="header-top-row">
           <div 
             className="brand-badge-group brand-badge-interactive"
@@ -690,6 +722,15 @@ function App() {
               <span className="pill-tag">2026</span>
             </button>
 
+            <button
+              className="header-contact-pill-btn"
+              onClick={() => setIsContactModalOpen(true)}
+              title="Suggestions & Connect with Alvis Khan"
+            >
+              <span className="pill-sparkle">💬</span>
+              <span className="pill-text">SUGGESTIONS</span>
+            </button>
+
             {/* Quick HUD Telemetry Bar */}
             <div className="telemetry-bar">
               <div className="telemetry-item">
@@ -728,44 +769,106 @@ function App() {
           </div>
         </div>
 
-        {/* Freshers Welcome Highlight Card */}
-        <div
-          className="freshers-welcome-strip"
-          onClick={() => navigateTo("/freshers")}
-          role="button"
-          tabIndex={0}
-          title="Open Freshers Guide (/freshers)"
-        >
-          <div className="strip-left">
-            <span className="strip-badge">🎓 NEW TO NIT SILCHAR?</span>
-            <span className="strip-desc">
-              Everything you need to get started: Emergency contacts, transport, mess, study links & senior advice.
-            </span>
-          </div>
-          <button
-            className="strip-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              navigateTo("/freshers");
-            }}
+        {/* Freshers Welcome Highlight Card (hidden when following an active route) */}
+        {route.length === 0 && (
+          <div
+            className="freshers-welcome-strip"
+            onClick={() => navigateTo("/freshers")}
+            role="button"
+            tabIndex={0}
+            title="Open Freshers Guide (/freshers)"
           >
-            <span>EXPLORE FRESHERS GUIDE</span>
-            <span className="strip-arrow">→</span>
-          </button>
-        </div>
+            <div className="strip-left">
+              <span className="strip-badge">🎓 NEW TO NIT SILCHAR?</span>
+              <span className="strip-desc">
+                Everything you need to get started: Emergency contacts, transport, mess, study links & senior advice.
+              </span>
+            </div>
+            <button
+              className="strip-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigateTo("/freshers");
+              }}
+            >
+              <span>EXPLORE FRESHERS GUIDE</span>
+              <span className="strip-arrow">→</span>
+            </button>
+          </div>
+        )}
 
-        {/* Global Search & Category Filters */}
-        <SearchBar
-          locations={locations}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          onSelectLocation={handleSelectDestination}
-          userLocation={userLocation}
-        />
+        {/* Navigation Mode: Ultra-compact route strip instead of bulky search stack */}
+        {route.length > 0 && !isSearchExpanded && (
+          <div className="active-nav-compact-header">
+            <div className="nav-compact-info">
+              <span className="nav-compact-icon">🚶</span>
+              <div className="nav-compact-titles">
+                <span className="nav-compact-to">WALKING ROUTE</span>
+                <strong className="nav-compact-name">
+                  {activeDestination?.name || "SELECTED DESTINATION"}
+                </strong>
+              </div>
+            </div>
+            <div className="nav-compact-btns">
+              <button
+                type="button"
+                className="nav-btn-change-dest"
+                onClick={() => setIsSearchExpanded(true)}
+                title="Search or select a different location"
+              >
+                🔍 CHANGE
+              </button>
+              <button
+                type="button"
+                className="nav-btn-fullmap-top"
+                onClick={() => setIsFullMapMode(!isFullMapMode)}
+                title={isFullMapMode ? "Restore standard view" : "Maximize map space"}
+              >
+                {isFullMapMode ? "🗗 EXIT" : "⛶ FULL MAP"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Global Search & Category Filters (shown when no route OR when search is expanded) */}
+        {(route.length === 0 || isSearchExpanded) && (
+          <div className="search-expanded-wrapper">
+            {route.length > 0 && isSearchExpanded && (
+              <div className="search-collapse-strip">
+                <span>SELECT NEW TARGET LOCATION</span>
+                <button
+                  type="button"
+                  className="btn-collapse-search"
+                  onClick={() => setIsSearchExpanded(false)}
+                >
+                  ✕ CANCEL
+                </button>
+              </div>
+            )}
+            <SearchBar
+              locations={locations}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+              onSelectLocation={handleSelectDestination}
+              userLocation={userLocation}
+            />
+          </div>
+        )}
       </header>
 
       {/* Main Map Viewport */}
-      <div className="map-container">
+      <div className={`map-container ${isFullMapMode ? "map-full-screen" : ""}`}>
+        {/* Floating Restore Controls Button (visible when header is hidden in full map mode) */}
+        {isFullMapMode && (
+          <button
+            className="floating-restore-hud-btn"
+            onClick={() => setIsFullMapMode(false)}
+            title="Restore standard interface header"
+          >
+            🗗 SHOW CONTROLS
+          </button>
+        )}
+
         {/* Floating HUD Location Status Toast */}
         <LocationStatusToast
           locationStatus={locationStatus}
@@ -783,6 +886,8 @@ function App() {
             onClearRoute={handleClearRoute}
             onViewDetails={() => setSelectedDestination(activeDestination)}
             onShowGmapsPopup={() => setShowGoogleMapsPopup(true)}
+            isFullMapMode={isFullMapMode}
+            onToggleFullMap={() => setIsFullMapMode(!isFullMapMode)}
           />
         )}
 
@@ -937,6 +1042,12 @@ function App() {
             routeStats={routeStats}
           />
         )}
+
+        {/* Contact & Suggestion Modal */}
+        <ContactModal
+          isOpen={isContactModalOpen}
+          onClose={() => setIsContactModalOpen(false)}
+        />
       </div>
       <Analytics />
     </div>

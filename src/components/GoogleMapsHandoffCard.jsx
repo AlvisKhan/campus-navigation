@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { getGoogleMapsDirectionsUrl } from "../utils/geoUtils";
 
 export default function GoogleMapsHandoffCard({
@@ -6,6 +7,13 @@ export default function GoogleMapsHandoffCard({
   onDismiss,
   routeStats,
 }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onDismiss();
+    }, 7000);
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
   if (!destination || destination.latitude == null || destination.longitude == null) {
     return null;
   }

@@ -22,7 +22,7 @@ import {
 } from "../data/freshersData";
 import "./FreshersGuide.css";
 
-export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSelectMapLocation }) {
+export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSelectMapLocation, onOpenContact }) {
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -92,14 +92,39 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
             <span className="nav-page-label">FRESHERS COMPASS 2026</span>
           </div>
 
-          <a
-            href="#emergency-section"
-            className="nav-emergency-quick"
-            title="Jump to Emergency Numbers"
-          >
-            <span className="pulse-alert-dot"></span>
-            <span>EMERGENCY</span>
-          </a>
+          <div className="nav-right-actions" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            {onOpenContact && (
+              <button
+                className="nav-contact-quick"
+                onClick={onOpenContact}
+                title="Suggestions & Connect with Alvis Khan"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "6px 12px",
+                  background: "rgba(56, 189, 248, 0.12)",
+                  border: "1px solid rgba(56, 189, 248, 0.35)",
+                  borderRadius: "16px",
+                  color: "#38bdf8",
+                  fontSize: "0.75rem",
+                  fontWeight: "700",
+                  cursor: "pointer"
+                }}
+              >
+                <span>💬</span>
+                <span>SUGGESTIONS</span>
+              </button>
+            )}
+            <a
+              href="#emergency-section"
+              className="nav-emergency-quick"
+              title="Jump to Emergency Numbers"
+            >
+              <span className="pulse-alert-dot"></span>
+              <span>EMERGENCY</span>
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -159,6 +184,22 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
             <a href="#additional-contacts" className="hero-action-pill additional-pill">
               <span>📞</span> Additional Contacts
             </a>
+            {onOpenContact && (
+              <button 
+                type="button" 
+                onClick={onOpenContact} 
+                className="hero-action-pill"
+                style={{ 
+                  cursor: "pointer", 
+                  border: "1px solid rgba(56, 189, 248, 0.4)", 
+                  background: "rgba(56, 189, 248, 0.12)", 
+                  color: "#38bdf8",
+                  fontFamily: "inherit"
+                }}
+              >
+                <span>💬</span> Suggestions & Connect
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -1790,6 +1831,28 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
           <div className="footer-brand">
             <strong>NIT SILCHAR | CAMPUS NAVIGATION & FRESHERS COMPASS</strong>
             <p>Designed for incoming students. Keep learning, exploring, and coding.</p>
+            {onOpenContact && (
+              <div style={{ marginTop: "10px" }}>
+                <button 
+                  onClick={onOpenContact}
+                  style={{
+                    background: "rgba(56, 189, 248, 0.15)",
+                    border: "1px solid rgba(56, 189, 248, 0.35)",
+                    color: "#7dd3fc",
+                    padding: "7px 16px",
+                    borderRadius: "10px",
+                    fontSize: "0.82rem",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                >
+                  <span>💬 Suggestions / Contact me</span>
+                </button>
+              </div>
+            )}
           </div>
           <button className="footer-back-top-btn" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
             ↑ BACK TO TOP

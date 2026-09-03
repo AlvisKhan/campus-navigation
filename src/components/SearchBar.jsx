@@ -76,7 +76,7 @@ export default function SearchBar({
           <input
             type="text"
             className="search-input"
-            placeholder="Search campus nodes (e.g. Library, CCC, SAC, Cafe, BH1)..."
+            placeholder="Search campus nodes and locations..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
