@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BlackRock SWE Intern — Interview Prep</title>
+<style>
+  :root{
+    --bg:#080c14;
+    --bg-elev:#0e1526;
+    --bg-elev-2:#131c33;
+    --border:#22304d;
+    --border-soft:#1a2439;
+    --text:#e8ecf5;
+    --text-dim:#9aa8c7;
+    --text-faint:#5d6c8f;
+    --accent:#5b93ff;
+    --accent-dim:#3a5fa8;
+    --accent-soft:rgba(91,147,255,0.12);
+    --gold:#cba869;
+    --gold-soft:rgba(203,168,105,0.14);
+    --good:#3fcf8e;
+    --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  a{color:var(--accent);}
+
+  /* ===== Layout ===== */
+  .app{display:flex;min-height:100vh;}
+
+  .sidebar{
+    width:250px;
+    flex-shrink:0;
+    background:var(--bg-elev);
+    border-right:1px solid var(--border-soft);
+    display:flex;
+    flex-direction:column;
+    position:fixed;
+    top:0;left:0;bottom:0;
+    z-index:40;
+    transition:transform .25s ease;
+  }
+  .brand{
+    padding:22px 20px 16px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .brand .mark{
+    font-family:var(--serif);
+    font-size:19px;
+    letter-spacing:.2px;
+    color:var(--text);
+  }
+  .brand .mark b{color:var(--accent);font-weight:600;}
+  .brand .sub{color:var(--text-faint);font-size:11.5px;margin-top:4px;letter-spacing:.3px;}
+
+  .navlist{list-style:none;margin:0;padding:10px;flex:1;overflow-y:auto;}
+  .navlist li{margin-bottom:2px;}
+  .navlink{
+    display:flex;align-items:center;gap:10px;
+    width:100%;text-align:left;background:none;border:none;
+    color:var(--text-dim);
+    padding:10px 12px;border-radius:8px;
+    font-size:13.5px;cursor:pointer;
+    font-family:var(--sans);
+    transition:background .15s, color .15s;
+  }
+  .navlink .num{
+    font-family:var(--serif);
+    font-size:12px;color:var(--text-faint);
+    width:16px;flex-shrink:0;
+  }
+  .navlink:hover{background:var(--bg-elev-2);color:var(--text);}
+  .navlink.active{background:var(--accent-soft);color:var(--text);}
+  .navlink.active .num{color:var(--accent);}
+
+  .sidebar-foot{
+    padding:14px 20px 18px;
+    border-top:1px solid var(--border-soft);
+  }
+  .ring-wrap{display:flex;align-items:center;gap:10px;}
+  .ring{width:38px;height:38px;flex-shrink:0;}
+  .ring-label{font-size:11.5px;color:var(--text-faint);}
+  .ring-label b{color:var(--text);font-size:13px;display:block;font-family:var(--serif);}
+
+  .main{
+    margin-left:250px;
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .topbar{
+    position:sticky;top:0;z-index:30;
+    background:rgba(8,12,20,0.9);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border-soft);
+    padding:14px 28px;
+    display:flex;align-items:center;gap:16px;
+  }
+  .menu-btn{
+    display:none;background:none;border:1px solid var(--border);color:var(--text);
+    width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;
+  }
+  .search-box{
+    flex:1;max-width:440px;
+    position:relative;
+  }
+  .search-box input{
+    width:100%;
+    background:var(--bg-elev-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:9px 14px 9px 34px;
+    border-radius:8px;
+    font-size:13.5px;
+    font-family:var(--sans);
+    outline:none;
+  }
+  .search-box input:focus{border-color:var(--accent-dim);}
+  .search-box input::placeholder{color:var(--text-faint);}
+  .search-box .ico{
+    position:absolute;left:11px;top:50%;transform:translateY(-50%);
+    color:var(--text-faint);font-size:13px;pointer-events:none;
+  }
+  .topbar-spacer{flex:1;}
+  .progress-pill{
+    display:flex;align-items:center;gap:8px;
+    background:var(--bg-elev-2);border:1px solid var(--border);
+    padding:7px 12px;border-radius:999px;font-size:12px;color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .progress-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--good);}
+
+  .content{padding:28px 32px 80px;max-width:960px;width:100%;}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fadein .2s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+  body.search-mode .panel{display:block !important;}
+  body.search-mode .panel-empty-note{display:none;}
+
+  .panel-head{margin-bottom:22px;}
+  .panel-eyebrow{color:var(--accent);font-size:12px;font-family:var(--serif);font-style:italic;}
+  .panel-title{
+    font-family:var(--serif);
+    font-size:28px;
+    font-weight:400;
+    margin:4px 0 8px;
+    color:var(--text);
+  }
+  .panel-desc{color:var(--text-dim);font-size:14px;max-width:640px;}
+
+  .group-title{
+    font-size:12.5px;text-transform:none;color:var(--text-faint);
+    margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border-soft);
+    letter-spacing:.2px;
+  }
+  .group-title:first-of-type{margin-top:0;}
+
+  /* ===== Cards ===== */
+  .card{
+    border:1px solid var(--border-soft);
+    border-left:3px solid var(--border);
+    border-radius:6px;
+    margin-bottom:10px;
+    background:var(--bg-elev);
+    overflow:hidden;
+  }
+  .card.done{border-left-color:var(--good);}
+  .card-head{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:13px 14px;
+    cursor:pointer;
+  }
+  .card-check{
+    margin-top:2px;
+    width:16px;height:16px;flex-shrink:0;
+    accent-color:var(--good);
+    cursor:pointer;
+  }
+  .card-q{
+    flex:1;font-size:14px;color:var(--text);font-weight:500;
+  }
+  .card-tag{
+    font-size:10.5px;color:var(--text-faint);
+    border:1px solid var(--border);
+    padding:2px 7px;border-radius:20px;
+    white-space:nowrap;margin-left:6px;
+  }
+  .chev{
+    color:var(--text-faint);font-size:11px;flex-shrink:0;margin-top:3px;
+    transition:transform .15s;
+  }
+  .card.open .chev{transform:rotate(90deg);}
+  .card-body{display:none;padding:0 14px 16px 40px;}
+  .card.open .card-body{display:block;}
+  .card-body p{margin:0 0 10px;color:var(--text-dim);font-size:13.8px;white-space:pre-line;}
+  .card-body .field-label{color:var(--gold);font-size:11.5px;font-family:var(--serif);font-style:italic;margin:12px 0 4px;}
+  .card-body .field-label:first-child{margin-top:0;}
+  .card-body .followup{
+    border-left:2px solid var(--accent-dim);padding-left:10px;margin-top:8px;
+    color:var(--text-faint);font-size:12.8px;font-style:italic;
+  }
+  .card-actions{display:flex;gap:8px;margin-top:6px;}
+  .copy-btn{
+    background:var(--bg-elev-2);border:1px solid var(--border);color:var(--text-dim);
+    font-size:11.5px;padding:5px 10px;border-radius:6px;cursor:pointer;
+    font-family:var(--sans);
+  }
+  .copy-btn:hover{color:var(--text);border-color:var(--accent-dim);}
+  .copy-btn.copied{color:var(--good);border-color:var(--good);}
+
+  /* project card */
+  .proj-card{
+    border:1px solid var(--border-soft);
+    border-radius:8px;
+    margin-bottom:22px;
+    background:var(--bg-elev);
+    overflow:hidden;
+  }
+  .proj-head{padding:16px 18px;border-bottom:1px solid var(--border-soft);}
+  .proj-name{font-family:var(--serif);font-size:19px;color:var(--text);}
+  .proj-30s{color:var(--text-dim);font-size:13.8px;margin-top:6px;}
+  .proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border-soft);}
+  .proj-grid .cell{padding:14px 18px;border-right:1px solid var(--border-soft);}
+  .proj-grid .cell:nth-child(2n){border-right:none;}
+  @media(max-width:680px){.proj-grid{grid-template-columns:1fr;}.proj-grid .cell{border-right:none;border-bottom:1px solid var(--border-soft);}}
+  .cell h4{margin:0 0 6px;font-size:11.5px;color:var(--gold);font-family:var(--serif);font-style:italic;font-weight:400;}
+  .cell p, .cell ul{margin:0;color:var(--text-dim);font-size:13.3px;}
+  .cell ul{padding-left:16px;}
+  .proj-qa{padding:14px 18px 8px;}
+  .proj-qa .qa-heading{font-size:11.5px;color:var(--text-faint);margin-bottom:8px;}
+
+  .note-card{
+    border:1px solid var(--border-soft);border-left:3px solid var(--accent-dim);
+    border-radius:6px;padding:16px 18px;margin-bottom:14px;background:var(--bg-elev);
+  }
+  .note-card h3{margin:0 0 10px;font-family:var(--serif);font-size:17px;font-weight:400;color:var(--text);}
+  .note-card ul{margin:0;padding-left:18px;color:var(--text-dim);font-size:13.6px;}
+  .note-card li{margin-bottom:6px;}
+  .note-card li b{color:var(--text);}
+
+  .fact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px;}
+  @media(max-width:680px){.fact-grid{grid-template-columns:1fr 1fr;}}
+  .fact{
+    border:1px solid var(--border-soft);border-radius:8px;padding:14px 16px;background:var(--bg-elev);
+  }
+  .fact .num{font-family:var(--serif);font-size:22px;color:var(--accent);}
+  .fact .lbl{font-size:11.5px;color:var(--text-faint);margin-top:2px;}
+
+  .lastmin-block{
+    border:1px solid var(--border-soft);border-radius:8px;padding:16px 18px;margin-bottom:14px;background:var(--bg-elev);
+  }
+  .lastmin-block h3{margin:0 0 8px;font-family:var(--serif);font-weight:400;font-size:15.5px;color:var(--accent);}
+  .lastmin-block p, .lastmin-block li{color:var(--text-dim);font-size:13.4px;}
+  .lastmin-block ul{margin:0;padding-left:18px;}
+
+  .no-results{display:none;color:var(--text-faint);font-size:13px;padding:12px 0;font-style:italic;}
+
+  .callout{
+    background:var(--gold-soft);border:1px solid rgba(203,168,105,0.35);
+    border-radius:8px;padding:12px 14px;font-size:12.8px;color:var(--text-dim);margin-bottom:18px;
+  }
+  .callout b{color:var(--gold);}
+
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  /* Backdrop overlay */
+  .sidebar-backdrop{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.65);
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
+    z-index:38;
+    opacity:0;
+    transition:opacity .25s ease;
+  }
+  .sidebar-backdrop.active{
+    display:block;
+    opacity:1;
+  }
+
+  .sidebar-close-btn{
+    display:none;
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    width:28px;
+    height:28px;
+    border-radius:6px;
+    font-size:12px;
+    cursor:pointer;
+    align-items:center;
+    justify-content:center;
+    transition:border-color .15s, color .15s;
+  }
+  .sidebar-close-btn:hover{
+    border-color:var(--accent);
+    color:var(--text);
+  }
+
+  @media(max-width:880px){
+    .sidebar{
+      width:min(280px, 84vw);
+      transform:translateX(-100%);
+      box-shadow:none;
+    }
+    .sidebar.open{
+      transform:translateX(0);
+      box-shadow:4px 0 24px rgba(0,0,0,0.5);
+    }
+    .sidebar-close-btn{display:inline-flex;}
+    .main{margin-left:0;}
+    .menu-btn{display:block;}
+    .content{padding:20px 16px calc(60px + env(safe-area-inset-bottom, 15px));}
+    .proj-grid{grid-template-columns:1fr;}
+  }
+
+  @media(max-width:600px){
+    .topbar{
+      padding:10px 12px;
+      gap:8px;
+    }
+    .search-box{
+      flex:1;
+      min-width:0;
+      max-width:none;
+    }
+    .search-box input{
+      padding:8px 10px 8px 30px;
+      font-size:13px;
+    }
+    .search-box input::placeholder{
+      font-size:12px;
+    }
+    .search-box .ico{left:9px;}
+    .topbar-spacer{display:none;}
+    .progress-pill{
+      padding:5px 9px;
+      font-size:11px;
+      gap:5px;
+      flex-shrink:0;
+    }
+    .content{
+      padding:16px 12px calc(60px + env(safe-area-inset-bottom, 15px));
+    }
+    .panel-head{margin-bottom:16px;}
+    .panel-title{font-size:22px;}
+    .panel-desc{font-size:13px;}
+    .card{
+      margin-bottom:8px;
+    }
+    .card-head{
+      padding:11px 12px;
+      gap:8px;
+    }
+    .card-q{
+      font-size:13.5px;
+      line-height:1.45;
+    }
+    .card-tag{
+      font-size:10px;
+      padding:1px 6px;
+    }
+    .card-body{
+      padding:0 12px 14px 12px; /* remove 40px left indentation so answer text isn't cramped */
+    }
+    .card-body p{
+      font-size:13.2px;
+      line-height:1.52;
+      word-break:break-word;
+      overflow-wrap:anywhere;
+    }
+    .card-actions{
+      margin-top:8px;
+    }
+    .copy-btn{
+      padding:6px 12px;
+      font-size:11.5px;
+      min-height:32px;
+    }
+    .proj-card{
+      margin-bottom:16px;
+    }
+    .proj-head{padding:12px 14px;}
+    .proj-name{font-size:17px;}
+    .proj-30s{font-size:13px;}
+    .proj-grid .cell{padding:11px 13px;}
+    .proj-qa{padding:12px 12px 6px;}
+    .fact-grid{
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-bottom:16px;
+    }
+    .fact{padding:11px 14px;}
+    .fact .num{font-size:20px;}
+    .note-card{padding:13px 14px;}
+    .note-card h3{font-size:15px;}
+    .note-card ul{font-size:13px;padding-left:16px;}
+    .lastmin-block{padding:13px 14px;}
+    .lastmin-block h3{font-size:14.5px;}
+    .lastmin-block p, .lastmin-block li{font-size:13px;}
+    .callout{padding:10px 12px;font-size:12.5px;}
+  }
+
+  @media(max-width:380px){
+    .progress-pill span#progressText{
+      max-width:75px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .card-tag{display:none;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<div class="app">
+
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="mark">Black<b>Rock</b> Prep</div>
+        <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close menu">✕</button>
+      </div>
+      <div class="sub">Jilmil Saikia · SWE Intern</div>
+    </div>
+    <ul class="navlist" id="navlist"></ul>
+    <div class="sidebar-foot">
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 40 40">
+          <circle cx="20" cy="20" r="16" fill="none" stroke="#1a2439" stroke-width="4"/>
+          <circle id="ringProgress" cx="20" cy="20" r="16" fill="none" stroke="#5b93ff" stroke-width="4" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)"/>
+        </svg>
+        <div class="ring-label"><b id="progressPct">0%</b>readiness</div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <div class="search-box">
+        <span class="ico">⌕</span>
+        <input type="text" id="searchInput" placeholder="Search every answer, note and question…">
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="progress-pill"><span class="dot"></span><span id="progressText">0 / 0 reviewed</span></div>
+    </div>
+
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+
+const RESUME = {
+  name: "Jilmil Saikia",
+  college: "NIT Silchar, B.Tech CSE (CGPA 8.23), Aug 2023 – May 2027 (expected)"
+};
+
+const INTRO = "Good Morning, I am Jilmil Saikia, currently pursuing my B.Tech in Computer Science and Engineering from NIT Silchar.\n\nI have a keen interest in software engineering, particularly problem solving, frontend and backend development. I have been learning Data Structures and Algorithms, Object-Oriented Programming and CS fundamentals, and I primarily work with C++. I have also learnt SQL.\n\nRecently, during my internship, I worked on an AI-powered Text-to-SQL system using FastAPI, LangChain, RAG and ChromaDB, where I contributed in building the frontend and also a modular backend for retrieval, SQL generation, validation and execution.\n\nApart from that, I've built a full-stack application using React, Node.js, Express and MongoDB, and an OOP-based multiplayer chess game in C++.\n\nWhat excites me about this opportunity at BlackRock is the chance to apply these engineering fundamentals to real-world systems at scale, learn from experienced engineers, and contribute to technology that has real business and client impact.";
+
+const WHY_BLACKROCK = "Three reasons:\n\n• BlackRock is a technology-driven company where software powers real financial systems through Aladdin.\n• The internship offers exposure to distributed systems, AI, APIs, cloud and production engineering.\n• I like BlackRock's focus on ownership, learning and solving problems with real business impact.";
+
+const WHY_HIRE = "I bring strong CS fundamentals, hands-on software development experience, and a willingness to learn quickly. My projects show I can build modular, scalable applications, and I want to grow by working on production-grade systems.";
+
+const FIVE_YEAR = "I want to see myself in a managerial post as a strong software engineer who can design, build and own scalable backend systems, while gradually taking responsibility for larger technical components and mentoring others.";
+
+const STRENGTHS = "My three strengths are problem solving, built through DSA practice and applying it in real projects; being a fast learner across technologies, which let me pick up LangChain and RAG quickly for my internship; and ownership with modular thinking, which shows in how I structured the Text-to-SQL backend and the Sajeda Foundation app into separate, maintainable components.";
+
+const WEAKNESS = "I sometimes spend extra time understanding concepts deeply before moving ahead, but I'm improving by building a working solution first and then iterating.";
+
+/* ---------- HR & BEHAVIORAL ---------- */
+const HR_ITEMS = [
+  {id:"hr-1", q:"Tell me about yourself.", a:INTRO, tag:"Core", follow:"What part of the Text-to-SQL project are you most proud of?"},
+  {id:"hr-2", q:"Why BlackRock?", a:WHY_BLACKROCK, tag:"Core", follow:"What do you know about Aladdin specifically?"},
+  {id:"hr-3", q:"Why Software Engineering?", a:"I enjoy the combination of logical problem solving and building something tangible. DSA and OOP gave me a way of thinking about problems structurally, and I like that software engineering lets me take that thinking all the way from a design on paper to a working, scalable system — which is exactly what I did when I broke my Text-to-SQL project into retrieval, generation, validation and execution modules.", tag:"Core"},
+  {id:"hr-4", q:"Why should we hire you?", a:WHY_HIRE, tag:"Core", follow:"Give me a concrete example of you learning something quickly."},
+  {id:"hr-5", q:"What are your strengths?", a:STRENGTHS, tag:"Core"},
+  {id:"hr-6", q:"What is your weakness?", a:WEAKNESS, tag:"Core", follow:"Can you give an example of when this slowed you down?"},
+  {id:"hr-7", q:"Where do you see yourself in five years?", a:FIVE_YEAR, tag:"Core"},
+  {id:"hr-8", q:"Tell me about a time you failed.", a:"Personalize this with a real moment — the framework below uses a plausible one from your own work, so adjust the specifics to what actually happened.\n\nWhile building the Text-to-SQL system, I initially underestimated how much time SQL validation would take and moved to execution too early, which produced queries that ran but returned wrong results. I had to step back, add a validation layer before execution, and rebuild that part of the pipeline. It taught me to design safety checks before optimizing for speed, and now I default to validating early instead of assuming the happy path.", tag:"Adapt to you"},
+  {id:"hr-9", q:"Tell me about a conflict within a team and how you handled it.", a:"Personalize this with a real example from Sajeda Foundation or GDGC — the shape below is a safe template.\n\nWhile working on the Sajeda Foundation project with a team split across Client, Server and Admin modules, there was a disagreement over how an API contract between two modules should look. Instead of pushing my version, I suggested we quickly document the expected request and response shape together before writing more code, which resolved the disagreement in minutes and avoided rework later. I try to treat conflicts as a missing-information problem rather than a personal one.", tag:"Adapt to you"},
+  {id:"hr-10", q:"Tell me about a time you showed leadership or ownership.", a:"As Media Head / Web-Dev core team member at GDGC NIT Silchar, I was responsible for parts of the club's web presence and coordination beyond just writing code — that meant taking ownership of a deliverable end-to-end rather than waiting to be told each step. The same instinct showed up in my internship, where I owned the retrieval-to-execution pipeline for the Text-to-SQL system rather than just one function inside it.", tag:"Core"},
+  {id:"hr-11", q:"What is your biggest achievement so far?", a:"Academically, qualifying GATE 2026 in CSE stands out because it validated my CS fundamentals against a national-level benchmark. On the project side, I'm proud of building a working AI-powered Text-to-SQL system end-to-end during my internship — going from natural language input to a validated, executable SQL query — because it combined backend engineering with a newer area, applied AI, that I had to learn quickly.", tag:"Core"},
+  {id:"hr-12", q:"What questions do you have for me?", a:"Good questions to ask, pick two or three:\n\n• What does a typical intern project look like on your team, and how is it scoped?\n• Which parts of Aladdin or the broader platform would an intern typically get exposure to?\n• How does the team decide when to bring in GenAI versus a traditional approach for a given problem?\n• What does success look like for an intern by the end of the program?\n• What has been the biggest engineering challenge your team has faced recently?", tag:"Core"}
+];
+
+/* ---------- RESUME DEEP DIVE (projects) ---------- */
+const PROJECTS = [
+{
+  id:"proj-texttosql",
+  name:"AI-Powered Text-to-SQL System (S. N. Bose Summer Internship)",
+  s30:"An AI-powered system that takes a natural-language question, retrieves relevant schema context, uses an LLM to generate SQL, validates it, and executes it against a database — built with FastAPI, LangChain, RAG and ChromaDB, with an interactive frontend and a modular backend for retrieval, SQL generation, validation and execution.",
+  architecture:"Four modular stages connected to an interactive frontend: (1) Retrieval — ChromaDB stores embeddings of schema/table metadata so relevant context is fetched via RAG for a given question; (2) Generation — LangChain orchestrates a call to the Groq LLM with the retrieved context and the user's question to produce a candidate SQL query; (3) Validation — the generated SQL is checked before it ever touches the database; (4) Execution — the validated query runs and results are returned to the frontend. FastAPI exposes this pipeline as REST endpoints.",
+  tech:["FastAPI","LangChain","Groq LLM","ChromaDB (vector DB)","RAG","Frontend Development","REST APIs","SQL"],
+  challenges:"Keeping the four stages independent so a change in the LLM or vector store didn't ripple through the rest of the system; making sure retrieval returned schema context that was actually relevant, since bad context leads directly to bad SQL; and validating generated SQL before execution to avoid running incorrect or unsafe queries.",
+  improvements:"Add automated test cases comparing generated SQL against expected results across a range of question types, cache frequent schema embeddings to cut retrieval latency, and add a feedback loop where failed validations retrain or re-prompt the generation step.",
+  qa:[
+    {q:"Walk me through what happens end-to-end when a user types a question.", a:"The question first goes to the retrieval stage, where ChromaDB returns the most relevant schema context using vector similarity. That context plus the original question is passed through LangChain to the Groq LLM, which generates a candidate SQL query. The query then goes through a validation step before FastAPI executes it against the database and returns results."},
+    {q:"Why did you use RAG instead of just prompting the LLM directly with the full schema?", a:"Passing the entire schema in every prompt doesn't scale — it's expensive, slow, and larger schemas won't even fit in context. RAG lets me retrieve only the tables and columns relevant to the specific question, which keeps prompts smaller, cheaper, and more accurate because the model isn't distracted by irrelevant tables."},
+    {q:"How does ChromaDB fit into this specifically?", a:"ChromaDB stores vector embeddings of my schema metadata — table names, column names, and descriptions. When a question comes in, I embed the question the same way and do a similarity search against ChromaDB to pull back the closest matching schema chunks, which become the context for generation."},
+    {q:"Why is SQL validation a separate stage instead of just running whatever the LLM generates?", a:"LLMs can hallucinate column names, generate syntactically valid but semantically wrong queries, or in the worst case produce destructive statements. Validating first — checking it references real tables/columns and is a safe, expected type of query — protects the database and catches errors before they become a bad user-facing result."},
+    {q:"What would you check for during validation?", a:"At minimum: that referenced tables and columns actually exist in the schema, that the query is read-only where required, that it's syntactically valid SQL, and ideally a sanity check like an EXPLAIN or dry-run before full execution."},
+    {q:"Why FastAPI over Flask or Django for this?", a:"FastAPI gave me async support, which matters when a request involves multiple I/O-bound steps like an LLM call and a vector DB lookup, plus built-in request/response validation with Pydantic and automatic OpenAPI docs, which made testing the pipeline faster during development."},
+    {q:"How would you handle a question that has no good matching schema context?", a:"I'd set a similarity-score threshold on the retrieval step — if nothing clears it, the system should say it can't confidently answer rather than forcing the LLM to guess and generate a plausible-looking but wrong query."},
+    {q:"How would this scale if the schema had thousands of tables?", a:"The RAG approach already helps here since I'm not sending the full schema every time. I'd also look at hierarchical retrieval — first identify the likely database or schema group, then narrow down to specific tables — and consider a more scalable vector index if ChromaDB's local setup became a bottleneck."},
+    {q:"What was the hardest bug you ran into?", a:"Personalize this, but a common one on this kind of system: getting SQL that referenced a column that existed in a similarly-named table, meaning retrieval returned 'close but wrong' context. Fixing it meant making the schema descriptions embedded in ChromaDB more distinct and specific."},
+    {q:"If you had one more week, what would you add?", a:"A proper evaluation set of question-to-SQL pairs so I could measure accuracy objectively instead of spot-checking, plus logging of which validation checks fail most often so I know where to invest next."}
+  ]
+},
+{
+  id:"proj-sajeda",
+  name:"Sajeda Foundation — Full-Stack Web Application",
+  s30:"A full-stack MERN application to manage a foundation's activities and online presence, built with separate Client, Server and Admin modules and REST APIs, deployed on Render.",
+  architecture:"Three-module structure: a public-facing React.js Client for visitors, a Node.js/Express.js Server exposing REST APIs backed by MongoDB, and a separate Admin module for managing content. Keeping Admin separate from the public Client meant the foundation's staff could manage activities without touching public-facing code.",
+  tech:["React.js","Node.js","Express.js","MongoDB","REST APIs","Git/GitHub","Render (deployment)"],
+  challenges:"Designing REST endpoints that were secure enough for the Admin module while staying simple for the public Client to consume, keeping the three modules cleanly separated so they could be developed and deployed somewhat independently, and coordinating feature work with teammates through Git.",
+  improvements:"Add role-based authentication/authorization on the Admin APIs if not already present, add input validation and rate limiting on public endpoints, and set up CI so pushes are tested before deployment to Render.",
+  qa:[
+    {q:"Why split the app into Client, Server and Admin instead of one unified app?", a:"It maps to two very different audiences and trust levels — public visitors and foundation staff managing content — so keeping them as separate modules meant the admin logic and any sensitive operations weren't bundled into the same bundle as public-facing code, and each part could evolve independently."},
+    {q:"How did the frontend talk to the backend?", a:"The React Client and Admin modules called REST APIs exposed by the Express server — standard JSON over HTTP, with endpoints organized around resources like activities or content entries."},
+    {q:"Why MongoDB instead of a relational database here?", a:"The content for a foundation's activities — event details, descriptions, media references — tends to be document-like and doesn't need complex joins across many normalized tables, so MongoDB's flexible schema fit well and was fast to iterate on early in the project."},
+    {q:"How did you secure the Admin module's APIs?", a:"Personalize with your actual implementation — describe whatever authentication (for example, token-based login) protected admin-only routes, and mention that public routes were kept read-only where possible."},
+    {q:"What was your specific contribution versus the team's?", a:"Personalize this — speak to which module(s) you owned, e.g. specific REST API endpoints, a part of the client UI, or the deployment setup on Render."},
+    {q:"How was the app deployed?", a:"The backend was deployed on Render; I collaborated with the team using Git and GitHub for version control and feature development, merging changes through pull requests."},
+    {q:"What would break first if traffic suddenly spiked?", a:"Most likely the single backend instance and MongoDB connection pool — I'd look at horizontal scaling of the server, connection pooling limits, and adding caching for read-heavy public endpoints like activity listings."},
+    {q:"How did you handle errors or invalid input from the client?", a:"Personalize with specifics — describe validation on incoming requests and how the API returned meaningful error responses rather than generic failures."},
+    {q:"What's one thing you'd redesign if you started over?", a:"I'd add a shared validation/schema layer between Client, Server and Admin so the same rules for what a valid 'activity' looks like aren't duplicated in multiple places."}
+  ]
+},
+{
+  id:"proj-chess",
+  name:"Multiplayer Chess Game (OOP, C++)",
+  s30:"A modular chess engine built in C++ using OOP principles, with separate classes for Board, Player and Pieces, implementing move validation and piece interactions with clean, reusable code.",
+  architecture:"Class-based design: a Board class managing the grid state, a Player class representing each side, and a Pieces hierarchy — likely a base Piece class with each piece type (Pawn, Rook, Knight, Bishop, Queen, King) overriding move-validation logic through inheritance and polymorphism.",
+  tech:["C++","Object-Oriented Programming","Inheritance","Polymorphism","Encapsulation","Abstraction"],
+  challenges:"Modeling piece-specific movement rules cleanly through inheritance rather than one giant switch statement, handling special chess rules (castling, en passant, check/checkmate detection) without breaking the clean class boundaries, and validating moves against the current board state efficiently.",
+  improvements:"Add full check and checkmate detection if not already complete, add a simple network layer so two players can play remotely instead of on one machine, and add unit tests per piece type to lock in move-validation correctness.",
+  qa:[
+    {q:"Why use OOP for a chess engine instead of a simpler procedural approach?", a:"Chess naturally maps to objects — a board, players, and pieces that each behave differently but share common behavior like 'can this piece move here.' A base Piece class with each piece type overriding its own move logic through polymorphism kept the code far more maintainable than one large function handling every piece type with conditionals."},
+    {q:"How did you use inheritance here specifically?", a:"I designed a base Piece class holding shared state like color and position, with each concrete piece — Pawn, Knight, Bishop, Rook, Queen, King — inheriting from it and overriding the move-validation method with its own rules."},
+    {q:"What's the difference between the polymorphism and encapsulation you used?", a:"Polymorphism let me call the same 'isValidMove' method on any piece object and have it behave according to that piece's own rules. Encapsulation meant each class kept its own state — like a piece's position or a player's captured pieces — private, exposing only the methods needed to interact with it."},
+    {q:"How does the Board class interact with individual Piece objects?", a:"The Board holds the grid state and, on a move request, asks the relevant Piece object whether the move is valid given the current board, then updates its own state if the move is legal — the Board doesn't need to know the specific rules for each piece type, it just relies on the polymorphic method."},
+    {q:"How did you validate a move?", a:"Personalize with the actual logic — generally: check the destination is on the board, check the piece's own movement pattern allows it, check the path isn't blocked (for sliding pieces), and check the move doesn't leave the player's own king in check."},
+    {q:"Did you implement check and checkmate detection?", a:"Personalize honestly — if implemented: describe scanning opposing piece moves against the king's position after each move; if not fully implemented, be upfront and describe it as the natural next step."},
+    {q:"How would you extend this to support two players over a network?", a:"I'd separate game logic from I/O completely if it isn't already, then add a thin networking layer — sockets or a WebSocket server — where each client sends a move request, the server validates it using the existing engine, and broadcasts the resulting state to both players."},
+    {q:"What design pattern does your Piece hierarchy resemble?", a:"It resembles the Strategy pattern in spirit — each piece encapsulates its own 'movement strategy' — implemented through classic inheritance and virtual functions rather than composition."},
+    {q:"Why C++ for this project instead of Python?", a:"C++ gave me tighter control over performance and forced me to be deliberate about class design, memory and object lifetimes, which was good practice for reinforcing OOP fundamentals at a lower level than a language like Python would require."}
+  ]
+},
+{
+  id:"proj-gate",
+  name:"GATE 2026 (CSE) — Qualified",
+  s30:"Qualified GATE 2026 in Computer Science and Engineering, a national-level exam testing CS fundamentals — DSA, OS, DBMS, CN, and core CS theory — against a highly competitive applicant pool.",
+  architecture:"Not applicable — this is an academic achievement rather than a build.",
+  tech:["Core CS fundamentals: DSA, OOP, DBMS, OS, Computer Networks"],
+  challenges:"Covering the full breadth of the CS syllabus deeply enough to answer application-based questions, not just recall, while balancing exam prep with coursework and internship work.",
+  improvements:"Not applicable — but mention any specific score/rank if you want to bring a number into the conversation.",
+  qa:[
+    {q:"Why did you prepare for GATE alongside your coursework and internship?", a:"I wanted a structured way to validate and deepen my CS fundamentals — GATE forces you to actually understand DSA, OS, DBMS and Networks well enough to apply them under exam conditions, not just pass a semester exam, and that discipline directly helped the way I approach technical interviews."},
+    {q:"Which subject did you find hardest to prepare for, and why?", a:"Personalize this with your real experience — pick the subject (e.g. Operating Systems or CN) and explain briefly what made it hard and how you approached it."},
+    {q:"How does GATE preparation connect to the kind of work you'd do as a software engineering intern?", a:"The core subjects — data structures, OS concepts like processes and concurrency, database fundamentals — are exactly what shows up in day-to-day engineering decisions, from choosing the right data structure to understanding why a service might deadlock."},
+    {q:"What was your study approach?", a:"Personalize this — describe your actual method, e.g. topic-wise revision, solving previous years' papers, timed mock tests."}
+  ]
+},
+{
+  id:"proj-sih",
+  name:"Smart India Hackathon 2024 — Qualified Round 1",
+  s30:"Qualified Round 1 of Smart India Hackathon 2024 among more than 500 competing teams nationwide, a national-level hackathon where teams build a working solution to a real problem statement under time pressure.",
+  architecture:"Personalize with the specific problem statement, tech stack and architecture your team used — the resume notes qualification but not the solution's build details, so fill this in with what your team actually built.",
+  tech:["Personalize with your team's actual stack"],
+  challenges:"Typically for SIH: converging on a workable idea quickly, dividing work across teammates with different skill sets, and building something demoable within the time constraints of the round.",
+  improvements:"Personalize based on feedback received, if any, or what you'd do differently with more time.",
+  qa:[
+    {q:"What was your team's problem statement?", a:"Personalize this with the actual problem statement your team addressed."},
+    {q:"What was your specific role or contribution?", a:"Personalize this with what you actually built or owned in the solution."},
+    {q:"What was the biggest constraint you faced during the hackathon?", a:"Personalize this — commonly time pressure, scoping the idea down to something buildable, or integrating teammates' work quickly."},
+    {q:"Why do you think your team qualified Round 1 out of 500+ teams?", a:"Personalize this — was it the clarity of the problem-solution fit, the feasibility of the demo, or the presentation?"},
+    {q:"What did you learn from the experience that you'd apply in a professional setting?", a:"Working under a hard deadline with a small team mirrors how real engineering teams often have to scope a first version, ship something functional, and iterate rather than trying to build the complete solution up front."}
+  ]
+},
+{
+  id:"proj-gdgc",
+  name:"Positions of Responsibility — GDGC, Eco Club, Athletics Club",
+  s30:"Core team member and Media Head for the Web-Dev vertical at GDGC NIT Silchar, alongside core member roles in the Eco Club and Athletics Club — responsibilities spanning technical contribution and coordination.",
+  architecture:"Not applicable.",
+  tech:["Web development (GDGC context)","Event and content coordination"],
+  challenges:"Balancing technical contribution to the Web-Dev team with the coordination and communication demands of being Media Head, and doing this alongside coursework and other club commitments.",
+  improvements:"Personalize with anything you'd want to build or improve for the club going forward, e.g. a more structured content calendar or an internal tool.",
+  qa:[
+    {q:"What did you actually do as Web-Dev core team member and Media Head?", a:"Personalize this — describe the specific web projects or pages you contributed to for GDGC, and what the Media Head responsibility involved, e.g. coordinating content or promotion for events."},
+    {q:"How do you balance technical work with a coordination-heavy role like Media Head?", a:"Personalize this — a good structure is: describe how you prioritized deadlines across both responsibilities, and one example of when they conflicted and how you resolved it."},
+    {q:"Why be involved in Eco Club and Athletics Club alongside a technical club?", a:"Personalize this — speak honestly to what drew you to those clubs and any transferable skills, like teamwork or discipline, that carried over into your engineering work."},
+    {q:"Tell me about an event or initiative you helped run.", a:"Personalize this with a specific event from GDGC or the other clubs and what your role in it was."}
+  ]
+}
+];
+
+/* ---------- TECHNICAL REVISION ---------- */
+const TECH_NOTES = [
+{
+  id:"tech-dsa", topic:"DSA Patterns",
+  points:[
+    "<b>Arrays:</b> two pointers for sorted-array problems (pair sum, dedup); sliding window for subarray/substring problems with a size or sum constraint; prefix sums for fast range-sum queries.",
+    "<b>Trees:</b> DFS (pre/in/post-order) for path and structural problems; BFS/level-order for shortest-path-like or level-based questions; know recursive and iterative traversal, and how BSTs keep in-order sorted.",
+    "<b>Graphs:</b> BFS for shortest path in unweighted graphs; DFS for connectivity, cycles, topological sort; Dijkstra for weighted shortest path; union-find for connectivity/cycle detection in undirected graphs.",
+    "<b>DP:</b> identify overlapping subproblems + optimal substructure; start with a recursive brute force, then memoize, then convert to bottom-up if needed; common families — knapsack, LIS, edit distance, grid path counting.",
+    "<b>Heap:</b> use for 'top-K' or 'kth largest/smallest' problems, and for merging K sorted lists; know push/pop is O(log n).",
+    "<b>Linked list:</b> fast/slow pointers for cycle detection and finding the middle; dummy head node to simplify edge cases when inserting/deleting at the head."
+  ]
+},
+{
+  id:"tech-oop", topic:"Object-Oriented Programming",
+  points:[
+    "<b>Encapsulation:</b> bundling data and the methods that operate on it, hiding internal state behind a controlled interface — e.g. a Piece's position is private, exposed only through methods.",
+    "<b>Abstraction:</b> exposing only what's necessary and hiding implementation detail — an abstract base class or interface defines 'what' without 'how'.",
+    "<b>Inheritance:</b> a class reuses and extends behavior from a parent class — used in the chess project so each piece type extends a base Piece.",
+    "<b>Polymorphism:</b> the same method call behaves differently depending on the actual object type — calling isValidMove() on any piece runs that piece's own logic.",
+    "<b>Virtual functions:</b> in C++, marking a base class method virtual allows a derived class's override to run even when called through a base class pointer/reference — this is how runtime polymorphism works.",
+    "<b>Overriding vs overloading:</b> overriding redefines a parent method's behavior in a child class (same signature, runtime dispatch); overloading defines multiple methods with the same name but different parameters in the same scope (resolved at compile time).",
+    "<b>Composition vs inheritance:</b> inheritance is an 'is-a' relationship (a Rook is-a Piece); composition is a 'has-a' relationship (a Board has Pieces). Prefer composition when you just need to reuse behavior without a strict hierarchy — it's more flexible and avoids fragile deep inheritance chains."
+  ]
+},
+{
+  id:"tech-dbms", topic:"DBMS + SQL",
+  points:[
+    "<b>ACID:</b> Atomicity (all-or-nothing transactions), Consistency (valid state to valid state), Isolation (concurrent transactions don't interfere), Durability (committed data survives failures).",
+    "<b>Normalization:</b> organizing tables to reduce redundancy — 1NF (atomic columns), 2NF (no partial dependency on part of a composite key), 3NF (no transitive dependency on non-key columns). Trade-off: more joins needed as you normalize further.",
+    "<b>Joins:</b> INNER (matching rows only), LEFT/RIGHT (all rows from one side plus matches), FULL OUTER (all rows from both sides), and know when a join can be replaced by a subquery.",
+    "<b>Indexes:</b> speed up lookups (often B-tree based) at the cost of slower writes and extra storage — index columns used often in WHERE/JOIN/ORDER BY.",
+    "<b>Transactions:</b> a unit of work that either fully commits or fully rolls back — critical for operations like the validation-before-execution step in the Text-to-SQL project.",
+    "<b>WHERE vs HAVING:</b> WHERE filters rows before grouping/aggregation; HAVING filters groups after aggregation (e.g. HAVING COUNT(*) > 5).",
+    "<b>Window functions:</b> compute a value across a set of rows related to the current row without collapsing them into groups — e.g. RANK(), ROW_NUMBER(), running totals with SUM() OVER (...)."
+  ]
+},
+{
+  id:"tech-os", topic:"Operating Systems",
+  points:[
+    "<b>Process vs thread:</b> a process has its own memory space and is isolated; threads share the same memory space within a process, which makes them lighter but requires care around shared state.",
+    "<b>Mutex vs semaphore:</b> a mutex is a locking mechanism owned by the thread that locked it (binary, ownership-based); a semaphore is a signaling counter that can allow multiple threads access up to a limit and isn't tied to ownership.",
+    "<b>Deadlock:</b> occurs when processes hold resources while waiting for others in a cycle — the four necessary conditions are mutual exclusion, hold-and-wait, no preemption, and circular wait; prevention breaks any one of these.",
+    "<b>Paging:</b> memory management scheme that divides memory into fixed-size pages/frames, letting a process's logical address space be non-contiguous in physical memory and enabling virtual memory."
+  ]
+},
+{
+  id:"tech-cn", topic:"Computer Networks",
+  points:[
+    "<b>TCP vs UDP:</b> TCP is connection-oriented, reliable, ordered (used for things like HTTP, file transfer); UDP is connectionless, faster, no delivery guarantee (used for streaming, DNS, gaming).",
+    "<b>HTTP methods:</b> GET (read, no body), POST (create), PUT (replace a resource entirely), PATCH (partial update), DELETE (remove).",
+    "<b>HTTPS:</b> HTTP over TLS — encrypts traffic and verifies server identity via certificates, protecting against eavesdropping and tampering.",
+    "<b>DNS:</b> resolves human-readable domain names to IP addresses through a hierarchy of resolvers, root servers, TLD servers and authoritative nameservers.",
+    "<b>Status codes:</b> 2xx success (200 OK, 201 Created), 3xx redirection, 4xx client error (400 Bad Request, 401 Unauthorized, 404 Not Found), 5xx server error (500 Internal Server Error)."
+  ]
+},
+{
+  id:"tech-rest", topic:"REST APIs",
+  points:[
+    "<b>Core idea:</b> resources are identified by URLs and manipulated using standard HTTP verbs — GET/POST/PUT/PATCH/DELETE — with the server holding no client session state between requests.",
+    "<b>Stateless:</b> each request must contain everything the server needs to process it; the server doesn't remember previous requests, which is what lets REST APIs scale horizontally.",
+    "<b>JWT:</b> a signed token (header.payload.signature) used to authenticate requests without server-side session storage — the server verifies the signature rather than looking up a session.",
+    "<b>Middleware:</b> functions that run between the incoming request and the final handler — used for things like authentication checks, logging, and validation, as in an Express.js backend.",
+    "<b>Designing endpoints:</b> nouns for resources (/users/:id), verbs come from HTTP methods not the URL, and consistent, predictable response shapes and status codes."
+  ]
+}
+];
+
+/* ---------- AI / RAG ---------- */
+const AI_ITEMS = [
+  {id:"ai-1", q:"What is RAG?", a:"Retrieval-Augmented Generation combines a retrieval step with a generative model — instead of relying only on what the LLM has memorized, you first fetch relevant, up-to-date context from an external source (like a vector database) and feed it into the prompt, so the model generates its answer grounded in that specific context. In my project, RAG meant retrieving relevant schema context before generating SQL."},
+  {id:"ai-2", q:"Why LangChain?", a:"LangChain gave me a structured way to chain together the retrieval step, prompt construction, and the LLM call without writing that orchestration logic from scratch — it made it easier to swap pieces in and out, like changing the LLM provider or retriever, while keeping the pipeline consistent."},
+  {id:"ai-3", q:"Why ChromaDB?", a:"ChromaDB is a lightweight, easy-to-run vector database that fit the scale of my project well — it let me store and query embeddings of schema metadata for similarity search without needing to stand up heavier infrastructure."},
+  {id:"ai-4", q:"Why FastAPI?", a:"FastAPI gave me async support for I/O-heavy operations like LLM and vector DB calls, automatic request validation through Pydantic, and auto-generated API docs, which sped up building and testing the backend."},
+  {id:"ai-5", q:"What are embeddings?", a:"Embeddings are numeric vector representations of text (or other data) where semantic similarity translates into geometric closeness — two similar pieces of text end up as nearby vectors, which is what makes similarity search possible."},
+  {id:"ai-6", q:"What is a vector database?", a:"A database optimized for storing embeddings and running fast nearest-neighbor similarity search over them, instead of exact-match lookups like a traditional database — that's what lets you find 'the most relevant schema context' for a question rather than an exact keyword match."},
+  {id:"ai-7", q:"How do you validate generated SQL before execution?", a:"Check that referenced tables and columns exist in the actual schema, confirm the query type is allowed (e.g. read-only if required), verify it parses as syntactically valid SQL, and ideally run a dry-run or EXPLAIN before full execution."},
+  {id:"ai-8", q:"How do you prevent or reduce hallucinations?", a:"Ground the model with retrieved, real schema context rather than asking it to recall structure from memory; constrain outputs with validation after generation; and set a confidence/similarity threshold on retrieval so the system says 'I'm not confident' instead of forcing an answer when context is weak."},
+  {id:"ai-9", q:"How would you scale the Text-to-SQL system?", a:"Cache embeddings and frequent queries, move to a more scalable vector index if ChromaDB's local setup becomes a bottleneck, add hierarchical retrieval for very large schemas, and separate the retrieval/generation/validation/execution stages into independently scalable services if load grew significantly."}
+];
+
+/* ---------- BLACKROCK PREP ---------- */
+const BR_FACTS = [
+  {num:"$15T+", lbl:"Assets under management (2026)"},
+  {num:"70+", lbl:"Countries served globally"},
+  {num:"1999", lbl:"BlackRock founded"}
+];
+
+const BR_ITEMS = [
+  {id:"br-1", q:"What does BlackRock do?", a:"BlackRock is the world's largest asset manager — it manages investments on behalf of institutions and individuals (pensions, governments, everyday savers) across asset classes like equities, fixed income and alternatives. It has grown into a technology provider as well, not just an investment manager, through its Aladdin platform."},
+  {id:"br-2", q:"What is Aladdin?", a:"Aladdin is BlackRock's investment management platform — it unifies portfolio management, risk analytics, trading and operations into one system with a common data language, giving clients a connected view of their whole portfolio across public and private markets. It's used both internally by BlackRock and licensed externally to other institutions."},
+  {id:"br-3", q:"What are BlackRock's principles, and why do they matter for this interview?", a:"BlackRock talks publicly about being a fiduciary to clients first, operating as 'one BlackRock' rather than siloed teams, and connecting technology to real investment outcomes. For an interview, the practical takeaway is: frame your answers around ownership, collaboration across a team, and connecting your technical work to a real outcome — not just 'I wrote code that worked.'"},
+  {id:"br-4", q:"What technologies does the JD mention, and where do you fit?", a:"The JD lists Java, Python, cloud platforms, distributed systems, data engineering, and depending on the team, Kubernetes, Kafka, APIs, modern web frameworks and GenAI/AI. I primarily work with C++ with strong CS fundamentals and OOP knowledge, along with hands-on full-stack development (React, Node.js, Express, MongoDB) and AI backend engineering (FastAPI, LangChain, RAG, ChromaDB, SQL). While I don't have production Java, Kafka or Kubernetes experience yet, my strong problem-solving foundation and fast-learning track record enable me to ramp up quickly on any stack."}
+];
+
+/* ---------- TOP 30 ---------- */
+const TOP30 = [
+{q:"Tell me about yourself.", why:"Opens almost every interview; tests clarity and structure.", a:"Use the exact intro answer — education, strengths, internship project, other projects, why BlackRock.", follow:"Which of these projects do you enjoy talking about most?"},
+{q:"Why BlackRock?", why:"Checks genuine interest vs generic application.", a:"Aladdin as real technology at scale, exposure to distributed systems/AI/cloud, and BlackRock's ownership/learning culture.", follow:"What do you know about Aladdin specifically?"},
+{q:"Why should we hire you?", why:"Direct pitch — tests self-awareness of fit.", a:"Strong CS fundamentals, hands-on modular project experience, fast learner, ready to grow on production systems.", follow:"Give a specific example of fast learning."},
+{q:"What are your strengths and weaknesses?", why:"Classic self-assessment check.", a:"Strengths: problem solving, fast learning, ownership/modular thinking. Weakness: spends extra time going deep before moving — mitigated by building first, iterating.", follow:"How do you know when you've spent 'too much' time understanding something?"},
+{q:"Where do you see yourself in five years?", why:"Checks ambition and realism.", a:"Growing into a strong engineer owning scalable backend systems, moving toward managerial responsibility while mentoring others.", follow:"What skill are you actively building toward that?"},
+{q:"Walk me through your Text-to-SQL project.", why:"Your most relevant, recent, technically deep project.", a:"Natural language question → RAG retrieval from ChromaDB → LangChain + Groq LLM generates SQL → validation → FastAPI executes and returns results, all as separate modules.", follow:"How did you validate the generated SQL?"},
+{q:"Why RAG for this project instead of a bigger context window?", why:"Tests understanding of RAG's purpose, not just buzzword use.", a:"Sending the whole schema every time doesn't scale in cost, latency, or accuracy — RAG retrieves only relevant context, keeping prompts focused and cheaper.", follow:"What happens if retrieval returns nothing relevant?"},
+{q:"How do you prevent an LLM from generating a wrong or destructive SQL query?", why:"Core engineering judgement question tied to your project.", a:"Validate before execution: confirm real tables/columns, restrict to safe query types, syntax-check, and dry-run before full execution.", follow:"What's a case your validation might still miss?"},
+{q:"What is a vector database and why use one here?", why:"Checks fundamental understanding behind ChromaDB.", a:"A database optimized for nearest-neighbor search over embeddings, enabling semantic similarity search rather than exact-match lookups — needed to find the schema context closest in meaning to the user's question.", follow:"How would you scale this if you had millions of embeddings?"},
+{q:"Explain your Sajeda Foundation project.", why:"Your main full-stack project; tests breadth beyond AI work.", a:"MERN app with separate Client, Server and Admin modules, REST APIs, deployed on Render, built collaboratively with Git/GitHub.", follow:"Why separate Admin from the public Client?"},
+{q:"Why MongoDB over a relational database for that project?", why:"Tests database decision-making, not just familiarity.", a:"The content (activities, descriptions) is document-like without heavy relational joins, and MongoDB's flexible schema suited fast iteration.", follow:"When would you have chosen SQL instead?"},
+{q:"Explain your chess engine's OOP design.", why:"Directly tests OOP depth via a concrete example.", a:"Base Piece class with each piece type overriding move validation via inheritance and polymorphism; Board and Player as separate collaborating classes.", follow:"How would you add check/checkmate detection?"},
+{q:"What's the difference between overriding and overloading?", why:"Classic OOP fundamentals check.", a:"Overriding redefines a parent method in a child class with the same signature, resolved at runtime; overloading defines multiple methods with the same name but different parameters, resolved at compile time.", follow:"Give an example from your chess project."},
+{q:"Composition vs inheritance — when would you choose one over the other?", why:"Tests design maturity beyond textbook definitions.", a:"Inheritance for a true 'is-a' relationship with shared behavior (a Rook is-a Piece); composition for a 'has-a' relationship where you just need to reuse behavior flexibly (a Board has Pieces) without a rigid hierarchy.", follow:"Where did you use composition in your chess project?"},
+{q:"Explain ACID properties.", why:"Foundational DBMS question, near-guaranteed.", a:"Atomicity, Consistency, Isolation, Durability — guarantees that transactions are all-or-nothing, leave the DB valid, don't interfere with each other, and survive failures once committed.", follow:"Which property matters most for a payments system, and why?"},
+{q:"WHERE vs HAVING?", why:"Common SQL fundamentals trap question.", a:"WHERE filters rows before aggregation; HAVING filters aggregated groups after GROUP BY.", follow:"Write a query using both in the same statement."},
+{q:"Explain normalization and its trade-offs.", why:"Tests DB design fundamentals.", a:"Organizing tables (1NF/2NF/3NF) to reduce redundancy and anomalies, at the cost of needing more joins as you normalize further — sometimes denormalization is chosen deliberately for read performance.", follow:"When would you denormalize on purpose?"},
+{q:"Process vs thread?", why:"Standard OS fundamentals question.", a:"A process has its own isolated memory space; threads share memory within a process, making them lighter but requiring careful handling of shared state.", follow:"What kind of bug is unique to multithreading?"},
+{q:"What causes a deadlock, and how do you prevent it?", why:"Frequently asked OS concept with practical relevance.", a:"Four conditions must hold simultaneously — mutual exclusion, hold-and-wait, no preemption, circular wait; breaking any one prevents deadlock.", follow:"How would you detect a deadlock at runtime?"},
+{q:"TCP vs UDP — when would you use each?", why:"Fundamental networking question, often tied to real system design.", a:"TCP for reliable, ordered delivery (web, file transfer); UDP for speed where occasional loss is acceptable (streaming, gaming, DNS).", follow:"Why does DNS use UDP?"},
+{q:"What happens when you type a URL into a browser?", why:"Classic systems question testing networking breadth.", a:"DNS resolves the domain to an IP, a TCP connection is established (with a TLS handshake for HTTPS), an HTTP request is sent, the server responds, and the browser renders the response.", follow:"Where does HTTPS add overhead versus HTTP?"},
+{q:"Explain REST and what 'stateless' means.", why:"Core to your Express/FastAPI backend experience.", a:"REST models resources with URLs manipulated via HTTP verbs; stateless means each request carries everything the server needs, so the server doesn't retain session state between calls — this is what enables horizontal scaling.", follow:"How does a stateless API still support 'logged-in' sessions?"},
+{q:"What is a JWT and how does it work?", why:"Common for any backend/API-heavy resume.", a:"A signed token — header, payload, signature — used to authenticate requests; the server verifies the signature instead of storing session state, so it fits naturally with stateless REST APIs.", follow:"What happens if a JWT is stolen?"},
+{q:"What is middleware in a backend framework?", why:"Tests practical Express/FastAPI knowledge.", a:"Functions that run between an incoming request and the final route handler — used for things like authentication checks, logging, and validation.", follow:"Give an example of middleware you might add to a login route."},
+{q:"How would you design a REST API for a new feature?", why:"Applied system-design-lite question for interns.", a:"Model the feature as resources with clear nouns in the URL, choose HTTP verbs matching intent, keep responses consistent, and design for statelessness so it scales horizontally.", follow:"How would you version this API later?"},
+{q:"What is Aladdin and why is it significant?", why:"Direct BlackRock-specific knowledge check.", a:"Aladdin is BlackRock's investment management platform unifying portfolio management, risk analytics, trading and operations on one platform with a shared data language, used both internally and licensed to other institutions.", follow:"How do you think an intern's work could connect to a platform like Aladdin?"},
+{q:"What technologies from the JD do you not have experience with, and how would you approach learning them?", why:"Tests honesty and learning approach on gaps like Kafka/Kubernetes/Java.", a:"I haven't used Kafka, Kubernetes or Java in production, but I picked up LangChain and RAG quickly for my internship by building small pieces first and iterating — I'd apply the same approach here, starting with fundamentals and a small hands-on project.", follow:"How did you actually learn LangChain in practice?"},
+{q:"Describe a time you had to learn a new technology quickly.", why:"Directly testable against your internship.", a:"For the Text-to-SQL project I had to learn LangChain, RAG concepts and ChromaDB from scratch, building the pipeline incrementally — starting with a basic retrieval step, then generation, then validation — rather than trying to understand everything before writing code.", follow:"What resource or approach helped you learn fastest?"},
+{q:"Tell me about a time you had to debug something difficult.", why:"Tests problem-solving process, common in technical rounds.", a:"Personalize this — a strong shape is: describe a bug where the symptom (e.g. wrong SQL results) didn't match the obvious cause, how you isolated it stage by stage, and what you changed to fix it and prevent it recurring.", follow:"How do you approach debugging a system you didn't build?"},
+{q:"Do you have any questions for us?", why:"Always asked at the end — shows genuine engagement.", a:"Ask about intern project scoping, exposure to Aladdin, how the team decides when to use GenAI, or what success looks like for an intern.", follow:"—"}
+];
+
+/* ---------- LAST MINUTE ---------- */
+const LASTMIN = [
+  {h:"30-second intro", b:"NIT Silchar CSE. Strong in problem solving, frontend & backend — primarily work with C++, also SQL. Internship: AI Text-to-SQL system (FastAPI, LangChain, RAG, ChromaDB) with frontend and modular backend. Full-stack MERN app (Sajeda Foundation), OOP chess engine in C++. Excited about BlackRock for scale + real business & client impact."},
+  {h:"Why BlackRock — 3 reasons", b:"1) Aladdin = real financial systems at scale. 2) Exposure to distributed systems, AI, cloud, APIs. 3) Culture of ownership and learning."},
+  {h:"Strengths / Weakness one-liners", b:"Strengths: problem solving, fast learner, ownership + modular thinking. Weakness: goes deep before moving — fixed by building first, iterating after."},
+  {h:"Project one-liners", b:"Text-to-SQL: NL question → RAG (ChromaDB) → LangChain+Groq generates SQL → validate → FastAPI executes. Sajeda Foundation: MERN, Client/Server/Admin split, deployed on Render. Chess: C++ OOP, base Piece class, inheritance + polymorphism for move rules."},
+  {h:"OOP four pillars, one line each", b:"Encapsulation = hide state behind methods. Abstraction = expose what, hide how. Inheritance = reuse via 'is-a'. Polymorphism = same call, type-specific behavior."},
+  {h:"DBMS quick hits", b:"ACID = Atomic, Consistent, Isolated, Durable. WHERE filters rows, HAVING filters groups. Normalization reduces redundancy, costs more joins. Index speeds reads, slows writes."},
+  {h:"Networking quick hits", b:"TCP = reliable/ordered. UDP = fast/no guarantee. HTTPS = HTTP + TLS. DNS = name → IP. 2xx ok, 4xx client error, 5xx server error."},
+  {h:"RAG in one breath", b:"Retrieve relevant context (vector similarity in ChromaDB) → feed it to the LLM (via LangChain) → generate a grounded answer instead of relying on memorized knowledge alone."},
+  {h:"Aladdin in one breath", b:"BlackRock's platform unifying portfolio management, risk analytics, trading and operations on one system with a shared data language — used internally and licensed externally."},
+  {h:"BlackRock scale fact", b:"World's largest asset manager, AUM over $15 trillion as of mid-2026 — useful context, not something to over-quote."},
+  {h:"Questions to ask them", b:"What does a typical intern project look like? What exposure would I get to Aladdin? How does the team decide when to use GenAI?"}
+];
+
+/* ============================================================
+   RENDER ENGINE
+   ============================================================ */
+
+const SECTIONS = [
+  {id:"hr", label:"HR & Behavioral"},
+  {id:"resume", label:"Resume Deep Dive"},
+  {id:"technical", label:"Technical Revision"},
+  {id:"ai", label:"AI / RAG"},
+  {id:"blackrock", label:"BlackRock Prep"},
+  {id:"top30", label:"Top 30 Questions"},
+  {id:"lastmin", label:"Last-Minute Revision"}
+];
+
+let progressState = {};
+try{ progressState = JSON.parse(localStorage.getItem('br_prep_progress') || '{}'); }catch(e){ progressState = {}; }
+
+function saveProgress(){
+  localStorage.setItem('br_prep_progress', JSON.stringify(progressState));
+  updateProgressUI();
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function makeQACard(item){
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.searchText = (item.q + ' ' + item.a + ' ' + (item.tag||'')).toLowerCase();
+  if(progressState[item.id]) card.classList.add('done');
+
+  const head = document.createElement('div');
+  head.className = 'card-head';
+  head.innerHTML = `
+    <input type="checkbox" class="card-check" ${progressState[item.id] ? 'checked' : ''}>
+    <div class="card-q">${escapeHtml(item.q)}</div>
+    ${item.tag ? `<span class="card-tag">${escapeHtml(item.tag)}</span>` : ''}
+    <span class="chev">▸</span>
+  `;
+  const body = document.createElement('div');
+  body.className = 'card-body';
+  body.innerHTML = `<p>${escapeHtml(item.a)}</p>` +
+    (item.follow && item.follow !== '—' ? `<div class="followup">Possible follow-up: ${escapeHtml(item.follow)}</div>` : '') +
+    `<div class="card-actions"><button class="copy-btn">Copy answer</button></div>`;
+
+  head.addEventListener('click', (e)=>{
+    if(e.target.classList.contains('card-check')) return;
+    card.classList.toggle('open');
+  });
+  const check = head.querySelector('.card-check');
+  check.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    progressState[item.id] = check.checked;
+    card.classList.toggle('done', check.checked);
+    saveProgress();
+  });
+  const copyBtn = body.querySelector('.copy-btn');
+  copyBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    navigator.clipboard.writeText(item.a).then(()=>{
+      copyBtn.textContent = 'Copied ✓';
+      copyBtn.classList.add('copied');
+      setTimeout(()=>{ copyBtn.textContent='Copy answer'; copyBtn.classList.remove('copied'); }, 1400);
+    });
+  });
+
+  card.appendChild(head);
+  card.appendChild(body);
+  return card;
+}
+
+function makeProjectCard(p){
+  const card = document.createElement('div');
+  card.className = 'proj-card';
+  card.dataset.searchText = (p.name+' '+p.s30+' '+p.architecture+' '+p.tech.join(' ')+' '+p.challenges+' '+p.improvements+' '+p.qa.map(x=>x.q+' '+x.a).join(' ')).toLowerCase();
+
+  const head = document.createElement('div');
+  head.className = 'proj-head';
+  head.innerHTML = `<div class="proj-name">${escapeHtml(p.name)}</div><div class="proj-30s">${escapeHtml(p.s30)}</div>`;
+  card.appendChild(head);
+
+  const grid = document.createElement('div');
+  grid.className = 'proj-grid';
+  grid.innerHTML = `
+    <div class="cell"><h4>Architecture</h4><p>${escapeHtml(p.architecture)}</p></div>
+    <div class="cell"><h4>Technologies</h4><p>${p.tech.map(escapeHtml).join(' · ')}</p></div>
+    <div class="cell"><h4>Challenges</h4><p>${escapeHtml(p.challenges)}</p></div>
+    <div class="cell"><h4>Improvements</h4><p>${escapeHtml(p.improvements)}</p></div>
+  `;
+  card.appendChild(grid);
+
+  const qaWrap = document.createElement('div');
+  qaWrap.className = 'proj-qa';
+  qaWrap.innerHTML = `<div class="qa-heading">Probable interviewer questions</div>`;
+  p.qa.forEach((qa, i)=>{
+    const item = {id:p.id+'-q'+i, q:qa.q, a:qa.a, tag:null};
+    qaWrap.appendChild(makeQACard(item));
+  });
+  card.appendChild(qaWrap);
+  return card;
+}
+
+function makeNoteCard(n){
+  const card = document.createElement('div');
+  card.className = 'note-card';
+  card.dataset.searchText = (n.topic+' '+n.points.join(' ')).toLowerCase().replace(/<[^>]+>/g,'');
+  const checked = progressState[n.id];
+  card.innerHTML = `
+    <h3>${escapeHtml(n.topic)}</h3>
+    <ul>${n.points.map(pt=>`<li>${pt}</li>`).join('')}</ul>
+    <div class="card-actions" style="margin-top:10px;">
+      <button class="copy-btn" data-copy>Copy notes</button>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-faint);cursor:pointer;margin-left:auto;">
+        <input type="checkbox" class="card-check" ${checked?'checked':''}> Reviewed
+      </label>
+    </div>
+  `;
+  const copyBtn = card.querySelector('[data-copy]');
+  copyBtn.addEventListener('click', ()=>{
+    const text = n.topic + '\n' + n.points.map(p=>'- '+p.replace(/<[^>]+>/g,'')).join('\n');
+    navigator.clipboard.writeText(text).then(()=>{
+      copyBtn.textContent = 'Copied ✓'; copyBtn.classList.add('copied');
+      setTimeout(()=>{ copyBtn.textContent='Copy notes'; copyBtn.classList.remove('copied'); }, 1400);
+    });
+  });
+  const check = card.querySelector('.card-check');
+  check.addEventListener('change', ()=>{
+    progressState[n.id] = check.checked;
+    saveProgress();
+  });
+  return card;
+}
+
+/* ---------- Panel builders ---------- */
+
+function buildHR(container){
+  container.innerHTML = `<div class="panel-head">
+    <div class="panel-eyebrow">Section 1</div>
+    <h1 class="panel-title">HR &amp; Behavioral</h1>
+    <p class="panel-desc">Core answers to keep close to verbatim, plus behavioral questions to personalize with your own specifics.</p>
+  </div>`;
+  const list = document.createElement('div');
+  HR_ITEMS.forEach(item=> list.appendChild(makeQACard(item)));
+  container.appendChild(list);
+}
+
+function buildResume(container){
+  container.innerHTML = `<div class="panel-head">
+    <div class="panel-eyebrow">Section 2</div>
+    <h1 class="panel-title">Resume Deep Dive</h1>
+    <p class="panel-desc">Every line on your resume, unpacked into an explanation, architecture, tech stack, challenges, and the questions an interviewer is likely to ask.</p>
+  </div>
+  <div class="callout"><b>Note:</b> a few answers below (GDGC, SIH, some behavioral) are marked to personalize — your resume states the fact but not every detail, so fill those in honestly rather than reciting the template.</div>`;
+  PROJECTS.forEach(p=> container.appendChild(makeProjectCard(p)));
+}
+
+function buildTechnical(container){
+  container.innerHTML = `<div class="panel-head">
+    <div class="panel-eyebrow">Section 3</div>
+    <h1 class="panel-title">Technical Revision</h1>
+    <p class="panel-desc">Interview-oriented notes, not textbook definitions — phrased the way you'd actually say them out loud.</p>
+  </div>`;
+  TECH_NOTES.forEach(n=> container.appendChild(makeNoteCard(n)));
+}
+
+function buildAI(container){
+  container.innerHTML = `<div class="panel-head">
+    <div class="panel-eyebrow">Section 4</div>
+    <h1 class="panel-title">AI / RAG</h1>
+    <p class="panel-desc">Explaining the concepts behind your Text-to-SQL system in plain, interview-ready language.</p>
+  </div>`;
+  const list = document.createElement('div');
+  AI_ITEMS.forEach(item=> list.appendChild(makeQACard(item)));
+  container.appendChild(list);
+}
+
+function buildBlackRock(container){
+  container.innerHTML = `<div class="panel-head">
+    <div class="panel-eyebrow">Section 5</div>
+    <h1 class="panel-title">BlackRock Preparation</h1>
+    <p class="panel-desc">What the firm does, what Aladdin is, and how the JD's technologies map to what you already know.</p>
+  </div>`;
+  const facts = document.createElement('div');
+  facts.className = 'fact-grid';
+  BR_FACTS.forEach(f=>{
+    const d = document.createElement('div');
+    d.className = 'fact';
+    d.innerHTML = `<div class="num">${escapeHtml(f.num)}</div><div class="lbl">${escapeHtml(f.lbl)}</div>`;
+    facts.appendChild(d);
+  });
+  container.appendChild(facts);
+  const list = document.createElement('div');
+  BR_ITEMS.forEach(item=> list.appendChild(makeQACard(item)));
+  container.appendChild(list);
+}
+
+function buildTop30(container){
+  container.innerHTML = `<div class="panel-head">
+    <div class="panel-eyebrow">Section 6</div>
+    <h1 class="panel-title">Top 30 Probable Questions</h1>
+    <p class="panel-desc">The 30 questions most likely to come up, built from your resume and the JD, each with why it's asked and a likely follow-up.</p>
+  </div>`;
+  const list = document.createElement('div');
+  TOP30.forEach((item, i)=>{
+    const withWhy = {
+      id:'top30-'+i,
+      q: item.q,
+      a: (item.why ? "Why they ask: " + item.why + "\n\n" : "") + "Answer: " + item.a,
+      follow: item.follow,
+      tag: 'Q'+(i+1)
+    };
+    list.appendChild(makeQACard(withWhy));
+  });
+  container.appendChild(list);
+}
+
+function buildLastMin(container){
+  container.innerHTML = `<div class="panel-head">
+    <div class="panel-eyebrow">Section 7</div>
+    <h1 class="panel-title">15 Minutes Before the Interview</h1>
+    <p class="panel-desc">Only the highest-priority facts. Skim top to bottom, then close the laptop.</p>
+  </div>`;
+  LASTMIN.forEach(item=>{
+    const d = document.createElement('div');
+    d.className = 'lastmin-block';
+    d.dataset.searchText = (item.h+' '+item.b).toLowerCase();
+    d.innerHTML = `<h3>${escapeHtml(item.h)}</h3><p>${escapeHtml(item.b)}</p>`;
+    container.appendChild(d);
+  });
+}
+
+const BUILDERS = {
+  hr: buildHR,
+  resume: buildResume,
+  technical: buildTechnical,
+  ai: buildAI,
+  blackrock: buildBlackRock,
+  top30: buildTop30,
+  lastmin: buildLastMin
+};
+
+/* ============================================================
+   INIT
+   ============================================================ */
+
+const contentEl = document.getElementById('content');
+const navlistEl = document.getElementById('navlist');
+let activeSection = 'hr';
+
+function renderNav(){
+  navlistEl.innerHTML = '';
+  SECTIONS.forEach((s, i)=>{
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.className = 'navlink' + (s.id===activeSection ? ' active' : '');
+    btn.innerHTML = `<span class="num">${i+1}</span><span>${s.label}</span>`;
+    btn.addEventListener('click', ()=> switchSection(s.id));
+    li.appendChild(btn);
+    navlistEl.appendChild(li);
+  });
+}
+
+function switchSection(id){
+  activeSection = id;
+  document.getElementById('searchInput').value = '';
+  document.body.classList.remove('search-mode');
+  renderNav();
+  renderPanels();
+  closeSidebar();
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+function renderPanels(){
+  contentEl.innerHTML = '';
+  SECTIONS.forEach(s=>{
+    const panel = document.createElement('div');
+    panel.className = 'panel' + (s.id===activeSection ? ' active' : '');
+    panel.id = 'panel-'+s.id;
+    contentEl.appendChild(panel);
+    BUILDERS[s.id](panel);
+  });
+  updateProgressUI();
+}
+
+function countTotalCheckable(){
+  return document.querySelectorAll('.card-check').length;
+}
+function updateProgressUI(){
+  const boxes = document.querySelectorAll('#content .card-check, #content input[type=checkbox].card-check');
+  const total = boxes.length;
+  let done = 0;
+  boxes.forEach(b=>{ if(b.checked) done++; });
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('progressText').textContent = done + ' / ' + total + ' reviewed';
+  document.getElementById('progressPct').textContent = pct + '%';
+  const circumference = 100.5;
+  const offset = circumference - (circumference * pct / 100);
+  document.getElementById('ringProgress').setAttribute('stroke-dashoffset', offset);
+}
+
+/* ---------- search ---------- */
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+  if(!q){
+    document.body.classList.remove('search-mode');
+    renderPanels();
+    document.querySelectorAll('.panel').forEach(p=> p.classList.toggle('active', p.id === 'panel-'+activeSection));
+    return;
+  }
+  document.body.classList.add('search-mode');
+  document.querySelectorAll('.panel').forEach(p=> p.classList.add('active'));
+  document.querySelectorAll('#content .card, #content .proj-card, #content .note-card, #content .lastmin-block').forEach(el=>{
+    const text = el.dataset.searchText || el.textContent.toLowerCase();
+    const match = text.includes(q);
+    el.style.display = match ? '' : 'none';
+    if(match && el.classList.contains('card')) el.classList.add('open');
+  });
+  // hide project cards with zero visible nested QA and no match on own fields
+  document.querySelectorAll('#content .proj-card').forEach(pc=>{
+    const ownMatch = (pc.dataset.searchText||'').includes(q);
+    const visibleChildren = pc.querySelectorAll('.card:not([style*="display: none"])').length;
+    if(!ownMatch && visibleChildren === 0){ pc.style.display = 'none'; }
+    else { pc.style.display = ''; }
+  });
+});
+
+/* ---------- sidebar toggle (mobile) ---------- */
+const sidebarEl = document.getElementById('sidebar');
+const backdropEl = document.getElementById('sidebarBackdrop');
+const menuBtn = document.getElementById('menuBtn');
+const closeBtn = document.getElementById('sidebarCloseBtn');
+
+function openSidebar(){
+  sidebarEl.classList.add('open');
+  backdropEl.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar(){
+  sidebarEl.classList.remove('open');
+  backdropEl.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+menuBtn.addEventListener('click', ()=>{
+  if(sidebarEl.classList.contains('open')) closeSidebar();
+  else openSidebar();
+});
+if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
+if(backdropEl) backdropEl.addEventListener('click', closeSidebar);
+
+/* ---------- initial render ---------- */
+renderNav();
+renderPanels();
+</script>
+</body>
+</html>
