@@ -2177,52 +2177,91 @@ body, html, #root {
    ========================================================================== */
 
 @media (max-width: 768px) {
-  html, body {
-    overscroll-behavior-y: none;
-  }
-
   .header {
-    padding: 8px 12px 6px;
+    padding: 8px 10px 6px;
     gap: 6px;
     flex-shrink: 0;
   }
 
   .header-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     flex-wrap: nowrap;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .brand-badge-group {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .institute-emblem {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+    border-radius: 8px;
+  }
+
+  .header-titles .sys-status-line {
+    display: none;
+  }
+
+  .main-heading {
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+    color: #ffffff;
   }
 
   .telemetry-bar {
     display: none;
   }
 
-  .header-freshers-pill-btn,
-  .header-contact-pill-btn {
-    padding: 5px 9px;
-    font-size: 10px;
-    white-space: nowrap;
+  .header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
   }
 
-  .freshers-welcome-strip {
-    padding: 8px 12px;
-    gap: 8px;
+  /* Home button: keep symbol only on mobile */
+  .header-home-pill-btn {
+    padding: 6px 9px;
+    font-size: 15px;
+    min-width: 32px;
+    height: 30px;
+    justify-content: center;
+    border-radius: 8px;
   }
 
-  .strip-desc {
+  .header-home-pill-btn .pill-text {
     display: none;
   }
 
-  .strip-badge {
+  /* Freshers button: compact on mobile */
+  .header-freshers-pill-btn {
+    padding: 5px 8px;
     font-size: 10.5px;
-    padding: 2px 6px;
+    height: 30px;
+    white-space: nowrap;
+    border-radius: 8px;
+    gap: 4px;
   }
 
-  .strip-btn {
-    padding: 5px 10px;
-    font-size: 10px;
+  .header-freshers-pill-btn .pill-tag {
+    display: none;
   }
 
-  .main-heading {
-    font-size: 14px;
+  /* Suggestions button: as it is, but small in size */
+  .header-contact-pill-btn {
+    padding: 5px 8px;
+    font-size: 10.5px;
+    height: 30px;
+    white-space: nowrap;
+    border-radius: 8px;
+    gap: 4px;
   }
 
   .hud-location-toast {

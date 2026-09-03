@@ -92,28 +92,16 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
             <span className="nav-page-label">FRESHERS COMPASS 2026</span>
           </div>
 
-          <div className="nav-right-actions" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="nav-right-actions">
             {onOpenContact && (
               <button
                 className="nav-contact-quick"
                 onClick={onOpenContact}
                 title="Suggestions & Connect with Alvis Khan"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "6px 12px",
-                  background: "rgba(56, 189, 248, 0.12)",
-                  border: "1px solid rgba(56, 189, 248, 0.35)",
-                  borderRadius: "16px",
-                  color: "#38bdf8",
-                  fontSize: "0.75rem",
-                  fontWeight: "700",
-                  cursor: "pointer"
-                }}
+                type="button"
               >
-                <span>💬</span>
-                <span>SUGGESTIONS</span>
+                <span className="btn-icon">💬</span>
+                <span className="btn-text">SUGGESTIONS</span>
               </button>
             )}
             <a
@@ -122,7 +110,7 @@ export default function FreshersGuide({ onNavigateToMap, onNavigateToHome, onSel
               title="Jump to Emergency Numbers"
             >
               <span className="pulse-alert-dot"></span>
-              <span>EMERGENCY</span>
+              <span className="btn-text">EMERGENCY</span>
             </a>
           </div>
         </div>
