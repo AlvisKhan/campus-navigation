@@ -418,7 +418,7 @@ function ActiveRouteHud({
             <div className="route-hud-metrics">
               <span className="route-metric-dist">📍 {distanceText}</span>
               <span className="route-metric-sep">•</span>
-              <span className="route-metric-time">🚶 {durationMinutes} MIN WALK</span>
+              <span className="route-metric-time">🚶 {durationMinutes} MIN</span>
             </div>
           </div>
         </div>
