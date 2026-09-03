@@ -16,7 +16,10 @@ export default function LandingPage({ onNavigateToCampus, onNavigateToFreshers, 
             <span>NIT</span>
           </div>
           <div className="landing-brand-text">
-            <span className="landing-brand-title">NATIONAL INSTITUTE OF TECHNOLOGY SILCHAR</span>
+            <span className="landing-brand-title">
+              <span className="brand-title-desktop">NATIONAL INSTITUTE OF TECHNOLOGY SILCHAR</span>
+              <span className="brand-title-mobile">NIT SILCHAR</span>
+            </span>
             <span className="landing-brand-sub">CAMPUS COMPANION</span>
           </div>
         </div>
