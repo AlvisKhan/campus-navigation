@@ -37,7 +37,6 @@ import DestinationCard from "./components/DestinationCard";
 import GoogleMapsHandoffCard from "./components/GoogleMapsHandoffCard";
 import FreshersGuide from "./components/FreshersGuide";
 import LandingPage from "./components/LandingPage";
-import AlvisGuide from "./components/AlvisGuide";
 
 // Custom Leaflet Pin Icons
 
@@ -640,16 +639,6 @@ function App() {
         onNavigateToMap={() => navigateTo("/map")}
         onNavigateToHome={() => navigateTo("/")}
         onSelectMapLocation={handleSelectMapLocationFromGuide}
-      />
-    );
-  }
-
-  // Render password-protected Alvis Interview & Project Guide if path is /alvis
-  if (currentPath === "/alvis" || currentPath.startsWith("/alvis")) {
-    return (
-      <AlvisGuide
-        onNavigateToHome={() => navigateTo("/")}
-        onNavigateToMap={() => navigateTo("/map")}
       />
     );
   }
