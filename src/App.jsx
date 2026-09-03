@@ -769,33 +769,7 @@ function App() {
           </div>
         </div>
 
-        {/* Freshers Welcome Highlight Card (hidden when following an active route) */}
-        {route.length === 0 && (
-          <div
-            className="freshers-welcome-strip"
-            onClick={() => navigateTo("/freshers")}
-            role="button"
-            tabIndex={0}
-            title="Open Freshers Guide (/freshers)"
-          >
-            <div className="strip-left">
-              <span className="strip-badge">🎓 NEW TO NIT SILCHAR?</span>
-              <span className="strip-desc">
-                Everything you need to get started: Emergency contacts, transport, mess, study links & senior advice.
-              </span>
-            </div>
-            <button
-              className="strip-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigateTo("/freshers");
-              }}
-            >
-              <span>EXPLORE FRESHERS GUIDE</span>
-              <span className="strip-arrow">→</span>
-            </button>
-          </div>
-        )}
+
 
         {/* Navigation Mode: Ultra-compact route strip instead of bulky search stack */}
         {route.length > 0 && !isSearchExpanded && (
