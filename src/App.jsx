@@ -697,7 +697,10 @@ function App() {
                 <span className="sys-title">CAMPUS NAVIGATION SYSTEM</span>
                 <span className="sys-version">v2.5</span>
               </div>
-              <h1 className="main-heading">National Institute of Technology Silchar</h1>
+              <h1 className="main-heading">
+                <span className="heading-desktop">National Institute of Technology Silchar</span>
+                <span className="heading-mobile">NIT Silchar</span>
+              </h1>
             </div>
           </div>
 

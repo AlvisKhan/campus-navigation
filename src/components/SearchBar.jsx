@@ -94,10 +94,6 @@ export default function SearchBar({
               ✕
             </button>
           )}
-
-          <div className="search-node-count">
-            {locations.length} NODES
-          </div>
         </div>
 
         {/* Futuristic Category Filter Pills */}

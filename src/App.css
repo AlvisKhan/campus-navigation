@@ -172,6 +172,10 @@ body, html, #root {
   letter-spacing: -0.01em;
 }
 
+.heading-mobile {
+  display: none;
+}
+
 .header-right-actions {
   display: flex;
   align-items: center;
@@ -2208,11 +2212,22 @@ body, html, #root {
     display: none;
   }
 
-  .main-heading {
-    font-size: 13px;
+  .heading-desktop {
+    display: none;
+  }
+
+  .heading-mobile {
+    display: inline;
+    font-size: 13.5px;
     font-weight: 800;
     white-space: nowrap;
     color: #ffffff;
+    letter-spacing: 0.03em;
+  }
+
+  .main-heading {
+    margin: 0;
+    line-height: 1.1;
   }
 
   .telemetry-bar {
@@ -2222,18 +2237,19 @@ body, html, #root {
   .header-right-actions {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     flex-shrink: 0;
   }
 
   /* Home button: keep symbol only on mobile */
   .header-home-pill-btn {
-    padding: 6px 9px;
-    font-size: 15px;
-    min-width: 32px;
+    padding: 5px 8px;
+    font-size: 14px;
+    min-width: 30px;
     height: 30px;
     justify-content: center;
     border-radius: 8px;
+    flex-shrink: 0;
   }
 
   .header-home-pill-btn .pill-text {
@@ -2243,11 +2259,12 @@ body, html, #root {
   /* Freshers button: compact on mobile */
   .header-freshers-pill-btn {
     padding: 5px 8px;
-    font-size: 10.5px;
+    font-size: 10px;
     height: 30px;
     white-space: nowrap;
     border-radius: 8px;
-    gap: 4px;
+    gap: 3px;
+    flex-shrink: 0;
   }
 
   .header-freshers-pill-btn .pill-tag {
@@ -2257,11 +2274,18 @@ body, html, #root {
   /* Suggestions button: as it is, but small in size */
   .header-contact-pill-btn {
     padding: 5px 8px;
-    font-size: 10.5px;
+    font-size: 10px;
     height: 30px;
     white-space: nowrap;
     border-radius: 8px;
-    gap: 4px;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 360px) {
+    .header-titles {
+      display: none;
+    }
   }
 
   .hud-location-toast {
