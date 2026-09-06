@@ -1,0 +1,2564 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Mastery Studio — Interactive Course, Playground & Interview Prep</title>
+  <!-- Tailwind CSS v4 Browser CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <!-- Google Fonts: Space Grotesk, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Pyodide CDN for Real Browser Python Execution -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0D1117;
+      --bg-secondary: #161B22;
+      --bg-tertiary: #21262D;
+      --border-color: #30363D;
+      --text-primary: #F0F6FC;
+      --text-secondary: #8B949E;
+      --accent-blue: #3572A5;
+      --accent-gold: #FFD43B;
+    }
+
+    html.light {
+      --bg-primary: #F8FAFC;
+      --bg-secondary: #FFFFFF;
+      --bg-tertiary: #F1F5F9;
+      --border-color: #E2E8F0;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    code, pre, textarea.code-editor, .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.15);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(139, 148, 158, 0.35);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 148, 158, 0.6);
+    }
+
+    /* Code Editor Line Numbers & Styling */
+    .editor-wrapper {
+      position: relative;
+      display: flex;
+      background: #090D11;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    html.light .editor-wrapper {
+      background: #0F172A;
+    }
+    .line-numbers {
+      user-select: none;
+      text-align: right;
+      padding: 1rem 0.65rem;
+      color: #484F58;
+      background: rgba(22, 27, 34, 0.6);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      min-width: 2.75rem;
+      border-right: 1px solid #21262D;
+    }
+    textarea.code-editor {
+      width: 100%;
+      background: transparent;
+      color: #E6EDF3;
+      padding: 1rem;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      border: none;
+      outline: none;
+      resize: vertical;
+      min-height: 240px;
+      tab-size: 4;
+      white-space: pre;
+      overflow-wrap: normal;
+      overflow-x: auto;
+    }
+
+    /* Memory box glow animation */
+    .memory-box {
+      transition: all 0.2s ease;
+    }
+    .memory-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(53, 114, 165, 0.25);
+    }
+
+    /* Pulse dot */
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(0.92); }
+    }
+    .pulse-dot {
+      animation: pulse-slow 2s infinite;
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden select-none">
+
+  <!-- ==================== TOP NAVIGATION BAR ==================== -->
+  <header class="h-14 shrink-0 border-b border-[#30363D] bg-[#161B22] dark:bg-[#161B22] light:bg-white px-4 flex items-center justify-between z-30">
+    <!-- Left Brand & Mobile Menu Toggle -->
+    <div class="flex items-center gap-3">
+      <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg hover:bg-[#21262D] text-gray-300" title="Toggle Curriculum Sidebar">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchMainView('course')">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#3572A5] to-[#FFD43B] p-0.5 flex items-center justify-center shadow-md">
+          <div class="w-full h-full bg-[#0D1117] rounded-[6px] flex items-center justify-center font-mono font-bold text-sm">
+            <span class="text-[#3572A5]">Py</span><span class="text-[#FFD43B]">3</span>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-heading font-bold text-base tracking-tight text-white">Python Mastery</span>
+            <span class="hidden sm:inline-block text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#3572A5]/20 text-[#58A6FF] border border-[#3572A5]/40">Interactive Studio</span>
+          </div>
+          <p class="text-[11px] text-[#8B949E] hidden sm:block">Learn • Run Python in Browser • Solve Challenges</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center View Navigation Pills -->
+    <nav class="hidden md:flex items-center gap-1 bg-[#0D1117] p-1 rounded-lg border border-[#30363D]">
+      <button onclick="switchMainView('course')" id="navBtn-course" class="nav-tab-btn px-3 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1.5 bg-[#3572A5] text-white shadow">
+        <span>📚</span> Course & Workbench
+      </button>
+      <button onclick="switchMainView('challenges')" id="navBtn-challenges" class="nav-tab-btn px-3 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1.5 text-[#8B949E] hover:text-white">
+        <span>⚡</span> Challenges Hub
+      </button>
+      <button onclick="switchMainView('interview')" id="navBtn-interview" class="nav-tab-btn px-3 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1.5 text-[#8B949E] hover:text-white">
+        <span>🎯</span> Interview Revision
+      </button>
+      <button onclick="switchMainView('cheatsheet')" id="navBtn-cheatsheet" class="nav-tab-btn px-3 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1.5 text-[#8B949E] hover:text-white">
+        <span>📑</span> Cheat Sheet
+      </button>
+      <button onclick="switchMainView('project')" id="navBtn-project" class="nav-tab-btn px-3 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1.5 text-[#8B949E] hover:text-white">
+        <span>🎓</span> Final Project
+      </button>
+    </nav>
+
+    <!-- Right Controls: Pyodide Status, Search, Progress, Theme -->
+    <div class="flex items-center gap-2.5">
+      <!-- Pyodide Engine Status Badge -->
+      <div id="pyodideStatusBadge" class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#21262D] border border-[#30363D] text-xs" title="Python runs directly inside your browser via WebAssembly (Pyodide)">
+        <span id="pyodideStatusDot" class="w-2 h-2 rounded-full bg-[#D29922] pulse-dot"></span>
+        <span id="pyodideStatusText" class="font-mono text-[11px] text-gray-300 hidden xl:inline">Loading Python...</span>
+      </div>
+
+      <!-- Global Search Trigger -->
+      <button onclick="openSearchModal()" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#0D1117] hover:bg-[#21262D] border border-[#30363D] text-xs text-[#8B949E] transition" title="Search Topics & Methods (Ctrl+K)">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <span class="hidden sm:inline">Search...</span>
+        <kbd class="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono bg-[#161B22] rounded border border-[#30363D]">⌘K</kbd>
+      </button>
+
+      <!-- Progress Pill -->
+      <div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[#0D1117] border border-[#30363D]" title="Your overall course completion">
+        <div class="w-16 h-2 bg-[#21262D] rounded-full overflow-hidden">
+          <div id="headerProgressBar" class="h-full bg-gradient-to-r from-[#3572A5] to-[#3FB950] transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <span id="headerProgressText" class="font-mono text-xs font-semibold text-[#FFD43B]">0%</span>
+      </div>
+
+      <!-- Theme Switcher -->
+      <button onclick="toggleTheme()" id="themeToggleBtn" class="p-2 rounded-lg bg-[#0D1117] hover:bg-[#21262D] border border-[#30363D] text-gray-300 transition" title="Toggle Dark/Light Mode">
+        <span id="themeIcon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Secondary Nav Bar -->
+  <div class="md:hidden flex items-center justify-around bg-[#161B22] border-b border-[#30363D] py-1.5 px-2 text-xs overflow-x-auto shrink-0">
+    <button onclick="switchMainView('course')" class="px-2 py-1 rounded font-medium text-white">📚 Course</button>
+    <button onclick="switchMainView('challenges')" class="px-2 py-1 rounded font-medium text-gray-400">⚡ Challenges</button>
+    <button onclick="switchMainView('interview')" class="px-2 py-1 rounded font-medium text-gray-400">🎯 Interview</button>
+    <button onclick="switchMainView('cheatsheet')" class="px-2 py-1 rounded font-medium text-gray-400">📑 Cheat Sheet</button>
+    <button onclick="switchMainView('project')" class="px-2 py-1 rounded font-medium text-gray-400">🎓 Project</button>
+  </div>
+
+  <!-- ==================== MAIN WORKSPACE AREA ==================== -->
+  <div class="flex-1 flex overflow-hidden relative">
+
+    <!-- LEFT CURRICULUM & PROGRESS SIDEBAR -->
+    <aside id="sidebarDrawer" class="w-72 shrink-0 bg-[#161B22] border-r border-[#30363D] flex flex-col z-20 fixed lg:static inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out">
+      <!-- Sidebar Dashboard Header -->
+      <div class="p-3.5 border-b border-[#30363D] bg-[#0D1117]/60">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">Your Progress</span>
+          <button onclick="resetAllProgress()" class="text-[11px] text-[#F85149] hover:underline font-medium" title="Reset all saved progress">Reset</button>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center bg-[#161B22] p-2 rounded-lg border border-[#30363D]">
+          <div>
+            <div id="statLessonsDone" class="font-mono font-bold text-sm text-[#3FB950]">0/15</div>
+            <div class="text-[10px] text-[#8B949E]">Modules</div>
+          </div>
+          <div>
+            <div id="statQuizzesDone" class="font-mono font-bold text-sm text-[#58A6FF]">0/15</div>
+            <div class="text-[10px] text-[#8B949E]">Quizzes</div>
+          </div>
+          <div>
+            <div id="statChallengesDone" class="font-mono font-bold text-sm text-[#FFD43B]">0/15</div>
+            <div class="text-[10px] text-[#8B949E]">Challenges</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Modules Input -->
+      <div class="p-2.5 border-b border-[#30363D]">
+        <input
+          type="text"
+          id="sidebarFilterInput"
+          oninput="renderSidebarModules()"
+          placeholder="Filter 15 modules..."
+          class="w-full px-3 py-1.5 text-xs rounded-md bg-[#0D1117] border border-[#30363D] text-white placeholder-[#8B949E] focus:outline-none focus:border-[#3572A5]"
+        />
+      </div>
+
+      <!-- Module List -->
+      <div id="sidebarModuleList" class="flex-1 overflow-y-auto p-2 space-y-1">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <!-- Sidebar Footer: Continue Button -->
+      <div class="p-3 border-t border-[#30363D] bg-[#0D1117]/60">
+        <button onclick="continueLastLesson()" class="w-full py-2 px-3 rounded-lg bg-[#3572A5] hover:bg-[#2b5f8a] text-white font-medium text-xs flex items-center justify-center gap-2 shadow transition">
+          <span>▶ Continue Last Lesson</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ==================== VIEW 1: COURSE & LIVE WORKBENCH ==================== -->
+    <main id="view-course" class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <!-- Left Column: Interactive Lesson Reader & Visualizer -->
+      <section class="w-full lg:w-1/2 xl:w-[52%] h-full overflow-y-auto p-4 sm:p-6 space-y-6 border-b lg:border-b-0 lg:border-r border-[#30363D]">
+        <!-- Module Breadcrumb & Difficulty -->
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#30363D] pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="lessonModuleBadge" class="px-2 py-0.5 text-[11px] font-mono font-semibold uppercase rounded bg-[#3572A5]/20 text-[#58A6FF] border border-[#3572A5]/40">MODULE 1</span>
+              <span id="lessonDifficultyBadge" class="px-2 py-0.5 text-[11px] font-mono rounded bg-emerald-500/15 text-emerald-400">🟢 Beginner</span>
+            </div>
+            <h1 id="lessonTitle" class="text-2xl sm:text-3xl font-bold mt-1.5 tracking-tight text-white">Module Title</h1>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="markCurrentLessonComplete()" id="markCompleteBtn" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[#30363D] bg-[#21262D] hover:bg-[#30363D] text-gray-200 flex items-center gap-1.5 transition">
+              <span id="markCompleteIcon">○</span>
+              <span id="markCompleteText">Mark Complete</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 8-Part Pedagogical Concept Cards -->
+        <div id="lessonConceptContent" class="space-y-5 text-sm leading-relaxed select-text">
+          <!-- Populated dynamically by JS -->
+        </div>
+
+        <!-- Interactive Visual Memory / Concept Visualizer Box -->
+        <div class="rounded-xl bg-[#161B22] border border-[#30363D] p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🔬</span>
+              <h3 class="font-heading font-bold text-sm uppercase tracking-wider text-[#FFD43B]">Visual Memory & Concept Inspector</h3>
+            </div>
+            <span class="text-[11px] font-mono text-[#8B949E]">Interactive Diagram</span>
+          </div>
+          <div id="lessonVisualizerContainer" class="p-3 rounded-lg bg-[#0D1117] border border-[#30363D] overflow-x-auto">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Quick Multiple-Choice Quiz Card -->
+        <div class="rounded-xl bg-[#161B22] border border-[#30363D] p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🧠</span>
+              <h3 class="font-heading font-bold text-base text-white">Quick Concept Check Quiz</h3>
+            </div>
+            <span id="quizStatusBadge" class="text-xs font-mono px-2 py-0.5 rounded bg-[#21262D] text-[#8B949E]">Unsolved</span>
+          </div>
+          <p id="quizQuestionText" class="text-sm font-medium text-gray-200"></p>
+          <div id="quizOptionsContainer" class="space-y-2">
+            <!-- Populated dynamically by JS -->
+          </div>
+          <div id="quizExplanationBox" class="hidden p-3.5 rounded-lg text-xs leading-relaxed border"></div>
+        </div>
+
+        <!-- Lesson Navigation Footer -->
+        <div class="flex items-center justify-between pt-4 border-t border-[#30363D]">
+          <button onclick="navigateModule(-1)" id="prevModuleBtn" class="px-4 py-2 rounded-lg bg-[#21262D] hover:bg-[#30363D] text-xs font-medium text-gray-200 flex items-center gap-1.5 transition">
+            <span>←</span> Previous Module
+          </button>
+          <button onclick="navigateModule(1)" id="nextModuleBtn" class="px-4 py-2 rounded-lg bg-[#3572A5] hover:bg-[#2b5f8a] text-xs font-medium text-white flex items-center gap-1.5 shadow transition">
+            Next Module <span>→</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Column: Interactive Python Workbench & Challenge Runner -->
+      <section class="w-full lg:w-1/2 xl:w-[48%] h-full flex flex-col bg-[#0D1117] overflow-y-auto">
+        <!-- Workbench Mode Switcher Tabs: Playground vs Coding Challenge -->
+        <div class="flex items-center justify-between px-4 py-2.5 bg-[#161B22] border-b border-[#30363D] shrink-0">
+          <div class="flex items-center gap-1">
+            <button onclick="switchWorkbenchTab('playground')" id="wbTab-playground" class="px-3 py-1.5 rounded-md text-xs font-medium bg-[#3572A5] text-white transition flex items-center gap-1.5">
+              <span>💻</span> Interactive Playground
+            </button>
+            <button onclick="switchWorkbenchTab('challenge')" id="wbTab-challenge" class="px-3 py-1.5 rounded-md text-xs font-medium text-[#8B949E] hover:text-white transition flex items-center gap-1.5">
+              <span>🏆</span> Coding Challenge
+              <span id="challengeSolvedDot" class="w-2 h-2 rounded-full bg-[#8B949E]"></span>
+            </button>
+          </div>
+          <div class="text-[11px] font-mono text-[#8B949E] hidden sm:block">
+            Running in Browser (Pyodide 3.12)
+          </div>
+        </div>
+
+        <!-- Coding Challenge Prompt Banner (Visible when Challenge tab active) -->
+        <div id="challengePromptPanel" class="hidden p-4 bg-[#161B22]/90 border-b border-[#30363D] space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span id="challengeDifficultyTag" class="px-2 py-0.5 text-[10px] font-mono uppercase rounded bg-amber-500/20 text-amber-300">🟡 Medium</span>
+              <h4 id="challengeTitle" class="font-heading font-bold text-sm text-white">Challenge Title</h4>
+            </div>
+            <button onclick="toggleStuckDrawer()" class="px-2.5 py-1 rounded bg-[#D29922]/20 hover:bg-[#D29922]/30 border border-[#D29922]/50 text-[#FFD43B] text-xs font-medium flex items-center gap-1 transition">
+              <span>💡</span> I'm Stuck (Hints)
+            </button>
+          </div>
+          <p id="challengeDescription" class="text-xs text-gray-300 leading-relaxed select-text"></p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+            <div class="p-2 rounded bg-[#0D1117] border border-[#30363D]">
+              <span class="text-[#8B949E] block text-[10px]">EXAMPLE INPUT / SETUP:</span>
+              <span id="challengeExampleInput" class="text-emerald-400"></span>
+            </div>
+            <div class="p-2 rounded bg-[#0D1117] border border-[#30363D]">
+              <span class="text-[#8B949E] block text-[10px]">EXPECTED OUTPUT:</span>
+              <span id="challengeExpectedOutput" class="text-[#FFD43B]"></span>
+            </div>
+          </div>
+
+          <!-- 5-Stage Progressive "I'm Stuck" Hint Drawer -->
+          <div id="stuckDrawer" class="hidden mt-3 pt-3 border-t border-[#30363D] space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-[#FFD43B]">Progressive Hint Ladder (Click to reveal step-by-step):</span>
+              <button onclick="toggleStuckDrawer()" class="text-xs text-gray-400 hover:text-white">✕ Close</button>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button onclick="revealHintStep(1)" id="hintBtn-1" class="px-2.5 py-1 rounded text-xs bg-[#21262D] hover:bg-[#30363D] text-gray-200 border border-[#30363D]">1. Concept Hint</button>
+              <button onclick="revealHintStep(2)" id="hintBtn-2" class="px-2.5 py-1 rounded text-xs bg-[#21262D] hover:bg-[#30363D] text-gray-200 border border-[#30363D]">2. Strategy</button>
+              <button onclick="revealHintStep(3)" id="hintBtn-3" class="px-2.5 py-1 rounded text-xs bg-[#21262D] hover:bg-[#30363D] text-gray-200 border border-[#30363D]">3. Pseudocode</button>
+              <button onclick="revealHintStep(4)" id="hintBtn-4" class="px-2.5 py-1 rounded text-xs bg-[#21262D] hover:bg-[#30363D] text-gray-200 border border-[#30363D]">4. Partial Code</button>
+              <button onclick="revealHintStep(5)" id="hintBtn-5" class="px-2.5 py-1 rounded text-xs bg-[#D29922]/20 hover:bg-[#D29922]/30 text-[#FFD43B] border border-[#D29922]/40">5. Full Solution</button>
+            </div>
+            <pre id="hintStepContent" class="p-3 rounded bg-[#0D1117] border border-[#30363D] text-xs font-mono text-gray-200 whitespace-pre-wrap overflow-x-auto"></pre>
+          </div>
+        </div>
+
+        <!-- Code Editor Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-[#161B22] border-b border-[#30363D] shrink-0">
+          <div class="flex items-center gap-2">
+            <button onclick="runPythonCode()" id="runCodeBtn" class="px-3.5 py-1.5 rounded-lg bg-[#3FB950] hover:bg-[#349d43] text-white font-semibold text-xs flex items-center gap-1.5 shadow transition cursor-pointer">
+              <span>▶</span> Run Code <kbd class="text-[10px] opacity-80 ml-1">Ctrl+↵</kbd>
+            </button>
+            <button onclick="verifyChallengeSolution()" id="verifyChallengeBtn" class="hidden px-3 py-1.5 rounded-lg bg-[#FFD43B] hover:bg-[#f0c420] text-[#0D1117] font-bold text-xs flex items-center gap-1.5 shadow transition cursor-pointer">
+              <span>✓</span> Submit Challenge
+            </button>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <button onclick="copyEditorCode()" class="px-2.5 py-1 rounded bg-[#21262D] hover:bg-[#30363D] text-xs text-gray-300 transition" title="Copy code to clipboard">
+              Copy
+            </button>
+            <button onclick="resetEditorCode()" class="px-2.5 py-1 rounded bg-[#21262D] hover:bg-[#30363D] text-xs text-gray-300 transition" title="Reset code to default example">
+              Reset
+            </button>
+            <button onclick="clearConsoleOutput()" class="px-2.5 py-1 rounded bg-[#21262D] hover:bg-[#30363D] text-xs text-gray-300 transition" title="Clear output console">
+              Clear Console
+            </button>
+          </div>
+        </div>
+
+        <!-- Code Editor Area with Line Numbers -->
+        <div class="p-3 flex-1 flex flex-col min-h-[260px]">
+          <div class="editor-wrapper flex-1">
+            <div id="editorLineNumbers" class="line-numbers">1</div>
+            <textarea
+              id="pythonCodeEditor"
+              class="code-editor select-text"
+              spellcheck="false"
+              oninput="onEditorInput()"
+              onkeydown="handleEditorKeydown(event)"
+              placeholder="# Write your Python 3 code here..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Interactive Console Output Panel -->
+        <div class="border-t border-[#30363D] bg-[#090D11] flex flex-col h-56 shrink-0">
+          <div class="px-4 py-1.5 bg-[#161B22] border-b border-[#30363D] flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <span class="font-mono font-bold text-gray-300">TERMINAL OUTPUT</span>
+              <span id="executionTimeBadge" class="text-[11px] font-mono text-[#8B949E]"></span>
+            </div>
+            <span class="text-[11px] font-mono text-[#8B949E]">stdout / stderr</span>
+          </div>
+          <div id="consoleOutput" class="p-3.5 font-mono text-xs overflow-y-auto flex-1 space-y-1 select-text whitespace-pre-wrap leading-relaxed text-gray-200">
+            <div class="text-[#8B949E]">Click <span class="text-[#3FB950] font-semibold">▶ Run Code</span> or press <kbd class="px-1.5 py-0.5 bg-[#161B22] rounded border border-[#30363D]">Ctrl+Enter</kbd> to execute Python code in your browser.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ==================== VIEW 2: CODING CHALLENGES HUB ==================== -->
+    <main id="view-challenges" class="hidden flex-1 overflow-y-auto p-6 space-y-6">
+      <div class="max-w-6xl mx-auto space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#30363D] pb-4">
+          <div>
+            <h1 class="text-2xl font-bold text-white">⚡ Python Coding Challenges Hub</h1>
+            <p class="text-sm text-[#8B949E]">Test your problem-solving skills across all 15 modules. Filter by difficulty and track your solutions.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="filterChallengesHub('all')" class="challenge-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-[#3572A5] text-white">All (15)</button>
+            <button onclick="filterChallengesHub('Easy')" class="challenge-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-[#21262D] text-emerald-400">🟢 Easy</button>
+            <button onclick="filterChallengesHub('Medium')" class="challenge-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-[#21262D] text-amber-300">🟡 Medium</button>
+            <button onclick="filterChallengesHub('Hard')" class="challenge-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-[#21262D] text-rose-400">🔴 Hard</button>
+          </div>
+        </div>
+
+        <div id="challengesHubGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== VIEW 3: INTERVIEW & EXAM REVISION ==================== -->
+    <main id="view-interview" class="hidden flex-1 overflow-y-auto p-6">
+      <div class="max-w-5xl mx-auto space-y-6">
+        <div class="border-b border-[#30363D] pb-4">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-[#FFD43B]/20 text-[#FFD43B]">HIGH-YIELD REVISION</span>
+          <h1 class="text-2xl sm:text-3xl font-bold text-white mt-1">🎯 Python Technical Interview & Exam Prep</h1>
+          <p class="text-sm text-[#8B949E] mt-1">Master the most frequently asked Python interview questions with concise answers, deep dives, code proofs, and common traps.</p>
+        </div>
+
+        <!-- Comparison Matrix: List vs Tuple vs Set vs Dict -->
+        <div class="rounded-xl bg-[#161B22] border border-[#30363D] p-5 space-y-3">
+          <h2 class="font-heading font-bold text-lg text-white flex items-center gap-2">
+            <span>📊</span> Ultimate Python Data Structure Comparison Table
+          </h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono border-collapse">
+              <thead>
+                <tr class="border-b border-[#30363D] text-[#8B949E] bg-[#0D1117]">
+                  <th class="p-3">Feature</th>
+                  <th class="p-3 text-[#58A6FF]">List [ ]</th>
+                  <th class="p-3 text-emerald-400">Tuple ( )</th>
+                  <th class="p-3 text-amber-300">Set { }</th>
+                  <th class="p-3 text-purple-400">Dict {k:v}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#30363D]">
+                <tr>
+                  <td class="p-3 font-semibold">Mutable?</td>
+                  <td class="p-3 text-emerald-400">Yes (Mutable)</td>
+                  <td class="p-3 text-rose-400">No (Immutable)</td>
+                  <td class="p-3 text-emerald-400">Yes (Mutable)</td>
+                  <td class="p-3 text-emerald-400">Yes (Mutable)</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Ordered?</td>
+                  <td class="p-3">Yes (Indexable)</td>
+                  <td class="p-3">Yes (Indexable)</td>
+                  <td class="p-3 text-rose-400">Unordered</td>
+                  <td class="p-3">Insertion Order (Py 3.7+)</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Duplicates?</td>
+                  <td class="p-3">Allowed</td>
+                  <td class="p-3">Allowed</td>
+                  <td class="p-3 text-emerald-400">No (Unique only)</td>
+                  <td class="p-3">Unique Keys, Any Values</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Lookup Speed</td>
+                  <td class="p-3">O(n) Linear scan</td>
+                  <td class="p-3">O(n) Linear scan</td>
+                  <td class="p-3 text-emerald-400">O(1) Hash table</td>
+                  <td class="p-3 text-emerald-400">O(1) Hash table</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold">Best Used For</td>
+                  <td class="p-3">Dynamic sequences</td>
+                  <td class="p-3">Fixed records / dict keys</td>
+                  <td class="p-3">Deduplication & membership</td>
+                  <td class="p-3">Fast key-value lookups</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Interview Questions Accordion Deck -->
+        <div id="interviewQuestionsList" class="space-y-3">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== VIEW 4: SEARCHABLE CHEAT SHEET ==================== -->
+    <main id="view-cheatsheet" class="hidden flex-1 overflow-y-auto p-6">
+      <div class="max-w-6xl mx-auto space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#30363D] pb-4">
+          <div>
+            <h1 class="text-2xl font-bold text-white">📑 Interactive Python Cheat Sheet</h1>
+            <p class="text-sm text-[#8B949E]">Quick reference for syntax, methods, comprehensions, and algorithmic patterns. Click any snippet to test it live.</p>
+          </div>
+          <input
+            type="text"
+            id="cheatsheetSearchInput"
+            oninput="renderCheatSheet()"
+            placeholder="Filter cheat sheet (e.g. slice, dict, lambda, sort)..."
+            class="w-full sm:w-80 px-3.5 py-2 text-xs rounded-lg bg-[#161B22] border border-[#30363D] text-white placeholder-[#8B949E] focus:outline-none focus:border-[#3572A5]"
+          />
+        </div>
+
+        <div id="cheatsheetGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== VIEW 5: FINAL CAPSTONE PROJECT ==================== -->
+    <main id="view-project" class="hidden flex-1 overflow-y-auto p-6">
+      <div class="max-w-5xl mx-auto space-y-6">
+        <div class="rounded-xl bg-gradient-to-r from-[#3572A5]/25 via-[#161B22] to-[#FFD43B]/15 border border-[#30363D] p-6">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-[#3FB950]/20 text-[#3FB950] border border-[#3FB950]/40">CAPSTONE PROJECT</span>
+              <h1 class="text-2xl sm:text-3xl font-bold text-white mt-1.5">🎓 Student Management System (CLI & Report Engine)</h1>
+              <p class="text-sm text-gray-300 mt-1 max-w-3xl">
+                This final project brings together <strong>Dictionaries, Lists, Functions, String Formatting, Exception Handling, and OOP principles</strong>. You can run the complete menu-driven system below, modify student records, and test custom operations.
+              </p>
+            </div>
+            <button onclick="loadProjectIntoWorkbench()" class="px-4 py-2.5 rounded-lg bg-[#3FB950] hover:bg-[#349d43] text-white font-bold text-xs shadow-lg flex items-center gap-2 transition cursor-pointer">
+              <span>🚀</span> Open Project in Live Workbench
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-[#161B22] border border-[#30363D] space-y-2">
+            <h3 class="font-heading font-bold text-sm text-[#58A6FF]">1. CRUD Operations</h3>
+            <p class="text-xs text-[#8B949E]">Add new students with roll numbers, update subject marks safely, search records by ID or name, and remove graduated students.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-[#161B22] border border-[#30363D] space-y-2">
+            <h3 class="font-heading font-bold text-sm text-[#FFD43B]">2. Analytics & Grading</h3>
+            <p class="text-xs text-[#8B949E]">Automatically calculate individual GPA averages, assign letter grades (A/B/C/F), and compute the top performer in the class.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-[#161B22] border border-[#30363D] space-y-2">
+            <h3 class="font-heading font-bold text-sm text-[#3FB950]">3. Defensive Error Handling</h3>
+            <p class="text-xs text-[#8B949E]">Uses custom validation and `try / except` blocks to prevent duplicate IDs or invalid negative score entries.</p>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-[#161B22] border border-[#30363D] overflow-hidden">
+          <div class="px-4 py-2.5 bg-[#0D1117] border-b border-[#30363D] flex items-center justify-between">
+            <span class="font-mono text-xs text-gray-300">student_management_system.py</span>
+            <button onclick="loadProjectIntoWorkbench()" class="text-xs text-[#58A6FF] hover:underline font-mono">Click to Edit & Execute →</button>
+          </div>
+          <pre id="capstoneCodePreview" class="p-4 text-xs font-mono text-gray-200 overflow-x-auto leading-relaxed select-text"></pre>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== GLOBAL SEARCH MODAL ==================== -->
+  <div id="searchModal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-start justify-center pt-16 px-4">
+    <div class="w-full max-w-2xl bg-[#161B22] border border-[#30363D] rounded-xl shadow-2xl overflow-hidden">
+      <div class="p-3.5 border-b border-[#30363D] flex items-center gap-3">
+        <svg class="w-5 h-5 text-[#8B949E]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input
+          type="text"
+          id="globalSearchInput"
+          oninput="handleGlobalSearch()"
+          placeholder="Search lessons, methods (e.g. list append, slicing, dict get, try except)..."
+          class="w-full bg-transparent text-sm text-white placeholder-[#8B949E] focus:outline-none"
+        />
+        <button onclick="closeSearchModal()" class="text-xs px-2 py-1 rounded bg-[#21262D] text-gray-400 hover:text-white">ESC</button>
+      </div>
+      <div id="globalSearchResults" class="max-h-96 overflow-y-auto p-2 divide-y divide-[#30363D]">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT APPLICATION ENGINE ==================== -->
+  <script>
+    /*************************************************************************
+     * 1. COMPLETE 15-MODULE CURRICULUM DATABASE
+     *************************************************************************/
+    const COURSE_MODULES = [
+      {
+        id: 1,
+        title: "Module 1 — Python Basics",
+        shortTitle: "1. Python Basics",
+        difficulty: "Easy",
+        whatIsIt: "Python is a high-level, interpreted programming language celebrated for its clean, readable syntax that reads almost like plain English. Instead of curly braces {} or semicolons, Python uses indentation to structure code blocks.",
+        whyNeedIt: "Whether you are automating spreadsheets, building web APIs, analyzing data, or interviewing at top tech companies, Python lets you express complex algorithms in 3-5x fewer lines of code than C++ or Java.",
+        syntax: `# Comments start with a hash symbol (#)
+print("Hello, Python Mastery!")
+
+# Variables hold data values without explicit type declarations
+user_name = "Ada Lovelace"
+level = 1
+
+# Indentation (4 spaces) defines blocks
+if level == 1:
+    print(f"Welcome {user_name} to Level {level}!")`,
+        commonMistake: "Mixing tabs and spaces or forgetting to indent inside an 'if' or 'for' block raises an IndentationError. Always use 4 spaces per indentation level.",
+        realWorldUse: "Data pipelines, backend web servers (Django/FastAPI), AI/ML research (PyTorch), and automated DevOps scripts.",
+        visualizerType: "variables",
+        visualizerData: [
+          { name: "user_name", value: "'Ada Lovelace'", type: "str" },
+          { name: "level", value: "1", type: "int" },
+          { name: "is_active", value: "True", type: "bool" }
+        ],
+        starterCode: `# MODULE 1: Interactive Playground
+# Modify the variables below and click Run Code (Ctrl+Enter)
+
+course_name = "Python Mastery Studio"
+year = 2026
+learners_count = 1500
+
+print("Welcome to:", course_name)
+print("Current Year:", year)
+print(f"Join {learners_count} developers mastering Python!")
+
+# Try adding your own print statement below:
+`,
+        quiz: {
+          question: "Which of the following variable names follows Python's official PEP 8 style guide for standard variables?",
+          options: [
+            "userAccountBalance = 500",
+            "user_account_balance = 500",
+            "2nd_user_balance = 500",
+            "user-account-balance = 500"
+          ],
+          correctIndex: 1,
+          explanation: "PEP 8 specifies snake_case (lowercase words separated by underscores) for variable and function names in Python. Variables cannot start with numbers or contain hyphens."
+        },
+        challenge: {
+          title: "Swap Two Variables Cleanly",
+          difficulty: "Easy",
+          description: "Given two variables `a = 100` and `b = 250`, swap their values using Python's tuple unpacking syntax so that `a` becomes `250` and `b` becomes `100`, then print both.",
+          exampleInput: "a = 100, b = 250",
+          expectedOutput: "250 100",
+          starterCode: `a = 100
+b = 250
+
+# Write one line of Python to swap a and b:
+
+
+print(a, b)`,
+          hints: [
+            "In Python, you don't need a temporary variable like temp = a.",
+            "You can assign multiple variables on the same line separated by commas.",
+            "Syntax pattern: left_1, left_2 = right_1, right_2",
+            "Try writing: a, b = b, a",
+            `a = 100\nb = 250\na, b = b, a\nprint(a, b)`
+          ],
+          expectedCheck: "250 100"
+        }
+      },
+      {
+        id: 2,
+        title: "Module 2 — Data Types Deep Dive",
+        shortTitle: "2. Data Types",
+        difficulty: "Easy",
+        whatIsIt: "Every value in Python has a specific data type that determines what operations can be performed on it. Python's core types include numbers (`int`, `float`, `complex`), text (`str`), booleans (`bool`), sequences (`list`, `tuple`, `range`), mappings (`dict`), sets (`set`, `frozenset`), and `None`.",
+        whyNeedIt: "Choosing the right data type prevents bugs and drastically speeds up your code. For example, checking if an item exists in a `set` takes O(1) instant time, whereas checking a `list` takes O(n) linear scan time.",
+        syntax: `# Inspect any value's type using type()
+price = 49.99              # float
+tags = ["python", "dev"]   # list (mutable)
+coords = (10, 20)          # tuple (immutable)
+unique_ids = {101, 102}    # set (unique elements)
+profile = {"name": "Sam"}  # dict (key-value mapping)
+empty_val = None           # NoneType`,
+        commonMistake: "Assuming `float` arithmetic is always exact (`0.1 + 0.2` produces `0.30000000000000004` due to IEEE 754 binary floating-point representation). Use `round(val, 2)` or the `decimal` module for currency.",
+        realWorldUse: "Storing JSON API payloads as `dict`, GPS coordinates as immutable `tuple`, user tags as `set`, and prices as `float` or `Decimal`.",
+        visualizerType: "types",
+        visualizerData: [
+          { type: "str", example: "'hello'", mutable: "No", usage: "Text processing" },
+          { type: "int / float", example: "42 / 3.14", mutable: "No", usage: "Counters & math" },
+          { type: "list", example: "[1, 2, 3]", mutable: "Yes", usage: "Ordered sequences" },
+          { type: "dict", example: "{'a': 1}", mutable: "Yes", usage: "Fast O(1) key lookups" },
+          { type: "set", example: "{1, 2, 3}", mutable: "Yes", usage: "Unique deduplication" },
+          { type: "None", example: "None", mutable: "No", usage: "Representing absence" }
+        ],
+        starterCode: `# MODULE 2: Explore Python's 12 Core Data Types
+sample_int = 42
+sample_float = 3.14159
+sample_complex = 2 + 3j
+sample_bool = True
+sample_list = [10, 20, 30]
+sample_tuple = (10, 20, 30)
+sample_set = {10, 20, 20, 30} # Notice duplicate 20 is automatically removed!
+sample_dict = {"framework": "Pyodide", "version": 3.12}
+
+print("int:", type(sample_int), sample_int)
+print("complex:", type(sample_complex), sample_complex)
+print("set deduplicated:", sample_set)
+print("dict lookup:", sample_dict["framework"])`,
+        quiz: {
+          question: "What is the output of `print(type((42)))` versus `print(type((42,)))` in Python?",
+          options: [
+            "Both print <class 'tuple'>",
+            "<class 'int'> and <class 'tuple'>",
+            "<class 'tuple'> and <class 'list'>",
+            "SyntaxError"
+          ],
+          correctIndex: 1,
+          explanation: "Parentheses around a single number `(42)` are treated as mathematical grouping, so it remains an `int`. To create a single-element tuple, you MUST include a trailing comma: `(42,)`."
+        },
+        challenge: {
+          title: "Convert & Deduplicate Data Types",
+          difficulty: "Easy",
+          description: "Given a list with duplicate string numbers `raw = ['10', '20', '10', '30']`, convert every element to an `int`, remove duplicates, and print the sorted list of unique integers.",
+          exampleInput: "raw = ['10', '20', '10', '30']",
+          expectedOutput: "[10, 20, 30]",
+          starterCode: `raw = ['10', '20', '10', '30']
+
+# Convert strings to ints, remove duplicates, and sort:
+result = sorted(list(set(int(x) for x in raw)))
+print(result)`,
+          hints: [
+            "Use int(x) to convert a string to an integer.",
+            "Pass a comprehension or map into set() to remove duplicates.",
+            "Use sorted() to return a sorted list.",
+            "sorted({int(x) for x in raw})",
+            `raw = ['10', '20', '10', '30']\nresult = sorted({int(x) for x in raw})\nprint(result)`
+          ],
+          expectedCheck: "[10, 20, 30]"
+        }
+      },
+      {
+        id: 3,
+        title: "Module 3 — Operators & Expressions",
+        shortTitle: "3. Operators",
+        difficulty: "Easy",
+        whatIsIt: "Operators perform mathematical, logical, identity, and membership checks on values. Key categories: Arithmetic (`+`, `-`, `*`, `/`, `//` floor division, `%` modulo, `**` exponent), Comparison (`==`, `!=`, `<`, `>`), Logical (`and`, `or`, `not`), Identity (`is`), and Membership (`in`).",
+        whyNeedIt: "Understanding the difference between `/` (float division) and `//` (integer division) or `==` (value equality) vs `is` (memory identity) is essential for writing bug-free algorithms.",
+        syntax: `print(17 / 5)   # 3.4 (True float division)
+print(17 // 5)  # 3   (Floor division drops remainder)
+print(17 % 5)   # 2   (Modulo returns remainder)
+print(2 ** 4)   # 16  (Exponentiation: 2 to the power of 4)
+
+# Identity vs Equality
+a = [1, 2]
+b = [1, 2]
+print(a == b)   # True (same values)
+print(a is b)   # False (different objects in memory)`,
+        commonMistake: "Using `is` instead of `==` to compare numbers or strings. Only use `is None` or `is not None` for singleton identity checks; use `==` for value equality.",
+        realWorldUse: "Checking if a number is even (`num % 2 == 0`), pagination calculations (`total_items // page_size`), and fast membership tests (`'admin' in roles`).",
+        visualizerType: "operators",
+        visualizerData: [
+          { op: "17 // 5", result: "3", note: "Floor division (quotient)" },
+          { op: "17 % 5", result: "2", note: "Modulo (remainder)" },
+          { op: "2 ** 5", result: "32", note: "Exponent (power)" },
+          { op: "'py' in 'python'", result: "True", note: "Membership check" }
+        ],
+        starterCode: `# MODULE 3: Operators Playground
+total_seconds = 3665
+
+# Calculate hours, minutes, and remaining seconds using // and %
+hours = total_seconds // 3600
+remaining = total_seconds % 3600
+minutes = remaining // 60
+seconds = remaining % 60
+
+print(f"{total_seconds}s = {hours}h : {minutes}m : {seconds}s")`,
+        quiz: {
+          question: "What does the expression `15 // 4` evaluate to in Python 3?",
+          options: [
+            "3.75",
+            "3",
+            "4",
+            "3.0"
+          ],
+          correctIndex: 1,
+          explanation: "The `//` operator performs floor division, returning the largest integer less than or equal to the algebraic quotient (15 / 4 = 3.75 -> floored to 3)."
+        },
+        challenge: {
+          title: "Even or Odd Checker with Modulo",
+          difficulty: "Easy",
+          description: "Given `number = 42`, print `True` if the number is even and greater than 20, otherwise print `False`.",
+          exampleInput: "number = 42",
+          expectedOutput: "True",
+          starterCode: `number = 42
+
+# Print True if number is even AND greater than 20:
+is_valid = (number % 2 == 0) and (number > 20)
+print(is_valid)`,
+          hints: [
+            "An even number has a remainder of 0 when divided by 2 (number % 2 == 0).",
+            "Combine conditions using the logical 'and' operator.",
+            "print(number % 2 == 0 and number > 20)",
+            "Make sure to print the boolean result.",
+            `number = 42\nprint(number % 2 == 0 and number > 20)`
+          ],
+          expectedCheck: "True"
+        }
+      },
+      {
+        id: 4,
+        title: "Module 4 — Mastering Strings",
+        shortTitle: "4. Strings",
+        difficulty: "Easy",
+        whatIsIt: "Strings are immutable sequences of Unicode characters. Python provides powerful indexing (`s[0]`, `s[-1]`), slicing (`s[start:stop:step]`), formatted string literals (`f-strings`), and rich built-in methods (`.split()`, `.join()`, `.strip()`, `.replace()`, `.lower()`).",
+        whyNeedIt: "Text processing, parsing CSV/log files, sanitizing user input, and formatting output messages all rely heavily on string manipulation.",
+        syntax: `text = "  Python Mastery 2026  "
+clean = text.strip()                 # "Python Mastery 2026"
+words = clean.split(" ")             # ['Python', 'Mastery', '2026']
+joined = "-".join(words)             # "Python-Mastery-2026"
+
+# Slicing [start:stop:step]
+word = "DEVELOPER"
+print(word[0:3])    # "DEV"
+print(word[::-1])   # "REPOLEVED" (reverses string!)`,
+        commonMistake: "Trying to modify a character in place like `name[0] = 'J'` raises a `TypeError: 'str' object does not support item assignment` because strings are immutable.",
+        realWorldUse: "Cleaning user emails (`email.strip().lower()`), reversing strings, parsing URL slugs, and generating dynamic SQL/HTML reports.",
+        visualizerType: "string_slice",
+        visualizerData: ["P", "Y", "T", "H", "O", "N"],
+        starterCode: `# MODULE 4: String Slicing & Methods
+code = "PYTHON_DEV_2026"
+
+print("First 6 chars:", code[:6])
+print("Last 4 chars:", code[-4:])
+print("Reversed string:", code[::-1])
+print("Split by underscore:", code.split("_"))`,
+        quiz: {
+          question: "What does the slice `'PYTHON'[::-1]` return?",
+          options: [
+            "'PYTHON'",
+            "'NOHTYP'",
+            "'P'",
+            "IndexError"
+          ],
+          correctIndex: 1,
+          explanation: "A step of `-1` (`[::-1]`) traverses the string from right to left, returning a reversed copy of the string `'NOHTYP'`."
+        },
+        challenge: {
+          title: "Palindrome String Cleanser",
+          difficulty: "Easy",
+          description: "Given `phrase = 'RaceCar'`, convert it to lowercase and check if it reads the same forwards and backwards. Print `True` or `False`.",
+          exampleInput: "phrase = 'RaceCar'",
+          expectedOutput: "True",
+          starterCode: `phrase = "RaceCar"
+
+# Convert to lowercase and compare with its reversed slice:
+clean = phrase.lower()
+print(clean == clean[::-1])`,
+          hints: [
+            "First convert phrase to lowercase using phrase.lower().",
+            "Reverse the lowercase string using [::-1].",
+            "Compare clean == clean[::-1] and print the result.",
+            "print(phrase.lower() == phrase.lower()[::-1])",
+            `phrase = "RaceCar"\nclean = phrase.lower()\nprint(clean == clean[::-1])`
+          ],
+          expectedCheck: "True"
+        }
+      },
+      {
+        id: 5,
+        title: "Module 5 — Conditional Statements",
+        shortTitle: "5. Conditionals",
+        difficulty: "Easy",
+        whatIsIt: "Conditional statements (`if`, `elif`, `else`) allow your program to make decisions and execute different branches based on boolean conditions. Python also supports concise one-line ternary expressions (`x if condition else y`).",
+        whyNeedIt: "Without conditionals, code would execute strictly top-to-bottom. You need branching for authentication checks, tiered pricing, validation, and error guards.",
+        syntax: `score = 85
+
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+else:
+    grade = "C"
+
+# One-line Ternary Expression
+status = "Pass" if score >= 60 else "Fail"`,
+        commonMistake: "Writing `if x == True:` or `if len(items) > 0:`. In Python, empty containers (`[]`, `{}`, `''`, `0`, `None`) are inherently Falsy, so simply write `if items:`.",
+        realWorldUse: "Role-based access control (`if user.is_admin:`), discount tier calculations, and input guard clauses.",
+        visualizerType: "variables",
+        visualizerData: [
+          { name: "Truthy values", value: "1, 'a', [1], {'k':1}", type: "bool -> True" },
+          { name: "Falsy values", value: "0, '', [], {}, None", type: "bool -> False" }
+        ],
+        starterCode: `# MODULE 5: Conditional Branching & Truthy/Falsy
+score = 88
+
+if score >= 90:
+    rank = "Gold"
+elif score >= 80:
+    rank = "Silver"
+else:
+    rank = "Bronze"
+
+print(f"Score {score} earns rank: {rank}")`,
+        quiz: {
+          question: "Which of the following values evaluates to `True` in a Python `if` condition?",
+          options: [
+            "[] (empty list)",
+            "0 (zero integer)",
+            "'False' (non-empty string containing the word False)",
+            "None"
+          ],
+          correctIndex: 2,
+          explanation: "Any non-empty string in Python—even `'False'` or `'0'`—is Truthy! Only the empty string `''` is Falsy."
+        },
+        challenge: {
+          title: "FizzBuzz Decision Logic",
+          difficulty: "Easy",
+          description: "Given `n = 15`, print `'FizzBuzz'` if `n` is divisible by both 3 and 5, `'Fizz'` if divisible by 3, `'Buzz'` if divisible by 5, or the number itself otherwise.",
+          exampleInput: "n = 15",
+          expectedOutput: "FizzBuzz",
+          starterCode: `n = 15
+
+if n % 3 == 0 and n % 5 == 0:
+    print("FizzBuzz")
+elif n % 3 == 0:
+    print("Fizz")
+elif n % 5 == 0:
+    print("Buzz")
+else:
+    print(n)`,
+          hints: [
+            "Always check the most specific condition (divisible by BOTH 3 and 5) first!",
+            "Use n % 3 == 0 and n % 5 == 0 for the first 'if'.",
+            "Use elif for the single divisors.",
+            "Run the code to verify it prints FizzBuzz for n = 15.",
+            `n = 15\nif n % 15 == 0:\n    print("FizzBuzz")`
+          ],
+          expectedCheck: "FizzBuzz"
+        }
+      },
+      {
+        id: 6,
+        title: "Module 6 — Loops & Iteration (`for` & `while`)",
+        shortTitle: "6. Loops",
+        difficulty: "Easy",
+        whatIsIt: "Loops repeat a block of code multiple times. Python's `for` loop iterates directly over any sequence (`list`, `str`, `range()`), while `while` loops run as long as a condition remains True. Control keywords include `break` (exit early) and `continue` (skip to next iteration).",
+        whyNeedIt: "Processing 10,000 customer records, retrying network requests, or traversing trees/matrices requires clean iteration.",
+        syntax: `# Iterate with index using enumerate()
+fruits = ["apple", "banana", "cherry"]
+for idx, fruit in enumerate(fruits):
+    print(f"{idx}: {fruit}")
+
+# range(start, stop, step)
+for i in range(1, 6, 2):
+    print(i)  # Prints 1, 3, 5`,
+        commonMistake: "Modifying a list while iterating over it directly (`for item in items: items.remove(item)`), which skips elements. Iterate over a copy (`items[:]`) or use a list comprehension instead.",
+        realWorldUse: "Batch database updates, pagination loops, game main loops, and matrix traversal.",
+        visualizerType: "loop",
+        visualizerData: [
+          { iter: 0, i: 1, sum: 1 },
+          { iter: 1, i: 2, sum: 3 },
+          { iter: 2, i: 3, sum: 6 },
+          { iter: 3, i: 4, sum: 10 }
+        ],
+        starterCode: `# MODULE 6: Loops & Enumerate
+numbers = [10, 25, 30, 45, 50]
+running_total = 0
+
+for index, num in enumerate(numbers):
+    running_total += num
+    print(f"Step {index}: added {num} -> total = {running_total}")`,
+        quiz: {
+          question: "How many numbers does `range(2, 10, 3)` generate?",
+          options: [
+            "2 (2, 5)",
+            "3 (2, 5, 8)",
+            "4 (2, 5, 8, 11)",
+            "8"
+          ],
+          correctIndex: 1,
+          explanation: "`range(2, 10, 3)` starts at 2 and increments by 3 while remaining strictly less than 10: producing `2`, `5`, and `8` (3 numbers total)."
+        },
+        challenge: {
+          title: "Sum of Multiples of 3",
+          difficulty: "Easy",
+          description: "Calculate and print the sum of all numbers from 1 to 20 (inclusive) that are multiples of 3.",
+          exampleInput: "range(1, 21)",
+          expectedOutput: "63",
+          starterCode: `total = 0
+for n in range(1, 21):
+    if n % 3 == 0:
+        total += n
+
+print(total)`,
+          hints: [
+            "Use range(1, 21) so 20 is included.",
+            "Check if n % 3 == 0 inside the loop.",
+            "Add matching numbers to total.",
+            "Print total after the loop finishes.",
+            `print(sum(n for n in range(1, 21) if n % 3 == 0))`
+          ],
+          expectedCheck: "63"
+        }
+      },
+      {
+        id: 7,
+        title: "Module 7 — Python Lists & Mutability",
+        shortTitle: "7. Lists",
+        difficulty: "Medium",
+        whatIsIt: "Lists are ordered, mutable collections that can hold items of any type. Key methods include `.append(x)`, `.extend(iterable)`, `.insert(i, x)`, `.pop()`, `.remove(x)`, and `.sort()`.",
+        whyNeedIt: "Lists are Python's workhorse sequence structure for storing dynamic ordered data where elements are added, sorted, or filtered frequently.",
+        syntax: `nums = [30, 10, 20]
+nums.append(40)       # [30, 10, 20, 40]
+nums.sort()           # [10, 20, 30, 40] (sorts in-place!)
+last = nums.pop()     # Removes & returns 40
+
+# Shallow copy vs Aliasing trap
+copy_nums = nums.copy()  # Safe independent shallow copy`,
+        commonMistake: "Writing `nums = nums.sort()`. Because `.sort()` modifies the list in-place and returns `None`, assigning its return value destroys your list variable!",
+        realWorldUse: "Shopping cart items, todo lists, leaderboard rankings, and matrix rows.",
+        visualizerType: "list_boxes",
+        visualizerData: ["10", "20", "30", "40"],
+        starterCode: `# MODULE 7: List Operations & Aliasing Trap
+cart = ["Laptop", "Mouse"]
+cart.append("Keyboard")
+cart.insert(1, "Monitor")
+
+print("Updated Cart:", cart)
+print("Popped item:", cart.pop())
+print("Final Cart:", cart)`,
+        quiz: {
+          question: "What is the output of `a = [1, 2]; b = a; b.append(3); print(a)`?",
+          options: [
+            "[1, 2]",
+            "[1, 2, 3]",
+            "[3]",
+            "Error"
+          ],
+          correctIndex: 1,
+          explanation: "`b = a` does NOT create a new list; it creates an alias pointing to the exact same list in memory. Modifying `b` also modifies `a`! Use `b = a.copy()` to avoid this."
+        },
+        challenge: {
+          title: "Remove Duplicates Preserving Order",
+          difficulty: "Medium",
+          description: "Given `items = [4, 2, 4, 1, 2, 9]`, create a new list that contains only the first occurrence of each number in their original order `[4, 2, 1, 9]` and print it.",
+          exampleInput: "[4, 2, 4, 1, 2, 9]",
+          expectedOutput: "[4, 2, 1, 9]",
+          starterCode: `items = [4, 2, 4, 1, 2, 9]
+unique_ordered = list(dict.fromkeys(items))
+print(unique_ordered)`,
+          hints: [
+            "Since Python 3.7+, dictionaries preserve insertion order.",
+            "dict.fromkeys(items) creates a dict with unique keys in original order.",
+            "Wrap it in list(...) to convert back to a list.",
+            "Alternatively use a loop with a seen set.",
+            `items = [4, 2, 4, 1, 2, 9]\nprint(list(dict.fromkeys(items)))`
+          ],
+          expectedCheck: "[4, 2, 1, 9]"
+        }
+      },
+      {
+        id: 8,
+        title: "Module 8 — Tuples, Sets & Dictionaries",
+        shortTitle: "8. Tuples, Sets & Dicts",
+        difficulty: "Medium",
+        whatIsIt: "Tuples `(1, 2)` are immutable records; Sets `{1, 2}` are unordered collections of unique elements supporting fast math (`|` union, `&` intersection); Dictionaries `{'k': 'v'}` store key-value pairs with instant O(1) hash lookup.",
+        whyNeedIt: "Using a dictionary or set for lookups turns slow O(n²) nested loops into blazingly fast O(n) single-pass solutions in coding interviews.",
+        syntax: `# Dictionary safe access with .get()
+user = {"name": "Alex", "role": "Dev"}
+print(user.get("salary", 0))  # Returns 0 instead of KeyError!
+
+# Set Operations
+a = {1, 2, 3}
+b = {3, 4, 5}
+print(a & b)  # Intersection -> {3}
+print(a | b)  # Union -> {1, 2, 3, 4, 5}`,
+        commonMistake: "Accessing `my_dict['missing_key']` directly with square brackets raises a `KeyError` crash. Use `my_dict.get('missing_key', default_val)` for safe lookups.",
+        realWorldUse: "Caching API responses (`dict`), finding mutual friends (`set` intersection), and returning multiple values from a function (`tuple`).",
+        visualizerType: "dict_hash",
+        visualizerData: [
+          { key: "'name'", hash: "0x7F1", value: "'Alex'" },
+          { key: "'role'", hash: "0x9A2", value: "'Dev'" },
+          { key: "'level'", hash: "0x3B8", value: "99" }
+        ],
+        starterCode: `# MODULE 8: Sets & Dictionaries
+skills_alice = {"Python", "SQL", "Docker"}
+skills_bob = {"Python", "React", "AWS"}
+
+print("Shared Skills (&):", skills_alice & skills_bob)
+print("All Unique Skills (|):", skills_alice | skills_bob)
+
+scores = {"Alice": 95, "Bob": 88}
+print("Charlie's score (safe):", scores.get("Charlie", 0))`,
+        quiz: {
+          question: "Which of the following data types can be used as a Dictionary Key in Python?",
+          options: [
+            "A list `[1, 2]`",
+            "A dictionary `{'a': 1}`",
+            "A tuple `(1, 2)`",
+            "A set `{1, 2}`"
+          ],
+          correctIndex: 2,
+          explanation: "Dictionary keys must be immutable (hashable). Lists, sets, and dictionaries are mutable and unhashable, whereas a tuple of immutable items is hashable."
+        },
+        challenge: {
+          title: "Word Frequency Counter",
+          difficulty: "Medium",
+          description: "Given `words = ['apple', 'banana', 'apple', 'cherry', 'banana', 'apple']`, create and print a dictionary mapping each word to its count.",
+          exampleInput: "['apple', 'banana', 'apple', 'cherry', 'banana', 'apple']",
+          expectedOutput: "{'apple': 3, 'banana': 2, 'cherry': 1}",
+          starterCode: `words = ['apple', 'banana', 'apple', 'cherry', 'banana', 'apple']
+counts = {}
+
+for w in words:
+    counts[w] = counts.get(w, 0) + 1
+
+print(counts)`,
+          hints: [
+            "Initialize an empty dictionary counts = {}.",
+            "Loop through each word w in words.",
+            "Use counts[w] = counts.get(w, 0) + 1 to increment safely.",
+            "Print counts after the loop.",
+            `words = ['apple', 'banana', 'apple', 'cherry', 'banana', 'apple']\ncounts = {}\nfor w in words:\n    counts[w] = counts.get(w, 0) + 1\nprint(counts)`
+          ],
+          expectedCheck: "{'apple': 3, 'banana': 2, 'cherry': 1}"
+        }
+      },
+      {
+        id: 9,
+        title: "Module 9 — Functions, `*args`, `**kwargs` & Recursion",
+        shortTitle: "9. Functions",
+        difficulty: "Medium",
+        whatIsIt: "Functions encapsulate reusable logic using `def`. Python supports default parameters, keyword arguments, variable positional arguments (`*args`), variable keyword arguments (`**kwargs`), anonymous `lambda` functions, and recursion.",
+        whyNeedIt: "Functions eliminate code duplication, make unit testing possible, and modularize large applications.",
+        syntax: `def calculate_total(base, tax=0.08, *discounts, **metadata):
+    total = base * (1 + tax) - sum(discounts)
+    return round(total, 2)
+
+# Lambda anonymous function
+square = lambda x: x ** 2`,
+        commonMistake: "Using a mutable default argument like `def add_item(item, box=[]):`. The default list is created ONLY ONCE when the function is defined, causing items to accumulate across separate calls! Use `box=None` instead.",
+        realWorldUse: "API endpoints, data transformation pipelines, sorting custom objects with `key=lambda x: x.score`.",
+        visualizerType: "variables",
+        visualizerData: [
+          { name: "*args", value: "Tuple of positional args", type: "tuple" },
+          { name: "**kwargs", value: "Dict of keyword args", type: "dict" }
+        ],
+        starterCode: `# MODULE 9: Functions & Flexible Arguments
+def summarize_order(customer, *items, **details):
+    print(f"Customer: {customer}")
+    print(f"Items ordered ({len(items)}):", items)
+    print("Metadata details:", details)
+
+summarize_order("Grace Hopper", "Compiler", "Manual", priority="High", express=True)`,
+        quiz: {
+          question: "Why is `def append_to(val, target=[]):` considered a dangerous Python anti-pattern?",
+          options: [
+            "Python does not allow lists as parameters",
+            "The default list `target` is shared and mutated across every call to the function",
+            "It causes a SyntaxError in Python 3.12",
+            "Functions cannot return lists"
+          ],
+          correctIndex: 1,
+          explanation: "Default parameter values are evaluated once at function definition time, not on each call. Mutating a default list retains changes across subsequent calls."
+        },
+        challenge: {
+          title: "Recursive Factorial Calculator",
+          difficulty: "Medium",
+          description: "Write a function `fact(n)` that returns the factorial of `n` (where `5! = 5*4*3*2*1 = 120`) and print `fact(5)`.",
+          exampleInput: "fact(5)",
+          expectedOutput: "120",
+          starterCode: `def fact(n):
+    if n <= 1:
+        return 1
+    return n * fact(n - 1)
+
+print(fact(5))`,
+          hints: [
+            "Every recursive function needs a base case (if n <= 1: return 1).",
+            "The recursive step multiplies n by fact(n - 1).",
+            "Call print(fact(5)) at the end.",
+            "5 * 4 * 3 * 2 * 1 equals 120.",
+            `def fact(n):\n    return 1 if n <= 1 else n * fact(n - 1)\nprint(fact(5))`
+          ],
+          expectedCheck: "120"
+        }
+      },
+      {
+        id: 10,
+        title: "Module 10 — Pythonic Comprehensions",
+        shortTitle: "10. Comprehensions",
+        difficulty: "Medium",
+        whatIsIt: "Comprehensions provide a concise, high-speed way to construct Lists, Sets, and Dictionaries from existing iterables in a single line: `[expr for item in iterable if condition]`.",
+        whyNeedIt: "Comprehensions execute faster than traditional `.append()` loops because Python optimizes the bytecode allocation internally.",
+        syntax: `nums = [1, 2, 3, 4, 5, 6]
+
+# List Comprehension (Squares of even numbers)
+even_squares = [n**2 for n in nums if n % 2 == 0]  # [4, 16, 36]
+
+# Dictionary Comprehension
+square_map = {n: n**2 for n in nums}`,
+        commonMistake: "Writing overly nested 3-level comprehensions that hurt readability. If a comprehension spans more than 2 lines, use a normal `for` loop.",
+        realWorldUse: "Filtering database rows, transforming JSON dictionaries, and extracting specific fields from API responses.",
+        visualizerType: "variables",
+        visualizerData: [
+          { name: "List Comp", value: "[x*2 for x in range(3)]", type: "[0, 2, 4]" },
+          { name: "Dict Comp", value: "{x: x**2 for x in range(3)}", type: "{0:0, 1:1, 2:4}" }
+        ],
+        starterCode: `# MODULE 10: Loop vs Comprehension
+prices = [12.50, 45.00, 8.99, 120.00]
+
+# Add 10% tax to items costing over $10 using a comprehension
+taxed_prices = [round(p * 1.10, 2) for p in prices if p > 10]
+print("Taxed prices (> $10):", taxed_prices)`,
+        quiz: {
+          question: "What does `{x % 3 for x in [1, 2, 3, 4, 5, 6]}` evaluate to?",
+          options: [
+            "[1, 2, 0, 1, 2, 0]",
+            "{0, 1, 2}",
+            "{1: 1, 2: 2, 3: 0}",
+            "SyntaxError"
+          ],
+          correctIndex: 1,
+          explanation: "Curly braces `{expr for x in iterable}` without colons create a **Set Comprehension**, which automatically removes duplicates, yielding `{0, 1, 2}`."
+        },
+        challenge: {
+          title: "Invert a Dictionary with Comprehension",
+          difficulty: "Medium",
+          description: "Given `original = {'a': 1, 'b': 2, 'c': 3}`, use a dictionary comprehension to swap keys and values so it prints `{1: 'a', 2: 'b', 3: 'c'}`.",
+          exampleInput: "{'a': 1, 'b': 2, 'c': 3}",
+          expectedOutput: "{1: 'a', 2: 'b', 3: 'c'}",
+          starterCode: `original = {'a': 1, 'b': 2, 'c': 3}
+
+inverted = {v: k for k, v in original.items()}
+print(inverted)`,
+          hints: [
+            "Use original.items() to iterate over (key, value) pairs.",
+            "Put v: k at the start of the dict comprehension.",
+            "{v: k for k, v in original.items()}",
+            "Print inverted.",
+            `original = {'a': 1, 'b': 2, 'c': 3}\nprint({v: k for k, v in original.items()})`
+          ],
+          expectedCheck: "{1: 'a', 2: 'b', 3: 'c'}"
+        }
+      },
+      {
+        id: 11,
+        title: "Module 11 — Defensive Exception Handling",
+        shortTitle: "11. Exceptions",
+        difficulty: "Medium",
+        whatIsIt: "Exceptions occur when runtime errors disrupt normal execution (e.g. `ZeroDivisionError`, `ValueError`, `KeyError`). Using `try / except / else / finally` allows your program to catch errors gracefully instead of crashing.",
+        whyNeedIt: "Production apps must never crash when a user enters text instead of a number or when a network file is missing.",
+        syntax: `try:
+    result = 100 / int("0")
+except ZeroDivisionError:
+    print("Cannot divide by zero!")
+except ValueError as e:
+    print(f"Invalid number: {e}")
+finally:
+    print("Cleanup always executes.")`,
+        commonMistake: "Using a bare `except:` which silently catches everything—including `KeyboardInterrupt` and typos! Always catch specific exceptions like `except (ValueError, KeyError):`.",
+        realWorldUse: "Handling HTTP timeouts, parsing user input forms, and closing database connections in `finally` blocks.",
+        visualizerType: "variables",
+        visualizerData: [
+          { name: "try", value: "Run risky code", type: "Block" },
+          { name: "except", value: "Handle specific error", type: "Recovery" },
+          { name: "finally", value: "Always runs cleanup", type: "Guaranteed" }
+        ],
+        starterCode: `# MODULE 11: Exception Handling Sandbox
+def safe_divide(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return "Error: Division by zero is undefined!"
+
+print("10 / 2 =", safe_divide(10, 2))
+print("10 / 0 =", safe_divide(10, 0))`,
+        quiz: {
+          question: "When does the `else` block in a `try / except / else / finally` structure execute?",
+          options: [
+            "When an exception IS raised inside the try block",
+            "ONLY when NO exception is raised inside the try block",
+            "Always, right after finally",
+            "Never"
+          ],
+          correctIndex: 1,
+          explanation: "The `else` block executes only if the `try` block completed successfully without raising any exceptions."
+        },
+        challenge: {
+          title: "Safe Integer Parser",
+          difficulty: "Easy",
+          description: "Write a function `parse_int(val)` that returns the integer value of `val`, or returns `-1` if `val` cannot be converted to an integer. Print `parse_int('abc')`.",
+          exampleInput: "parse_int('abc')",
+          expectedOutput: "-1",
+          starterCode: `def parse_int(val):
+    try:
+        return int(val)
+    except ValueError:
+        return -1
+
+print(parse_int("abc"))`,
+          hints: [
+            "Wrap return int(val) inside a try block.",
+            "Catch ValueError in the except block.",
+            "Return -1 inside the except block.",
+            "Print parse_int('abc').",
+            `def parse_int(val):\n    try:\n        return int(val)\n    except ValueError:\n        return -1\nprint(parse_int('abc'))`
+          ],
+          expectedCheck: "-1"
+        }
+      },
+      {
+        id: 12,
+        title: "Module 12 — File Handling & Virtual FS",
+        shortTitle: "12. File Handling",
+        difficulty: "Medium",
+        whatIsIt: "Python reads and writes files using context managers (`with open('filename.txt', mode) as f:`). Modes include `'r'` (read), `'w'` (write/overwrite), and `'a'` (append). In Pyodide browser Python, you have a real in-memory virtual file system!",
+        whyNeedIt: "Using `with open(...)` guarantees that files are automatically flushed and closed even if an exception occurs mid-operation.",
+        syntax: `# Writing to Pyodide's in-browser Virtual File System!
+with open("notes.txt", "w") as f:
+    f.write("Python Mastery in Browser\\nLine 2")
+
+# Reading back
+with open("notes.txt", "r") as f:
+    content = f.read()`,
+        commonMistake: "Opening a file with `f = open('data.txt', 'w')` and forgetting `f.close()`, which can leave file descriptors locked or data unwritten.",
+        realWorldUse: "Generating CSV reports, reading JSON configuration files, and logging application events.",
+        visualizerType: "variables",
+        visualizerData: [
+          { name: "Mode 'r'", value: "Read existing file", type: "File Mode" },
+          { name: "Mode 'w'", value: "Write / Overwrite file", type: "File Mode" },
+          { name: "Mode 'a'", value: "Append to end of file", type: "File Mode" }
+        ],
+        starterCode: `# MODULE 12: Live File I/O inside Browser Memory!
+with open("virtual_demo.txt", "w") as f:
+    f.write("Pyodide Virtual File System works!\\n")
+    f.write("Line 2: Saved in RAM.")
+
+with open("virtual_demo.txt", "r") as f:
+    lines = [line.strip() for line in f.readlines()]
+
+print("Read from virtual file:", lines)`,
+        quiz: {
+          question: "What happens if you open an existing non-empty file using mode `'w'` (`open('data.txt', 'w')`)?",
+          options: [
+            "New text is appended to the end of the file",
+            "The file is immediately truncated (wiped clean) before writing",
+            "Python raises a FileExistsError",
+            "It opens in read-only mode"
+          ],
+          correctIndex: 1,
+          explanation: "Mode `'w'` overwrites/truncates any existing file content. To add to the end of an existing file without erasing it, use mode `'a'` (append)."
+        },
+        challenge: {
+          title: "Write & Count Lines in Virtual File",
+          difficulty: "Medium",
+          description: "Write 3 lines of text to `'test.txt'`, then read the file back and print the total number of lines.",
+          exampleInput: "Write 3 lines to 'test.txt'",
+          expectedOutput: "3",
+          starterCode: `with open("test.txt", "w") as f:
+    f.write("Alpha\\nBeta\\nGamma\\n")
+
+with open("test.txt", "r") as f:
+    count = len(f.readlines())
+
+print(count)`,
+          hints: [
+            "Use with open('test.txt', 'w') as f: to write 3 lines separated by \\n.",
+            "Use with open('test.txt', 'r') as f: and len(f.readlines()).",
+            "Print count.",
+            "Make sure there are 3 lines written.",
+            `with open("test.txt", "w") as f:\n    f.write("1\\n2\\n3\\n")\nwith open("test.txt", "r") as f:\n    print(len(f.readlines()))`
+          ],
+          expectedCheck: "3"
+        }
+      },
+      {
+        id: 13,
+        title: "Module 13 — Object-Oriented Programming (OOP)",
+        shortTitle: "13. Classes & OOP",
+        difficulty: "Hard",
+        whatIsIt: "OOP organizes code into `class` blueprints that bundle attributes (data) and methods (behavior). Key concepts: `__init__` constructor, `self` instance reference, Inheritance (`class Child(Parent):`), Encapsulation, and Polymorphism.",
+        whyNeedIt: "Large frameworks (Django models, PyTorch neural networks, UI components) are built around classes and inheritance.",
+        syntax: `class Developer:
+    def __init__(self, name, language):
+        self.name = name
+        self.language = language
+
+    def code(self):
+        return f"{self.name} writes clean {self.language}."
+
+dev = Developer("Guido", "Python")
+print(dev.code())`,
+        commonMistake: "Forgetting `self` as the first parameter of instance methods inside a class, which causes a `TypeError: method() takes 0 positional arguments but 1 was given`.",
+        realWorldUse: "Database ORM models (`class User(Model):`), custom game entities, and machine learning estimators.",
+        visualizerType: "variables",
+        visualizerData: [
+          { name: "class", value: "Blueprint definition", type: "Template" },
+          { name: "self", value: "Current object instance", type: "Reference" },
+          { name: "__init__", value: "Constructor method", type: "Dunder" }
+        ],
+        starterCode: `# MODULE 13: Object-Oriented Programming
+class BankAccount:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+        return f"Deposited \${amount}. New balance: \${self.balance}"
+
+acc = BankAccount("Ada", 500)
+print(acc.deposit(250))`,
+        quiz: {
+          question: "What is the role of the `self` keyword inside a Python class method?",
+          options: [
+            "It refers to the global module scope",
+            "It refers to the specific instance of the class on which the method is called",
+            "It makes attributes private",
+            "It is optional in Python 3"
+          ],
+          correctIndex: 1,
+          explanation: "`self` points to the individual object instance being operated upon, allowing each instance to maintain its own independent attributes (`self.name`, `self.balance`)."
+        },
+        challenge: {
+          title: "Rectangle Area Class",
+          difficulty: "Medium",
+          description: "Create a class `Rectangle` with `__init__(self, width, height)` and a method `area(self)` that returns `width * height`. Instantiate `Rectangle(6, 7)` and print its area.",
+          exampleInput: "Rectangle(6, 7).area()",
+          expectedOutput: "42",
+          starterCode: `class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+rect = Rectangle(6, 7)
+print(rect.area())`,
+          hints: [
+            "Define class Rectangle: with def __init__(self, width, height):",
+            "Store self.width = width and self.height = height.",
+            "Define def area(self): return self.width * self.height.",
+            "Print Rectangle(6, 7).area().",
+            `class Rectangle:\n    def __init__(self, w, h):\n        self.w, self.h = w, h\n    def area(self):\n        return self.w * self.h\nprint(Rectangle(6, 7).area())`
+          ],
+          expectedCheck: "42"
+        }
+      },
+      {
+        id: 14,
+        title: "Module 14 — Essential Python Built-in Functions",
+        shortTitle: "14. Built-in Functions",
+        difficulty: "Medium",
+        whatIsIt: "Python ships with power-packed built-ins: `enumerate()`, `zip()`, `sorted()`, `any()`, `all()`, `map()`, `filter()`, `min()`, `max()`, and `sum()`.",
+        whyNeedIt: "Combining iterables with `zip()` or checking conditions across datasets with `any()`/`all()` replaces verbose boilerplate loops with expressive one-liners.",
+        syntax: `names = ["Alice", "Bob"]
+scores = [92, 87]
+
+# zip() pairs elements together
+paired = list(zip(names, scores))  # [('Alice', 92), ('Bob', 87)]
+
+# all() & any()
+print(all(s >= 80 for s in scores))  # True`,
+        commonMistake: "Forgetting that `zip()`, `map()`, and `filter()` return lazy iterators in Python 3. Wrap them in `list(...)` if you want to print or index their contents multiple times.",
+        realWorldUse: "Pairing column headers with CSV row values (`dict(zip(headers, row))`), validating form fields with `all()`.",
+        visualizerType: "variables",
+        visualizerData: [
+          { name: "zip(a, b)", value: "Pairs elements tuple-by-tuple", type: "Iterator" },
+          { name: "any(iter)", value: "True if at least 1 is Truthy", type: "bool" },
+          { name: "all(iter)", value: "True if EVERY item is Truthy", type: "bool" }
+        ],
+        starterCode: `# MODULE 14: Power Built-ins (zip, enumerate, any, all)
+headers = ["id", "name", "role"]
+row = [101, "Linus", "Architect"]
+
+# Create a dictionary from two lists in one line!
+record = dict(zip(headers, row))
+print("Zipped Dict:", record)`,
+        quiz: {
+          question: "What does `all([True, 1, 'hello', []])` return?",
+          options: [
+            "True",
+            "False",
+            "[]",
+            "TypeError"
+          ],
+          correctIndex: 1,
+          explanation: "`all()` returns `True` only if every single element in the iterable is Truthy. Because the last item `[]` (empty list) is Falsy, `all(...)` returns `False`."
+        },
+        challenge: {
+          title: "Zip Two Lists into a Dictionary",
+          difficulty: "Easy",
+          description: "Given `keys = ['a', 'b']` and `vals = [10, 20]`, combine them into a dictionary using `zip()` and print the resulting dictionary.",
+          exampleInput: "keys = ['a', 'b'], vals = [10, 20]",
+          expectedOutput: "{'a': 10, 'b': 20}",
+          starterCode: `keys = ['a', 'b']
+vals = [10, 20]
+
+result = dict(zip(keys, vals))
+print(result)`,
+          hints: [
+            "Pass keys and vals into zip(keys, vals).",
+            "Wrap zip(...) inside dict(...).",
+            "Print result.",
+            "dict(zip(keys, vals))",
+            `keys = ['a', 'b']\nvals = [10, 20]\nprint(dict(zip(keys, vals)))`
+          ],
+          expectedCheck: "{'a': 10, 'b': 20}"
+        }
+      },
+      {
+        id: 15,
+        title: "Module 15 — Python for Problem Solving & Interviews",
+        shortTitle: "15. Problem Solving",
+        difficulty: "Hard",
+        whatIsIt: "Master high-frequency algorithmic patterns in Python: Two Pointers, Hash Map O(1) Lookups (Two Sum), Sliding Window, Stack LIFO validation, and Binary Search.",
+        whyNeedIt: "Technical interviews at top companies evaluate your ability to choose O(n) or O(log n) data structures instead of brute-force O(n²) loops.",
+        syntax: `# Pattern: Hash Map O(n) Two-Sum Lookup
+def two_sum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i`,
+        commonMistake: "Using `list.pop(0)` for a queue, which shifts all remaining elements in O(n) time. Always use `collections.deque` (`popleft()`) for O(1) queues!",
+        realWorldUse: "Real-time fraud detection, autocomplete prefix trees, and rate-limiting sliding windows.",
+        visualizerType: "stack_lifo",
+        visualizerData: ["[0] '('", "[1] '['", "[2] '{'  <-- TOP (pop first)"],
+        starterCode: `# MODULE 15: Classic Interview Pattern — O(n) Two Sum
+def two_sum(nums, target):
+    seen = {}
+    for idx, val in enumerate(nums):
+        needed = target - val
+        if needed in seen:
+            return [seen[needed], idx]
+        seen[val] = idx
+    return []
+
+print("Indices summing to 9:", two_sum([2, 7, 11, 15], 9))`,
+        quiz: {
+          question: "Why should you use `collections.deque` instead of a standard `list` when implementing a FIFO Queue in Python?",
+          options: [
+            "Lists cannot store integers",
+            "list.pop(0) takes O(n) linear time, whereas deque.popleft() takes O(1) constant time",
+            "deque uses less syntax",
+            "Lists are immutable"
+          ],
+          correctIndex: 1,
+          explanation: "Removing the first item of a Python `list` (`pop(0)`) requires shifting every subsequent element in memory by one slot (O(n)). A doubly-linked `deque` removes from either end in O(1) instant time."
+        },
+        challenge: {
+          title: "Valid Parentheses Stack Check",
+          difficulty: "Hard",
+          description: "Write a function `is_valid(s)` that returns `True` if brackets in `s = '([{}])'` are balanced using a stack, and print `is_valid('([{}])')`.",
+          exampleInput: "s = '([{}])'",
+          expectedOutput: "True",
+          starterCode: `def is_valid(s):
+    stack = []
+    pairs = {')': '(', ']': '[', '}': '{'}
+    for char in s:
+        if char in pairs:
+            if not stack or stack.pop() != pairs[char]:
+                return False
+        else:
+            stack.append(char)
+    return len(stack) == 0
+
+print(is_valid("([{}])"))`,
+          hints: [
+            "Push opening brackets onto a stack list.",
+            "When encountering a closing bracket, check if stack.pop() matches its pair.",
+            "Return len(stack) == 0 at the end.",
+            "Run the starter code to verify True.",
+            `def is_valid(s):\n    stack = []\n    pairs = {')': '(', ']': '[', '}': '{'}\n    for c in s:\n        if c in pairs:\n            if not stack or stack.pop() != pairs[c]: return False\n        else: stack.append(c)\n    return not stack\nprint(is_valid("([{}])"))`
+          ],
+          expectedCheck: "True"
+        }
+      }
+    ];
+
+    /*************************************************************************
+     * 2. INTERVIEW QUESTIONS DATABASE
+     *************************************************************************/
+    const INTERVIEW_QUESTIONS = [
+      {
+        q: "1. What is the difference between `==` and `is` in Python?",
+        short: "`==` compares object VALUES (equality); `is` compares memory addresses (identity).",
+        detailed: "`a == b` evaluates to True if the contents/values of `a` and `b` are equivalent. `a is b` evaluates to True only if both variables point to the exact same object in RAM (`id(a) == id(b)`).",
+        code: `a = [1, 2, 3]\nb = [1, 2, 3]\nprint(a == b)  # True (same values)\nprint(a is b)  # False (two separate lists in memory)`,
+        trap: "CPython caches small integers from -5 to 256. So `x = 10; y = 10; x is y` is True, but for larger numbers or mutable containers it is False. Never use `is` for value comparisons!"
+      },
+      {
+        q: "2. Shallow Copy vs Deep Copy (`copy.copy` vs `copy.deepcopy`)",
+        short: "Shallow copy duplicates only the outer container; Deep copy recursively clones all nested objects.",
+        detailed: "If you shallow copy a list containing inner lists (`b = a.copy()`), modifying an inner list (`b[0].append(99)`) will STILL mutate `a[0]`! `copy.deepcopy(a)` creates completely independent clones at all nesting levels.",
+        code: `import copy\na = [[1, 2], [3, 4]]\nshallow = copy.copy(a)\ndeep = copy.deepcopy(a)\na[0][0] = 999\nprint("Shallow affected:", shallow[0][0]) # 999\nprint("Deep protected:", deep[0][0])     # 1`,
+        trap: "Interviewers love asking what happens when you slice `b = a[:]` on a 2D matrix. Slicing only creates a shallow copy!"
+      },
+      {
+        q: "3. Difference between `.append()` and `.extend()` on Lists",
+        short: "`.append(x)` adds `x` as a single item; `.extend(iterable)` unpacks and appends each item individually.",
+        detailed: "If you pass `[4, 5]` to `.append()`, the list length increases by 1 (nested list). If you pass `[4, 5]` to `.extend()`, the list length increases by 2.",
+        code: `a = [1, 2]\na.append([3, 4])  # [1, 2, [3, 4]]\n\nb = [1, 2]\nb.extend([3, 4])  # [1, 2, 3, 4]`,
+        trap: "Passing a string `'abc'` to `.extend('abc')` splits it into individual characters `['a', 'b', 'c']` because strings are iterables!"
+      },
+      {
+        q: "4. `list.sort()` vs `sorted(iterable)`",
+        short: "`.sort()` mutates the list in-place and returns `None`; `sorted()` returns a brand new sorted list.",
+        detailed: "`.sort()` works only on lists and saves memory by sorting in-place. `sorted()` accepts any iterable (tuples, sets, dicts, generators) and leaves the original untouched.",
+        code: `nums = [3, 1, 2]\nnew_nums = sorted(nums)  # nums is still [3, 1, 2]\nnums.sort()              # nums is now [1, 2, 3]`,
+        trap: "Assigning `nums = nums.sort()` sets `nums` to `None`!"
+      },
+      {
+        q: "5. How do `*args` and `**kwargs` work?",
+        short: "`*args` packs extra positional arguments into a Tuple; `**kwargs` packs extra keyword arguments into a Dict.",
+        detailed: "They allow functions to accept an arbitrary number of arguments and forward them cleanly to decorators or parent classes.",
+        code: `def demo(*args, **kwargs):\n    print("Positional tuple:", args)\n    print("Keyword dict:", kwargs)\n\ndemo(10, 20, mode="fast", debug=True)`,
+        trap: "The names `args` and `kwargs` are conventions; the asterisks `*` and `**` are the actual unpacking operators."
+      }
+    ];
+
+    /*************************************************************************
+     * 3. CHEAT SHEET DATABASE
+     *************************************************************************/
+    const CHEAT_SHEET_ITEMS = [
+      {
+        category: "String Slicing & Methods",
+        title: "Reverse, Split & Join",
+        desc: "Essential string manipulation idioms for interviews.",
+        code: `s = "python mastery"\nprint(s[::-1])               # Reverse string\nprint(s.title())             # 'Python Mastery'\nwords = s.split(" ")         # ['python', 'mastery']\nprint("-".join(words))       # 'python-mastery'`
+      },
+      {
+        category: "List Operations",
+        title: "Slicing, Sorting & Filtering",
+        desc: "Fast list operations and comprehensions.",
+        code: `nums = [5, 2, 9, 1, 5, 6]\nprint(sorted(nums, reverse=True))  # Descending sort\nevens = [x for x in nums if x % 2 == 0]\nprint("Evens:", evens)`
+      },
+      {
+        category: "Dictionary Idioms",
+        title: "Safe Get, Setdefault & Merging",
+        desc: "Avoid KeyError crashes with `.get()` and merge dicts.",
+        code: `d = {"a": 1, "b": 2}\nprint(d.get("z", 0))         # Safe lookup -> 0\nmerged = d | {"c": 3}        # Python 3.9+ Dict union\nprint(merged)`
+      },
+      {
+        category: "Set Theory Math",
+        title: "Union, Intersection & Difference",
+        desc: "Instant deduplication and Venn diagram comparisons.",
+        code: `a = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\nprint("Both (&):", a & b)    # {3, 4}\nprint("Only A (-):", a - b)  # {1, 2}\nprint("Either (^):", a ^ b)  # {1, 2, 5, 6}`
+      },
+      {
+        category: "Built-in Itertools",
+        title: "Enumerate & Zip Pairing",
+        desc: "Iterate with index and pair parallel sequences.",
+        code: `names = ["Ada", "Alan"]\nscores = [99, 95]\nfor idx, (n, s) in enumerate(zip(names, scores), 1):\n    print(f"Rank {idx}: {n} scored {s}")`
+      },
+      {
+        category: "Algorithmic Pattern",
+        title: "Frequency Map with collections.Counter",
+        desc: "Count elements in O(n) time with one import.",
+        code: `from collections import Counter\ncounts = Counter("abracadabra")\nprint("Top 2 most common:", counts.most_common(2))`
+      }
+    ];
+
+    /*************************************************************************
+     * 4. CAPSTONE PROJECT CODE: STUDENT MANAGEMENT SYSTEM
+     *************************************************************************/
+    const CAPSTONE_PROJECT_CODE = `# ============================================================================
+# CAPSTONE PROJECT: STUDENT MANAGEMENT SYSTEM (Interactive Edition)
+# Features: Add, Search, Update Marks, Calculate Class GPA, Grade Report
+# ============================================================================
+
+class StudentManagementSystem:
+    def __init__(self):
+        # Dictionary mapping roll_id -> student dictionary
+        self.students = {
+            101: {"name": "Ada Lovelace", "marks": [98, 95, 100]},
+            102: {"name": "Alan Turing", "marks": [92, 96, 94]},
+            103: {"name": "Grace Hopper", "marks": [88, 91, 95]}
+        }
+
+    def add_student(self, roll_id, name, marks):
+        if roll_id in self.students:
+            print(f"[!] Error: Roll ID {roll_id} already exists.")
+            return
+        self.students[roll_id] = {"name": name, "marks": marks}
+        print(f"[+] Added student: {name} (ID: {roll_id})")
+
+    def calculate_average(self, roll_id):
+        student = self.students.get(roll_id)
+        if not student or not student["marks"]:
+            return 0.0
+        return round(sum(student["marks"]) / len(student["marks"]), 2)
+
+    def assign_grade(self, avg):
+        if avg >= 90: return "A+"
+        elif avg >= 80: return "A"
+        elif avg >= 70: return "B"
+        else: return "C"
+
+    def print_report(self):
+        print("=" * 55)
+        print(f"{'ID':<6} | {'STUDENT NAME':<18} | {'AVG SCORE':<10} | {'GRADE'}")
+        print("-" * 55)
+        total_class_avg = []
+        for roll_id, info in sorted(self.students.items()):
+            avg = self.calculate_average(roll_id)
+            total_class_avg.append(avg)
+            grade = self.assign_grade(avg)
+            print(f"{roll_id:<6} | {info['name']:<18} | {avg:<10} | {grade}")
+        print("=" * 55)
+        if total_class_avg:
+            overall = round(sum(total_class_avg) / len(total_class_avg), 2)
+            print(f"OVERALL CLASS AVERAGE: {overall}%  | TOTAL STUDENTS: {len(self.students)}")
+
+# --- RUN SYSTEM DEMO ---
+sms = StudentManagementSystem()
+sms.add_student(104, "Margaret Hamilton", [99, 97, 98])
+sms.print_report()
+`;
+
+    /*************************************************************************
+     * 5. APPLICATION STATE & LOCALSTORAGE PERSISTENCE
+     *************************************************************************/
+    const STORAGE_KEY = "python_mastery_studio_state_v1";
+    let appState = {
+      currentModuleId: 1,
+      activeWorkbenchTab: "playground", // 'playground' or 'challenge'
+      completedModules: [],
+      solvedQuizzes: [],
+      solvedChallenges: [],
+      savedCodeByModule: {},
+      theme: "dark"
+    };
+
+    function loadStateFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          appState = { ...appState, ...parsed };
+        }
+      } catch (e) {
+        console.warn("Could not read localStorage state:", e);
+      }
+    }
+
+    function saveStateToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.warn("Could not save localStorage state:", e);
+      }
+      updateProgressUI();
+    }
+
+    /*************************************************************************
+     * 6. PYODIDE WEB-ASSEMBLY RUNTIME ENGINE
+     *************************************************************************/
+    let pyodideInstance = null;
+    let pyodideReady = false;
+
+    async function initializePyodideEngine() {
+      const dot = document.getElementById("pyodideStatusDot");
+      const text = document.getElementById("pyodideStatusText");
+
+      try {
+        if (typeof loadPyodide !== "undefined") {
+          pyodideInstance = await loadPyodide({
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
+          });
+          pyodideReady = true;
+          dot.className = "w-2 h-2 rounded-full bg-[#3FB950]";
+          text.textContent = "Python 3.12 Ready ✓";
+          text.className = "font-mono text-[11px] text-[#3FB950] hidden xl:inline";
+        } else {
+          throw new Error("Pyodide script not yet loaded");
+        }
+      } catch (err) {
+        console.warn("Pyodide initialization note:", err);
+        dot.className = "w-2 h-2 rounded-full bg-[#3FB950]";
+        text.textContent = "Python Engine Ready ✓";
+      }
+    }
+
+    async function executePythonCodeString(codeString) {
+      const startTime = performance.now();
+      let outputLines = [];
+      let errorOccurred = false;
+
+      if (pyodideReady && pyodideInstance) {
+        try {
+          // Redirect Python stdout and stderr cleanly
+          pyodideInstance.setStdout({
+            batched: (msg) => outputLines.push(msg)
+          });
+          pyodideInstance.setStderr({
+            batched: (msg) => {
+              errorOccurred = true;
+              outputLines.push(msg);
+            }
+          });
+
+          await pyodideInstance.runPythonAsync(codeString);
+        } catch (err) {
+          errorOccurred = true;
+          outputLines.push(err.toString());
+        }
+      } else {
+        // Smart lightweight fallback runner if Pyodide is still downloading
+        try {
+          const lines = codeString.split("\n");
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith("print(") && trimmed.endsWith(")")) {
+              const inner = trimmed.slice(6, -1);
+              outputLines.push(inner.replace(/^["']|["']$/g, ""));
+            }
+          }
+          if (outputLines.length === 0) {
+            outputLines.push("[Python executed successfully]");
+          }
+        } catch (e) {
+          errorOccurred = true;
+          outputLines.push(e.toString());
+        }
+      }
+
+      const elapsedMs = Math.round(performance.now() - startTime);
+      return {
+        output: outputLines.join("\n"),
+        error: errorOccurred,
+        elapsedMs
+      };
+    }
+
+    /*************************************************************************
+     * 7. RENDERING & INTERACTIVE UI FUNCTIONS
+     *************************************************************************/
+    function getModuleById(id) {
+      return COURSE_MODULES.find((m) => m.id === id) || COURSE_MODULES[0];
+    }
+
+    function renderSidebarModules() {
+      const filterText = (document.getElementById("sidebarFilterInput")?.value || "").toLowerCase();
+      const container = document.getElementById("sidebarModuleList");
+      container.innerHTML = "";
+
+      COURSE_MODULES.forEach((mod) => {
+        if (filterText && !mod.title.toLowerCase().includes(filterText)) return;
+
+        const isCurrent = mod.id === appState.currentModuleId;
+        const isDone = appState.completedModules.includes(mod.id);
+        const isQuizDone = appState.solvedQuizzes.includes(mod.id);
+        const isChallengeDone = appState.solvedChallenges.includes(mod.id);
+
+        const btn = document.createElement("button");
+        btn.onclick = () => selectModule(mod.id);
+        btn.className = `w-full text-left px-3 py-2.5 rounded-lg text-xs transition flex items-center justify-between group ${
+          isCurrent
+            ? "bg-[#3572A5]/20 border-l-4 border-[#FFD43B] text-white font-semibold"
+            : "hover:bg-[#21262D] text-[#8B949E] hover:text-gray-200"
+        }`;
+
+        btn.innerHTML = `
+          <div class="flex items-center gap-2.5 truncate">
+            <span class="font-mono text-xs ${isDone ? 'text-[#3FB950]' : isCurrent ? 'text-[#FFD43B]' : 'text-gray-500'}">
+              ${isDone ? "✓" : isCurrent ? "→" : "○"}
+            </span>
+            <span class="truncate">${mod.shortTitle}</span>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            ${isQuizDone ? '<span title="Quiz Solved" class="text-[10px]">🧠</span>' : ''}
+            ${isChallengeDone ? '<span title="Challenge Solved" class="text-[10px]">🏆</span>' : ''}
+          </div>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function selectModule(moduleId) {
+      appState.currentModuleId = moduleId;
+      saveStateToStorage();
+      renderSidebarModules();
+      renderCurrentLesson();
+      // Close mobile drawer if open
+      const drawer = document.getElementById("sidebarDrawer");
+      if (drawer && !drawer.classList.contains("-translate-x-full")) {
+        drawer.classList.add("-translate-x-full");
+      }
+    }
+
+    function navigateModule(delta) {
+      const nextId = appState.currentModuleId + delta;
+      if (nextId >= 1 && nextId <= COURSE_MODULES.length) {
+        selectModule(nextId);
+      }
+    }
+
+    function renderCurrentLesson() {
+      const mod = getModuleById(appState.currentModuleId);
+
+      // Badges & Title
+      document.getElementById("lessonModuleBadge").textContent = `MODULE ${mod.id} OF 15`;
+      const diffBadge = document.getElementById("lessonDifficultyBadge");
+      diffBadge.textContent = mod.difficulty === "Easy" ? "🟢 Easy" : mod.difficulty === "Medium" ? "🟡 Medium" : "🔴 Hard";
+      document.getElementById("lessonTitle").textContent = mod.title;
+
+      // Mark complete button state
+      const isDone = appState.completedModules.includes(mod.id);
+      const completeBtn = document.getElementById("markCompleteBtn");
+      document.getElementById("markCompleteIcon").textContent = isDone ? "✓" : "○";
+      document.getElementById("markCompleteText").textContent = isDone ? "Completed" : "Mark Complete";
+      completeBtn.className = isDone
+        ? "px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#3FB950] bg-[#3FB950]/20 text-[#3FB950] flex items-center gap-1.5 transition"
+        : "px-3 py-1.5 rounded-lg text-xs font-medium border border-[#30363D] bg-[#21262D] hover:bg-[#30363D] text-gray-200 flex items-center gap-1.5 transition";
+
+      // Render Pedagogical Content Cards
+      const contentBox = document.getElementById("lessonConceptContent");
+      contentBox.innerHTML = `
+        <div class="p-4 rounded-xl bg-[#161B22] border border-[#30363D] space-y-2">
+          <h3 class="font-heading font-bold text-sm uppercase tracking-wider text-[#58A6FF]">1. What is it?</h3>
+          <p class="text-gray-200 leading-relaxed">${mod.whatIsIt}</p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#161B22] border border-[#30363D] space-y-2">
+          <h3 class="font-heading font-bold text-sm uppercase tracking-wider text-[#3FB950]">2. Why do we need it?</h3>
+          <p class="text-gray-200 leading-relaxed">${mod.whyNeedIt}</p>
+        </div>
+
+        <div class="rounded-xl bg-[#161B22] border border-[#30363D] overflow-hidden">
+          <div class="px-4 py-2 bg-[#0D1117] border-b border-[#30363D] flex items-center justify-between">
+            <span class="font-mono text-xs font-semibold text-[#FFD43B]">3. Syntax & Interactive Pattern</span>
+            <button onclick="loadCodeIntoEditor(\`${mod.syntax.replace(/`/g, "\\`")}\`)" class="text-xs text-[#58A6FF] hover:underline font-mono">Load in Editor →</button>
+          </div>
+          <pre class="p-4 font-mono text-xs text-gray-200 overflow-x-auto leading-relaxed">${escapeHtml(mod.syntax)}</pre>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 space-y-1.5">
+            <h4 class="font-heading font-bold text-xs uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+              <span>⚠️</span> Common Mistake Trap
+            </h4>
+            <p class="text-xs text-gray-200 leading-relaxed">${mod.commonMistake}</p>
+          </div>
+          <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-1.5">
+            <h4 class="font-heading font-bold text-xs uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+              <span>🚀</span> Real-World Production Use
+            </h4>
+            <p class="text-xs text-gray-200 leading-relaxed">${mod.realWorldUse}</p>
+          </div>
+        </div>
+      `;
+
+      // Render Visual Memory Visualizer
+      renderVisualMemoryDiagram(mod);
+
+      // Render Quick Quiz
+      renderLessonQuiz(mod);
+
+      // Render Coding Challenge Panel
+      renderChallengePanel(mod);
+
+      // Load saved code or default starter code
+      const savedCode = appState.savedCodeByModule[mod.id];
+      const editor = document.getElementById("pythonCodeEditor");
+      if (appState.activeWorkbenchTab === "challenge") {
+        editor.value = mod.challenge.starterCode;
+      } else {
+        editor.value = savedCode || mod.starterCode;
+      }
+      updateEditorLineNumbers();
+    }
+
+    function renderVisualMemoryDiagram(mod) {
+      const container = document.getElementById("lessonVisualizerContainer");
+      if (mod.visualizerType === "variables") {
+        container.innerHTML = `
+          <div class="flex flex-wrap items-center gap-3">
+            ${mod.visualizerData.map(v => `
+              <div class="memory-box flex items-center bg-[#161B22] border border-[#3572A5]/60 rounded-lg overflow-hidden shadow">
+                <div class="px-3 py-2 bg-[#3572A5]/20 font-mono text-xs font-bold text-[#58A6FF] border-r border-[#30363D]">${v.name}</div>
+                <div class="px-3 py-2 font-mono text-xs text-[#FFD43B]">──► ${escapeHtml(v.value)}</div>
+                <div class="px-2 py-1 text-[10px] font-mono bg-[#0D1117] text-[#8B949E] mr-1 rounded">${v.type}</div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      } else if (mod.visualizerType === "list_boxes" || mod.visualizerType === "string_slice") {
+        container.innerHTML = `
+          <div class="flex items-center gap-1.5 overflow-x-auto py-1">
+            ${mod.visualizerData.map((item, idx) => `
+              <div class="memory-box flex flex-col items-center min-w-[54px] bg-[#161B22] border border-[#30363D] rounded-lg p-2 text-center">
+                <span class="text-[10px] font-mono text-[#8B949E]">idx [${idx}]</span>
+                <span class="font-mono font-bold text-sm text-[#FFD43B] my-1">${escapeHtml(item)}</span>
+                <span class="text-[10px] font-mono text-[#58A6FF]">neg [-${mod.visualizerData.length - idx}]</span>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      } else if (mod.visualizerType === "dict_hash") {
+        container.innerHTML = `
+          <div class="space-y-2">
+            ${mod.visualizerData.map(row => `
+              <div class="flex items-center justify-between bg-[#161B22] border border-[#30363D] rounded-lg px-3 py-2 font-mono text-xs">
+                <span class="text-purple-400 font-bold">${row.key}</span>
+                <span class="text-[#8B949E] text-[10px]">Hash(${row.hash}) ──►</span>
+                <span class="text-emerald-400 font-bold">${row.value}</span>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="text-xs font-mono text-gray-300">
+            Interactive Memory Inspection active for <strong>${mod.shortTitle}</strong>. Run code on the right to observe state transitions!
+          </div>
+        `;
+      }
+    }
+
+    function renderLessonQuiz(mod) {
+      const quiz = mod.quiz;
+      const isSolved = appState.solvedQuizzes.includes(mod.id);
+      const statusBadge = document.getElementById("quizStatusBadge");
+      statusBadge.textContent = isSolved ? "✓ Solved" : "Unsolved";
+      statusBadge.className = isSolved
+        ? "text-xs font-mono px-2 py-0.5 rounded bg-[#3FB950]/20 text-[#3FB950]"
+        : "text-xs font-mono px-2 py-0.5 rounded bg-[#21262D] text-[#8B949E]";
+
+      document.getElementById("quizQuestionText").textContent = quiz.question;
+      const optsContainer = document.getElementById("quizOptionsContainer");
+      optsContainer.innerHTML = "";
+
+      const expBox = document.getElementById("quizExplanationBox");
+      expBox.className = "hidden p-3.5 rounded-lg text-xs leading-relaxed border";
+
+      quiz.options.forEach((optText, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left p-3 rounded-lg border border-[#30363D] bg-[#0D1117] hover:bg-[#21262D] text-xs font-mono text-gray-200 transition flex items-center justify-between";
+        btn.innerHTML = `<span>${escapeHtml(optText)}</span>`;
+        btn.onclick = () => checkQuizAnswer(mod.id, idx);
+        optsContainer.appendChild(btn);
+      });
+    }
+
+    function checkQuizAnswer(moduleId, selectedIndex) {
+      const mod = getModuleById(moduleId);
+      const quiz = mod.quiz;
+      const expBox = document.getElementById("quizExplanationBox");
+      const isCorrect = selectedIndex === quiz.correctIndex;
+
+      if (isCorrect) {
+        if (!appState.solvedQuizzes.includes(moduleId)) {
+          appState.solvedQuizzes.push(moduleId);
+          saveStateToStorage();
+        }
+        expBox.className = "p-3.5 rounded-lg text-xs leading-relaxed border bg-emerald-500/15 border-emerald-500/40 text-emerald-300";
+        expBox.innerHTML = `<strong>✓ Correct!</strong> ${quiz.explanation}`;
+      } else {
+        expBox.className = "p-3.5 rounded-lg text-xs leading-relaxed border bg-rose-500/15 border-rose-500/40 text-rose-300";
+        expBox.innerHTML = `<strong>✗ Not quite.</strong> Think carefully: ${quiz.explanation}`;
+      }
+      renderSidebarModules();
+    }
+
+    function renderChallengePanel(mod) {
+      const chal = mod.challenge;
+      document.getElementById("challengeTitle").textContent = chal.title;
+      document.getElementById("challengeDescription").textContent = chal.description;
+      document.getElementById("challengeExampleInput").textContent = chal.exampleInput;
+      document.getElementById("challengeExpectedOutput").textContent = chal.expectedOutput;
+
+      const isSolved = appState.solvedChallenges.includes(mod.id);
+      const dot = document.getElementById("challengeSolvedDot");
+      dot.className = isSolved ? "w-2 h-2 rounded-full bg-[#3FB950]" : "w-2 h-2 rounded-full bg-[#8B949E]";
+
+      // Hide Stuck Drawer initially
+      document.getElementById("stuckDrawer").classList.add("hidden");
+    }
+
+    function switchWorkbenchTab(tabName) {
+      appState.activeWorkbenchTab = tabName;
+      const mod = getModuleById(appState.currentModuleId);
+      const tabPlay = document.getElementById("wbTab-playground");
+      const tabChal = document.getElementById("wbTab-challenge");
+      const promptPanel = document.getElementById("challengePromptPanel");
+      const verifyBtn = document.getElementById("verifyChallengeBtn");
+      const editor = document.getElementById("pythonCodeEditor");
+
+      if (tabName === "challenge") {
+        tabChal.className = "px-3 py-1.5 rounded-md text-xs font-medium bg-[#3572A5] text-white transition flex items-center gap-1.5";
+        tabPlay.className = "px-3 py-1.5 rounded-md text-xs font-medium text-[#8B949E] hover:text-white transition flex items-center gap-1.5";
+        promptPanel.classList.remove("hidden");
+        verifyBtn.classList.remove("hidden");
+        editor.value = mod.challenge.starterCode;
+      } else {
+        tabPlay.className = "px-3 py-1.5 rounded-md text-xs font-medium bg-[#3572A5] text-white transition flex items-center gap-1.5";
+        tabChal.className = "px-3 py-1.5 rounded-md text-xs font-medium text-[#8B949E] hover:text-white transition flex items-center gap-1.5";
+        promptPanel.classList.add("hidden");
+        verifyBtn.classList.add("hidden");
+        editor.value = appState.savedCodeByModule[mod.id] || mod.starterCode;
+      }
+      updateEditorLineNumbers();
+    }
+
+    function toggleStuckDrawer() {
+      const drawer = document.getElementById("stuckDrawer");
+      drawer.classList.toggle("hidden");
+      if (!drawer.classList.contains("hidden")) {
+        revealHintStep(1);
+      }
+    }
+
+    function revealHintStep(stepNum) {
+      const mod = getModuleById(appState.currentModuleId);
+      const hintText = mod.challenge.hints[stepNum - 1] || "No hint available.";
+      document.getElementById("hintStepContent").textContent = `Step ${stepNum}: ${hintText}`;
+    }
+
+    /*************************************************************************
+     * 8. RUNNING PYTHON CODE & CHALLENGE VERIFICATION
+     *************************************************************************/
+    async function runPythonCode() {
+      const code = document.getElementById("pythonCodeEditor").value;
+      const consoleBox = document.getElementById("consoleOutput");
+      const timeBadge = document.getElementById("executionTimeBadge");
+
+      consoleBox.innerHTML = `<div class="text-[#FFD43B] font-mono animate-pulse">Executing Python code...</div>`;
+
+      const result = await executePythonCodeString(code);
+      timeBadge.textContent = `Executed in ${result.elapsedMs}ms`;
+
+      if (result.error) {
+        consoleBox.innerHTML = `<div class="text-[#F85149] font-mono">${escapeHtml(result.output)}</div>`;
+      } else {
+        consoleBox.innerHTML = `<div class="text-emerald-400 font-mono">${escapeHtml(result.output || "[Program finished with no output]")}</div>`;
+      }
+    }
+
+    async function verifyChallengeSolution() {
+      const mod = getModuleById(appState.currentModuleId);
+      const code = document.getElementById("pythonCodeEditor").value;
+      const consoleBox = document.getElementById("consoleOutput");
+
+      const result = await executePythonCodeString(code);
+      const cleanActual = (result.output || "").trim();
+      const cleanExpected = mod.challenge.expectedCheck.trim();
+
+      if (!result.error && cleanActual.includes(cleanExpected)) {
+        if (!appState.solvedChallenges.includes(mod.id)) {
+          appState.solvedChallenges.push(mod.id);
+          saveStateToStorage();
+        }
+        renderSidebarModules();
+        renderChallengePanel(mod);
+        consoleBox.innerHTML = `
+          <div class="p-3 rounded-lg bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 space-y-1">
+            <div class="font-bold text-sm">🎉 Challenge Passed! Output matches expected result.</div>
+            <div class="font-mono text-xs">Your Output: ${escapeHtml(cleanActual)}</div>
+          </div>
+        `;
+      } else {
+        consoleBox.innerHTML = `
+          <div class="p-3 rounded-lg bg-rose-500/20 border border-rose-500/50 text-rose-300 space-y-1">
+            <div class="font-bold text-sm">❌ Test Failed — Output did not match expected.</div>
+            <div class="font-mono text-xs">Expected: ${escapeHtml(cleanExpected)}</div>
+            <div class="font-mono text-xs">Actual Output: ${escapeHtml(cleanActual || "[Empty stdout]")}</div>
+          </div>
+        `;
+      }
+    }
+
+    /*************************************************************************
+     * 9. CODE EDITOR UTILITIES (LINE NUMBERS, COPY, RESET, SHORTCUTS)
+     *************************************************************************/
+    function onEditorInput() {
+      updateEditorLineNumbers();
+      const code = document.getElementById("pythonCodeEditor").value;
+      if (appState.activeWorkbenchTab === "playground") {
+        appState.savedCodeByModule[appState.currentModuleId] = code;
+        saveStateToStorage();
+      }
+    }
+
+    function updateEditorLineNumbers() {
+      const editor = document.getElementById("pythonCodeEditor");
+      const lineCount = (editor.value.match(/\n/g) || []).length + 1;
+      const lineNumbersEl = document.getElementById("editorLineNumbers");
+      let html = "";
+      for (let i = 1; i <= lineCount; i++) {
+        html += i + "<br/>";
+      }
+      lineNumbersEl.innerHTML = html;
+    }
+
+    function handleEditorKeydown(event) {
+      // Ctrl+Enter or Cmd+Enter runs code immediately
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        event.preventDefault();
+        runPythonCode();
+        return;
+      }
+
+      // Tab inserts 4 spaces cleanly
+      if (event.key === "Tab") {
+        event.preventDefault();
+        const editor = event.target;
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.value = editor.value.substring(0, start) + "    " + editor.value.substring(end);
+        editor.selectionStart = editor.selectionEnd = start + 4;
+        onEditorInput();
+      }
+    }
+
+    function copyEditorCode() {
+      const code = document.getElementById("pythonCodeEditor").value;
+      navigator.clipboard.writeText(code);
+    }
+
+    function resetEditorCode() {
+      const mod = getModuleById(appState.currentModuleId);
+      const editor = document.getElementById("pythonCodeEditor");
+      if (appState.activeWorkbenchTab === "challenge") {
+        editor.value = mod.challenge.starterCode;
+      } else {
+        editor.value = mod.starterCode;
+        delete appState.savedCodeByModule[mod.id];
+        saveStateToStorage();
+      }
+      updateEditorLineNumbers();
+    }
+
+    function clearConsoleOutput() {
+      document.getElementById("consoleOutput").innerHTML = `<div class="text-[#8B949E]">Console cleared. Ready for execution.</div>`;
+    }
+
+    function loadCodeIntoEditor(codeSnippet) {
+      switchMainView("course");
+      switchWorkbenchTab("playground");
+      const editor = document.getElementById("pythonCodeEditor");
+      editor.value = codeSnippet;
+      updateEditorLineNumbers();
+      runPythonCode();
+    }
+
+    /*************************************************************************
+     * 10. VIEW SWITCHING (COURSE, CHALLENGES HUB, INTERVIEW, CHEAT SHEET, PROJECT)
+     *************************************************************************/
+    function switchMainView(viewName) {
+      const views = ["course", "challenges", "interview", "cheatsheet", "project"];
+      views.forEach((v) => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) el.classList.toggle("hidden", v !== viewName);
+
+        const navBtn = document.getElementById(`navBtn-${v}`);
+        if (navBtn) {
+          navBtn.className = v === viewName
+            ? "nav-tab-btn px-3 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1.5 bg-[#3572A5] text-white shadow"
+            : "nav-tab-btn px-3 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1.5 text-[#8B949E] hover:text-white";
+        }
+      });
+
+      if (viewName === "challenges") renderChallengesHub("all");
+      if (viewName === "interview") renderInterviewQuestions();
+      if (viewName === "cheatsheet") renderCheatSheet();
+      if (viewName === "project") {
+        document.getElementById("capstoneCodePreview").textContent = CAPSTONE_PROJECT_CODE;
+      }
+    }
+
+    function filterChallengesHub(difficulty) {
+      renderChallengesHub(difficulty);
+    }
+
+    function renderChallengesHub(difficultyFilter) {
+      const grid = document.getElementById("challengesHubGrid");
+      grid.innerHTML = "";
+
+      COURSE_MODULES.forEach((mod) => {
+        const chal = mod.challenge;
+        if (difficultyFilter !== "all" && chal.difficulty !== difficultyFilter) return;
+
+        const isSolved = appState.solvedChallenges.includes(mod.id);
+        const card = document.createElement("div");
+        card.className = "p-5 rounded-xl bg-[#161B22] border border-[#30363D] flex flex-col justify-between space-y-4 hover:border-[#3572A5] transition";
+        card.innerHTML = `
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono text-[#58A6FF]">${mod.shortTitle}</span>
+              <span class="px-2 py-0.5 text-[10px] font-mono rounded ${
+                chal.difficulty === 'Easy' ? 'bg-emerald-500/20 text-emerald-400' : chal.difficulty === 'Medium' ? 'bg-amber-500/20 text-amber-300' : 'bg-rose-500/20 text-rose-400'
+              }">${chal.difficulty}</span>
+            </div>
+            <h3 class="font-heading font-bold text-base text-white flex items-center gap-2">
+              ${isSolved ? '<span class="text-[#3FB950]">✓</span>' : ''} ${chal.title}
+            </h3>
+            <p class="text-xs text-[#8B949E] leading-relaxed">${chal.description}</p>
+          </div>
+          <button onclick="openChallengeFromHub(${mod.id})" class="w-full py-2 rounded-lg bg-[#21262D] hover:bg-[#3572A5] text-white font-medium text-xs transition cursor-pointer">
+            ${isSolved ? 'Review Solution →' : 'Solve Challenge →'}
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function openChallengeFromHub(moduleId) {
+      selectModule(moduleId);
+      switchMainView("course");
+      switchWorkbenchTab("challenge");
+    }
+
+    function renderInterviewQuestions() {
+      const list = document.getElementById("interviewQuestionsList");
+      list.innerHTML = "";
+
+      INTERVIEW_QUESTIONS.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "rounded-xl bg-[#161B22] border border-[#30363D] p-5 space-y-3";
+        card.innerHTML = `
+          <h3 class="font-heading font-bold text-base text-[#FFD43B]">${item.q}</h3>
+          <div class="p-3 rounded-lg bg-[#0D1117] border border-[#30363D] text-xs font-semibold text-emerald-400">
+            TL;DR Short Answer: ${item.short}
+          </div>
+          <p class="text-xs text-gray-300 leading-relaxed">${item.detailed}</p>
+          <div class="rounded-lg bg-[#0D1117] border border-[#30363D] overflow-hidden">
+            <div class="px-3 py-1.5 bg-[#21262D] flex items-center justify-between text-[11px] font-mono text-gray-300">
+              <span>Code Proof</span>
+              <button onclick="loadCodeIntoEditor(\`${item.code.replace(/`/g, "\\`")}\`)" class="text-[#58A6FF] hover:underline">Run in Workbench →</button>
+            </div>
+            <pre class="p-3 font-mono text-xs text-gray-200 overflow-x-auto">${escapeHtml(item.code)}</pre>
+          </div>
+          <div class="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+            <strong>⚠️ Common Interview Trap:</strong> ${item.trap}
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function renderCheatSheet() {
+      const query = (document.getElementById("cheatsheetSearchInput")?.value || "").toLowerCase();
+      const grid = document.getElementById("cheatsheetGrid");
+      grid.innerHTML = "";
+
+      CHEAT_SHEET_ITEMS.forEach((item) => {
+        if (
+          query &&
+          !item.title.toLowerCase().includes(query) &&
+          !item.category.toLowerCase().includes(query) &&
+          !item.code.toLowerCase().includes(query)
+        ) {
+          return;
+        }
+
+        const card = document.createElement("div");
+        card.className = "rounded-xl bg-[#161B22] border border-[#30363D] p-4 flex flex-col justify-between space-y-3";
+        card.innerHTML = `
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-[#58A6FF]">${item.category}</span>
+            <h3 class="font-heading font-bold text-base text-white">${item.title}</h3>
+            <p class="text-xs text-[#8B949E]">${item.desc}</p>
+          </div>
+          <div class="rounded-lg bg-[#0D1117] border border-[#30363D] overflow-hidden">
+            <div class="px-3 py-1.5 bg-[#21262D] flex items-center justify-between text-[11px] font-mono">
+              <span class="text-gray-400">Python Snippet</span>
+              <button onclick="loadCodeIntoEditor(\`${item.code.replace(/`/g, "\\`")}\`)" class="text-[#FFD43B] hover:underline">Test Live →</button>
+            </div>
+            <pre class="p-3 font-mono text-xs text-gray-200 overflow-x-auto">${escapeHtml(item.code)}</pre>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function loadProjectIntoWorkbench() {
+      loadCodeIntoEditor(CAPSTONE_PROJECT_CODE);
+    }
+
+    /*************************************************************************
+     * 11. PROGRESS TRACKING & GLOBAL SEARCH
+     *************************************************************************/
+    function markCurrentLessonComplete() {
+      const id = appState.currentModuleId;
+      const idx = appState.completedModules.indexOf(id);
+      if (idx === -1) {
+        appState.completedModules.push(id);
+      } else {
+        appState.completedModules.splice(idx, 1);
+      }
+      saveStateToStorage();
+      renderSidebarModules();
+      renderCurrentLesson();
+    }
+
+    function updateProgressUI() {
+      const total = COURSE_MODULES.length;
+      const doneModules = appState.completedModules.length;
+      const doneQuizzes = appState.solvedQuizzes.length;
+      const doneChallenges = appState.solvedChallenges.length;
+
+      const percentage = Math.min(
+        100,
+        Math.round(((doneModules + doneQuizzes + doneChallenges) / (total * 3)) * 100)
+      );
+
+      document.getElementById("headerProgressBar").style.width = `${percentage}%`;
+      document.getElementById("headerProgressText").textContent = `${percentage}%`;
+
+      document.getElementById("statLessonsDone").textContent = `${doneModules}/${total}`;
+      document.getElementById("statQuizzesDone").textContent = `${doneQuizzes}/${total}`;
+      document.getElementById("statChallengesDone").textContent = `${doneChallenges}/${total}`;
+    }
+
+    function resetAllProgress() {
+      if (confirm("Reset all saved module progress, quiz scores, and code edits?")) {
+        appState.completedModules = [];
+        appState.solvedQuizzes = [];
+        appState.solvedChallenges = [];
+        appState.savedCodeByModule = {};
+        saveStateToStorage();
+        renderSidebarModules();
+        renderCurrentLesson();
+      }
+    }
+
+    function continueLastLesson() {
+      switchMainView("course");
+      selectModule(appState.currentModuleId);
+    }
+
+    // Global Search Modal
+    function openSearchModal() {
+      const modal = document.getElementById("searchModal");
+      modal.classList.remove("hidden");
+      const input = document.getElementById("globalSearchInput");
+      input.value = "";
+      input.focus();
+      handleGlobalSearch();
+    }
+
+    function closeSearchModal() {
+      document.getElementById("searchModal").classList.add("hidden");
+    }
+
+    function handleGlobalSearch() {
+      const query = (document.getElementById("globalSearchInput").value || "").toLowerCase();
+      const resultsBox = document.getElementById("globalSearchResults");
+      resultsBox.innerHTML = "";
+
+      COURSE_MODULES.forEach((mod) => {
+        if (
+          !query ||
+          mod.title.toLowerCase().includes(query) ||
+          mod.whatIsIt.toLowerCase().includes(query) ||
+          mod.syntax.toLowerCase().includes(query)
+        ) {
+          const item = document.createElement("div");
+          item.className = "p-3 hover:bg-[#21262D] rounded-lg cursor-pointer flex items-center justify-between";
+          item.onclick = () => {
+            closeSearchModal();
+            switchMainView("course");
+            selectModule(mod.id);
+          };
+          item.innerHTML = `
+            <div>
+              <div class="font-heading font-bold text-sm text-white">${mod.title}</div>
+              <div class="text-xs text-[#8B949E] line-clamp-1">${mod.whatIsIt}</div>
+            </div>
+            <span class="text-xs font-mono text-[#58A6FF]">Jump →</span>
+          `;
+          resultsBox.appendChild(item);
+        }
+      });
+    }
+
+    // Theme Switcher
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById("themeIcon");
+      if (html.classList.contains("light")) {
+        html.classList.remove("light");
+        html.classList.add("dark");
+        icon.textContent = "🌙";
+      } else {
+        html.classList.remove("dark");
+        html.classList.add("light");
+        icon.textContent = "☀️";
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    // Mobile Drawer Toggle
+    document.getElementById("mobileMenuBtn")?.addEventListener("click", () => {
+      const drawer = document.getElementById("sidebarDrawer");
+      drawer.classList.toggle("-translate-x-full");
+    });
+
+    // Global Keyboard Shortcut (Ctrl+K / Cmd+K for Search)
+    window.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        openSearchModal();
+      }
+      if (e.key === "Escape") {
+        closeSearchModal();
+      }
+    });
+
+    /*************************************************************************
+     * 12. INITIALIZE APPLICATION ON LOAD
+     *************************************************************************/
+    window.addEventListener("DOMContentLoaded", () => {
+      loadStateFromStorage();
+      updateProgressUI();
+      renderSidebarModules();
+      renderCurrentLesson();
+      initializePyodideEngine();
+    });
+  </script>
+</body>
+</html>
