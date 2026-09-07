@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theory of Computation — Interview Prep</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Caveat:wght@600;700&display=swap');
+
+  :root{
+    --ink:#161c2b;
+    --paper:#f7f5ef;
+    --panel:#24463a;
+    --panel-2:#2b5344;
+    --panel-paper:#efe6cf;
+    --navy:#1b2a4a;
+    --teal:#e8d17a;
+    --amber:#e0a08c;
+    --line:#7a6a3f;
+    --muted:#5b5f6b;
+
+    --board:#0f241b;
+    --board-frame:#081712;
+    --grid-line:rgba(244,240,224,0.07);
+    --chalk:#f4f1e6;
+    --chalk-yellow:#e8d17a;
+    --chalk-coral:#e0a08c;
+    --chalk-dim:#a9c2b2;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background-color:var(--board);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+      radial-gradient(ellipse 900px 500px at 20% -10%, rgba(120,190,160,0.16), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 30%, rgba(60,140,110,0.12), transparent 55%),
+      linear-gradient(rgba(0,0,0,0.28), rgba(0,0,0,0.28));
+    background-size:34px 34px, 34px 34px, 100% 100%, 100% 100%, 100% 100%;
+    background-attachment:fixed, fixed, fixed, fixed, fixed;
+    color:var(--chalk);
+    font-family:'Source Serif 4', Georgia, serif;
+    line-height:1.55;
+  }
+
+  /* ---------- Layout shell ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns:270px 1fr;
+    min-height:100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    background:linear-gradient(180deg, rgba(120,190,160,0.10), rgba(4,12,9,0.6));
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-right:1px solid rgba(244,241,230,0.12);
+    color:#dbe4dc;
+    padding:28px 22px 40px;
+    font-family:'Inter', sans-serif;
+  }
+  .sidebar .brand{
+    font-family:'Caveat', 'Source Serif 4', serif;
+    font-weight:700;
+    font-size:1.9rem;
+    color:var(--chalk);
+    line-height:1.15;
+    margin-bottom:2px;
+  }
+  .sidebar .brand-sub{
+    font-size:0.78rem;
+    color:var(--chalk-dim);
+    margin-bottom:26px;
+    letter-spacing:0.01em;
+  }
+  .sidebar nav a{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    color:#c3d3c8;
+    text-decoration:none;
+    font-size:0.87rem;
+    padding:8px 10px;
+    border-radius:5px;
+    margin-bottom:2px;
+    transition:background 0.15s ease, color 0.15s ease;
+  }
+  .sidebar nav a .num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    color:#6f8c78;
+    min-width:18px;
+  }
+  .sidebar nav a:hover{ background:rgba(244,241,230,0.08); color:var(--chalk-yellow); }
+  .sidebar .meter{
+    margin-top:30px;
+    padding-top:18px;
+    border-top:1px dashed rgba(244,241,230,0.22);
+    font-size:0.74rem;
+    color:var(--chalk-dim);
+  }
+  .sidebar .meter b{ color:var(--chalk-yellow); }
+
+  /* ---------- Main content ---------- */
+  main{
+    padding:56px 64px 100px;
+    max-width:900px;
+  }
+
+  header.hero{
+    margin-bottom:46px;
+    padding-bottom:30px;
+    border-bottom:2px dashed rgba(244,241,230,0.4);
+  }
+  header.hero h1{
+    font-family:'Caveat', 'Source Serif 4', serif;
+    font-size:3.6rem;
+    font-weight:700;
+    color:var(--chalk);
+    margin:0 0 6px;
+    letter-spacing:0.01em;
+    text-shadow:0 0 14px rgba(244,241,230,0.18);
+  }
+  header.hero p{
+    font-family:'Inter', sans-serif;
+    color:var(--chalk-dim);
+    max-width:64ch;
+    font-size:0.98rem;
+    margin:0;
+  }
+
+  section.topic{
+    margin-bottom:58px;
+    scroll-margin-top:24px;
+  }
+  section.topic .topic-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  section.topic .topic-head .tnum{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--chalk-yellow);
+    font-size:1rem;
+  }
+  section.topic h2{
+    font-family:'Caveat', 'Source Serif 4', serif;
+    font-weight:700;
+    font-size:2.1rem;
+    margin:0;
+    color:var(--chalk);
+  }
+  section.topic .blurb{
+    font-family:'Inter', sans-serif;
+    color:var(--chalk-dim);
+    font-size:0.92rem;
+    max-width:70ch;
+    margin:6px 0 24px;
+    padding-left:0;
+  }
+
+  /* Q&A cards -- frosted glass tablets over the darker board */
+  .qa{
+    background:linear-gradient(155deg, rgba(120,190,160,0.14), rgba(20,45,36,0.55));
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(244,241,230,0.14);
+    border-top:1px solid rgba(244,241,230,0.28);
+    border-left:4px solid var(--teal);
+    border-radius:8px;
+    padding:19px 24px;
+    margin-bottom:16px;
+    box-shadow:0 12px 26px rgba(0,0,0,0.35);
+  }
+  .qa.imp{ border-left-color:var(--amber); }
+  .qa .q{
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:0.97rem;
+    color:var(--chalk);
+    display:flex;
+    gap:10px;
+    margin-bottom:9px;
+  }
+  .qa .q .qmark{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--teal);
+    font-weight:600;
+  }
+  .qa.imp .q .qmark{ color:var(--amber); }
+  .qa .a{
+    font-size:0.99rem;
+    color:#dfe9e0;
+  }
+  .qa .a p{ margin:0 0 8px; }
+  .qa .a p:last-child{ margin-bottom:0; }
+  .qa .a code, .qa .a .kw{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.86em;
+    background:rgba(232,209,122,0.18);
+    padding:1px 6px;
+    border-radius:3px;
+    color:var(--chalk-yellow);
+  }
+  .qa .a b{ color:#fff; }
+  .qa .a ul{ margin:6px 0 0; padding-left:20px; }
+  .qa .a li{ margin-bottom:4px; }
+
+  .tag{
+    display:inline-block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.68rem;
+    color:var(--amber);
+    border:1px solid var(--amber);
+    border-radius:20px;
+    padding:1px 9px;
+    margin-left:8px;
+    vertical-align:middle;
+  }
+
+  /* comparison table for rapid-fire section -- same frosted glass treatment */
+  table.rapid{
+    width:100%;
+    border-collapse:collapse;
+    font-family:'Inter', sans-serif;
+    font-size:0.88rem;
+    background:linear-gradient(155deg, rgba(120,190,160,0.14), rgba(20,45,36,0.55));
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(244,241,230,0.14);
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 12px 26px rgba(0,0,0,0.35);
+  }
+  table.rapid th{
+    background:rgba(8,23,18,0.55);
+    color:var(--chalk-yellow);
+    text-align:left;
+    padding:11px 16px;
+    font-weight:600;
+    font-size:0.82rem;
+  }
+  table.rapid td{
+    padding:11px 16px;
+    border-top:1px solid rgba(244,241,230,0.1);
+    vertical-align:top;
+    color:#dbe6dc;
+  }
+  table.rapid td b{ color:#fff; }
+  table.rapid tr:nth-child(even) td{ background:rgba(0,0,0,0.18); }
+
+  /* ---------- Diagrams -- warm parchment handouts pinned to the board ---------- */
+  .diagram{
+    background:var(--panel-paper);
+    border:1px solid #cbb98c;
+    border-radius:4px;
+    padding:24px 18px 14px;
+    margin:6px 0 20px;
+    box-shadow:0 10px 20px rgba(0,0,0,0.28);
+    position:relative;
+  }
+  .diagram::before{
+    content:"";
+    position:absolute;
+    top:-9px; left:50%;
+    transform:translateX(-50%) rotate(-3deg);
+    width:34px; height:16px;
+    background:var(--chalk-coral);
+    border-radius:2px;
+    box-shadow:0 3px 5px rgba(0,0,0,0.35);
+  }
+  .diagram svg{ display:block; margin:0 auto; max-width:100%; height:auto; }
+  .diagram .cap{
+    font-family:'Inter', sans-serif;
+    font-size:0.8rem;
+    color:#6b5f41;
+    text-align:center;
+    margin-top:8px;
+  }
+  .diagram .cap b{ color:#332a15; }
+
+  footer.end{
+    margin-top:60px;
+    padding-top:20px;
+    border-top:1px dashed rgba(244,241,230,0.3);
+    font-family:'Inter', sans-serif;
+    font-size:0.82rem;
+    color:var(--chalk-dim);
+  }
+
+  @media (max-width:880px){
+    .shell{ grid-template-columns:1fr; }
+    .sidebar{ position:relative; height:auto; }
+    main{ padding:36px 22px 80px; }
+  }
+
+  @media print{
+    .sidebar{ display:none; }
+    .shell{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="brand">Theory of Computation</div>
+    <div class="brand-sub">Placement interview crash sheet</div>
+    <nav>
+      <a href="#t1"><span class="num">01</span> Foundations &amp; Chomsky Hierarchy</a>
+      <a href="#t2"><span class="num">02</span> Finite Automata</a>
+      <a href="#t3"><span class="num">03</span> Regular Expressions &amp; Languages</a>
+      <a href="#t4"><span class="num">04</span> Context-Free Grammars &amp; PDA</a>
+      <a href="#t5"><span class="num">05</span> Turing Machines</a>
+      <a href="#t6"><span class="num">06</span> Decidability &amp; Undecidability</a>
+      <a href="#t7"><span class="num">07</span> Complexity: P, NP &amp; Beyond</a>
+      <a href="#t8"><span class="num">08</span> Rapid-Fire Comparison Table</a>
+    </nav>
+    <div class="meter">
+      <b>~55 Q&amp;A + 8 diagrams</b> across 8 sections.<br>
+      Amber-edged cards = high-frequency interview questions.
+    </div>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <h1>Theory of Computation</h1>
+      <p>A condensed, interview-style walkthrough of TOC — built for a same-day refresh, not a semester-long read. Every entry is a question you could actually be asked, followed by the answer the way you'd say it out loud.</p>
+    </header>
+
+    <!-- 1. FOUNDATIONS -->
+    <section class="topic" id="t1">
+      <div class="topic-head"><span class="tnum">01</span><h2>Foundations &amp; Chomsky Hierarchy</h2></div>
+      <p class="blurb">The vocabulary everything else in TOC is built on — alphabets, languages, and the four-level hierarchy interviewers use to organize every follow-up question.</p>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What is a language, formally, in TOC?</div>
+        <div class="a"><p>A language is simply a set of strings over some alphabet <code>Σ</code>. If <code>Σ = {0,1}</code>, then any subset of <code>Σ*</code> (all possible strings, including the empty string) is a language — for example "all binary strings with an even number of 1s."</p></div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> Explain the Chomsky hierarchy.</div>
+        <div class="a">
+          <p>It's four nested classes of languages, each recognized by a specific machine and generated by a specific grammar type:</p>
+          <ul>
+            <li><b>Type 3 — Regular</b>: recognized by Finite Automata, generated by regular grammars.</li>
+            <li><b>Type 2 — Context-Free</b>: recognized by Pushdown Automata (PDA), generated by CFGs.</li>
+            <li><b>Type 1 — Context-Sensitive</b>: recognized by Linear Bounded Automata (LBA).</li>
+            <li><b>Type 0 — Recursively Enumerable</b>: recognized by Turing Machines.</li>
+          </ul>
+          <p>Each class is a strict superset of the one before it: Regular ⊂ Context-Free ⊂ Context-Sensitive ⊂ Recursively Enumerable.</p>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="20" width="600" height="260" rx="6" fill="none" stroke="#1b2a4a" stroke-width="2"/>
+          <text x="34" y="44" font-family="Inter, sans-serif" font-size="13" fill="#1b2a4a" font-weight="600">Type 0 — Recursively Enumerable (Turing Machine)</text>
+
+          <rect x="55" y="60" width="530" height="200" rx="6" fill="none" stroke="#b5691e" stroke-width="2"/>
+          <text x="69" y="82" font-family="Inter, sans-serif" font-size="13" fill="#b5691e" font-weight="600">Type 1 — Context-Sensitive (LBA)</text>
+
+          <rect x="90" y="98" width="460" height="140" rx="6" fill="none" stroke="#2e6f63" stroke-width="2"/>
+          <text x="104" y="120" font-family="Inter, sans-serif" font-size="13" fill="#2e6f63" font-weight="600">Type 2 — Context-Free (PDA)</text>
+
+          <rect x="130" y="136" width="380" height="80" rx="6" fill="#eef0e8" stroke="#161c2b" stroke-width="2"/>
+          <text x="144" y="182" font-family="Inter, sans-serif" font-size="13" fill="#161c2b" font-weight="600">Type 3 — Regular (Finite Automata)</text>
+        </svg>
+        <div class="cap">Each level fully contains the next — <b>Regular ⊂ Context-Free ⊂ Context-Sensitive ⊂ Recursively Enumerable</b>.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Where do recursive languages fit relative to recursively enumerable ones?</div>
+        <div class="a"><p>Recursive languages (decidable by some TM that always halts) sit strictly between Context-Sensitive and Recursively Enumerable. Every recursive language is recursively enumerable, but not every recursively enumerable language is recursive — the Halting Problem's language is the standard example of the latter.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What's the difference between a grammar and an automaton?</div>
+        <div class="a"><p>A grammar <i>generates</i> strings of a language using production rules (a top-down, constructive view). An automaton <i>recognizes/accepts</i> strings by processing them (a bottom-up, computational view). Both describe the same language classes — that equivalence is a core theme of TOC.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is Kleene closure (<code>Σ*</code>) vs positive closure (<code>Σ⁺</code>)?</div>
+        <div class="a"><p><code>Σ*</code> is the set of all strings over <code>Σ</code> including the empty string <code>ε</code>. <code>Σ⁺</code> is the same but excludes <code>ε</code>. So <code>Σ* = Σ⁺ ∪ {ε}</code>.</p></div>
+      </div>
+    </section>
+
+    <!-- 2. FINITE AUTOMATA -->
+    <section class="topic" id="t2">
+      <div class="topic-head"><span class="tnum">02</span><h2>Finite Automata</h2></div>
+      <p class="blurb">DFA vs NFA, why they're equally powerful, and how to shrink one down — this is the section interviewers use to check you actually understand automata, not just memorized definitions.</p>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What is a DFA? Give its formal definition.</div>
+        <div class="a"><p>A Deterministic Finite Automaton is a 5-tuple <code>(Q, Σ, δ, q0, F)</code>: a finite set of states <code>Q</code>, an input alphabet <code>Σ</code>, a transition function <code>δ: Q × Σ → Q</code> (exactly one next state per symbol), a start state <code>q0</code>, and a set of accepting states <code>F</code>. For every state and every input symbol, there is exactly one defined transition.</p></div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 560 220" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="80" cy="110" r="34" fill="#eef0e8" stroke="#161c2b" stroke-width="2"/>
+          <text x="80" y="115" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" fill="#161c2b">q0</text>
+          <line x1="30" y1="110" x2="46" y2="110" stroke="#161c2b" stroke-width="2" marker-end="url(#arrow)"/>
+
+          <circle cx="280" cy="110" r="34" fill="#eef0e8" stroke="#161c2b" stroke-width="2"/>
+          <text x="280" y="115" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" fill="#161c2b">q1</text>
+
+          <circle cx="480" cy="110" r="34" fill="#fff" stroke="#2e6f63" stroke-width="2"/>
+          <circle cx="480" cy="110" r="27" fill="none" stroke="#2e6f63" stroke-width="2"/>
+          <text x="480" y="115" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="15" fill="#2e6f63">q2</text>
+
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#161c2b"/></marker>
+          </defs>
+
+          <line x1="114" y1="110" x2="242" y2="110" stroke="#161c2b" stroke-width="2" marker-end="url(#arrow)"/>
+          <text x="178" y="98" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#161c2b">0</text>
+
+          <line x1="314" y1="110" x2="442" y2="110" stroke="#161c2b" stroke-width="2" marker-end="url(#arrow)"/>
+          <text x="378" y="98" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#161c2b">1</text>
+
+          <path d="M 80 76 C 80 10, 280 10, 280 76" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="180" y="26" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#5b5f6b">1</text>
+
+          <path d="M 480 76 C 480 10, 280 10, 280 76" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow)" transform="scale(1,1)"/>
+
+          <path d="M 46 144 C 46 200, 114 200, 114 144" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="80" y="196" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#5b5f6b">1</text>
+
+          <path d="M 246 144 C 246 200, 314 200, 314 144" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="280" y="196" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#5b5f6b">0</text>
+
+          <path d="M 446 144 C 446 200, 514 200, 514 144" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <text x="480" y="196" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#5b5f6b">0, 1</text>
+        </svg>
+        <div class="cap">DFA accepting strings ending in <b>"01"</b> — double circle (<code>q2</code>) marks the accepting state, the incoming arrow marks the start state (<code>q0</code>).</div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> How does an NFA differ from a DFA?</div>
+        <div class="a"><p>An NFA allows zero, one, or multiple transitions on the same symbol from a given state, and also permits <code>ε</code>-transitions (moving states without consuming input). Its transition function is <code>δ: Q × (Σ ∪ {ε}) → 2^Q</code> — it maps to a <i>set</i> of possible next states rather than one.</p></div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> If NFAs are "non-deterministic," why are they equally powerful as DFAs?</div>
+        <div class="a"><p>Because of the <b>subset construction</b>: any NFA with <code>n</code> states can be converted to an equivalent DFA whose states are subsets of the NFA's states (at most <code>2^n</code> states). Non-determinism only affects the construction's convenience and size, not what languages can be recognized — both accept exactly the regular languages.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is an ε-NFA and why is it useful?</div>
+        <div class="a"><p>An NFA that additionally allows transitions on the empty string <code>ε</code> without consuming input. It's mainly a convenience for building automata compositionally (e.g. constructing an NFA from a regular expression via Thompson's construction) — it's then converted away using ε-closure before subset construction.</p></div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> How do you minimize a DFA?</div>
+        <div class="a">
+          <p>The standard method is <b>table-filling / partition refinement</b>:</p>
+          <ul>
+            <li>Remove unreachable states from the start state.</li>
+            <li>Start by partitioning states into two groups: accepting and non-accepting.</li>
+            <li>Repeatedly split groups where two states in the same group go to different groups on some input symbol.</li>
+            <li>Stop when no group can be split further — each remaining group merges into a single state.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is the Myhill-Nerode theorem, in plain terms?</div>
+        <div class="a"><p>Two strings <code>x</code> and <code>y</code> are "equivalent" for a language <code>L</code> if, for every suffix <code>z</code>, either both <code>xz</code> and <code>yz</code> are in <code>L</code> or neither is. The theorem says <code>L</code> is regular if and only if this equivalence relation has finitely many classes — and that number equals the minimum number of states in a DFA for <code>L</code>. It's the theoretical justification behind DFA minimization.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Can every NFA be converted to a regular expression?</div>
+        <div class="a"><p>Yes — via the <b>state elimination method</b>. States are removed one at a time, and each removal is compensated for by labeling the remaining transitions with regular expressions that capture the paths through the eliminated state, until only the start and final state remain, connected by a single expression.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> How do you build a DFA that recognizes the intersection or union of two regular languages?</div>
+        <div class="a"><p>Using the <b>product construction</b>: build a new DFA whose states are pairs <code>(p, q)</code> — one state from each original DFA. The new machine tracks both machines running in parallel on the same input. For intersection, a pair state is accepting only if <i>both</i> <code>p</code> and <code>q</code> are accepting; for union, if <i>either</i> is accepting.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is a "dead state" / "trap state" in a DFA, and why is it needed?</div>
+        <div class="a"><p>A DFA's transition function must be <i>total</i> — defined for every state and every input symbol. A trap state is a non-accepting state with self-loops on every symbol, used to absorb any input that should never lead to acceptance (e.g. an invalid symbol appearing early in a pattern). It keeps the DFA formally complete without changing the language it accepts.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is the difference between a Moore machine and a Mealy machine?</div>
+        <div class="a"><p>Both are finite automata with output, but a <b>Moore machine</b>'s output depends only on the current state, while a <b>Mealy machine</b>'s output depends on the current state <i>and</i> the current input symbol. Mealy machines often need fewer states for the same task, but Moore machines are simpler to reason about since output changes only on state transitions.</p></div>
+      </div>
+    </section>
+
+    <!-- 3. REGULAR EXPRESSIONS & LANGUAGES -->
+    <section class="topic" id="t3">
+      <div class="topic-head"><span class="tnum">03</span><h2>Regular Expressions &amp; Languages</h2></div>
+      <p class="blurb">This is where interviewers test whether you can actually <i>prove</i> a language is or isn't regular — pumping lemma questions show up constantly.</p>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> State the Pumping Lemma for regular languages.</div>
+        <div class="a">
+          <p>If <code>L</code> is regular, there exists a pumping length <code>p</code> such that any string <code>s ∈ L</code> with <code>|s| ≥ p</code> can be split into three parts <code>s = xyz</code> where:</p>
+          <ul>
+            <li><code>|y| &gt; 0</code> (the pumped part is non-empty)</li>
+            <li><code>|xy| ≤ p</code> (pumping happens within the first <code>p</code> characters)</li>
+            <li><code>xyⁱz ∈ L</code> for every <code>i ≥ 0</code> (repeating <code>y</code> any number of times keeps the string in <code>L</code>)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> Use the pumping lemma to show <code>L = {0ⁿ1ⁿ | n ≥ 0}</code> is not regular.</div>
+        <div class="a"><p>Assume <code>L</code> is regular with pumping length <code>p</code>. Pick <code>s = 0ᵖ1ᵖ</code>. Since <code>|xy| ≤ p</code>, <code>y</code> must consist only of 0s. Pumping (<code>i=2</code>) increases the number of 0s but not 1s, producing a string not of the form <code>0ⁿ1ⁿ</code> — a contradiction. So <code>L</code> is not regular. This is the textbook template interviewers expect almost verbatim.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Are regular languages closed under union, intersection, and complement?</div>
+        <div class="a"><p>Yes to all three — regular languages are closed under union, intersection, complement, concatenation, and Kleene star. This is usually shown constructively: e.g. complement by swapping accept/non-accept states in a DFA, intersection via the product construction of two DFAs.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Is <code>{ww | w ∈ {0,1}*}</code> regular?</div>
+        <div class="a"><p>No. Intuitively a finite-state machine can't "remember" an arbitrarily long first half of the string to compare it against the second half — a pumping lemma argument on a string like <code>0ᵖ10ᵖ1</code> confirms this formally.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What's the difference between a regular expression and a regular grammar?</div>
+        <div class="a"><p>Both describe exactly the regular languages, but a regular expression is a compact algebraic notation (using union, concatenation, and star), while a regular grammar is a set of production rules restricted to a left-linear or right-linear form (e.g. <code>A → aB</code> or <code>A → a</code>).</p></div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 620 160" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#161c2b"/></marker>
+          </defs>
+          <circle cx="40" cy="80" r="22" fill="#eef0e8" stroke="#161c2b" stroke-width="2"/>
+          <text x="40" y="85" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#161c2b">i</text>
+
+          <circle cx="180" cy="40" r="22" fill="#fff" stroke="#2e6f63" stroke-width="2"/>
+          <text x="180" y="45" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2e6f63">a</text>
+          <circle cx="180" cy="120" r="22" fill="#fff" stroke="#2e6f63" stroke-width="2"/>
+          <text x="180" y="125" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2e6f63">b</text>
+
+          <circle cx="340" cy="80" r="22" fill="#eef0e8" stroke="#161c2b" stroke-width="2"/>
+          <text x="340" y="85" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#161c2b">m</text>
+
+          <circle cx="480" cy="80" r="22" fill="#fff" stroke="#b5691e" stroke-width="2"/>
+          <text x="480" y="85" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#b5691e">c</text>
+
+          <circle cx="580" cy="80" r="22" fill="#fff" stroke="#161c2b" stroke-width="2"/>
+          <circle cx="580" cy="80" r="16" fill="none" stroke="#161c2b" stroke-width="2"/>
+          <text x="580" y="85" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#161c2b">f</text>
+
+          <path d="M60,68 C90,50 120,42 158,40" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <text x="105" y="35" font-family="JetBrains Mono, monospace" font-size="11" fill="#5b5f6b">ε</text>
+          <path d="M60,92 C90,110 120,118 158,120" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <text x="105" y="132" font-family="JetBrains Mono, monospace" font-size="11" fill="#5b5f6b">ε</text>
+
+          <path d="M200,45 C240,55 300,68 320,75" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <path d="M200,115 C240,105 300,92 320,85" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <text x="255" y="72" font-family="JetBrains Mono, monospace" font-size="11" fill="#5b5f6b">ε</text>
+
+          <line x1="362" y1="80" x2="458" y2="80" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <text x="410" y="72" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#5b5f6b">ε</text>
+          <text x="410" y="105" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#b5691e">(loops back on itself, star)</text>
+
+          <line x1="502" y1="80" x2="558" y2="80" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow2)"/>
+          <text x="530" y="72" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#5b5f6b">ε</text>
+        </svg>
+        <div class="cap">Thompson's construction sketch for <b>(a|b)c*</b> — union of <code>a</code>/<code>b</code> feeds into a state, then <code>c</code> loops via an ε-edge before reaching the final state <code>f</code>.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is Arden's theorem and where is it used?</div>
+        <div class="a"><p>For an equation of the form <code>R = QR + P</code> (with <code>ε ∉ Q</code>), Arden's theorem gives the unique solution <code>R = QR</code> as <code>R = Q*P</code>. It's used to convert a finite automaton directly into a regular expression by writing one equation per state (in terms of its incoming transitions) and solving the system.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Is the language <code>L = {aⁿ | n is prime}</code> regular?</div>
+        <div class="a"><p>No. Applying the pumping lemma: pick a prime <code>p ≥</code> pumping length, take <code>s = a^p</code>; pumping down or up changes the exponent to a value that can always be shown composite for suitable choice of <code>i</code>, contradicting the requirement that all pumped strings stay in <code>L</code>.</p></div>
+      </div>
+    </section>
+
+    <!-- 4. CFG & PDA -->
+    <section class="topic" id="t4">
+      <div class="topic-head"><span class="tnum">04</span><h2>Context-Free Grammars &amp; PDA</h2></div>
+      <p class="blurb">CFGs model nested structure (brackets, expressions, code blocks) that finite automata simply cannot track — that's the recurring "why do we need this" answer.</p>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What is a Context-Free Grammar (CFG)?</div>
+        <div class="a"><p>A 4-tuple <code>(V, Σ, R, S)</code>: a set of non-terminals <code>V</code>, terminals <code>Σ</code>, production rules <code>R</code> of the form <code>A → α</code> (a single non-terminal on the left, any string of terminals/non-terminals on the right), and a start symbol <code>S</code>. The "context-free" part means the left side is always a single non-terminal — no surrounding context is checked before applying a rule.</p></div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What is ambiguity in a CFG, and why does it matter?</div>
+        <div class="a"><p>A grammar is ambiguous if some string in its language has two or more distinct parse trees (or leftmost derivations). It matters because compilers and parsers need a single, unambiguous interpretation — the classic example is the dangling-else problem or <code>E → E+E | E*E | id</code> not encoding operator precedence.</p></div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 420 200" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="210" cy="26" r="18" fill="#eef0e8" stroke="#161c2b" stroke-width="2"/>
+          <text x="210" y="31" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#161c2b">E</text>
+
+          <circle cx="110" cy="90" r="18" fill="#eef0e8" stroke="#161c2b" stroke-width="2"/>
+          <text x="110" y="95" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#161c2b">E</text>
+          <circle cx="210" cy="90" r="16" fill="#fff" stroke="#b5691e" stroke-width="2"/>
+          <text x="210" y="95" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#b5691e">+</text>
+          <circle cx="310" cy="90" r="18" fill="#eef0e8" stroke="#161c2b" stroke-width="2"/>
+          <text x="310" y="95" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#161c2b">E</text>
+
+          <circle cx="70" cy="160" r="16" fill="#fff" stroke="#2e6f63" stroke-width="2"/>
+          <text x="70" y="165" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2e6f63">id</text>
+          <circle cx="150" cy="160" r="16" fill="#fff" stroke="#2e6f63" stroke-width="2"/>
+          <text x="150" y="165" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2e6f63">id</text>
+          <circle cx="310" cy="160" r="16" fill="#fff" stroke="#2e6f63" stroke-width="2"/>
+          <text x="310" y="165" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2e6f63">id</text>
+
+          <line x1="210" y1="44" x2="110" y2="72" stroke="#5b5f6b" stroke-width="1.5"/>
+          <line x1="210" y1="44" x2="210" y2="74" stroke="#5b5f6b" stroke-width="1.5"/>
+          <line x1="210" y1="44" x2="310" y2="72" stroke="#5b5f6b" stroke-width="1.5"/>
+
+          <line x1="110" y1="108" x2="70" y2="144" stroke="#5b5f6b" stroke-width="1.5"/>
+          <line x1="110" y1="108" x2="150" y2="144" stroke="#5b5f6b" stroke-width="1.5"/>
+          <line x1="310" y1="108" x2="310" y2="144" stroke="#5b5f6b" stroke-width="1.5"/>
+        </svg>
+        <div class="cap">One parse tree for <code>id + id + id</code> under <code>E → E+E | id</code> — the other valid grouping (right-associative) is what makes this grammar <b>ambiguous</b>.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is Chomsky Normal Form (CNF)?</div>
+        <div class="a"><p>A CFG is in CNF if every production is one of two forms: <code>A → BC</code> (two non-terminals) or <code>A → a</code> (a single terminal), with an optional <code>S → ε</code> for the start symbol. Every CFG can be converted to an equivalent one in CNF, and CNF is what makes the CYK parsing algorithm work in <code>O(n³)</code> time.</p></div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What is a Pushdown Automaton (PDA), and how does it extend a finite automaton?</div>
+        <div class="a"><p>A PDA is an NFA equipped with an auxiliary <b>stack</b> of unbounded size. Transitions can read/pop the top of the stack and push new symbols. This stack is exactly what lets a PDA count and match nested structures (like balanced parentheses), which a finite automaton's fixed, finite memory cannot do.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Are CFGs and PDAs equivalent in power?</div>
+        <div class="a"><p>Yes — a language is context-free if and only if some PDA accepts it. The proof is constructive in both directions: any CFG can be converted to an equivalent PDA (simulating derivations using the stack), and any PDA can be converted back to an equivalent CFG.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> State the Pumping Lemma for context-free languages.</div>
+        <div class="a"><p>For a CFL <code>L</code>, there's a pumping length <code>p</code> such that any string <code>s ∈ L</code> with <code>|s| ≥ p</code> can be split into five parts <code>s = uvxyz</code> where <code>|vy| &gt; 0</code>, <code>|vxy| ≤ p</code>, and <code>uvⁱxyⁱz ∈ L</code> for all <code>i ≥ 0</code>. It's used the same way as the regular-language version — to prove languages like <code>{aⁿbⁿcⁿ}</code> are not context-free.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Is a Deterministic PDA (DPDA) as powerful as a (non-deterministic) PDA?</div>
+        <div class="a"><p>No. DPDAs recognize a strict subset of context-free languages, called deterministic context-free languages. A classic example only a non-deterministic PDA handles is the language of even-length palindromes — the machine can't know when it has reached the middle of the string without guessing.</p></div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 460 190" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#161c2b"/></marker></defs>
+
+          <rect x="20" y="20" width="230" height="90" rx="4" fill="none" stroke="#161c2b" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="30" y="14" font-family="Inter, sans-serif" font-size="12" fill="#5b5f6b">Finite control</text>
+          <circle cx="70" cy="65" r="26" fill="#eef0e8" stroke="#161c2b" stroke-width="2"/>
+          <text x="70" y="70" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#161c2b">q0</text>
+          <circle cx="190" cy="65" r="26" fill="#fff" stroke="#2e6f63" stroke-width="2"/>
+          <circle cx="190" cy="65" r="20" fill="none" stroke="#2e6f63" stroke-width="2"/>
+          <text x="190" y="70" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" fill="#2e6f63">q1</text>
+          <line x1="96" y1="65" x2="164" y2="65" stroke="#161c2b" stroke-width="2" marker-end="url(#arrow3)"/>
+          <text x="130" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#161c2b">0, Z/0Z</text>
+          <path d="M 190 39 C 190 -5, 250 -5, 250 39" fill="none" stroke="#5b5f6b" stroke-width="1.5" marker-end="url(#arrow3)" transform="translate(0,25)"/>
+
+          <text x="330" y="40" font-family="Inter, sans-serif" font-size="12" fill="#5b5f6b">Stack</text>
+          <rect x="310" y="50" width="60" height="26" fill="#fff" stroke="#b5691e" stroke-width="1.5"/>
+          <text x="340" y="68" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#b5691e">0</text>
+          <rect x="310" y="76" width="60" height="26" fill="#fff" stroke="#b5691e" stroke-width="1.5"/>
+          <text x="340" y="94" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#b5691e">0</text>
+          <rect x="310" y="102" width="60" height="26" fill="#fff" stroke="#b5691e" stroke-width="1.5"/>
+          <text x="340" y="120" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#b5691e">Z</text>
+          <text x="340" y="145" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#5b5f6b">push on 0, pop on 1</text>
+
+          <line x1="255" y1="65" x2="300" y2="75" stroke="#5b5f6b" stroke-width="1.5" stroke-dasharray="3 2" marker-end="url(#arrow3)"/>
+        </svg>
+        <div class="cap">PDA sketch for <code>0ⁿ1ⁿ</code>: push a marker for every <code>0</code> read in <code>q0</code>, then pop one for every <code>1</code> read in <code>q1</code> — accept only if the stack empties exactly (hits <code>Z</code>) when input ends.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What are the two common PDA acceptance modes?</div>
+        <div class="a"><p><b>Acceptance by final state</b>: the PDA accepts if it's in an accepting state after reading all input, regardless of stack contents. <b>Acceptance by empty stack</b>: the PDA accepts if the stack is empty after reading all input, regardless of state. Both modes define the same class — context-free languages — and either can be converted to the other.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is the CYK algorithm used for?</div>
+        <div class="a"><p>It's a dynamic-programming membership-testing algorithm: given a CFG in Chomsky Normal Form and a string of length <code>n</code>, CYK decides whether the string belongs to the grammar's language in <code>O(n³)</code> time by filling a triangular table of which non-terminals can generate each substring.</p></div>
+      </div>
+    </section>
+
+    <!-- 5. TURING MACHINES -->
+    <section class="topic" id="t5">
+      <div class="topic-head"><span class="tnum">05</span><h2>Turing Machines</h2></div>
+      <p class="blurb">The model of "what a computer can do, period." Expect at least one conceptual question here about why TMs are the ceiling of computability.</p>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What is a Turing Machine (TM), formally?</div>
+        <div class="a"><p>A 7-tuple <code>(Q, Σ, Γ, δ, q0, qaccept, qreject)</code> featuring an infinite tape, a read/write head, states <code>Q</code>, an input alphabet <code>Σ</code>, a tape alphabet <code>Γ</code> (which includes a blank symbol), and a transition function <code>δ: Q × Γ → Q × Γ × {L, R}</code> that reads a symbol, writes a symbol, changes state, and moves the head left or right.</p></div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 480 130" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="arrow4" markerWidth="10" markerHeight="10" refX="5" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#161c2b"/></marker></defs>
+          <g font-family="JetBrains Mono, monospace" font-size="16">
+            <rect x="20" y="20" width="46" height="46" fill="#f2efe6" stroke="#5b5f6b" stroke-width="1.5"/><text x="43" y="49" text-anchor="middle" fill="#5b5f6b">…</text>
+            <rect x="66" y="20" width="46" height="46" fill="#fff" stroke="#161c2b" stroke-width="1.5"/><text x="89" y="49" text-anchor="middle" fill="#161c2b">1</text>
+            <rect x="112" y="20" width="46" height="46" fill="#fff" stroke="#161c2b" stroke-width="1.5"/><text x="135" y="49" text-anchor="middle" fill="#161c2b">0</text>
+            <rect x="158" y="20" width="46" height="46" fill="#eef0e8" stroke="#2e6f63" stroke-width="2.5"/><text x="181" y="49" text-anchor="middle" fill="#2e6f63">1</text>
+            <rect x="204" y="20" width="46" height="46" fill="#fff" stroke="#161c2b" stroke-width="1.5"/><text x="227" y="49" text-anchor="middle" fill="#161c2b">0</text>
+            <rect x="250" y="20" width="46" height="46" fill="#fff" stroke="#161c2b" stroke-width="1.5"/><text x="273" y="49" text-anchor="middle" fill="#161c2b">1</text>
+            <rect x="296" y="20" width="46" height="46" fill="#fff" stroke="#161c2b" stroke-width="1.5"/><text x="319" y="49" text-anchor="middle" fill="#161c2b">⊔</text>
+            <rect x="342" y="20" width="46" height="46" fill="#f2efe6" stroke="#5b5f6b" stroke-width="1.5"/><text x="365" y="49" text-anchor="middle" fill="#5b5f6b">…</text>
+          </g>
+          <polygon points="181,72 171,90 191,90" fill="#b5691e"/>
+          <text x="181" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#b5691e">head (state q3)</text>
+        </svg>
+        <div class="cap">The tape is infinite in both directions; the head reads/writes the cell under it, then moves L or R based on <code>δ(state, symbol)</code>.</div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> Why is a Turing Machine more powerful than a PDA?</div>
+        <div class="a"><p>A PDA's stack only allows last-in-first-out access, while a TM's tape gives unrestricted, unlimited random-access read/write memory in both directions. This lets a TM simulate any algorithm — including things a stack can't do, like comparing two arbitrary-length substrings anywhere in the input.</p></div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What is the Church-Turing thesis?</div>
+        <div class="a"><p>An (unprovable, but universally accepted) claim that any function "computable" by an intuitive algorithmic process can be computed by a Turing Machine. It's why TMs are used as the formal definition of "computable" and "algorithm" in computer science.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is a Universal Turing Machine (UTM)?</div>
+        <div class="a"><p>A single TM that takes as input the description (encoding) of any other TM <code>M</code> along with an input <code>w</code>, and simulates <code>M</code> running on <code>w</code>. It's the theoretical ancestor of the stored-program computer — one machine that can run any program.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Do non-deterministic Turing Machines recognize more languages than deterministic ones?</div>
+        <div class="a"><p>No. Every non-deterministic TM has an equivalent deterministic TM (which can simulate all branches, e.g. via breadth-first search over the computation tree). They differ in efficiency, not in the class of languages they can recognize.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What's the difference between a language being "recognized" and "decided" by a TM?</div>
+        <div class="a"><p>A TM <i>recognizes</i> (accepts) a language if it halts and accepts every string in the language — but it may loop forever on strings not in the language. A TM <i>decides</i> a language if it always halts, accepting strings in the language and rejecting all others. "Decidable" languages are a strict subset of "recognizable" ones.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What are common "variant" Turing Machines, and why do they matter?</div>
+        <div class="a">
+          <p>Multi-tape TMs, multi-track TMs, and 2-way infinite tape TMs are all variants used to <i>simplify design</i>. The key interview point:</p>
+          <ul>
+            <li>Every variant is <b>equivalent in power</b> to the standard single-tape TM.</li>
+            <li>A multi-tape TM can be simulated by a single-tape TM with at most a <b>polynomial (quadratic)</b> slowdown — it doesn't change what's computable, only efficiency.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is a Linear Bounded Automaton (LBA)?</div>
+        <div class="a"><p>A Turing Machine whose tape is restricted to exactly the length of the input (no extra working space beyond that). LBAs recognize precisely the context-sensitive languages — one level below unrestricted TMs in the Chomsky hierarchy.</p></div>
+      </div>
+    </section>
+
+    <!-- 6. DECIDABILITY -->
+    <section class="topic" id="t6">
+      <div class="topic-head"><span class="tnum">06</span><h2>Decidability &amp; Undecidability</h2></div>
+      <p class="blurb">The Halting Problem is almost guaranteed to come up. Know the diagonalization proof idea, not just the statement.</p>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What is the Halting Problem, and why is it undecidable?</div>
+        <div class="a">
+          <p>It asks: given a TM <code>M</code> and input <code>w</code>, does <code>M</code> halt on <code>w</code>? It's proven undecidable by contradiction using diagonalization:</p>
+          <ul>
+            <li>Assume a TM <code>H</code> decides it, i.e. <code>H(M, w)</code> outputs "halts" or "loops."</li>
+            <li>Build a new machine <code>D</code> that runs <code>H(M, M)</code> and does the opposite: loops if <code>H</code> says "halts," halts if <code>H</code> says "loops."</li>
+            <li>Run <code>D</code> on itself: <code>D(D)</code> halts iff it doesn't halt — a contradiction, so <code>H</code> cannot exist.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What's the difference between decidable, recognizable (semi-decidable), and non-recognizable languages?</div>
+        <div class="a">
+          <p><b>Decidable</b>: a TM always halts and correctly accepts/rejects. <b>Recognizable</b>: a TM halts and accepts on "yes" instances, but may loop forever on "no" instances. <b>Non-recognizable</b>: no TM even reliably accepts the "yes" instances — the complement of the Halting Problem is a standard example.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is a reduction, and how is it used to prove undecidability?</div>
+        <div class="a"><p>A reduction from problem <code>A</code> to problem <code>B</code> shows that if you could solve <code>B</code>, you could use that to solve <code>A</code>. So if <code>A</code> is already known to be undecidable, and <code>A</code> reduces to <code>B</code>, then <code>B</code> must be undecidable too (otherwise you'd have a way to decide <code>A</code>). Most undecidability proofs reduce from the Halting Problem.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What does Rice's Theorem say?</div>
+        <div class="a"><p>Any non-trivial property of the language recognized by a Turing Machine (a property that's true for some TMs and false for others) is undecidable. In practice, this means questions like "does this program's language contain only even-length strings?" are undecidable in general — you can't algorithmically inspect semantic behavior of arbitrary programs.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Is the Post Correspondence Problem (PCP) decidable?</div>
+        <div class="a"><p>No, PCP is undecidable. It's a common tool used to prove other problems undecidable (e.g. ambiguity of a CFG is undecidable, shown via reduction from PCP).</p></div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="230" cy="120" r="95" fill="#f2efe6" stroke="#b5691e" stroke-width="2"/>
+          <text x="230" y="34" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#b5691e" font-weight="600">Recognizable (Type 0)</text>
+
+          <circle cx="230" cy="130" r="62" fill="#eef0e8" stroke="#2e6f63" stroke-width="2"/>
+          <text x="230" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#2e6f63" font-weight="600">Decidable</text>
+
+          <circle cx="230" cy="150" r="30" fill="#fff" stroke="#161c2b" stroke-width="2"/>
+          <text x="230" y="145" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#161c2b" font-weight="600">Regular</text>
+          <text x="230" y="158" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#161c2b">/ CFL</text>
+
+          <text x="230" y="200" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#5b5f6b">Halting Problem lives out here (recognizable, not decidable)</text>
+        </svg>
+        <div class="cap">Nested strictly: <b>Regular/CFL ⊂ Decidable ⊂ Recognizable</b>. Undecidable-but-unrecognizable languages (like the Halting Problem's complement) sit entirely outside the outer circle.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Is the complement of the Halting Problem recognizable?</div>
+        <div class="a"><p>No. The Halting Problem's language is recognizable but not decidable. A standard theorem says a language is decidable if and only if both it and its complement are recognizable. Since the Halting Problem isn't decidable, its complement cannot be recognizable — it's an example of a language that is neither recognizable nor co-recognizable.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Give one concrete example each of a trivial and a non-trivial property (in the sense of Rice's Theorem).</div>
+        <div class="a"><p><b>Trivial</b> (decidable, but useless): "Is the language recognized by TM <code>M</code> equal to itself?" — always true. <b>Non-trivial</b> (undecidable): "Is <code>L(M)</code> empty?", "Does <code>L(M)</code> contain the string <code>'abc'</code>?", "Is <code>L(M)</code> regular?" — each is true for some TMs and false for others, so Rice's Theorem makes all of them undecidable.</p></div>
+      </div>
+    </section>
+
+    <!-- 7. COMPLEXITY -->
+    <section class="topic" id="t7">
+      <div class="topic-head"><span class="tnum">07</span><h2>Complexity: P, NP &amp; Beyond</h2></div>
+      <p class="blurb">Sits right on the border between TOC and DSA/Algorithms — interviewers love this overlap because it's practical.</p>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> Define the classes P and NP.</div>
+        <div class="a"><p><b>P</b> is the set of decision problems solvable by a deterministic TM in polynomial time. <b>NP</b> is the set of decision problems for which a proposed solution ("certificate") can be <i>verified</i> in polynomial time by a deterministic TM — equivalently, solvable in polynomial time by a non-deterministic TM.</p></div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What does NP-Complete mean, and how is it different from NP-Hard?</div>
+        <div class="a"><p>A problem is <b>NP-Complete</b> if it's in NP <i>and</i> every problem in NP can be reduced to it in polynomial time — making it one of the "hardest" problems in NP. A problem is <b>NP-Hard</b> if it has that second property (everything in NP reduces to it) but isn't required to be in NP itself — so NP-Hard problems can be harder than NP, or not even be decision problems (e.g. optimization versions of NP-Complete problems).</p></div>
+      </div>
+
+      <div class="qa imp">
+        <div class="q"><span class="qmark">Q.</span> What is the Cook-Levin theorem?</div>
+        <div class="a"><p>It proves that Boolean Satisfiability (SAT) is NP-Complete — the first problem ever shown to be NP-Complete. Every other NP-Completeness proof today works by reducing SAT (or another already-proven NP-Complete problem) to the new problem, rather than repeating Cook-Levin's original argument from scratch.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Is P = NP? What's the current status?</div>
+        <div class="a"><p>It's the biggest open problem in computer science — unresolved. Most researchers believe <code>P ≠ NP</code>, but no proof exists either way. Practically: if <code>P = NP</code> were proven with a constructive algorithm, problems like factoring, scheduling, and many optimization tasks would become efficiently solvable, with massive implications for cryptography.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> Name a few classic NP-Complete problems.</div>
+        <div class="a"><p>SAT and 3-SAT, the Traveling Salesman decision problem, the Knapsack decision problem, Graph Coloring, the Clique problem, Vertex Cover, and the Hamiltonian Path/Cycle problem.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What's the difference between NP and co-NP?</div>
+        <div class="a"><p>NP problems have "yes" instances that are efficiently verifiable. co-NP problems have "no" instances that are efficiently verifiable (co-NP is the class of complements of NP problems). Whether NP = co-NP is also open — for example, it's easy to verify a graph <i>is</i> 3-colorable given a coloring, but not obviously easy to verify it <i>isn't</i>.</p></div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="230" cy="115" rx="220" ry="95" fill="#f2efe6" stroke="#161c2b" stroke-width="2"/>
+          <text x="230" y="30" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#161c2b" font-weight="600">NP-Hard (everything NP reduces to it)</text>
+
+          <ellipse cx="180" cy="125" rx="150" ry="72" fill="#eef0e8" stroke="#2e6f63" stroke-width="2"/>
+          <text x="140" y="66" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#2e6f63" font-weight="600">NP</text>
+
+          <ellipse cx="95" cy="130" rx="55" ry="42" fill="#fff" stroke="#161c2b" stroke-width="2"/>
+          <text x="95" y="134" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#161c2b" font-weight="600">P</text>
+
+          <ellipse cx="255" cy="145" rx="60" ry="42" fill="#fff" stroke="#b5691e" stroke-width="2"/>
+          <text x="255" y="140" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#b5691e" font-weight="600">NP-</text>
+          <text x="255" y="153" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#b5691e" font-weight="600">Complete</text>
+        </svg>
+        <div class="cap">NP-Complete = the overlap of NP and NP-Hard. If <b>P = NP</b> were proven, the P and NP ellipses would collapse into one — SAT and every NP-Complete problem would become polynomial-time solvable.</div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is a polynomial-time reduction, and how is it used to prove NP-Completeness?</div>
+        <div class="a"><p>A problem <code>A</code> reduces to <code>B</code> (written <code>A ≤p B</code>) if any instance of <code>A</code> can be transformed into an instance of <code>B</code> in polynomial time, such that the answers match. To prove a new problem <code>X</code> is NP-Complete: (1) show <code>X ∈ NP</code> by giving a polynomial-time verifier, and (2) reduce a known NP-Complete problem to <code>X</code> — proving <code>X</code> is at least as hard as everything already known to be NP-Complete.</p></div>
+      </div>
+
+      <div class="qa">
+        <div class="q"><span class="qmark">Q.</span> What is the difference between time complexity and space complexity classes, e.g. PSPACE?</div>
+        <div class="a"><p>Time complexity classes (like P, NP) bound the number of computation steps. Space complexity classes (like PSPACE, the set of problems solvable using polynomial memory regardless of time) bound memory used. It's known that <code>P ⊆ NP ⊆ PSPACE</code>, and PSPACE problems can require exponential time even though they use only polynomial space.</p></div>
+      </div>
+    </section>
+
+    <!-- 8. RAPID FIRE -->
+    <section class="topic" id="t8">
+      <div class="topic-head"><span class="tnum">08</span><h2>Rapid-Fire Comparison Table</h2></div>
+      <p class="blurb">The exact side-by-side comparisons interviewers ask for when they say "quickly tell me the difference between..."</p>
+
+      <table class="rapid">
+        <tr><th>Compare</th><th>Left</th><th>Right</th></tr>
+        <tr>
+          <td><b>DFA vs NFA</b></td>
+          <td>One transition per symbol; no ε-moves; larger to build directly</td>
+          <td>Multiple/zero transitions allowed; ε-moves allowed; smaller/easier to design, equal power</td>
+        </tr>
+        <tr>
+          <td><b>Regular vs Context-Free</b></td>
+          <td>No memory beyond finite states; can't count/match nesting</td>
+          <td>Has a stack; can match nested/balanced structures (e.g. parentheses)</td>
+        </tr>
+        <tr>
+          <td><b>PDA vs Turing Machine</b></td>
+          <td>Stack memory (LIFO only), one-directional tape read</td>
+          <td>Infinite tape, random read/write access, can move both directions freely</td>
+        </tr>
+        <tr>
+          <td><b>Decidable vs Recognizable</b></td>
+          <td>TM always halts with correct yes/no</td>
+          <td>TM halts on "yes," may loop forever on "no"</td>
+        </tr>
+        <tr>
+          <td><b>NP vs NP-Complete</b></td>
+          <td>Solution verifiable in polynomial time</td>
+          <td>In NP <i>and</i> every NP problem reduces to it</td>
+        </tr>
+        <tr>
+          <td><b>NP-Complete vs NP-Hard</b></td>
+          <td>Must be in NP itself</td>
+          <td>Not required to be in NP (can be even harder, or non-decision)</td>
+        </tr>
+        <tr>
+          <td><b>Ambiguous vs Unambiguous CFG</b></td>
+          <td>Some string has 2+ parse trees</td>
+          <td>Every string has exactly one parse tree</td>
+        </tr>
+        <tr>
+          <td><b>Moore vs Mealy Machine</b></td>
+          <td>Output depends only on current state</td>
+          <td>Output depends on current state <i>and</i> input</td>
+        </tr>
+      </table>
+    </section>
+
+    <footer class="end">
+      Built for last-minute placement prep — walk through sections 1→7 once, then use the rapid-fire table as a final memory check before you go in.
+    </footer>
+  </main>
+</div>
+</body>
+</html>
