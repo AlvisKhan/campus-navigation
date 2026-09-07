@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Architecture — Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board:#0b2e24;
+    --board-deep:#082019;
+    --trace:#b8804a;
+    --trace-bright:#e0a868;
+    --pad:#d9c9a3;
+    --silk:#eef3ee;
+    --silk-dim:#a9c2b6;
+    --mask:#123f31;
+    --line:#1e5744;
+    --amber:#e8b04b;
+    --danger:#e0785a;
+    --radius:3px;
+    --maxw:840px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html, body{
+    overflow-x:hidden;
+    width:100%;
+  }
+  body{
+    margin:0;
+    background:var(--board-deep);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-attachment:fixed;
+    color:var(--silk);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.6;
+  }
+  a{color:var(--trace-bright);}
+
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--silk-dim);
+    text-decoration:none;
+    margin-bottom:16px;
+    padding:4px 10px;
+    background:rgba(18,63,49,0.5);
+    border:1px solid var(--line);
+    border-radius:20px;
+    transition:color 0.2s, border-color 0.2s;
+  }
+  .back-link:hover{
+    color:var(--amber);
+    border-color:var(--trace);
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    padding:64px 24px 40px;
+    max-width:var(--maxw);
+    margin:0 auto;
+    border-bottom:1px solid var(--line);
+  }
+  .chip{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.04em;
+    color:var(--amber);
+    border:1px solid var(--trace);
+    padding:3px 10px;
+    border-radius:20px;
+    margin-bottom:18px;
+  }
+  h1{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:clamp(28px,5vw,42px);
+    margin:0 0 12px;
+    color:var(--silk);
+    letter-spacing:-0.01em;
+    word-break:break-word;
+  }
+  header p.lede{
+    color:var(--silk-dim);
+    font-size:16px;
+    max-width:62ch;
+    margin:0 0 22px;
+  }
+  .meta-row{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--silk-dim);
+  }
+  .meta-row span b{color:var(--trace-bright); font-weight:600;}
+
+  /* ---------- Layout ---------- */
+  .wrap{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:36px 24px 100px;
+    display:grid;
+    grid-template-columns:190px 1fr;
+    gap:36px;
+    align-items:start;
+  }
+  nav.toc{
+    position:sticky;
+    top:24px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+  }
+  nav.toc .toc-title{
+    color:var(--silk-dim);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    font-size:11px;
+    margin-bottom:10px;
+  }
+  nav.toc ol{
+    list-style:none;
+    margin:0; padding:0;
+    counter-reset:tocnum;
+  }
+  nav.toc li{
+    counter-increment:tocnum;
+    margin-bottom:9px;
+  }
+  nav.toc a{
+    text-decoration:none;
+    color:var(--silk-dim);
+    display:flex;
+    gap:8px;
+  }
+  nav.toc a:hover{color:var(--trace-bright);}
+  nav.toc a::before{
+    content:counter(tocnum,decimal-leading-zero);
+    color:var(--trace);
+    flex-shrink:0;
+  }
+
+  main{min-width:0;}
+
+  section.topic{
+    margin-bottom:56px;
+    scroll-margin-top:20px;
+  }
+  .topic-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    border-bottom:1px solid var(--trace);
+    padding-bottom:10px;
+    margin-bottom:22px;
+  }
+  .topic-head h2{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:20px;
+    color:var(--trace-bright);
+    margin:0;
+  }
+  .topic-head .idx{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--trace);
+    font-size:13px;
+  }
+
+  .qa{
+    background:var(--mask);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    margin-bottom:16px;
+    overflow-wrap:break-word;
+  }
+  .qa .q{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:14.5px;
+    color:var(--amber);
+    margin:0 0 10px;
+    display:flex;
+    gap:9px;
+  }
+  .qa .q .tag{
+    color:var(--trace);
+    flex-shrink:0;
+  }
+  .qa .a{
+    margin:0;
+    color:var(--silk);
+    font-size:14.5px;
+  }
+  .qa .a p{margin:0 0 10px;}
+  .qa .a p:last-child{margin-bottom:0;}
+  .qa .a ul{margin:8px 0 10px 18px; padding:0;}
+  .qa .a li{margin-bottom:5px;}
+  .qa .a b{color:var(--trace-bright); font-weight:600;}
+
+  pre{
+    background:var(--board-deep);
+    border:1px solid var(--line);
+    border-left:3px solid var(--trace);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.8px;
+    color:#cfe8da;
+    margin:10px 0;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+  code{
+    font-family:'IBM Plex Mono', monospace;
+    background:rgba(184,128,74,0.14);
+    padding:1px 5px;
+    border-radius:3px;
+    font-size:0.92em;
+    color:var(--trace-bright);
+    word-break:break-word;
+  }
+  pre code{
+    background:none;
+    padding:0;
+    color:inherit;
+    word-break:normal;
+  }
+
+  .table-wrap{
+    width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    margin:12px 0;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:rgba(8,32,25,0.45);
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:0;
+    font-size:13.5px;
+    min-width:440px;
+  }
+  th,td{
+    border:1px solid var(--line);
+    padding:8px 12px;
+    text-align:left;
+  }
+  th{
+    background:rgba(184,128,74,0.14);
+    color:var(--trace-bright);
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    font-size:12px;
+  }
+
+  /* Custom scrollbars */
+  pre::-webkit-scrollbar,
+  .table-wrap::-webkit-scrollbar,
+  .diagram::-webkit-scrollbar{
+    height:5px;
+  }
+  pre::-webkit-scrollbar-thumb,
+  .table-wrap::-webkit-scrollbar-thumb,
+  .diagram::-webkit-scrollbar-thumb{
+    background:var(--line);
+    border-radius:3px;
+  }
+
+  .callout{
+    border:1px dashed var(--trace);
+    border-radius:var(--radius);
+    padding:10px 14px;
+    font-size:13px;
+    color:var(--silk-dim);
+    margin-top:10px;
+    background:rgba(232,176,75,0.05);
+  }
+  .callout b{color:var(--amber);}
+
+  .diagram{
+    background:var(--board-deep);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 10px 8px;
+    margin:12px 0;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .diagram svg{
+    width:100%;
+    min-width:300px;
+    height:auto;
+    display:block;
+  }
+  .diagram .cap{
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--silk-dim);
+    margin-top:8px;
+    letter-spacing:0.02em;
+  }
+
+  .rapidfire{
+    background:var(--mask);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px 22px;
+  }
+  .rapidfire .rf-item{
+    display:grid;
+    grid-template-columns:1fr;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13.5px;
+  }
+  .rapidfire .rf-item:last-child{border-bottom:none;}
+  .rapidfire .rf-q{color:var(--amber); font-weight:600; font-family:'IBM Plex Mono',monospace; font-size:13px;}
+  .rapidfire .rf-a{color:var(--silk-dim); margin-top:3px;}
+
+  footer{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:0 24px 60px;
+    color:var(--silk-dim);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    border-top:1px solid var(--line);
+    padding-top:20px;
+  }
+
+  @media (max-width:720px){
+    header{
+      padding:36px 16px 28px;
+    }
+    .chip{
+      font-size:11px;
+      padding:2px 8px;
+      margin-bottom:14px;
+    }
+    h1{
+      font-size:clamp(24px, 6.5vw, 32px);
+      margin-bottom:10px;
+    }
+    header p.lede{
+      font-size:14.5px;
+      margin-bottom:16px;
+    }
+    .meta-row{
+      gap:10px 16px;
+      font-size:11.5px;
+    }
+    .wrap{
+      grid-template-columns:1fr;
+      padding:20px 14px 60px;
+      gap:24px;
+    }
+    nav.toc{
+      position:static;
+      margin-bottom:16px;
+      background:var(--mask);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+    }
+    nav.toc ol{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(135px, 1fr));
+      gap:8px 12px;
+    }
+    nav.toc li{
+      margin-bottom:0;
+    }
+    nav.toc a{
+      font-size:12px;
+    }
+    .topic-head{
+      gap:8px;
+      margin-bottom:16px;
+    }
+    .topic-head h2{
+      font-size:18px;
+    }
+    .qa{
+      padding:14px;
+      margin-bottom:14px;
+    }
+    .qa .q{
+      font-size:13.5px;
+      margin-bottom:8px;
+    }
+    .qa .a{
+      font-size:13.5px;
+    }
+    pre{
+      font-size:11.5px;
+      padding:10px 12px;
+    }
+    .diagram{
+      padding:12px 6px 6px;
+    }
+    .diagram .cap{
+      font-size:10.5px;
+      padding:0 4px;
+    }
+    .rapidfire{
+      padding:14px;
+    }
+    footer{
+      padding:0 16px 40px;
+      font-size:11px;
+    }
+  }
+
+  @media (max-width:440px){
+    .meta-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px 12px;
+    }
+    nav.toc ol{
+      grid-template-columns:1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="./index.html" class="back-link">← Back to Vault</a><br>
+  <span class="chip">Infosys · Technical Round Prep</span>
+  <h1>Computer Architecture,<br>Interview-Ready</h1>
+  <p class="lede">Every core topic Infosys interviewers actually probe — Von Neumann basics, memory hierarchy, pipelining, RISC/CISC, interrupts, addressing modes — framed as the question you'll be asked and the answer you should give.</p>
+  <div class="meta-row">
+    <span>Format: <b>Q&amp;A</b></span>
+    <span>Sections: <b>11</b></span>
+    <span>Questions: <b>32 + 10 rapid-fire</b></span>
+    <span>Diagrams: <b>8</b></span>
+    <span>Read time: <b>~45 min</b></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc">
+    <div class="toc-title">Jump to</div>
+    <ol>
+      <li><a href="#basics">Architecture basics</a></li>
+      <li><a href="#cpu">CPU & instruction cycle</a></li>
+      <li><a href="#riscisc">RISC vs CISC</a></li>
+      <li><a href="#addressing">Addressing modes</a></li>
+      <li><a href="#pipeline">Pipelining</a></li>
+      <li><a href="#memory">Memory hierarchy</a></li>
+      <li><a href="#cache">Cache mapping</a></li>
+      <li><a href="#virtual">Virtual memory</a></li>
+      <li><a href="#io">I/O & interrupts</a></li>
+      <li><a href="#multicore">Multicore & parallelism</a></li>
+      <li><a href="#rapid">Rapid-fire round</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="topic" id="basics">
+      <div class="topic-head"><span class="idx">01</span><h2>Architecture Basics</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q1.</span> What is computer architecture, and how is it different from computer organization?</p>
+        <div class="a">
+          <p><b>Architecture</b> is the "what" — the programmer-visible part: instruction set, addressing modes, data types, registers exposed to software. <b>Organization</b> is the "how" — the actual hardware implementation: control unit design, bus structure, memory technology used to realize that architecture.</p>
+          <p>Interview one-liner: <i>"Architecture is the contract with the programmer; organization is how the hardware honours that contract."</i> Two CPUs with the same architecture (e.g. two different x86 chips) can have very different organizations.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q2.</span> Explain the Von Neumann architecture. What is the "Von Neumann bottleneck"?</p>
+        <div class="a">
+          <p>A Von Neumann machine stores <b>program instructions and data in the same memory</b>, accessed over a single shared bus. Core components:</p>
+          <ul>
+            <li><b>CPU</b> — ALU + control unit + registers</li>
+            <li><b>Memory</b> — single unified address space for code and data</li>
+            <li><b>Input/Output</b> — peripherals</li>
+            <li><b>Bus</b> — connects everything, carries address/data/control signals</li>
+          </ul>
+          <p>Because instructions and data share the same bus, the CPU cannot fetch an instruction and read/write data at the same time — this serialization is the <b>Von Neumann bottleneck</b>, and it's the main reason caches and pipelining exist.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q3.</span> How does Harvard architecture solve this? Where is it used today?</p>
+        <div class="a">
+          <p>Harvard architecture uses <b>separate memories and buses for instructions and data</b>, so both can be fetched in the same cycle — no contention. Pure Harvard is rare in general-purpose CPUs (rigid, hard to load programs dynamically), but the idea survives as <b>Modified Harvard</b>: unified main memory, but split L1 instruction cache and L1 data cache — used in virtually every modern processor including those in Infosys's typical enterprise/embedded stack.</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Aspect</th><th>Von Neumann</th><th>Harvard</th></tr>
+              <tr><td>Memory</td><td>Shared</td><td>Separate (I & D)</td></tr>
+              <tr><td>Bus</td><td>Single</td><td>Dual</td></tr>
+              <tr><td>Speed</td><td>Slower (bottleneck)</td><td>Faster, parallel access</td></tr>
+              <tr><td>Used in</td><td>General PCs</td><td>DSPs, microcontrollers, L1 caches</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="20" width="560" height="14" fill="none"/>
+          <!-- Bus -->
+          <rect x="40" y="95" width="520" height="24" rx="3" fill="var(--mask)" stroke="var(--trace)" stroke-width="1.5"/>
+          <text x="300" y="111" text-anchor="middle" fill="var(--amber)" font-family="IBM Plex Mono, monospace" font-size="12">SYSTEM BUS (address / data / control)</text>
+          <!-- CPU box -->
+          <rect x="60" y="20" width="200" height="60" rx="3" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="160" y="42" text-anchor="middle" fill="var(--silk)" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600">CPU</text>
+          <text x="160" y="60" text-anchor="middle" fill="var(--silk-dim)" font-family="IBM Plex Mono, monospace" font-size="10">ALU · Control Unit · Registers</text>
+          <line x1="160" y1="80" x2="160" y2="95" stroke="var(--trace)" stroke-width="1.5"/>
+          <!-- Memory box -->
+          <rect x="340" y="20" width="220" height="60" rx="3" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="450" y="42" text-anchor="middle" fill="var(--silk)" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600">Main Memory</text>
+          <text x="450" y="60" text-anchor="middle" fill="var(--silk-dim)" font-family="IBM Plex Mono, monospace" font-size="10">Instructions + Data (shared)</text>
+          <line x1="450" y1="80" x2="450" y2="95" stroke="var(--trace)" stroke-width="1.5"/>
+          <!-- I/O box -->
+          <rect x="200" y="150" width="200" height="50" rx="3" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="300" y="180" text-anchor="middle" fill="var(--silk)" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600">Input / Output Devices</text>
+          <line x1="300" y1="119" x2="300" y2="150" stroke="var(--trace)" stroke-width="1.5"/>
+        </svg>
+        <div class="cap">Fig 1 — Von Neumann architecture: one shared bus for instructions and data</div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q4.</span> What is Flynn's Taxonomy? How does it classify processors?</p>
+        <div class="a">
+          <p>Flynn's Taxonomy classifies architectures by how many instruction and data streams they process simultaneously:</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Class</th><th>Meaning</th><th>Example</th></tr>
+              <tr><td>SISD</td><td>Single Instruction, Single Data</td><td>Classic single-core CPU</td></tr>
+              <tr><td>SIMD</td><td>Single Instruction, Multiple Data</td><td>GPUs, vector/AVX instructions</td></tr>
+              <tr><td>MISD</td><td>Multiple Instruction, Single Data</td><td>Rare — fault-tolerant systems</td></tr>
+              <tr><td>MIMD</td><td>Multiple Instruction, Multiple Data</td><td>Multicore CPUs, distributed systems</td></tr>
+            </table>
+          </div>
+          <p>Interviewers like this because it connects nicely to a follow-up on GPUs vs CPUs: GPUs are SIMD-heavy (same operation across thousands of data elements), CPUs are MIMD (independent cores doing independent work).</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q5.</span> Hardwired vs microprogrammed control unit — what's the difference?</p>
+        <div class="a">
+          <ul>
+            <li><b>Hardwired control unit</b> — control signals are generated by fixed logic circuits (combinational + sequential logic). Very fast, but hard to modify — any change to the instruction set means redesigning the circuit. Common in RISC CPUs where instructions are simple.</li>
+            <li><b>Microprogrammed control unit</b> — control signals come from a small internal program (microcode) stored in a control memory (ROM). Each instruction maps to a sequence of micro-instructions. Slower than hardwired, but flexible — new instructions can be added by updating microcode. Common in CISC CPUs.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q6.</span> What are the basic functional units of a CPU?</p>
+        <div class="a">
+          <ul>
+            <li><b>ALU (Arithmetic Logic Unit)</b> — performs arithmetic (add, subtract) and logical (AND, OR, NOT) operations.</li>
+            <li><b>CU (Control Unit)</b> — decodes instructions and generates control signals that orchestrate every other unit.</li>
+            <li><b>Registers</b> — tiny, ultra-fast storage inside the CPU: PC (Program Counter), IR (Instruction Register), MAR/MBR (Memory Address/Buffer Register), Accumulator, general-purpose registers.</li>
+            <li><b>Bus interface</b> — connects the CPU to memory and I/O.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="cpu">
+      <div class="topic-head"><span class="idx">02</span><h2>CPU &amp; Instruction Cycle</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q7.</span> Walk me through the fetch-decode-execute cycle.</p>
+        <div class="a">
+          <p>This is one of the most commonly asked questions — answer it as a numbered sequence:</p>
+          <ul>
+            <li><b>1. Fetch</b> — PC holds the address of the next instruction; it's copied to MAR; the instruction is read from memory into MBR, then into the Instruction Register (IR); PC increments.</li>
+            <li><b>2. Decode</b> — the Control Unit interprets the opcode in IR and figures out what operation and operands are involved.</li>
+            <li><b>3. Fetch operands</b> — if needed, operands are read from registers or memory.</li>
+            <li><b>4. Execute</b> — ALU performs the operation.</li>
+            <li><b>5. Store / Write-back</b> — result is written back to a register or memory.</li>
+          </ul>
+          <p>Then the cycle repeats for the next instruction. Mention that this is exactly what pipelining tries to overlap across multiple instructions (see Section 05).</p>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
+          <g font-family="IBM Plex Mono, monospace" font-size="12">
+            <circle cx="120" cy="60" r="46" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+            <text x="120" y="56" text-anchor="middle" fill="var(--silk)" font-weight="600">FETCH</text>
+            <text x="120" y="72" text-anchor="middle" fill="var(--silk-dim)" font-size="9.5">PC -&gt; IR</text>
+
+            <circle cx="300" cy="60" r="46" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+            <text x="300" y="56" text-anchor="middle" fill="var(--silk)" font-weight="600">DECODE</text>
+            <text x="300" y="72" text-anchor="middle" fill="var(--silk-dim)" font-size="9.5">opcode -&gt; signals</text>
+
+            <circle cx="480" cy="60" r="46" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+            <text x="480" y="56" text-anchor="middle" fill="var(--silk)" font-weight="600">EXECUTE</text>
+            <text x="480" y="72" text-anchor="middle" fill="var(--silk-dim)" font-size="9.5">ALU op</text>
+
+            <circle cx="300" cy="170" r="46" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+            <text x="300" y="166" text-anchor="middle" fill="var(--silk)" font-weight="600">WRITE-BACK</text>
+            <text x="300" y="182" text-anchor="middle" fill="var(--silk-dim)" font-size="9.5">store result</text>
+
+            <path d="M166 60 H254" stroke="var(--trace)" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M346 60 H434" stroke="var(--trace)" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <path d="M460 100 Q400 160 346 168" stroke="var(--trace)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+            <path d="M254 155 Q160 130 130 106" stroke="var(--trace)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+          </g>
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--trace)"/>
+            </marker>
+          </defs>
+        </svg>
+        <div class="cap">Fig 2 — The instruction cycle, repeated for every instruction</div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q8.</span> What's the difference between a register, cache, and RAM?</p>
+        <div class="a">
+          <div class="table-wrap">
+            <table>
+              <tr><th>Storage</th><th>Speed</th><th>Size</th><th>Location</th></tr>
+              <tr><td>Register</td><td>Fastest (~1 cycle)</td><td>Bytes (a handful)</td><td>Inside CPU</td></tr>
+              <tr><td>Cache (L1/L2/L3)</td><td>Very fast (few cycles)</td><td>KB–MB</td><td>On/near CPU die</td></tr>
+              <tr><td>RAM</td><td>Slow (~100+ cycles)</td><td>GB</td><td>Separate chip on motherboard</td></tr>
+            </table>
+          </div>
+          <p>This naturally sets up the <b>memory hierarchy</b> question in Section 06 — you can say "these three sit at the top of the memory hierarchy pyramid, trading capacity for speed."</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q9.</span> What is clock speed, and does higher clock speed always mean a faster CPU?</p>
+        <div class="a">
+          <p>Clock speed (GHz) is how many cycles per second the CPU executes. But actual performance depends on:</p>
+          <pre><code>Execution Time = Instructions
+               × Cycles per Instruction (CPI)
+               × Clock cycle time</code></pre>
+          <p>Known as the <b>CPU performance equation</b>. So a lower-clocked CPU with a better microarchitecture (fewer cycles per instruction, better pipelining, better branch prediction) can outperform a higher-clocked one — this is why raw GHz comparisons across different CPU families are misleading.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="riscisc">
+      <div class="topic-head"><span class="idx">03</span><h2>RISC vs CISC</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q10.</span> Differentiate RISC and CISC. Give real examples.</p>
+        <div class="a">
+          <div class="table-wrap">
+            <table>
+              <tr><th></th><th>RISC</th><th>CISC</th></tr>
+              <tr><td>Instruction set</td><td>Small, simple, uniform-length</td><td>Large, complex, variable-length</td></tr>
+              <tr><td>Cycles/instruction</td><td>Mostly 1 cycle</td><td>Multiple cycles</td></tr>
+              <tr><td>Memory access</td><td>Only via LOAD/STORE</td><td>Any instruction can touch memory</td></tr>
+              <tr><td>Hardware vs Compiler</td><td>Simple hardware, smarter compiler</td><td>Complex hardware, simpler compiler</td></tr>
+              <tr><td>Examples</td><td>ARM, RISC-V, MIPS</td><td>x86 (Intel/AMD)</td></tr>
+            </table>
+          </div>
+          <p>Good closing line for the interviewer: <i>"Modern x86 chips are actually CISC on the outside but internally translate instructions into RISC-like micro-ops — so the line has blurred in practice."</i></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="addressing">
+      <div class="topic-head"><span class="idx">04</span><h2>Addressing Modes</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q11.</span> Name the common addressing modes with a one-line example each.</p>
+        <div class="a">
+          <pre><code>Immediate    : MOV R1, #5        ; operand is the value itself
+Direct       : MOV R1, [1000]    ; operand is at memory address 1000
+Indirect     : MOV R1, [[1000]]  ; address 1000 holds the address of operand
+Register     : MOV R1, R2        ; operand is inside a register
+Register Ind.: MOV R1, [R2]      ; R2 holds the memory address of operand
+Indexed      : MOV R1, [R2+4]    ; base register + offset (great for arrays)
+Base + Offset: used for stack frames, struct field access</code></pre>
+          <p>Follow-up they often ask: <b>"Why do we need so many?"</b> — Answer: different modes trade off instruction size, flexibility, and speed. Indexed/base addressing is what makes array and struct access efficient without hardcoding every address.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="pipeline">
+      <div class="topic-head"><span class="idx">05</span><h2>Pipelining</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q12.</span> What is pipelining and why does it improve throughput?</p>
+        <div class="a">
+          <p>Pipelining overlaps the execution of multiple instructions by splitting the instruction cycle into independent stages, so while one instruction is being decoded, the next is already being fetched — like an assembly line. Classic 5-stage RISC pipeline:</p>
+          <pre><code>IF  -&gt; ID  -&gt; EX  -&gt; MEM -&gt; WB
+(Fetch)(Decode)(Execute)(Memory)(Write-back)</code></pre>
+          <p>Without pipelining, each instruction needs 5 cycles serially. With pipelining, once the pipeline is full, <b>one instruction completes every cycle</b> — ideal speedup is close to 5x for a 5-stage pipe.</p>
+          <pre><code>Cycle:     1    2    3    4    5    6    7
+Instr 1:  IF   ID   EX   MEM  WB
+Instr 2:       IF   ID   EX   MEM  WB
+Instr 3:            IF   ID   EX   MEM  WB</code></pre>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q13.</span> What are pipeline hazards? Name the three types.</p>
+        <div class="a">
+          <ul>
+            <li><b>Structural hazard</b> — two instructions need the same hardware resource at the same time (e.g. one memory port needed for both fetch and data access). Fixed by duplicating resources (separate I-cache/D-cache).</li>
+            <li><b>Data hazard</b> — an instruction depends on the result of a previous instruction still in the pipeline.
+              <pre><code>ADD R1, R2, R3   ; R1 = R2 + R3
+SUB R4, R1, R5   ; needs R1 (not written back yet!)</code></pre>
+              Fixed by <b>forwarding/bypassing</b> (feed the ALU result directly to the next stage) or stalling.
+            </li>
+            <li><b>Control hazard</b> — caused by branches; the CPU doesn't know which instruction to fetch next until the branch is resolved. Fixed by <b>branch prediction</b> and speculative execution.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace" font-size="11">
+          <!-- header row: cycle numbers -->
+          <g fill="var(--silk-dim)">
+            <text x="140" y="15" text-anchor="middle">1</text>
+            <text x="200" y="15" text-anchor="middle">2</text>
+            <text x="260" y="15" text-anchor="middle">3</text>
+            <text x="320" y="15" text-anchor="middle">4</text>
+            <text x="380" y="15" text-anchor="middle">5</text>
+            <text x="440" y="15" text-anchor="middle">6</text>
+            <text x="500" y="15" text-anchor="middle">7</text>
+          </g>
+          <text x="30" y="15" fill="var(--amber)">cycle</text>
+
+          <!-- rows for instr1..4, each stage box 55 wide -->
+          <g>
+            <text x="30" y="45" fill="var(--silk)">I1</text>
+            <rect x="112" y="30" width="52" height="22" fill="var(--mask)" stroke="var(--trace-bright)"/><text x="138" y="45" text-anchor="middle" fill="var(--silk)" font-size="9">IF</text>
+            <rect x="172" y="30" width="52" height="22" fill="var(--mask)" stroke="var(--trace-bright)"/><text x="198" y="45" text-anchor="middle" fill="var(--silk)" font-size="9">ID</text>
+            <rect x="232" y="30" width="52" height="22" fill="var(--mask)" stroke="var(--trace-bright)"/><text x="258" y="45" text-anchor="middle" fill="var(--silk)" font-size="9">EX</text>
+            <rect x="292" y="30" width="52" height="22" fill="var(--mask)" stroke="var(--trace-bright)"/><text x="318" y="45" text-anchor="middle" fill="var(--silk)" font-size="9">MEM</text>
+            <rect x="352" y="30" width="52" height="22" fill="var(--mask)" stroke="var(--trace-bright)"/><text x="378" y="45" text-anchor="middle" fill="var(--silk)" font-size="9">WB</text>
+          </g>
+          <g>
+            <text x="30" y="75" fill="var(--silk)">I2</text>
+            <rect x="172" y="60" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="198" y="75" text-anchor="middle" fill="var(--silk-dim)" font-size="9">IF</text>
+            <rect x="232" y="60" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="258" y="75" text-anchor="middle" fill="var(--silk-dim)" font-size="9">ID</text>
+            <rect x="292" y="60" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="318" y="75" text-anchor="middle" fill="var(--silk-dim)" font-size="9">EX</text>
+            <rect x="352" y="60" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="378" y="75" text-anchor="middle" fill="var(--silk-dim)" font-size="9">MEM</text>
+            <rect x="412" y="60" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="438" y="75" text-anchor="middle" fill="var(--silk-dim)" font-size="9">WB</text>
+          </g>
+          <g>
+            <text x="30" y="105" fill="var(--silk)">I3</text>
+            <rect x="232" y="90" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="258" y="105" text-anchor="middle" fill="var(--silk-dim)" font-size="9">IF</text>
+            <rect x="292" y="90" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="318" y="105" text-anchor="middle" fill="var(--silk-dim)" font-size="9">ID</text>
+            <rect x="352" y="90" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="378" y="105" text-anchor="middle" fill="var(--silk-dim)" font-size="9">EX</text>
+            <rect x="412" y="90" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="438" y="105" text-anchor="middle" fill="var(--silk-dim)" font-size="9">MEM</text>
+            <rect x="472" y="90" width="52" height="22" fill="var(--mask)" stroke="var(--line)"/><text x="498" y="105" text-anchor="middle" fill="var(--silk-dim)" font-size="9">WB</text>
+          </g>
+          <text x="280" y="145" text-anchor="middle" fill="var(--silk-dim)" font-size="10">Each instruction takes 5 cycles alone, but once the pipe is full,</text>
+          <text x="280" y="162" text-anchor="middle" fill="var(--silk-dim)" font-size="10">a new instruction finishes every single cycle</text>
+          <text x="280" y="182" text-anchor="middle" fill="var(--amber)" font-size="10.5">&#8594; throughput approaches 1 instruction / cycle</text>
+        </svg>
+        <div class="cap">Fig 5 — Overlapping pipeline stages across instructions I1, I2, I3</div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q14.</span> Superpipelining vs superscalar — what's the difference?</p>
+        <div class="a">
+          <ul>
+            <li><b>Superpipelining</b> — increase the <b>number of pipeline stages</b> (deeper pipeline) so each stage does less work and can run at a higher clock speed. More stages = more potential for hazards and higher misprediction penalty.</li>
+            <li><b>Superscalar</b> — increase <b>width</b> instead of depth: duplicate execution units (multiple ALUs, load/store units) so more than one instruction can be issued and executed <b>in the same cycle</b>.</li>
+          </ul>
+          <p>Modern high-performance CPUs (e.g. Intel Core, Apple M-series) combine both: deep pipelines <b>and</b> wide superscalar issue.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q15.</span> What is branch prediction, and what happens on a misprediction?</p>
+        <div class="a">
+          <p>The CPU guesses which way a branch (if/loop condition) will go and speculatively fetches/executes down that path, instead of stalling until the condition is actually evaluated. If the guess is wrong, everything speculatively executed after the branch must be <b>flushed</b> from the pipeline and fetching restarts from the correct address — this "pipeline flush" is why mispredictions are expensive (can cost 10-20 cycles on deep pipelines).</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="memory">
+      <div class="topic-head"><span class="idx">06</span><h2>Memory Hierarchy</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q16.</span> Draw/describe the memory hierarchy and explain why it's shaped like a pyramid.</p>
+        <div class="a">
+          <pre><code>  ▲  Registers        <- fastest, smallest, $$$
+  │  L1 Cache
+  │  L2 Cache
+  │  L3 Cache
+  │  RAM
+  ▼  SSD / Hard Disk  <- slowest, largest, cheap</code></pre>
+          <p>Principle: as you go down, <b>speed decreases, capacity increases, cost per byte decreases</b>. It works because of <b>locality of reference</b>:</p>
+          <ul>
+            <li><b>Temporal locality</b> — recently used data will likely be used again soon (loop variables).</li>
+            <li><b>Spatial locality</b> — data near recently accessed data will likely be accessed soon (array traversal).</li>
+          </ul>
+          <p>Caches exploit both to keep frequently-used data close to the CPU, hiding the latency of slow main memory.</p>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 550 240" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace" font-size="12">
+          <polygon points="260,10 320,55 200,55" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="260" y="40" text-anchor="middle" fill="var(--silk)" font-size="10.5">Registers</text>
+
+          <polygon points="200,55 320,55 350,95 170,95" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="260" y="80" text-anchor="middle" fill="var(--silk)" font-size="10.5">L1 / L2 / L3 Cache</text>
+
+          <polygon points="170,95 350,95 385,140 135,140" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="260" y="122" text-anchor="middle" fill="var(--silk)" font-size="10.5">Main Memory (RAM)</text>
+
+          <polygon points="135,140 385,140 425,190 95,190" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="260" y="169" text-anchor="middle" fill="var(--silk)" font-size="10.5">SSD / Hard Disk</text>
+
+          <text x="440" y="35" fill="var(--amber)" font-size="10">faster</text>
+          <text x="440" y="180" fill="var(--amber)" font-size="10">cheaper / larger</text>
+          <line x1="430" y1="45" x2="430" y2="170" stroke="var(--trace)" stroke-width="1.2" marker-end="url(#arrow2)" marker-start="url(#arrow2s)"/>
+          <defs>
+            <marker id="arrow2" markerWidth="8" markerHeight="8" refX="4" refY="6" orient="auto"><path d="M0,0 L4,6 L8,0" fill="none" stroke="var(--trace)" stroke-width="1.2"/></marker>
+            <marker id="arrow2s" markerWidth="8" markerHeight="8" refX="4" refY="0" orient="auto"><path d="M0,6 L4,0 L8,6" fill="none" stroke="var(--trace)" stroke-width="1.2"/></marker>
+          </defs>
+        </svg>
+        <div class="cap">Fig 3 — Memory hierarchy: speed and cost drop as you go down, capacity grows</div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q17.</span> SRAM vs DRAM — where is each used, and why?</p>
+        <div class="a">
+          <div class="table-wrap">
+            <table>
+              <tr><th></th><th>SRAM</th><th>DRAM</th></tr>
+              <tr><td>Cell design</td><td>6-transistor flip-flop</td><td>1 transistor + 1 capacitor</td></tr>
+              <tr><td>Needs refresh?</td><td>No</td><td>Yes — capacitor leaks charge, must be refreshed every few ms</td></tr>
+              <tr><td>Speed</td><td>Very fast</td><td>Slower</td></tr>
+              <tr><td>Density / cost</td><td>Low density, expensive</td><td>High density, cheap</td></tr>
+              <tr><td>Used for</td><td>CPU caches (L1/L2/L3)</td><td>Main memory (RAM sticks)</td></tr>
+            </table>
+          </div>
+          <p>One-liner: <i>"SRAM trades density for speed and is used where every nanosecond counts — the cache. DRAM trades speed for density and cost — main memory."</i></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="cache">
+      <div class="topic-head"><span class="idx">07</span><h2>Cache Mapping &amp; Performance</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q18.</span> What are the cache mapping techniques?</p>
+        <div class="a">
+          <ul>
+            <li><b>Direct-mapped</b> — each memory block maps to exactly <b>one</b> cache line. Simple, fast, but causes frequent conflict misses.</li>
+            <li><b>Fully associative</b> — a block can go into <b>any</b> cache line. Fewer conflicts, but expensive to search (needs parallel comparators).</li>
+            <li><b>N-way set associative</b> — middle ground: cache is split into sets, a block maps to one set but can occupy any of the N lines within it. Most real CPUs use 4-way to 16-way set associative caches.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q19.</span> How do you calculate Average Memory Access Time (AMAT)? Solve a quick example.</p>
+        <div class="a">
+          <pre><code>AMAT = Hit Time + Miss Rate x Miss Penalty</code></pre>
+          <p><b>Example (frequently asked as a numerical):</b> Hit time = 1 ns, Miss rate = 5%, Miss penalty = 100 ns.</p>
+          <pre><code>AMAT = 1 + 0.05 x 100
+     = 1 + 5
+     = 6 ns</code></pre>
+          <p>Follow-up: for <b>multi-level cache</b>, extend it —</p>
+          <pre><code>AMAT = L1_HitTime + L1_MissRate × (L2_HitTime + L2_MissRate × L2_Penalty)</code></pre>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 560 225" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace" font-size="11">
+          <text x="130" y="20" text-anchor="middle" fill="var(--amber)" font-size="12" font-weight="600">Main Memory (16 blocks)</text>
+          <text x="430" y="20" text-anchor="middle" fill="var(--amber)" font-size="12" font-weight="600">Cache (4 lines)</text>
+          <!-- memory blocks 0..15 as small squares -->
+          <g>
+            <!-- render 16 blocks in 2 rows of 8 -->
+          </g>
+          <!-- Row of memory blocks -->
+          <g id="mem">
+            <!-- generated manually -->
+          </g>
+          <!-- We manually place blocks 0-15 -->
+          <g font-size="10">
+            <!-- block template positions x=20+ i*24, y=40 row1 (0-7), y=70 row2(8-15) -->
+            <rect x="20" y="40" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="30" y="54" text-anchor="middle" fill="var(--silk-dim)">0</text>
+            <rect x="44" y="40" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="54" y="54" text-anchor="middle" fill="var(--silk-dim)">1</text>
+            <rect x="68" y="40" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="78" y="54" text-anchor="middle" fill="var(--silk-dim)">2</text>
+            <rect x="92" y="40" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="102" y="54" text-anchor="middle" fill="var(--silk-dim)">3</text>
+            <rect x="116" y="40" width="20" height="20" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/><text x="126" y="54" text-anchor="middle" fill="var(--trace-bright)">4</text>
+            <rect x="140" y="40" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="150" y="54" text-anchor="middle" fill="var(--silk-dim)">5</text>
+            <rect x="164" y="40" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="174" y="54" text-anchor="middle" fill="var(--silk-dim)">6</text>
+            <rect x="188" y="40" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="198" y="54" text-anchor="middle" fill="var(--silk-dim)">7</text>
+
+            <rect x="20" y="70" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="30" y="84" text-anchor="middle" fill="var(--silk-dim)">8</text>
+            <rect x="44" y="70" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="54" y="84" text-anchor="middle" fill="var(--silk-dim)">9</text>
+            <rect x="68" y="70" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="78" y="84" text-anchor="middle" fill="var(--silk-dim)">10</text>
+            <rect x="92" y="70" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="102" y="84" text-anchor="middle" fill="var(--silk-dim)">11</text>
+            <rect x="116" y="70" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="126" y="84" text-anchor="middle" fill="var(--silk-dim)">12</text>
+            <rect x="140" y="70" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="150" y="84" text-anchor="middle" fill="var(--silk-dim)">13</text>
+            <rect x="164" y="70" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="174" y="84" text-anchor="middle" fill="var(--silk-dim)">14</text>
+            <rect x="188" y="70" width="20" height="20" fill="var(--mask)" stroke="var(--line)"/><text x="198" y="84" text-anchor="middle" fill="var(--silk-dim)">15</text>
+          </g>
+
+          <!-- cache lines 0-3 -->
+          <g font-size="11">
+            <rect x="380" y="40" width="140" height="26" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/><text x="450" y="57" text-anchor="middle" fill="var(--silk)">Line 0</text>
+            <rect x="380" y="70" width="140" height="26" fill="var(--mask)" stroke="var(--line)"/><text x="450" y="87" text-anchor="middle" fill="var(--silk-dim)">Line 1</text>
+            <rect x="380" y="100" width="140" height="26" fill="var(--mask)" stroke="var(--line)"/><text x="450" y="117" text-anchor="middle" fill="var(--silk-dim)">Line 2</text>
+            <rect x="380" y="130" width="140" height="26" fill="var(--mask)" stroke="var(--line)"/><text x="450" y="147" text-anchor="middle" fill="var(--silk-dim)">Line 3</text>
+          </g>
+
+          <path d="M126 62 C 200 130, 300 53, 380 53" stroke="var(--trace-bright)" stroke-width="1.3" fill="none" stroke-dasharray="4 3" marker-end="url(#arrow3)"/>
+          <defs><marker id="arrow3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--trace-bright)"/></marker></defs>
+
+          <text x="280" y="185" text-anchor="middle" fill="var(--silk-dim)" font-size="10.5">Direct-mapped: line = block_number mod (num_lines)</text>
+          <text x="280" y="202" text-anchor="middle" fill="var(--amber)" font-size="10.5">&#8594; block 4 mod 4 = Line 0 (also blocks 0, 8, 12)</text>
+        </svg>
+        <div class="cap">Fig 4 — Direct-mapped cache: several memory blocks compete for the same line</div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q20.</span> A system has 16 memory blocks and a 4-line direct-mapped cache. Which blocks map to line 0?</p>
+        <div class="a">
+          <p>Direct-mapped index formula:</p>
+          <pre><code>cache_line = block_number MOD number_of_lines
+           = block_number MOD 4</code></pre>
+          <p>Blocks 0, 4, 8, 12 all satisfy <code>block MOD 4 == 0</code>, so they all compete for <b>Line 0</b>. Only one of them can live in the cache at a time — loading block 8 while block 4 already occupies Line 0 evicts block 4. This repeated eviction of blocks that alias to the same line is exactly what causes <b>conflict misses</b>, and is the motivation for set-associative caches.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q21.</span> What is cache coherence, and what does the MESI protocol do?</p>
+        <div class="a">
+          <p>In a multicore CPU, each core has its own private cache. If Core A and Core B both cache the same memory address and Core A updates its copy, Core B's cached copy becomes stale — this is the <b>cache coherence problem</b>. Every core must always observe a consistent view of memory.</p>
+          <p><b>MESI</b> is a widely used coherence protocol where every cache line is in one of four states:</p>
+          <ul>
+            <li><b>Modified</b> — line is dirty, changed only in this cache, memory is stale.</li>
+            <li><b>Exclusive</b> — line is clean, only this cache has it, matches memory.</li>
+            <li><b>Shared</b> — line may exist in multiple caches, all clean and consistent.</li>
+            <li><b>Invalid</b> — line is stale/unusable, must be refetched.</li>
+          </ul>
+          <p>Cores snoop the bus and transition states on reads/writes so no core ever computes on stale data — this is what makes multicore programming safe from a hardware-memory standpoint.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q22.</span> Explain cache write policies: write-through vs write-back.</p>
+        <div class="a">
+          <div class="table-wrap">
+            <table>
+              <tr><th></th><th>Write-through</th><th>Write-back</th></tr>
+              <tr><td>How it works</td><td>Every write goes to cache AND main memory immediately</td><td>Write only to cache; memory updated later when the line is evicted</td></tr>
+              <tr><td>Consistency</td><td>Always consistent</td><td>Cache and memory can differ temporarily (uses a "dirty bit")</td></tr>
+              <tr><td>Speed</td><td>Slower (extra memory writes)</td><td>Faster (fewer memory writes)</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="virtual">
+      <div class="topic-head"><span class="idx">08</span><h2>Virtual Memory</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q23.</span> What is virtual memory and why do we need it?</p>
+        <div class="a">
+          <p>Virtual memory gives each process the illusion of having its own large, contiguous private address space, independent of how much physical RAM actually exists. Benefits:</p>
+          <ul>
+            <li><b>Isolation</b> — one process can't read/corrupt another's memory.</li>
+            <li><b>More usable memory</b> — programs larger than physical RAM can run, using disk as overflow.</li>
+            <li><b>Simplifies programming</b> — every process "thinks" it starts at address 0.</li>
+          </ul>
+          <p>Implemented via <b>paging</b>: virtual address space is divided into fixed-size <b>pages</b>, mapped to physical <b>frames</b> using a <b>page table</b>. The CPU's <b>MMU (Memory Management Unit)</b> does this translation on every memory access, and a <b>TLB (Translation Lookaside Buffer)</b> caches recent translations so it doesn't need a full page-table walk every time.</p>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace" font-size="11">
+          <text x="90" y="20" text-anchor="middle" fill="var(--amber)" font-size="12" font-weight="600">Virtual Address</text>
+          <rect x="20" y="30" width="70" height="30" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="55" y="49" text-anchor="middle" fill="var(--silk)" font-size="10">Page #</text>
+          <rect x="90" y="30" width="70" height="30" fill="var(--mask)" stroke="var(--line)"/>
+          <text x="125" y="49" text-anchor="middle" fill="var(--silk-dim)" font-size="10">Offset</text>
+
+          <path d="M55 60 V 90 H 230" stroke="var(--trace)" stroke-width="1.4" fill="none" marker-end="url(#arrow4)"/>
+
+          <text x="300" y="80" text-anchor="middle" fill="var(--amber)" font-size="12" font-weight="600">Page Table</text>
+          <rect x="230" y="90" width="140" height="70" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <line x1="230" y1="107" x2="370" y2="107" stroke="var(--line)"/>
+          <line x1="230" y1="124" x2="370" y2="124" stroke="var(--line)"/>
+          <line x1="230" y1="141" x2="370" y2="141" stroke="var(--line)"/>
+          <text x="300" y="102" text-anchor="middle" fill="var(--silk-dim)" font-size="9">page &#8594; frame</text>
+          <text x="300" y="119" text-anchor="middle" fill="var(--silk)" font-size="9">2 &#8594; 7</text>
+          <text x="300" y="136" text-anchor="middle" fill="var(--trace-bright)" font-size="9">3 &#8594; 12  (this one)</text>
+          <text x="300" y="153" text-anchor="middle" fill="var(--silk)" font-size="9">4 &#8594; 3</text>
+
+          <path d="M370 133 H 420 V 90" stroke="var(--trace-bright)" stroke-width="1.4" fill="none" marker-end="url(#arrow4)"/>
+
+          <text x="480" y="80" text-anchor="middle" fill="var(--amber)" font-size="12" font-weight="600">Physical Memory</text>
+          <rect x="420" y="90" width="120" height="70" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="480" y="130" text-anchor="middle" fill="var(--silk)" font-size="10">Frame 12</text>
+
+          <text x="280" y="185" text-anchor="middle" fill="var(--silk-dim)" font-size="10">MMU splits the virtual address, looks up the page table, and resolves the physical frame</text>
+          <defs><marker id="arrow4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--trace-bright)"/></marker></defs>
+        </svg>
+        <div class="cap">Fig 6 — Paging: virtual address translated to a physical frame via the page table</div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q24.</span> Paging vs Segmentation — how do they differ?</p>
+        <div class="a">
+          <div class="table-wrap">
+            <table>
+              <tr><th></th><th>Paging</th><th>Segmentation</th></tr>
+              <tr><td>Division</td><td>Fixed-size pages</td><td>Variable-size logical segments (code, stack, heap)</td></tr>
+              <tr><td>Visibility to programmer</td><td>Invisible — purely a memory-management trick</td><td>Visible — matches how a programmer thinks about a program's structure</td></tr>
+              <tr><td>Fragmentation</td><td>Internal fragmentation (last page rarely full)</td><td>External fragmentation (variable-size holes)</td></tr>
+              <tr><td>Address form</td><td>Page number + offset</td><td>Segment number + offset</td></tr>
+            </table>
+          </div>
+          <p>Many real systems (like x86) use both together: segmentation for logical structure, paging underneath for physical allocation.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q25.</span> What is a TLB, and what happens on a TLB miss?</p>
+        <div class="a">
+          <p>The <b>Translation Lookaside Buffer</b> is a small, fast cache inside the MMU that stores recent virtual-to-physical page translations, so the CPU doesn't need to walk the (potentially multi-level) page table on every memory access. On a <b>TLB hit</b>, translation takes effectively zero extra cycles. On a <b>TLB miss</b>, the MMU/OS must walk the page table in memory to find the mapping — much slower — and then cache the result in the TLB for next time. High TLB hit rates are critical for performance, which is why programs with good locality (fewer distinct pages touched) run faster.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q26.</span> What is a page fault?</p>
+        <div class="a">
+          <p>A page fault happens when a process accesses a page that's marked valid in its virtual space but is not currently loaded into physical RAM (it's on disk, in swap). The OS then: pauses the process → finds a free frame (or evicts one using a replacement policy like LRU) → loads the page from disk → updates the page table → resumes the process. It's expensive (disk I/O), so minimizing page faults matters for performance.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="io">
+      <div class="topic-head"><span class="idx">09</span><h2>I/O &amp; Interrupts</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q27.</span> What is an interrupt, and how is it different from polling?</p>
+        <div class="a">
+          <p><b>Polling</b>: CPU repeatedly checks a device's status register in a loop, wasting cycles even when the device has nothing to report.</p>
+          <p><b>Interrupt-driven I/O</b>: the device signals the CPU only when it actually needs attention (e.g. data ready). The CPU:</p>
+          <ul>
+            <li>1. Finishes current instruction</li>
+            <li>2. Saves current state (PC, registers) onto the stack</li>
+            <li>3. Jumps to the <b>Interrupt Service Routine (ISR)</b> via the interrupt vector table</li>
+            <li>4. Executes the ISR</li>
+            <li>5. Restores state and resumes the interrupted program</li>
+          </ul>
+          <p>Interrupts are more efficient because the CPU is free to do other work between events.</p>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <svg viewBox="0 0 560 130" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace" font-size="10.5">
+          <rect x="10" y="45" width="100" height="34" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="60" y="66" text-anchor="middle" fill="var(--silk)">Main Program</text>
+
+          <path d="M110 62 H 150" stroke="var(--trace)" stroke-width="1.4" marker-end="url(#arrow5)"/>
+          <text x="130" y="55" text-anchor="middle" fill="var(--amber)" font-size="9">IRQ</text>
+
+          <rect x="150" y="45" width="90" height="34" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="195" y="60" text-anchor="middle" fill="var(--silk)" font-size="9">Save state</text>
+          <text x="195" y="72" text-anchor="middle" fill="var(--silk-dim)" font-size="9">(PC, regs)</text>
+
+          <path d="M240 62 H 280" stroke="var(--trace)" stroke-width="1.4" marker-end="url(#arrow5)"/>
+
+          <rect x="280" y="45" width="90" height="34" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="325" y="66" text-anchor="middle" fill="var(--silk)" font-size="9">Run ISR</text>
+
+          <path d="M370 62 H 410" stroke="var(--trace)" stroke-width="1.4" marker-end="url(#arrow5)"/>
+
+          <rect x="410" y="45" width="140" height="34" fill="var(--mask)" stroke="var(--trace-bright)" stroke-width="1.5"/>
+          <text x="480" y="60" text-anchor="middle" fill="var(--silk)" font-size="9">Restore state &amp;</text>
+          <text x="480" y="72" text-anchor="middle" fill="var(--silk-dim)" font-size="9">resume program</text>
+
+          <path d="M480 45 C 480 10, 60 10, 60 45" stroke="var(--line)" stroke-width="1.2" fill="none" stroke-dasharray="3 3" marker-end="url(#arrow5)"/>
+          <text x="270" y="14" text-anchor="middle" fill="var(--silk-dim)" font-size="9">execution resumes exactly where it left off</text>
+
+          <defs><marker id="arrow5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--trace)"/></marker></defs>
+        </svg>
+        <div class="cap">Fig 7 — Interrupt handling flow: the CPU parks the current program, services the ISR, and returns</div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q28.</span> What is bus arbitration, and why is it needed?</p>
+        <div class="a">
+          <p>Only one device can drive the shared bus at a time. When multiple devices (CPU, DMA controller, peripherals) want to use the bus simultaneously, an <b>arbiter</b> decides who gets access, using a scheme such as:</p>
+          <ul>
+            <li><b>Daisy chaining</b> — a priority signal passes serially device to device; simple but slower and fixed-priority.</li>
+            <li><b>Centralized (polling/priority encoder)</b> — a central arbiter grants the bus based on priority or request lines.</li>
+            <li><b>Distributed arbitration</b> — devices negotiate among themselves without a central controller (used in some modern buses).</li>
+          </ul>
+          <p>Without arbitration, two devices driving the bus at once would corrupt data — this is the hardware equivalent of a race condition.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q29.</span> What is DMA (Direct Memory Access) and why is it useful?</p>
+        <div class="a">
+          <p>Normally, moving data between an I/O device and memory requires the CPU to copy it word-by-word — wasteful for large transfers (disk reads, network packets). A <b>DMA controller</b> takes over the bus and moves data directly between the device and memory <b>without CPU involvement</b>, only interrupting the CPU once when the whole transfer is complete. This frees the CPU to do useful work in parallel with I/O transfers.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="multicore">
+      <div class="topic-head"><span class="idx">10</span><h2>Multicore &amp; Parallelism</h2></div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q30.</span> Multicore vs multiprocessor — aren't they the same thing?</p>
+        <div class="a">
+          <p>Close, but interviewers do check this distinction:</p>
+          <ul>
+            <li><b>Multicore</b> — multiple CPU cores on a <b>single chip</b>, typically sharing L3 cache and the memory controller.</li>
+            <li><b>Multiprocessor</b> — multiple <b>separate CPU chips</b> on the same motherboard/system, each potentially with their own full cache hierarchy, communicating over a system interconnect.</li>
+          </ul>
+          <p>Both fall under MIMD in Flynn's taxonomy. A modern server can be a multiprocessor system where each processor is itself multicore.</p>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q31.</span> State Amdahl's Law and solve a quick example.</p>
+        <div class="a">
+          <p>Amdahl's Law caps the speedup you can get from parallelizing part of a program:</p>
+          <pre><code>Speedup = 1 / ( (1 - P) + P/N )
+
+P = parallelizable fraction of the program
+N = number of processors</code></pre>
+          <p><b>Example:</b> 80% of a program can be parallelized (P = 0.8), running on 4 cores (N = 4).</p>
+          <pre><code>Speedup = 1 / ( (1 - 0.8) + 0.8/4 )
+        = 1 / ( 0.2 + 0.2 )
+        = 1 / 0.4
+        = 2.5x</code></pre>
+          <p>Key insight interviewers want to hear: <i>"Even with infinite cores, speedup can never exceed 1/(1-P) — here that ceiling is 1/0.2 = 5x. The serial portion always dominates eventually."</i></p>
+          <div class="diagram">
+            <svg viewBox="0 0 500 160" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace" font-size="10.5">
+              <line x1="40" y1="130" x2="480" y2="130" stroke="var(--line)"/>
+              <line x1="40" y1="130" x2="40" y2="10" stroke="var(--line)"/>
+              <text x="20" y="15" fill="var(--silk-dim)" font-size="9">speedup</text>
+              <text x="440" y="145" fill="var(--silk-dim)" font-size="9">cores (N)</text>
+              <path d="M40,130 C 120,95 220,55 480,42" stroke="var(--trace-bright)" stroke-width="1.8" fill="none"/>
+              <line x1="40" y1="42" x2="480" y2="42" stroke="var(--amber)" stroke-width="1" stroke-dasharray="3 3"/>
+              <text x="450" y="36" text-anchor="end" fill="var(--amber)" font-size="9">ceiling = 1/(1-P) = 5x</text>
+            </svg>
+            <div class="cap">Fig 8 — Speedup curve flattens out — the serial fraction sets a hard ceiling</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="qa">
+        <p class="q"><span class="tag">Q32.</span> What is the difference between parallelism and concurrency, from a hardware standpoint?</p>
+        <div class="a">
+          <p><b>Concurrency</b> is about structuring a program as multiple independent tasks that can be interleaved — it can happen even on a single core via time-slicing/context switching, and doesn't require multiple physical execution units. <b>Parallelism</b> requires actual simultaneous execution on multiple hardware units (multiple cores, multiple ALUs). One-liner: <i>"Concurrency is about dealing with lots of things at once; parallelism is about doing lots of things at once."</i> — every parallel system is concurrent, but not every concurrent system is parallel.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="topic" id="rapid">
+      <div class="topic-head"><span class="idx">11</span><h2>Rapid-Fire Round</h2></div>
+      <p style="color:var(--silk-dim); font-size:13.5px; margin-top:-8px;">Skim this right before you walk in — these are the one-liners interviewers use as warm-up or filler questions.</p>
+
+      <div class="rapidfire">
+        <div class="rf-item"><div class="rf-q">What is a bus?</div><div class="rf-a">A shared communication pathway (address, data, control lines) connecting CPU, memory, and I/O.</div></div>
+        <div class="rf-item"><div class="rf-q">Multiprogramming vs multiprocessing?</div><div class="rf-a">Multiprogramming = multiple programs share one CPU via context switching. Multiprocessing = multiple CPUs execute truly in parallel.</div></div>
+        <div class="rf-item"><div class="rf-q">What is a context switch?</div><div class="rf-a">Saving the state of a running process and loading another's, so the CPU can switch between processes.</div></div>
+        <div class="rf-item"><div class="rf-q">What is thrashing?</div><div class="rf-a">Excessive page faulting where the system spends more time swapping pages than executing — usually from over-committing memory.</div></div>
+        <div class="rf-item"><div class="rf-q">What is a superscalar processor?</div><div class="rf-a">A CPU that can issue and execute more than one instruction per clock cycle using multiple execution units.</div></div>
+        <div class="rf-item"><div class="rf-q">What is out-of-order execution?</div><div class="rf-a">CPU executes instructions as their operands become ready, rather than strictly in program order, then retires results in order.</div></div>
+        <div class="rf-item"><div class="rf-q">What is Amdahl's Law used for?</div><div class="rf-a">Estimating the max theoretical speedup from parallelizing part of a task — speedup is limited by the serial portion.</div></div>
+        <div class="rf-item"><div class="rf-q">What is a cache hit ratio?</div><div class="rf-a">Fraction of memory accesses found in cache: Hits / (Hits + Misses).</div></div>
+        <div class="rf-item"><div class="rf-q">What's the difference between microarchitecture and ISA?</div><div class="rf-a">ISA is the instruction set contract (e.g. x86-64); microarchitecture is the specific chip implementation of it (e.g. Zen 4, Golden Cove).</div></div>
+        <div class="rf-item"><div class="rf-q">What is pipelining's theoretical speedup formula?</div><div class="rf-a">Speedup ≈ number of pipeline stages, assuming no stalls/hazards and a filled pipeline.</div></div>
+      </div>
+
+      <div class="callout"><b>Interview tip:</b> Infosys technical rounds often mix 2-3 conceptual questions with one quick numerical (AMAT, hit ratio, or speedup calculation). Practice the AMAT example in Q15 until you can redo it without hesitation.</div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  Computer Architecture — Interview Prep · Built for quick revision · Good luck with the interview.
+</footer>
+
+</body>
+</html>
