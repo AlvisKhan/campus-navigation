@@ -302,6 +302,17 @@ const locations = [
     verified: true,
   },
   {
+    id: "officers-club",
+    name: "Officers' Club",
+    category: "Activities & SAC",
+    categoryId: "events",
+    latitude: 24.753185767321785,
+    longitude: 92.78970326467667,
+    description: "Recreational club and community centre for NIT Silchar faculty, officers, and staff.",
+    aliases: ["officers club", "officers' club", "faculty club", "staff club", "officer club", "club"],
+    verified: true,
+  },
+  {
     id: "gymkhana-park",
     name: "Gymkhana Park",
     category: "Sports & Fitness",
