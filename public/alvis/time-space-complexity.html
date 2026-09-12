@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Time &amp; Space Complexity — The Complete Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================= TOKENS ============================= */
+:root{
+  --paper:#FAF9F5;
+  --paper-dim:#F1EEE5;
+  --paper-card:#FFFFFF;
+  --ink:#181A1F;
+  --ink-soft:#565A6C;
+  --ink-faint:#8A8DA0;
+  --rule:#E1DDD0;
+  --rule-strong:#CBC6B4;
+  --accent:#3652C9;
+  --accent-ink:#20309C;
+  --accent-soft:#E9ECFB;
+
+  --o1:#2F9E63;      --o1-bg:#E6F5EC;
+  --ologn:#0C8599;   --ologn-bg:#E1F4F6;
+  --on:#2568C7;      --on-bg:#E7EFFC;
+  --onlogn:#6741D9;  --onlogn-bg:#EEE8FC;
+  --on2:#E8590C;     --on2-bg:#FDECDF;
+  --on3:#C2255C;     --on3-bg:#FBE3EC;
+  --o2n:#E03131;     --o2n-bg:#FCE3E3;
+  --onf:#7C2D12;     --onf-bg:#F3E3DC;
+
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:'JetBrains Mono',Consolas,monospace;
+
+  --nav-w:252px;
+  --content-w:700px;
+  --wide-w:880px;
+
+  --grid-line: rgba(24,26,31,0.045);
+  --shadow-card: 0 1px 2px rgba(24,26,31,.05);
+  color-scheme: light;
+}
+
+/* ============================= DARK THEME ============================= */
+html[data-theme="dark"]{
+  --paper:#0F1116;
+  --paper-dim:#161923;
+  --paper-card:#1A1D28;
+  --ink:#ECEBF2;
+  --ink-soft:#AEB1C4;
+  --ink-faint:#767A91;
+  --rule:#272B38;
+  --rule-strong:#383D4E;
+  --accent:#7C90FF;
+  --accent-ink:#A9B7FF;
+  --accent-soft:#232945;
+
+  --o1:#3ED991;      --o1-bg:rgba(62,217,145,.14);
+  --ologn:#3AD0E0;   --ologn-bg:rgba(58,208,224,.14);
+  --on:#6D95F5;      --on-bg:rgba(109,149,245,.16);
+  --onlogn:#B49BFA;  --onlogn-bg:rgba(180,155,250,.16);
+  --on2:#FF9E5A;     --on2-bg:rgba(255,158,90,.16);
+  --on3:#F77CAE;     --on3-bg:rgba(247,124,174,.16);
+  --o2n:#FF7A7A;     --o2n-bg:rgba(255,122,122,.16);
+  --onf:#F0B27A;     --onf-bg:rgba(240,178,122,.15);
+
+  --grid-line: rgba(255,255,255,.045);
+  --shadow-card: 0 1px 2px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+html[data-theme="dark"] body{background:var(--paper);}
+html[data-theme="dark"] .code-wrap{box-shadow:0 0 0 1px rgba(255,255,255,.06), 0 2px 10px rgba(0,0,0,.35);}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .diagram,
+html[data-theme="dark"] .qa,
+html[data-theme="dark"] table{box-shadow:var(--shadow-card);}
+html[data-theme="dark"] .brand .mark{box-shadow:0 0 0 1px rgba(255,255,255,.08);}
+
+body, .card, .diagram, .qa, .sidenav, table, .callout, .qa-answer, .code-wrap{
+  transition: background-color .35s ease, border-color .35s ease, color .35s ease, box-shadow .35s ease;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.65;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+}
+
+img,svg{max-width:100%;}
+a{color:var(--accent-ink);}
+::selection{background:var(--accent-soft); color:var(--accent-ink);}
+
+h1,h2,h3,h4{font-family:var(--serif); font-weight:600; line-height:1.15; color:var(--ink); letter-spacing:-0.01em;}
+h1{font-size:clamp(2.1rem,5vw,3.2rem); font-weight:700;}
+h2{font-size:clamp(1.5rem,3.4vw,2.1rem); margin:0 0 .3em;}
+h3{font-size:clamp(1.15rem,2.4vw,1.4rem); margin:1.6em 0 .5em;}
+h4{font-size:1.02rem; margin:1.3em 0 .4em; font-family:var(--sans); font-weight:700; text-transform:none;}
+p{margin:0 0 1em; color:var(--ink);}
+code{font-family:var(--mono); font-size:.88em; background:var(--paper-dim); padding:.12em .38em; border-radius:4px; color:var(--accent-ink);}
+
+/* ============================= GRID PAPER TEXTURE ============================= */
+.grid-texture{
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ============================= LAYOUT SHELL ============================= */
+.shell{
+  display:grid;
+  grid-template-columns:var(--nav-w) 1fr;
+  min-height:100vh;
+}
+@media (max-width: 980px){
+  .shell{grid-template-columns:1fr;}
+}
+
+/* ---------- SIDEBAR NAV ---------- */
+.sidenav{
+  position:sticky; top:0; align-self:start; height:100vh;
+  border-right:1px solid var(--rule);
+  padding:28px 22px;
+  overflow-y:auto;
+  background:var(--paper-dim);
+}
+.brand{
+  font-family:var(--serif); font-weight:700; font-size:1.18rem;
+  display:flex; align-items:center; gap:10px; margin-bottom:6px;
+}
+.brand .mark{
+  width:30px;height:30px;border-radius:7px;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:var(--mono);font-weight:700;font-size:.8rem;flex:none;
+}
+.brand-sub{font-size:.78rem;color:var(--ink-faint);margin-bottom:22px;}
+.nav-group-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);margin:18px 0 8px;font-weight:600;}
+.sidenav nav a{
+  display:flex; align-items:center; gap:9px;
+  font-size:.87rem; color:var(--ink-soft); text-decoration:none;
+  padding:6px 8px; border-radius:6px; margin:1px 0;
+  border-left:2px solid transparent;
+}
+.sidenav nav a:hover{background:#fff; color:var(--ink);}
+.sidenav nav a.active{color:var(--accent-ink); font-weight:600; background:#fff; border-left:2px solid var(--accent);}
+.sidenav nav a .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.5;flex:none;}
+
+.nav-toggle{display:none;}
+@media (max-width: 980px){
+  .sidenav{
+    position:sticky; height:auto; max-height:56px; overflow:hidden;
+    padding:12px 18px; z-index:50; transition:max-height .25s ease;
+    border-right:none; border-bottom:1px solid var(--rule);
+  }
+  .sidenav.open{max-height:80vh; overflow-y:auto;}
+  .brand-row{display:flex; align-items:center; justify-content:space-between;}
+  .nav-toggle{
+    display:flex; align-items:center; gap:6px;
+    background:var(--accent); color:#fff; border:none; border-radius:7px;
+    padding:7px 12px; font-family:var(--sans); font-weight:600; font-size:.82rem; cursor:pointer;
+  }
+  .brand-sub{display:none;}
+}
+
+/* ---------- MAIN CONTENT ---------- */
+main{min-width:0;}
+
+.hero{
+  padding:64px 6vw 56px;
+  border-bottom:1px solid var(--rule);
+  position:relative;
+  overflow:hidden;
+}
+.hero-inner{max-width:var(--wide-w); margin:0 auto; position:relative; z-index:1;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:.75rem; font-weight:600;
+  color:var(--accent-ink); background:var(--accent-soft);
+  padding:5px 11px; border-radius:20px; margin-bottom:18px;
+}
+.hero h1{max-width:14ch;}
+.hero p.lead{font-size:1.1rem; color:var(--ink-soft); max-width:56ch; margin-top:14px;}
+.hero-stats{display:flex; gap:28px; margin-top:32px; flex-wrap:wrap;}
+.hero-stat b{display:block; font-family:var(--serif); font-size:1.6rem; color:var(--accent-ink);}
+.hero-stat span{font-size:.78rem; color:var(--ink-faint);}
+
+section.block{
+  max-width:var(--content-w);
+  margin:0 auto;
+  padding:52px 6vw 8px;
+}
+section.block.wide{max-width:var(--wide-w);}
+section.block + section.block{border-top:1px solid var(--rule);}
+
+.section-tag{
+  font-family:var(--mono); font-size:.72rem; font-weight:600; letter-spacing:.04em;
+  color:var(--ink-faint); margin-bottom:8px; display:block;
+}
+
+/* ============================= COMPONENTS ============================= */
+
+/* Complexity badge */
+.badge{
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--mono); font-weight:700; font-size:.82rem;
+  padding:3px 9px; border-radius:6px; white-space:nowrap;
+}
+.b-o1{color:var(--o1); background:var(--o1-bg);}
+.b-ologn{color:var(--ologn); background:var(--ologn-bg);}
+.b-on{color:var(--on); background:var(--on-bg);}
+.b-onlogn{color:var(--onlogn); background:var(--onlogn-bg);}
+.b-on2{color:var(--on2); background:var(--on2-bg);}
+.b-on3{color:var(--on3); background:var(--on3-bg);}
+.b-o2n{color:var(--o2n); background:var(--o2n-bg);}
+.b-onf{color:var(--onf); background:var(--onf-bg);}
+
+/* Callouts */
+.callout{
+  border-left:3px solid var(--accent);
+  background:var(--paper-card);
+  border-radius:0 10px 10px 0;
+  padding:14px 18px;
+  margin:20px 0;
+  font-size:.94rem;
+}
+.callout.tip{border-color:var(--o1);}
+.callout.warn{border-color:var(--on2);}
+.callout strong.label{display:block; font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; color:var(--ink-faint);}
+
+/* Code blocks */
+.code-wrap{
+  background:#1B1D24; color:#E7E7EE; border-radius:12px;
+  margin:18px 0; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.08);
+}
+.code-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:9px 14px; background:#22242D; font-family:var(--mono); font-size:.72rem; color:#9498AC;
+  border-bottom:1px solid #2D2F3A;
+}
+.code-head .dots{display:flex; gap:5px;}
+.code-head .dots span{width:9px;height:9px;border-radius:50%; background:#454859;}
+pre{margin:0; padding:16px 18px; overflow-x:auto;}
+pre code{background:none; padding:0; color:inherit; font-size:.86rem; line-height:1.65;}
+.tok-kw{color:#C792EA;} .tok-type{color:#82AAFF;} .tok-str{color:#C3E88D;} .tok-com{color:#6C7086; font-style:italic;} .tok-num{color:#F78C6C;} .tok-fn{color:#89DDFF;}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto; margin:20px 0; border:1px solid var(--rule); border-radius:10px;}
+table{border-collapse:collapse; width:100%; min-width:520px; font-size:.88rem; background:var(--paper-card);}
+th,td{text-align:left; padding:10px 14px; border-bottom:1px solid var(--rule);}
+th{font-family:var(--mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); background:var(--paper-dim);}
+tr:last-child td{border-bottom:none;}
+
+/* Card grid */
+.grid-cards{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); margin:20px 0;}
+.card{background:var(--paper-card); border:1px solid var(--rule); border-radius:12px; padding:16px 18px;}
+.card h4{margin-top:0;}
+
+/* Diagram frame */
+.diagram{
+  background:var(--paper-card); border:1px solid var(--rule); border-radius:14px;
+  padding:18px; margin:22px 0;
+}
+.diagram-title{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px;}
+.diagram-title h4{margin:0; font-family:var(--sans);}
+.btn{
+  font-family:var(--sans); font-weight:600; font-size:.8rem; cursor:pointer;
+  border:1px solid var(--rule-strong); background:#fff; color:var(--ink);
+  padding:7px 13px; border-radius:8px; transition:background .15s;
+}
+.btn:hover{background:var(--paper-dim);}
+.btn.primary{background:var(--accent); color:#fff; border-color:var(--accent);}
+.btn.primary:hover{background:var(--accent-ink);}
+.legend{display:flex; gap:10px; flex-wrap:wrap; font-size:.76rem; margin-top:10px;}
+.legend span{display:inline-flex; align-items:center; gap:5px; cursor:pointer; user-select:none; opacity:1; transition:opacity .15s;}
+.legend span.off{opacity:.3;}
+.legend i{width:12px;height:3px; border-radius:2px; display:inline-block;}
+
+/* Accordion / practice questions */
+.qa{border:1px solid var(--rule); border-radius:12px; margin:14px 0; overflow:hidden; background:var(--paper-card);}
+.qa summary{
+  cursor:pointer; padding:14px 18px; font-weight:600; list-style:none;
+  display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:.94rem;
+}
+.qa summary::-webkit-details-marker{display:none;}
+.qa summary .chev{transition:transform .2s; color:var(--ink-faint); flex:none;}
+.qa[open] summary .chev{transform:rotate(90deg);}
+.qa .qa-body{padding:0 18px 18px;}
+.qa .qa-num{font-family:var(--mono); color:var(--accent-ink); margin-right:8px;}
+.qa-answer{background:var(--paper-dim); border-radius:10px; padding:12px 16px; margin-top:10px; font-size:.92rem;}
+.qa-answer .ans-badge{margin-bottom:8px;}
+
+/* Steps */
+.steps{counter-reset:step; list-style:none; padding:0; margin:20px 0;}
+.steps li{
+  counter-increment:step; position:relative; padding:6px 0 22px 42px; margin:0;
+  border-left:2px solid var(--rule); margin-left:14px;
+}
+.steps li:last-child{border-left:2px solid transparent;}
+.steps li::before{
+  content:counter(step); position:absolute; left:-15px; top:2px;
+  width:28px; height:28px; border-radius:50%; background:var(--accent);
+  color:#fff; font-family:var(--mono); font-weight:700; font-size:.8rem;
+  display:flex; align-items:center; justify-content:center;
+}
+.steps h4{margin:0 0 4px;}
+
+/* Footer */
+footer{padding:40px 6vw 80px; max-width:var(--wide-w); margin:0 auto; color:var(--ink-faint); font-size:.85rem; border-top:1px solid var(--rule); margin-top:20px;}
+
+/* fade-in on scroll */
+.reveal{opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease;}
+.reveal.in{opacity:1; transform:none;}
+
+/* small print inline math */
+.kbd{font-family:var(--mono); background:var(--paper-dim); border:1px solid var(--rule-strong); border-bottom-width:2px; border-radius:5px; padding:1px 6px; font-size:.85em;}
+
+@media (max-width: 560px){
+  .hero{padding:44px 5vw 40px;}
+  section.block{padding:36px 5vw 4px;}
+  .hero-stats{gap:18px;}
+}
+
+/* ============================= THEME TOGGLE ============================= */
+.theme-toggle{
+  position:fixed; right:22px; bottom:22px; z-index:100;
+  width:52px; height:52px; border-radius:50%;
+  background:var(--paper-card); border:1px solid var(--rule-strong);
+  box-shadow:0 4px 16px rgba(24,26,31,.16);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; overflow:hidden;
+  transition:background-color .35s ease, border-color .35s ease, transform .2s ease;
+}
+.theme-toggle:hover{transform:translateY(-2px);}
+.theme-toggle:active{transform:scale(.94);}
+.theme-toggle svg{width:22px;height:22px; position:absolute; transition:opacity .3s ease, transform .4s ease;}
+.theme-toggle .icon-sun{color:#D9A441;}
+.theme-toggle .icon-moon{color:#7C90FF;}
+html:not([data-theme="dark"]) .theme-toggle .icon-moon{opacity:0; transform:rotate(-60deg) scale(.5);}
+html:not([data-theme="dark"]) .theme-toggle .icon-sun{opacity:1; transform:rotate(0) scale(1);}
+html[data-theme="dark"] .theme-toggle .icon-sun{opacity:0; transform:rotate(60deg) scale(.5);}
+html[data-theme="dark"] .theme-toggle .icon-moon{opacity:1; transform:rotate(0) scale(1);}
+@media (max-width:560px){
+  .theme-toggle{right:14px; bottom:14px; width:46px; height:46px;}
+  .theme-toggle svg{width:19px;height:19px;}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ============================= SIDE NAV ============================= -->
+  <aside class="sidenav" id="sidenav">
+    <div class="brand-row">
+      <div class="brand"><span class="mark">O</span> Complexity Guide</div>
+      <button class="nav-toggle" id="navToggle">Menu ▾</button>
+    </div>
+    <div class="brand-sub">Time &amp; Space Analysis, from zero to interview‑ready</div>
+    <nav id="navLinks">
+      <div class="nav-group-label">Foundations</div>
+      <a href="#intro"><span class="dot"></span>Why complexity matters</a>
+      <a href="#notation"><span class="dot"></span>Big‑O, Ω, Θ</a>
+      <a href="#rules"><span class="dot"></span>Simplification rules</a>
+      <div class="nav-group-label">Core skill</div>
+      <a href="#loops"><span class="dot"></span>Analyzing loops</a>
+      <a href="#classes"><span class="dot"></span>Complexity classes</a>
+      <a href="#recursion"><span class="dot"></span>Recursion &amp; recurrences</a>
+      <a href="#space"><span class="dot"></span>Space complexity</a>
+      <a href="#amortized"><span class="dot"></span>Amortized analysis</a>
+      <a href="#cases"><span class="dot"></span>Best / worst / average</a>
+      <div class="nav-group-label">Apply it</div>
+      <a href="#identify"><span class="dot"></span>Reading any code fast</a>
+      <a href="#cheatsheet"><span class="dot"></span>Cheat sheet</a>
+      <a href="#practice"><span class="dot"></span>Practice questions</a>
+    </nav>
+  </aside>
+
+  <!-- ============================= MAIN ============================= -->
+  <main>
+    <header class="hero grid-texture">
+      <div class="hero-inner">
+        <span class="eyebrow">◆ C++ examples throughout</span>
+        <h1>Time &amp; Space Complexity, mastered properly.</h1>
+        <p class="lead">A single, self-contained walkthrough that takes you from "what is Big‑O" to reading any snippet of code cold and stating its complexity — the way you'll be asked to in an interview.</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><b>12</b><span>concepts, ground‑up</span></div>
+          <div class="hero-stat"><b>6</b><span>interactive diagrams</span></div>
+          <div class="hero-stat"><b>18</b><span>practice problems</span></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============================= 1. INTRO ============================= -->
+    <section class="block reveal" id="intro">
+      <span class="section-tag">01 · Foundations</span>
+      <h2>Why we measure algorithms at all</h2>
+      <p>Two pieces of code can solve the exact same problem and produce the exact same output, yet one finishes in a blink and the other locks up a machine. Complexity analysis is how we predict <em>which one</em> before we ever run either — by counting how the amount of work (time) or memory (space) grows as the input grows, independent of the specific computer running it.</p>
+      <p>This matters because your laptop is irrelevant to the analysis. A function that is <code>O(n²)</code> will eventually lose to an <code>O(n log n)</code> function on <em>any</em> hardware, once <code>n</code> is large enough — it's a statement about the shape of growth, not a stopwatch reading.</p>
+      <div class="callout tip">
+        <strong class="label">Mental model</strong>
+        Think of complexity as answering one question: <strong>"If I double the input size, what happens to the work?"</strong> Does it stay the same? Double? Quadruple? Explode? That single question is the seed of everything below.
+      </div>
+    </section>
+
+    <!-- ============================= 2. NOTATION ============================= -->
+    <section class="block reveal" id="notation">
+      <span class="section-tag">02 · Foundations</span>
+      <h2>Big‑O, Big‑Ω, and Big‑Θ</h2>
+      <p>These three notations describe bounds on a function's growth. In interviews, "complexity" almost always means <strong>Big‑O</strong> (the upper bound / worst case ceiling), but knowing all three makes you sound — and think — like someone who actually understands the math, not just the vocabulary.</p>
+
+      <div class="grid-cards">
+        <div class="card">
+          <h4><span class="badge b-on2" style="margin-right:6px">O</span>Big‑O (upper bound)</h4>
+          <p style="margin:0;font-size:.9rem">"Grows <em>no faster than</em> this." A guaranteed ceiling — the algorithm will never be worse than this, for large enough <code>n</code>. This is what we use to describe <strong>worst‑case</strong> performance.</p>
+        </div>
+        <div class="card">
+          <h4><span class="badge b-o1" style="margin-right:6px">Ω</span>Big‑Omega (lower bound)</h4>
+          <p style="margin:0;font-size:.9rem">"Grows <em>no slower than</em> this." A guaranteed floor — describes the <strong>best‑case</strong> or a minimum amount of unavoidable work.</p>
+        </div>
+        <div class="card">
+          <h4><span class="badge b-onlogn" style="margin-right:6px">Θ</span>Big‑Theta (tight bound)</h4>
+          <p style="margin:0;font-size:.9rem">Upper and lower bound match — the algorithm's growth is <strong>exactly</strong> this rate, not just bounded by it.</p>
+        </div>
+      </div>
+
+      <p>Formally: <code>f(n) = O(g(n))</code> means there exist positive constants <code>c</code> and <code>n₀</code> such that <code>f(n) ≤ c·g(n)</code> for all <code>n ≥ n₀</code>. In plain English: past some point, a constant multiple of <code>g(n)</code> always sits above <code>f(n)</code>.</p>
+
+      <!-- DIAGRAM: growth curve chart -->
+      <div class="diagram">
+        <div class="diagram-title">
+          <h4>Growth curves side‑by‑side (n = 1 → 20)</h4>
+        </div>
+        <svg id="growthChart" viewBox="0 0 640 360" style="width:100%;height:auto;display:block;"></svg>
+        <div class="legend" id="growthLegend"></div>
+        <p style="font-size:.8rem;color:var(--ink-faint);margin:10px 0 0">Click a legend item to toggle that curve. Notice how <span class="badge b-on2">O(n²)</span> and <span class="badge b-o2n">O(2ⁿ)</span> are barely distinguishable from the axis at small <code>n</code> — this is exactly why "it worked fine on my small test input" is not proof of a good algorithm.</p>
+      </div>
+    </section>
+
+    <!-- ============================= 3. RULES ============================= -->
+    <section class="block reveal" id="rules">
+      <span class="section-tag">03 · Foundations</span>
+      <h2>The simplification rules</h2>
+      <p>We never report exact operation counts — we report the <em>shape</em> of growth. Four rules get you there every time.</p>
+
+      <div class="steps">
+        <li>
+          <h4>1. Drop constants</h4>
+          <p><code>O(2n)</code>, <code>O(n + 5)</code>, and <code>O(n/2)</code> are all just <code>O(n)</code>. A constant factor doesn't change the growth <em>shape</em> — doubling <code>n</code> still roughly doubles the work either way.</p>
+        </li>
+        <li>
+          <h4>2. Drop lower‑order terms</h4>
+          <p><code>O(n² + n + 1)</code> becomes <code>O(n²)</code>. As <code>n</code> grows large, the <code>n²</code> term completely dwarfs the rest — at <code>n = 10,000</code>, <code>n²</code> is 100 million while <code>n</code> is only 10,000.</p>
+        </li>
+        <li>
+          <h4>3. Different inputs get different variables</h4>
+          <p>A function looping over array <code>A</code> (size <code>n</code>) and then array <code>B</code> (size <code>m</code>) is <code>O(n + m)</code>, <strong>not</strong> <code>O(n)</code>. Never assume two inputs are the same size unless told so.</p>
+        </li>
+        <li>
+          <h4>4. Multiply nested, add sequential</h4>
+          <p>Loops <em>inside</em> loops <strong>multiply</strong>: a loop of <code>n</code> containing a loop of <code>m</code> is <code>O(n·m)</code>. Loops that run one <em>after</em> another <strong>add</strong>: <code>O(n) + O(m) = O(n + m)</code>.</p>
+        </li>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-head"><span>rules.cpp</span><span class="dots"><span></span><span></span><span></span></span></div>
+        <pre><code><span class="tok-comment tok-com">// Sequential  →  ADD   →  O(n + m)</span>
+<span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++) { <span class="tok-fn">doWork</span>(i); }
+<span class="tok-kw">for</span> (<span class="tok-type">int</span> j = <span class="tok-num">0</span>; j &lt; m; j++) { <span class="tok-fn">doWork</span>(j); }
+
+<span class="tok-comment tok-com">// Nested      →  MULTIPLY → O(n * m)</span>
+<span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++)
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> j = <span class="tok-num">0</span>; j &lt; m; j++)
+        <span class="tok-fn">doWork</span>(i, j);</code></pre>
+      </div>
+    </section>
+
+    <!-- ============================= 4. LOOPS ============================= -->
+    <section class="block wide reveal" id="loops">
+      <span class="section-tag">04 · Core skill</span>
+      <h2>Analyzing loops (the workhorse skill)</h2>
+      <p>Nearly every interview complexity question reduces to "how many times does this loop body actually run?" Master these six patterns and you can compose them to handle almost anything.</p>
+
+      <h3>4.1 — Single loop, constant step</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>single_loop.cpp</span><span class="badge b-on">O(n)</span></div>
+        <pre><code><span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++) {
+    <span class="tok-fn">std::cout</span> &lt;&lt; i; <span class="tok-comment tok-com">// runs exactly n times</span>
+}</code></pre>
+      </div>
+      <p>The loop variable moves by a fixed amount (<code>+1</code>), so the number of iterations is directly proportional to <code>n</code>.</p>
+
+      <h3>4.2 — Loop with a bigger constant step</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>step_loop.cpp</span><span class="badge b-on">O(n)</span></div>
+        <pre><code><span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i += <span class="tok-num">2</span>) {
+    <span class="tok-fn">std::cout</span> &lt;&lt; i; <span class="tok-comment tok-com">// runs n/2 times</span>
+}</code></pre>
+      </div>
+      <p><code>n/2</code> is still <code>O(n)</code> — rule #1, drop the constant. The step size changes the constant factor, not the growth shape.</p>
+
+      <h3>4.3 — Nested independent loops</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>nested_independent.cpp</span><span class="badge b-on2">O(n²)</span></div>
+        <pre><code><span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++)
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> j = <span class="tok-num">0</span>; j &lt; n; j++)
+        <span class="tok-fn">std::cout</span> &lt;&lt; i * j; <span class="tok-comment tok-com">// runs n * n times</span></code></pre>
+      </div>
+
+      <!-- DIAGRAM: nested loop grid animation -->
+      <div class="diagram">
+        <div class="diagram-title">
+          <h4>Watch the n × n grid get visited</h4>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label style="font-size:.78rem;color:var(--ink-faint)">n = <span id="gridNVal">10</span></label>
+            <input id="gridN" type="range" min="4" max="16" value="10" style="width:100px">
+            <button class="btn primary" id="runGrid">▶ Run</button>
+          </div>
+        </div>
+        <div id="gridWrap" style="display:flex; flex-wrap:wrap; align-items:flex-start; gap:18px;">
+          <div id="loopGrid" style="display:grid; gap:3px;"></div>
+          <div style="font-family:var(--mono); font-size:.85rem; color:var(--ink-soft); min-width:150px;">
+            <div>Cells visited: <b id="cellCount">0</b></div>
+            <div>Total cells: <b id="cellTotal">100</b></div>
+            <div style="margin-top:8px;color:var(--ink-faint)">Each cell = one loop-body execution. The grid fills at a rate of n² — this is what "quadratic" looks like in the flesh.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>4.4 — Nested dependent loops (a very common trap)</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>nested_dependent.cpp</span><span class="badge b-on2">O(n²)</span></div>
+        <pre><code><span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++)
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> j = i; j &lt; n; j++) <span class="tok-comment tok-com">// inner loop shrinks</span>
+        <span class="tok-fn">std::cout</span> &lt;&lt; i * j;</code></pre>
+      </div>
+      <p>The inner loop runs <code>n, n-1, n-2, ... 1</code> times as <code>i</code> increases. Summed, that's <code>n + (n-1) + ... + 1 = n(n+1)/2</code>. Drop the constant and lower‑order term: still <code>O(n²)</code>. <strong>The pattern to remember: any triangular iteration (inner bound depends linearly on outer index) is still quadratic — it just has a smaller constant (½) than a full square.</strong></p>
+
+      <h3>4.5 — Logarithmic loop (multiplicative step)</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>log_loop.cpp</span><span class="badge b-ologn">O(log n)</span></div>
+        <pre><code><span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">1</span>; i &lt; n; i *= <span class="tok-num">2</span>) {
+    <span class="tok-fn">std::cout</span> &lt;&lt; i; <span class="tok-comment tok-com">// i: 1, 2, 4, 8, 16 ... </span>
+}</code></pre>
+      </div>
+      <p>The moment you see the loop variable being <strong>multiplied or divided</strong> each iteration (instead of added/subtracted), think <code>log n</code>. The question "how many times can you double 1 before passing n?" is literally the definition of <code>log₂ n</code>.</p>
+
+      <!-- DIAGRAM: halving/log visualization -->
+      <div class="diagram">
+        <div class="diagram-title">
+          <h4>Doubling i until it passes n (log growth)</h4>
+          <button class="btn primary" id="runLog">▶ Step through</button>
+        </div>
+        <div id="logBars" style="display:flex; align-items:flex-end; gap:6px; height:120px;"></div>
+        <div style="font-family:var(--mono); font-size:.85rem; margin-top:10px; color:var(--ink-soft);">
+          Steps taken so far: <b id="logSteps">0</b> — for n = 64, only <b>log₂(64) = 6</b> steps are ever needed.
+        </div>
+      </div>
+
+      <h3>4.6 — Loop with recursive‑like halving (binary search)</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>binary_search.cpp</span><span class="badge b-ologn">O(log n)</span></div>
+        <pre><code><span class="tok-type">int</span> <span class="tok-fn">binarySearch</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; arr, <span class="tok-type">int</span> target) {
+    <span class="tok-type">int</span> lo = <span class="tok-num">0</span>, hi = arr.size() - <span class="tok-num">1</span>;
+    <span class="tok-kw">while</span> (lo &lt;= hi) {
+        <span class="tok-type">int</span> mid = lo + (hi - lo) / <span class="tok-num">2</span>;
+        <span class="tok-kw">if</span> (arr[mid] == target) <span class="tok-kw">return</span> mid;
+        <span class="tok-kw">else if</span> (arr[mid] &lt; target) lo = mid + <span class="tok-num">1</span>;
+        <span class="tok-kw">else</span> hi = mid - <span class="tok-num">1</span>;
+    }
+    <span class="tok-kw">return</span> -<span class="tok-num">1</span>;
+}</code></pre>
+      </div>
+      <p>Each iteration discards <strong>half</strong> the remaining search space. That halving pattern is the other big <code>log n</code> signal — whenever the problem size shrinks by a fixed <em>fraction</em> each step (not a fixed amount), you're looking at logarithmic time.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Pattern you see in code</th><th>What to think</th><th>Typical complexity</th></tr></thead>
+          <tbody>
+            <tr><td><code>i++</code> or <code>i--</code></td><td>Linear step</td><td><span class="badge b-on">O(n)</span></td></tr>
+            <tr><td><code>i += k</code> for constant k</td><td>Still linear, smaller constant</td><td><span class="badge b-on">O(n)</span></td></tr>
+            <tr><td><code>i *= 2</code> / <code>i /= 2</code></td><td>Multiplicative step</td><td><span class="badge b-ologn">O(log n)</span></td></tr>
+            <tr><td>Inner loop bound depends on outer index (<code>j = i</code>)</td><td>Triangular iteration</td><td><span class="badge b-on2">O(n²)</span></td></tr>
+            <tr><td>Loop + halving inside (e.g. binary search inside a loop)</td><td>Multiply the pieces</td><td><span class="badge b-onlogn">O(n log n)</span></td></tr>
+            <tr><td>Recursion branching into 2 calls per level, full depth n</td><td>Exponential branching</td><td><span class="badge b-o2n">O(2ⁿ)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================= 5. CLASSES ============================= -->
+    <section class="block wide reveal" id="classes">
+      <span class="section-tag">05 · Core skill</span>
+      <h2>The complexity classes, ranked</h2>
+      <p>Here is every class you'll meet in a typical interview, ordered from fastest to slowest growth, each with a canonical example in C++.</p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Class</th><th>Name</th><th>Canonical C++ example</th><th>n=10</th><th>n=1,000,000</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge b-o1">O(1)</span></td><td>Constant</td><td><code>arr[5]</code>, <code>stack.top()</code>, hash lookup</td><td>1</td><td>1</td></tr>
+            <tr><td><span class="badge b-ologn">O(log n)</span></td><td>Logarithmic</td><td>Binary search, balanced BST lookup</td><td>~3</td><td>~20</td></tr>
+            <tr><td><span class="badge b-on">O(n)</span></td><td>Linear</td><td>Single loop, linear search</td><td>10</td><td>1,000,000</td></tr>
+            <tr><td><span class="badge b-onlogn">O(n log n)</span></td><td>Linearithmic</td><td>Merge sort, quicksort (avg), heap sort</td><td>~33</td><td>~20,000,000</td></tr>
+            <tr><td><span class="badge b-on2">O(n²)</span></td><td>Quadratic</td><td>Bubble sort, nested loops over same array</td><td>100</td><td>10¹²  (infeasible)</td></tr>
+            <tr><td><span class="badge b-on3">O(n³)</span></td><td>Cubic</td><td>Naive matrix multiplication</td><td>1,000</td><td>10¹⁸  (infeasible)</td></tr>
+            <tr><td><span class="badge b-o2n">O(2ⁿ)</span></td><td>Exponential</td><td>Recursive Fibonacci, subset generation</td><td>1,024</td><td>astronomical</td></tr>
+            <tr><td><span class="badge b-onf">O(n!)</span></td><td>Factorial</td><td>Generating all permutations, brute‑force TSP</td><td>3,628,800</td><td>unfathomable</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <strong class="label">Rule of thumb for interviews</strong>
+        As a working ceiling: <code>10⁸</code> operations run in roughly one second. If <code>n ≤ 20</code>, exponential might be fine. If <code>n ≤ 500</code>, <code>O(n³)</code> is probably fine. If <code>n ≤ 10,000</code>, <code>O(n²)</code> is probably fine. If <code>n</code> is up to <code>10⁶</code>–<code>10⁸</code>, you need <code>O(n)</code> or <code>O(n log n)</code>. This single heuristic lets you sanity‑check a proposed solution against given constraints instantly.
+      </div>
+    </section>
+
+    <!-- ============================= 6. RECURSION ============================= -->
+    <section class="block wide reveal" id="recursion">
+      <span class="section-tag">06 · Core skill</span>
+      <h2>Recursion &amp; recurrence relations</h2>
+      <p>Recursive code can't be "counted" by staring at a single loop — you need to express the running time as a function of itself (a <strong>recurrence</strong>) and then solve it.</p>
+
+      <h3>6.1 — Write the recurrence</h3>
+      <p>Ask two questions: (1) how many subproblems does one call spawn, and how much smaller is each? (2) how much non‑recursive work happens per call?</p>
+
+      <div class="code-wrap">
+        <div class="code-head"><span>factorial.cpp</span><span class="badge b-on">O(n)</span></div>
+        <pre><code><span class="tok-type">int</span> <span class="tok-fn">factorial</span>(<span class="tok-type">int</span> n) {
+    <span class="tok-kw">if</span> (n &lt;= <span class="tok-num">1</span>) <span class="tok-kw">return</span> <span class="tok-num">1</span>;      <span class="tok-comment tok-com">// base case: O(1)</span>
+    <span class="tok-kw">return</span> n * <span class="tok-fn">factorial</span>(n - <span class="tok-num">1</span>); <span class="tok-comment tok-com">// 1 subcall, size n-1</span>
+}
+<span class="tok-comment tok-com">// T(n) = T(n-1) + O(1)  →  T(n) = O(n)</span></code></pre>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-head"><span>fibonacci_naive.cpp</span><span class="badge b-o2n">O(2ⁿ)</span></div>
+        <pre><code><span class="tok-type">int</span> <span class="tok-fn">fib</span>(<span class="tok-type">int</span> n) {
+    <span class="tok-kw">if</span> (n &lt;= <span class="tok-num">1</span>) <span class="tok-kw">return</span> n;
+    <span class="tok-kw">return</span> <span class="tok-fn">fib</span>(n - <span class="tok-num">1</span>) + <span class="tok-fn">fib</span>(n - <span class="tok-num">2</span>); <span class="tok-comment tok-com">// 2 subcalls, size n-1</span>
+}
+<span class="tok-comment tok-com">// T(n) = 2T(n-1) + O(1)  →  T(n) = O(2^n)</span></code></pre>
+      </div>
+
+      <!-- DIAGRAM: recursion tree -->
+      <div class="diagram">
+        <div class="diagram-title"><h4>Recursion tree — fib(4) branching into O(2ⁿ) calls</h4></div>
+        <svg id="fibTree" viewBox="0 0 640 260" style="width:100%;height:auto;display:block;"></svg>
+        <p style="font-size:.8rem;color:var(--ink-faint);margin-top:8px">Every call that isn't a base case spawns two more. The tree's node count roughly doubles per level — that explosion <em>is</em> <code>O(2ⁿ)</code>. Memoizing (caching results) collapses this to <span class="badge b-on">O(n)</span> by never recomputing a subproblem.</p>
+      </div>
+
+      <h3>6.2 — Merge sort: the classic divide‑and‑conquer</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>merge_sort.cpp</span><span class="badge b-onlogn">O(n log n)</span></div>
+        <pre><code><span class="tok-type">void</span> <span class="tok-fn">mergeSort</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, <span class="tok-type">int</span> l, <span class="tok-type">int</span> r) {
+    <span class="tok-kw">if</span> (l &gt;= r) <span class="tok-kw">return</span>;
+    <span class="tok-type">int</span> mid = l + (r - l) / <span class="tok-num">2</span>;
+    <span class="tok-fn">mergeSort</span>(a, l, mid);       <span class="tok-comment tok-com">// T(n/2)</span>
+    <span class="tok-fn">mergeSort</span>(a, mid + <span class="tok-num">1</span>, r);   <span class="tok-comment tok-com">// T(n/2)</span>
+    <span class="tok-fn">merge</span>(a, l, mid, r);        <span class="tok-comment tok-com">// O(n) to merge</span>
+}
+<span class="tok-comment tok-com">// T(n) = 2T(n/2) + O(n)  →  T(n) = O(n log n)</span></code></pre>
+      </div>
+
+      <!-- DIAGRAM: merge sort recursion tree with per-level work -->
+      <div class="diagram">
+        <div class="diagram-title"><h4>Why 2T(n/2) + O(n) becomes O(n log n)</h4></div>
+        <svg id="mergeTree" viewBox="0 0 640 280" style="width:100%;height:auto;display:block;"></svg>
+        <p style="font-size:.8rem;color:var(--ink-faint);margin-top:8px">Every level of the tree does <strong>O(n)</strong> total work (the merge cost adds up to n per row, no matter how many pieces it's split into). There are <strong>log n</strong> levels because the input halves each time. Total = <code>n</code> work × <code>log n</code> levels = <code>O(n log n)</code>.</p>
+      </div>
+
+      <h3>6.3 — The Master Theorem (shortcut for divide &amp; conquer)</h3>
+      <p>For recurrences of the form <code>T(n) = a·T(n/b) + O(n<sup>d</sup>)</code> — <code>a</code> subproblems, each of size <code>n/b</code>, plus <code>O(n<sup>d</sup>)</code> work to combine — compare <code>d</code> against <code>log<sub>b</sub> a</code>:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Condition</th><th>Result</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>d &lt; log_b(a)</code></td><td><span class="badge b-onlogn">O(n<sup>log_b a</sup>)</span></td><td>Naive recursive matrix mult: T(n)=8T(n/2)+O(n²) → O(n³)</td></tr>
+            <tr><td><code>d = log_b(a)</code></td><td><span class="badge b-onlogn">O(n<sup>d</sup> log n)</span></td><td>Merge sort: T(n)=2T(n/2)+O(n) → O(n log n)</td></tr>
+            <tr><td><code>d &gt; log_b(a)</code></td><td><span class="badge b-on">O(n<sup>d</sup>)</span></td><td>T(n)=2T(n/2)+O(n²) → O(n²)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout tip"><strong class="label">Interview‑speed trick</strong>You rarely need the full theorem. Just remember the three named shapes: <code>T(n)=T(n/2)+O(1)</code> → <span class="badge b-ologn">O(log n)</span> (binary search); <code>T(n)=2T(n/2)+O(n)</code> → <span class="badge b-onlogn">O(n log n)</span> (merge sort); <code>T(n)=2T(n-1)+O(1)</code> → <span class="badge b-o2n">O(2ⁿ)</span> (naive recursion tree, subtracting not dividing).</div>
+    </section>
+
+    <!-- ============================= 7. SPACE ============================= -->
+    <section class="block reveal" id="space">
+      <span class="section-tag">07 · Core skill</span>
+      <h2>Space complexity</h2>
+      <p>Space complexity counts <strong>extra</strong> memory an algorithm needs, as a function of <code>n</code> — not counting the input itself. Two sources are commonly missed by people who are otherwise fine at time complexity: <strong>auxiliary data structures</strong>, and the <strong>call stack</strong> that recursion silently builds.</p>
+
+      <h3>7.1 — Iterative: O(1) space</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>sum_iterative.cpp</span><span class="badge b-o1">O(1) space</span></div>
+        <pre><code><span class="tok-type">int</span> <span class="tok-fn">sum</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a) {
+    <span class="tok-type">int</span> total = <span class="tok-num">0</span>;             <span class="tok-comment tok-com">// one variable, regardless of n</span>
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> x : a) total += x;
+    <span class="tok-kw">return</span> total;
+}</code></pre>
+      </div>
+
+      <h3>7.2 — Recursive: O(n) space (the hidden call stack)</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>sum_recursive.cpp</span><span class="badge b-on">O(n) space</span></div>
+        <pre><code><span class="tok-type">int</span> <span class="tok-fn">sum</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, <span class="tok-type">int</span> i) {
+    <span class="tok-kw">if</span> (i == a.size()) <span class="tok-kw">return</span> <span class="tok-num">0</span>;
+    <span class="tok-kw">return</span> a[i] + <span class="tok-fn">sum</span>(a, i + <span class="tok-num">1</span>); <span class="tok-comment tok-com">// n stack frames alive at once</span>
+}</code></pre>
+      </div>
+      <p>Even though this does the exact same work as 7.1, it needs <code>O(n)</code> space, because <code>n</code> stack frames are stacked up waiting for their recursive call to return before they can add and return. <strong>Every unreturned recursive call sits in memory.</strong> This is precisely why deep recursion risks a stack overflow, and why "just make it recursive" is not free.</p>
+
+      <h3>7.3 — Auxiliary array: O(n) space</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>reverse_new_array.cpp</span><span class="badge b-on">O(n) space</span></div>
+        <pre><code>std::vector&lt;<span class="tok-type">int</span>&gt; <span class="tok-fn">reversed</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a) {
+    std::vector&lt;<span class="tok-type">int</span>&gt; out(a.size());   <span class="tok-comment tok-com">// new array of size n</span>
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; a.size(); i++)
+        out[i] = a[a.size() - <span class="tok-num">1</span> - i];
+    <span class="tok-kw">return</span> out;
+}
+<span class="tok-comment tok-com">// compare: reversing a[] IN PLACE with two pointers is O(1) space</span></code></pre>
+      </div>
+
+      <div class="callout">
+        <strong class="label">Quick checklist for space</strong>
+        Count: (a) any array/vector/hashmap/string you allocate that scales with <code>n</code>, (b) the maximum recursion depth (each frame ≈ O(1) unless it stores its own array), (c) output storage only if the problem asks for "extra" space excluding the required output.
+      </div>
+    </section>
+
+    <!-- ============================= 8. AMORTIZED ============================= -->
+    <section class="block reveal" id="amortized">
+      <span class="section-tag">08 · Core skill</span>
+      <h2>Amortized analysis</h2>
+      <p>Some operations are usually cheap but occasionally expensive — and the trick is to prove the <em>average cost over a sequence of operations</em> is still low, even though any single call could be slow.</p>
+
+      <div class="code-wrap">
+        <div class="code-head"><span>dynamic_array.cpp</span><span class="badge b-o1">O(1) amortized</span></div>
+        <pre><code>std::vector&lt;<span class="tok-type">int</span>&gt; v;
+<span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++)
+    v.push_back(i); <span class="tok-comment tok-com">// usually O(1); occasionally O(k) to resize+copy</span></code></pre>
+      </div>
+      <p><code>std::vector::push_back</code> is usually <code>O(1)</code>. But when the backing array is full, it must allocate a bigger block (typically double the size) and copy every existing element — an <code>O(k)</code> operation. Because doubling means resizes happen at sizes <code>1, 2, 4, 8, 16, ...</code>, the total copying cost across <code>n</code> pushes sums to <code>1+2+4+...+n ≈ 2n</code>, which spread across <code>n</code> calls averages out to <code>O(1)</code> per call — this is <strong>amortized O(1)</strong>, distinct from every call actually being fast.</p>
+      <div class="callout tip"><strong class="label">Say this in interviews</strong>"Amortized" is not "average case" — average case is about input distribution; amortized is a worst‑case guarantee <em>over a sequence of operations</em>, regardless of input.</div>
+    </section>
+
+    <!-- ============================= 9. CASES ============================= -->
+    <section class="block reveal" id="cases">
+      <span class="section-tag">09 · Core skill</span>
+      <h2>Best, worst, and average case</h2>
+      <p>The <em>same</em> algorithm can have different complexities depending on the input arrangement, not just its size.</p>
+      <div class="code-wrap">
+        <div class="code-head"><span>linear_search.cpp</span></div>
+        <pre><code><span class="tok-type">int</span> <span class="tok-fn">linearSearch</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, <span class="tok-type">int</span> target) {
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; a.size(); i++)
+        <span class="tok-kw">if</span> (a[i] == target) <span class="tok-kw">return</span> i;
+    <span class="tok-kw">return</span> -<span class="tok-num">1</span>;
+}</code></pre>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Case</th><th>Scenario</th><th>Complexity</th></tr></thead>
+          <tbody>
+            <tr><td>Best</td><td>Target is the first element</td><td><span class="badge b-o1">O(1)</span></td></tr>
+            <tr><td>Average</td><td>Target is somewhere in the middle, uniformly random</td><td><span class="badge b-on">O(n)</span></td></tr>
+            <tr><td>Worst</td><td>Target is last, or absent entirely</td><td><span class="badge b-on">O(n)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Quicksort is the canonical example that trips people up: <strong>average case O(n log n)</strong> with a random or well‑chosen pivot, but <strong>worst case O(n²)</strong> if the pivot is repeatedly the smallest or largest element (e.g. an already‑sorted array with a naive "always pick first element" pivot strategy). Unless told otherwise, interviewers expect the <strong>worst case</strong> when they ask "what's the time complexity" with no qualifier.</p>
+    </section>
+
+    <!-- ============================= 10. IDENTIFY ANY CODE ============================= -->
+    <section class="block reveal" id="identify">
+      <span class="section-tag">10 · Apply it</span>
+      <h2>The 6-step method: reading any code cold</h2>
+      <p>This is the actual procedure to run in your head when an interviewer hands you a function and says "what's the complexity?" — in order.</p>
+      <div class="steps">
+        <li><h4>Identify the input(s) and name their sizes</h4><p>Is there one array of size <code>n</code>? Two of sizes <code>n</code> and <code>m</code>? A number <code>n</code> itself (careful — complexity for numeric inputs is often measured in bits, e.g. checking primality). Name every independent size variable.</p></li>
+        <li><h4>Find every loop and recursive call, and classify its step</h4><p>Additive step (<code>i++</code>, <code>i += k</code>) → linear contribution. Multiplicative step (<code>i *= 2</code>) → logarithmic contribution. Recursive call shrinking input by a fraction → logarithmic or divide‑and‑conquer.</p></li>
+        <li><h4>Determine nesting vs. sequencing</h4><p>Are loops/recursive structures <strong>inside</strong> one another (multiply their costs) or <strong>one after another</strong> (add their costs)? Draw imaginary boxes around each loop to see the nesting depth clearly.</p></li>
+        <li><h4>Check if inner bounds depend on the outer variable</h4><p>If an inner loop's range depends on the outer loop's current index (<code>j = i</code> or <code>j &lt; n - i</code>), it's a triangular/shrinking pattern — still polynomial, but compute the actual sum (often still simplifies to the same order, just half the constant).</p></li>
+        <li><h4>For recursion, write the recurrence relation and solve it</h4><p>Count subproblems (<code>a</code>), the shrink factor (<code>b</code>), and non‑recursive work per call (<code>O(n^d)</code>). Apply the Master Theorem or match one of the three memorized shapes from Section 6.3.</p></li>
+        <li><h4>Combine, then apply the simplification rules</h4><p>Add the sequential pieces, multiply the nested pieces, then drop constants and lower‑order terms to land on the final Big‑O. Separately repeat the whole process counting <em>memory</em> allocated (not steps taken) to get the space complexity.</p></li>
+      </div>
+
+      <div class="callout warn">
+        <strong class="label">Common traps interviewers plant</strong>
+        • A loop that looks like it runs <code>n</code> times but actually breaks early or is bounded by a small constant (e.g. looping over a fixed‑size alphabet of 26 letters is <code>O(1)</code>, not <code>O(n)</code>).<br>
+        • Built‑in function calls that hide complexity — <code>std::string::substr</code> is <code>O(k)</code> (copies), <code>std::vector::erase(begin())</code> is <code>O(n)</code> (shifts everything), <code>unordered_map</code> lookups are <code>O(1)</code> <em>average</em> but <code>O(n)</code> <em>worst case</em> (hash collisions), <code>std::sort</code> is <code>O(n log n)</code>.<br>
+        • Recursion that looks like it branches but actually only recurses down one path most of the time (e.g. memoized recursion, or one branch that returns immediately).
+      </div>
+
+      <h3>Worked example — walk the method live</h3>
+      <div class="code-wrap">
+        <div class="code-head"><span>worked_example.cpp</span></div>
+        <pre><code><span class="tok-type">bool</span> <span class="tok-fn">hasPairWithSum</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, <span class="tok-type">int</span> target) {
+    std::unordered_set&lt;<span class="tok-type">int</span>&gt; seen;           <span class="tok-comment tok-com">// step 1: input is array size n</span>
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> x : a) {                    <span class="tok-comment tok-com">// step 2: single additive loop → n iterations</span>
+        <span class="tok-kw">if</span> (seen.count(target - x)) <span class="tok-kw">return</span> <span class="tok-kw">true</span>; <span class="tok-comment tok-com">// O(1) avg hashset lookup</span>
+        seen.insert(x);                     <span class="tok-comment tok-com">// O(1) avg insert</span>
+    }
+    <span class="tok-kw">return</span> <span class="tok-kw">false</span>;
+}</code></pre>
+      </div>
+      <p><strong>Walkthrough:</strong> one input, size <code>n</code> (step 1). One loop, additive step, not nested inside anything (steps 2–3). No inner-bound dependency, no recursion (steps 4–5). Loop body does <code>O(1)</code> average hash‑set work, run <code>n</code> times → <code>O(n)</code> time overall (step 6). Space: the <code>seen</code> set can hold up to <code>n</code> elements → <span class="badge b-on">O(n) time</span> &nbsp;<span class="badge b-on">O(n) space</span>. This is the classic "trade space for time" upgrade over the <code>O(n²)</code> brute‑force nested‑loop pair check.</p>
+    </section>
+
+    <!-- ============================= 11. CHEATSHEET ============================= -->
+    <section class="block wide reveal" id="cheatsheet">
+      <span class="section-tag">11 · Apply it</span>
+      <h2>Cheat sheet — data structures &amp; algorithms</h2>
+
+      <h3>Data structure operations</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Structure</th><th>Access</th><th>Search</th><th>Insert</th><th>Delete</th></tr></thead>
+          <tbody>
+            <tr><td><code>std::vector</code> (end)</td><td><span class="badge b-o1">O(1)</span></td><td><span class="badge b-on">O(n)</span></td><td><span class="badge b-o1">O(1)*</span></td><td><span class="badge b-o1">O(1)*</span></td></tr>
+            <tr><td><code>std::vector</code> (middle)</td><td><span class="badge b-o1">O(1)</span></td><td><span class="badge b-on">O(n)</span></td><td><span class="badge b-on">O(n)</span></td><td><span class="badge b-on">O(n)</span></td></tr>
+            <tr><td><code>std::list</code> (linked list)</td><td><span class="badge b-on">O(n)</span></td><td><span class="badge b-on">O(n)</span></td><td><span class="badge b-o1">O(1)</span></td><td><span class="badge b-o1">O(1)</span></td></tr>
+            <tr><td><code>std::unordered_map/set</code></td><td>—</td><td><span class="badge b-o1">O(1) avg</span></td><td><span class="badge b-o1">O(1) avg</span></td><td><span class="badge b-o1">O(1) avg</span></td></tr>
+            <tr><td><code>std::map/set</code> (balanced BST)</td><td>—</td><td><span class="badge b-ologn">O(log n)</span></td><td><span class="badge b-ologn">O(log n)</span></td><td><span class="badge b-ologn">O(log n)</span></td></tr>
+            <tr><td>Binary heap / <code>priority_queue</code></td><td>O(1) top</td><td><span class="badge b-on">O(n)</span></td><td><span class="badge b-ologn">O(log n)</span></td><td><span class="badge b-ologn">O(log n)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.8rem;color:var(--ink-faint)">*amortized, due to occasional resizing — see Section 8.</p>
+
+      <h3>Sorting algorithms</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th></tr></thead>
+          <tbody>
+            <tr><td>Bubble / Selection / Insertion sort</td><td><span class="badge b-on">O(n)</span>/<span class="badge b-on2">O(n²)</span>*</td><td><span class="badge b-on2">O(n²)</span></td><td><span class="badge b-on2">O(n²)</span></td><td><span class="badge b-o1">O(1)</span></td></tr>
+            <tr><td>Merge sort</td><td><span class="badge b-onlogn">O(n log n)</span></td><td><span class="badge b-onlogn">O(n log n)</span></td><td><span class="badge b-onlogn">O(n log n)</span></td><td><span class="badge b-on">O(n)</span></td></tr>
+            <tr><td>Quick sort</td><td><span class="badge b-onlogn">O(n log n)</span></td><td><span class="badge b-onlogn">O(n log n)</span></td><td><span class="badge b-on2">O(n²)</span></td><td><span class="badge b-ologn">O(log n)</span></td></tr>
+            <tr><td>Heap sort</td><td><span class="badge b-onlogn">O(n log n)</span></td><td><span class="badge b-onlogn">O(n log n)</span></td><td><span class="badge b-onlogn">O(n log n)</span></td><td><span class="badge b-o1">O(1)</span></td></tr>
+            <tr><td>Counting / Radix sort</td><td><span class="badge b-on">O(n+k)</span></td><td><span class="badge b-on">O(n+k)</span></td><td><span class="badge b-on">O(n+k)</span></td><td><span class="badge b-on">O(n+k)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.8rem;color:var(--ink-faint)">*insertion sort is O(n) best case on already‑sorted input, O(n²) otherwise.</p>
+
+      <h3>Graph algorithms (V = vertices, E = edges)</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Algorithm</th><th>Time</th><th>Space</th></tr></thead>
+          <tbody>
+            <tr><td>BFS / DFS</td><td><span class="badge b-on">O(V + E)</span></td><td><span class="badge b-on">O(V)</span></td></tr>
+            <tr><td>Dijkstra (binary heap)</td><td><span class="badge b-onlogn">O((V+E) log V)</span></td><td><span class="badge b-on">O(V)</span></td></tr>
+            <tr><td>Bellman‑Ford</td><td><span class="badge b-on2">O(V·E)</span></td><td><span class="badge b-on">O(V)</span></td></tr>
+            <tr><td>Floyd‑Warshall</td><td><span class="badge b-on3">O(V³)</span></td><td><span class="badge b-on2">O(V²)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================= 12. PRACTICE ============================= -->
+    <section class="block wide reveal" id="practice">
+      <span class="section-tag">12 · Apply it</span>
+      <h2>Practice questions</h2>
+      <p>State the <strong>time</strong> and (where relevant) <strong>space</strong> complexity before expanding each answer. Difficulty increases as you go.</p>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q1</span>Single pass over an array</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">int</span> <span class="tok-fn">maxVal</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a) {
+    <span class="tok-type">int</span> m = a[<span class="tok-num">0</span>];
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> x : a) m = std::max(m, x);
+    <span class="tok-kw">return</span> m;
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on">O(n) time</span> <span class="badge b-o1">O(1) space</span></div>One loop over n elements, one variable for extra state.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q2</span>Two separate loops</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">void</span> <span class="tok-fn">printBoth</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, std::vector&lt;<span class="tok-type">int</span>&gt;&amp; b) {
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> x : a) std::cout &lt;&lt; x;
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> y : b) std::cout &lt;&lt; y;
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on">O(n + m) time</span> <span class="badge b-o1">O(1) space</span></div>Sequential loops over two <em>different</em> inputs add — don't collapse to O(n) unless told n = m.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q3</span>Nested loop, inner bound is constant</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">void</span> <span class="tok-fn">f</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a) {
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; a.size(); i++)
+        <span class="tok-kw">for</span> (<span class="tok-type">int</span> j = <span class="tok-num">0</span>; j &lt; <span class="tok-num">26</span>; j++)
+            <span class="tok-fn">doWork</span>(a[i], j);
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on">O(n) time</span> <span class="badge b-o1">O(1) space</span></div>The inner loop always runs exactly 26 times regardless of n — that's a constant, not a variable. O(26n) = O(n). Watch for fixed bounds disguised as loops (common with alphabets, digits, or a fixed board size).</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q4</span>Triangular nested loop</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">void</span> <span class="tok-fn">f</span>(<span class="tok-type">int</span> n) {
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++)
+        <span class="tok-kw">for</span> (<span class="tok-type">int</span> j = <span class="tok-num">0</span>; j &lt; i; j++)
+            <span class="tok-fn">doWork</span>();
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on2">O(n²) time</span> <span class="badge b-o1">O(1) space</span></div>Sum of 0+1+2+...+(n-1) = n(n-1)/2 → O(n²) after dropping constants and lower-order terms.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q5</span>Three sequential nested-loop blocks</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">void</span> <span class="tok-fn">f</span>(<span class="tok-type">int</span> n) {
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++)
+        <span class="tok-fn">doWork</span>();                              <span class="tok-comment tok-com">// O(n)</span>
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++)
+        <span class="tok-kw">for</span> (<span class="tok-type">int</span> j = <span class="tok-num">0</span>; j &lt; n; j++)
+            <span class="tok-fn">doWork</span>();                          <span class="tok-comment tok-com">// O(n^2)</span>
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on2">O(n²) time</span></div>O(n) + O(n²) — when adding, the largest term wins (rule #2). Total is O(n²), not O(n³) — they are not nested inside each other.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q6</span>While loop with multiplicative shrink</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">int</span> <span class="tok-fn">countDigits</span>(<span class="tok-type">int</span> n) {
+    <span class="tok-type">int</span> count = <span class="tok-num">0</span>;
+    <span class="tok-kw">while</span> (n &gt; <span class="tok-num">0</span>) { n /= <span class="tok-num">10</span>; count++; }
+    <span class="tok-kw">return</span> count;
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-ologn">O(log n) time</span> <span class="badge b-o1">O(1) space</span></div>n shrinks by a factor of 10 each time — logarithmic (base 10, but log base doesn't matter for Big-O since it's a constant factor: log₁₀n = log₂n / log₂10).</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q7</span>Recursive Fibonacci with memoization</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code>std::unordered_map&lt;<span class="tok-type">int</span>,<span class="tok-type">int</span>&gt; memo;
+<span class="tok-type">int</span> <span class="tok-fn">fib</span>(<span class="tok-type">int</span> n) {
+    <span class="tok-kw">if</span> (n &lt;= <span class="tok-num">1</span>) <span class="tok-kw">return</span> n;
+    <span class="tok-kw">if</span> (memo.count(n)) <span class="tok-kw">return</span> memo[n];
+    <span class="tok-kw">return</span> memo[n] = <span class="tok-fn">fib</span>(n-<span class="tok-num">1</span>) + <span class="tok-fn">fib</span>(n-<span class="tok-num">2</span>);
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on">O(n) time</span> <span class="badge b-on">O(n) space</span></div>Each value 0..n is computed exactly once and cached — n unique subproblems, O(1) work each. Space: memo table O(n) plus recursion stack depth O(n).</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q8</span>Nested loop over two different arrays</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">bool</span> <span class="tok-fn">hasCommon</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, std::vector&lt;<span class="tok-type">int</span>&gt;&amp; b) {
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> x : a)
+        <span class="tok-kw">for</span> (<span class="tok-type">int</span> y : b)
+            <span class="tok-kw">if</span> (x == y) <span class="tok-kw">return</span> <span class="tok-kw">true</span>;
+    <span class="tok-kw">return</span> <span class="tok-kw">false</span>;
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-onlogn">O(n·m) time</span> <span class="badge b-o1">O(1) space</span></div>Nested loops over different-sized inputs multiply their sizes: O(n) × O(m). Could be improved to O(n+m) using a hash set.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q9</span>Recursive binary search</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">int</span> <span class="tok-fn">bs</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, <span class="tok-type">int</span> lo, <span class="tok-type">int</span> hi, <span class="tok-type">int</span> target) {
+    <span class="tok-kw">if</span> (lo &gt; hi) <span class="tok-kw">return</span> -<span class="tok-num">1</span>;
+    <span class="tok-type">int</span> mid = lo + (hi - lo) / <span class="tok-num">2</span>;
+    <span class="tok-kw">if</span> (a[mid] == target) <span class="tok-kw">return</span> mid;
+    <span class="tok-kw">if</span> (a[mid] &lt; target) <span class="tok-kw">return</span> <span class="tok-fn">bs</span>(a, mid+<span class="tok-num">1</span>, hi, target);
+    <span class="tok-kw">return</span> <span class="tok-fn">bs</span>(a, lo, mid-<span class="tok-num">1</span>, target);
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-ologn">O(log n) time</span> <span class="badge b-ologn">O(log n) space</span></div>T(n) = T(n/2) + O(1) → O(log n) time. Space is O(log n) here (not O(1)!) because each recursive call adds a stack frame — the iterative version from Section 4.6 is the O(1)-space alternative.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q10</span>Generating all subsets</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">void</span> <span class="tok-fn">subsets</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, <span class="tok-type">int</span> i, std::vector&lt;<span class="tok-type">int</span>&gt;&amp; cur) {
+    <span class="tok-kw">if</span> (i == a.size()) { <span class="tok-fn">process</span>(cur); <span class="tok-kw">return</span>; }
+    <span class="tok-fn">subsets</span>(a, i+<span class="tok-num">1</span>, cur);           <span class="tok-comment tok-com">// exclude a[i]</span>
+    cur.push_back(a[i]);
+    <span class="tok-fn">subsets</span>(a, i+<span class="tok-num">1</span>, cur);           <span class="tok-comment tok-com">// include a[i]</span>
+    cur.pop_back();
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-o2n">O(2ⁿ) time</span> <span class="badge b-on">O(n) space</span></div>Two recursive calls per level, n levels deep → 2ⁿ total calls (one per subset — there really are 2ⁿ subsets, so this is optimal). Space is only O(n) for the recursion depth + current subset, since we don't store all subsets simultaneously here.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q11</span>String concatenation in a loop</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code>std::string <span class="tok-fn">build</span>(<span class="tok-type">int</span> n) {
+    std::string s = <span class="tok-str">""</span>;
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++)
+        s += <span class="tok-str">"x"</span>;         <span class="tok-comment tok-com">// each += may copy the whole string</span>
+    <span class="tok-kw">return</span> s;
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on2">O(n²) time (worst case)</span> <span class="badge b-on">O(n) space</span></div>Each <code>+=</code> can be O(current length) in the worst case (though std::string uses amortized-doubling growth internally similar to vector, so in practice it's closer to amortized O(n) total — but treat naive repeated concatenation as the classic O(n²) trap unless the language/structure guarantees amortized growth). Compare with <code>std::ostringstream</code> or reserving capacity upfront.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q12</span>Matrix traversal</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">int</span> <span class="tok-fn">sumMatrix</span>(std::vector&lt;std::vector&lt;<span class="tok-type">int</span>&gt;&gt;&amp; m) {
+    <span class="tok-type">int</span> total = <span class="tok-num">0</span>;
+    <span class="tok-kw">for</span> (<span class="tok-type">auto</span>&amp; row : m)
+        <span class="tok-kw">for</span> (<span class="tok-type">int</span> x : row)
+            total += x;
+    <span class="tok-kw">return</span> total;
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on2">O(r·c) time</span> <span class="badge b-o1">O(1) space</span></div>With r rows and c columns this visits every cell exactly once — O(r·c). If it's a square matrix (r = c = n), this is commonly written O(n²), but don't assume square unless stated.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q13</span>Two-pointer technique</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">bool</span> <span class="tok-fn">isPalindrome</span>(std::string&amp; s) {
+    <span class="tok-type">int</span> l = <span class="tok-num">0</span>, r = s.size() - <span class="tok-num">1</span>;
+    <span class="tok-kw">while</span> (l &lt; r) {
+        <span class="tok-kw">if</span> (s[l] != s[r]) <span class="tok-kw">return</span> <span class="tok-kw">false</span>;
+        l++; r--;
+    }
+    <span class="tok-kw">return</span> <span class="tok-kw">true</span>;
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on">O(n) time</span> <span class="badge b-o1">O(1) space</span></div>Looks like it "loops" but two pointers moving toward each other still only visit each index once combined — n/2 iterations, still O(n). This is the two-pointer pattern: despite feeling clever, it's linear, not logarithmic — don't confuse "pointers converging" with "halving".</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q14</span>Sliding window</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">int</span> <span class="tok-fn">maxSumWindow</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, <span class="tok-type">int</span> k) {
+    <span class="tok-type">int</span> windowSum = <span class="tok-num">0</span>, best = <span class="tok-num">0</span>;
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; a.size(); i++) {
+        windowSum += a[i];
+        <span class="tok-kw">if</span> (i &gt;= k) windowSum -= a[i - k];
+        <span class="tok-kw">if</span> (i &gt;= k - <span class="tok-num">1</span>) best = std::max(best, windowSum);
+    }
+    <span class="tok-kw">return</span> best;
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on">O(n) time</span> <span class="badge b-o1">O(1) space</span></div>Despite involving a "window" of size k, each element is added once and removed once — total work is 2n, still O(n). This beats the naive nested-loop O(n·k) approach of resumming every window from scratch.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q15</span>Recursive tree traversal</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">struct</span> Node { <span class="tok-type">int</span> val; Node *left, *right; };
+<span class="tok-type">int</span> <span class="tok-fn">height</span>(Node* root) {
+    <span class="tok-kw">if</span> (!root) <span class="tok-kw">return</span> <span class="tok-num">0</span>;
+    <span class="tok-kw">return</span> <span class="tok-num">1</span> + std::max(<span class="tok-fn">height</span>(root-&gt;left), <span class="tok-fn">height</span>(root-&gt;right));
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-on">O(n) time</span></div>Visits every node in the tree exactly once (n nodes total) → O(n) time. Space is O(h) where h is tree height — O(log n) for a balanced tree, but O(n) worst case for a completely skewed (linked-list-shaped) tree. Always state space in terms of height, and mention the skewed worst case.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q16</span>Function with an early return</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">bool</span> <span class="tok-fn">containsDuplicate</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a) {
+    std::unordered_set&lt;<span class="tok-type">int</span>&gt; seen;
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> x : a) {
+        <span class="tok-kw">if</span> (seen.count(x)) <span class="tok-kw">return</span> <span class="tok-kw">true</span>; <span class="tok-comment tok-com">// might exit on iteration 1</span>
+        seen.insert(x);
+    }
+    <span class="tok-kw">return</span> <span class="tok-kw">false</span>;
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge">Best: <span class="badge b-o1">O(1)</span> · Worst: <span class="badge b-on">O(n)</span></div>Interviewers want the worst case by default: O(n) time, O(n) space (the seen set can hold up to n elements before returning false).</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q17</span>Nested loop where the inner loop is logarithmic</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">void</span> <span class="tok-fn">f</span>(<span class="tok-type">int</span> n) {
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = <span class="tok-num">0</span>; i &lt; n; i++)
+        <span class="tok-kw">for</span> (<span class="tok-type">int</span> j = <span class="tok-num">1</span>; j &lt; n; j *= <span class="tok-num">2</span>)
+            <span class="tok-fn">doWork</span>();
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-onlogn">O(n log n) time</span></div>Outer loop is O(n), inner loop is O(log n), and they're nested (multiply) → O(n log n). This exact pattern shows up in algorithms like building a sparse table or certain binary-indexed-tree operations.</div>
+        </div>
+      </details>
+
+      <details class="qa">
+        <summary><span><span class="qa-num">Q18</span>Full permutation generation</span><span class="chev">›</span></summary>
+        <div class="qa-body">
+          <div class="code-wrap"><pre><code><span class="tok-type">void</span> <span class="tok-fn">permute</span>(std::vector&lt;<span class="tok-type">int</span>&gt;&amp; a, <span class="tok-type">int</span> k) {
+    <span class="tok-kw">if</span> (k == a.size()) { <span class="tok-fn">process</span>(a); <span class="tok-kw">return</span>; }
+    <span class="tok-kw">for</span> (<span class="tok-type">int</span> i = k; i &lt; a.size(); i++) {
+        std::swap(a[k], a[i]);
+        <span class="tok-fn">permute</span>(a, k + <span class="tok-num">1</span>);
+        std::swap(a[k], a[i]); <span class="tok-comment tok-com">// backtrack</span>
+    }
+}</code></pre></div>
+          <div class="qa-answer"><div class="ans-badge"><span class="badge b-onf">O(n!) time</span> <span class="badge b-on">O(n) space</span></div>Generates all n! permutations, and at each of the n levels of recursion does O(n) work in the loop, so more precisely it's O(n · n!) — but the dominant, commonly-quoted term is O(n!). Space is O(n) for the recursion depth (permutations are built in-place via swaps, not stored separately).</div>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <p>Built as a single self-contained reference — no dependencies beyond web fonts. Revisit the <a href="#identify">6-step method</a> before any interview; everything else on this page exists to make those six steps automatic.</p>
+    </footer>
+  </main>
+</div>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.5 12H2.1M21.9 12h-2.4M6.2 6.2 4.5 4.5M19.5 19.5l-1.7-1.7M17.8 6.2l1.7-1.7M4.5 19.5l1.7-1.7"/></svg>
+  <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.4 14.7A8.4 8.4 0 0 1 9.3 3.6a.6.6 0 0 0-.7-.9A9.6 9.6 0 1 0 21.3 15.4a.6.6 0 0 0-.9-.7Z"/></svg>
+</button>
+
+<script>
+/* ============================= THEME TOGGLE LOGIC ============================= */
+(function(){
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if(prefersDark) root.setAttribute('data-theme','dark');
+  btn.addEventListener('click', ()=>{
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  });
+})();
+</script>
+
+<script>
+/* ============================= NAV: mobile toggle + active highlight ============================= */
+const sidenav = document.getElementById('sidenav');
+const navToggle = document.getElementById('navToggle');
+navToggle && navToggle.addEventListener('click', () => sidenav.classList.toggle('open'));
+document.querySelectorAll('#navLinks a').forEach(a=>{
+  a.addEventListener('click', ()=> { if(window.innerWidth <= 980) sidenav.classList.remove('open'); });
+});
+
+const sections = document.querySelectorAll('section.block[id]');
+const navLinkMap = {};
+document.querySelectorAll('#navLinks a').forEach(a => navLinkMap[a.getAttribute('href').slice(1)] = a);
+const navObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      Object.values(navLinkMap).forEach(a=>a.classList.remove('active'));
+      const link = navLinkMap[e.target.id];
+      if(link) link.classList.add('active');
+    }
+  });
+}, {rootMargin:'-15% 0px -70% 0px'});
+sections.forEach(s=>navObserver.observe(s));
+
+/* ============================= REVEAL ON SCROLL ============================= */
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); revealObserver.unobserve(e.target); } });
+}, {threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+/* ============================= GROWTH CHART ============================= */
+(function(){
+  const svg = document.getElementById('growthChart');
+  const legendEl = document.getElementById('growthLegend');
+  const W = 640, H = 360, PAD = {l:44,r:14,t:14,b:34};
+  const plotW = W - PAD.l - PAD.r, plotH = H - PAD.t - PAD.b;
+  const N = 20;
+  const series = [
+    {key:'o1', label:'O(1)', color:'var(--o1)', fn: n => 1},
+    {key:'ologn', label:'O(log n)', color:'var(--ologn)', fn: n => Math.log2(n)},
+    {key:'on', label:'O(n)', color:'var(--on)', fn: n => n},
+    {key:'onlogn', label:'O(n log n)', color:'var(--onlogn)', fn: n => n*Math.log2(n||1)},
+    {key:'on2', label:'O(n²)', color:'var(--on2)', fn: n => n*n},
+    {key:'o2n', label:'O(2ⁿ)', color:'var(--o2n)', fn: n => Math.pow(2,n)},
+  ];
+  const maxY = Math.pow(2,N); // cap
+  function xFor(n){ return PAD.l + (n/N)*plotW; }
+  function yFor(v){
+    const clamped = Math.min(v, maxY);
+    const logv = clamped <= 0 ? 0 : Math.log(clamped+1)/Math.log(maxY+1);
+    return PAD.t + plotH - logv*plotH;
+  }
+  let svgHTML = '';
+  // axes
+  svgHTML += `<line x1="${PAD.l}" y1="${PAD.t}" x2="${PAD.l}" y2="${H-PAD.b}" stroke="var(--rule-strong)" stroke-width="1"/>`;
+  svgHTML += `<line x1="${PAD.l}" y1="${H-PAD.b}" x2="${W-PAD.r}" y2="${H-PAD.b}" stroke="var(--rule-strong)" stroke-width="1"/>`;
+  svgHTML += `<text x="${PAD.l}" y="${H-10}" font-size="10" fill="var(--ink-faint)" font-family="JetBrains Mono">n=0</text>`;
+  svgHTML += `<text x="${W-PAD.r-24}" y="${H-10}" font-size="10" fill="var(--ink-faint)" font-family="JetBrains Mono">n=${N}</text>`;
+  svgHTML += `<text x="6" y="${PAD.t+8}" font-size="10" fill="var(--ink-faint)" font-family="JetBrains Mono">work</text>`;
+
+  series.forEach(s=>{
+    let d = '';
+    for(let n=0;n<=N;n+=0.25){
+      const x = xFor(n), y = yFor(s.fn(n));
+      d += (n===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    }
+    svgHTML += `<path id="path-${s.key}" d="${d}" fill="none" stroke="${s.color}" stroke-width="2.5" stroke-linecap="round" style="transition:opacity .2s"/>`;
+  });
+  svg.innerHTML = svgHTML;
+
+  // animate draw-in
+  const paths = series.map(s=>document.getElementById('path-'+s.key));
+  const chartObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        paths.forEach(p=>{
+          const len = p.getTotalLength();
+          p.style.strokeDasharray = len;
+          p.style.strokeDashoffset = len;
+          p.getBoundingClientRect();
+          p.style.transition = 'stroke-dashoffset 1.4s ease';
+          p.style.strokeDashoffset = 0;
+        });
+        chartObserver.disconnect();
+      }
+    });
+  }, {threshold:0.3});
+  chartObserver.observe(svg);
+
+  // legend
+  series.forEach(s=>{
+    const item = document.createElement('span');
+    item.innerHTML = `<i style="background:${s.color}"></i>${s.label}`;
+    item.addEventListener('click', ()=>{
+      item.classList.toggle('off');
+      const p = document.getElementById('path-'+s.key);
+      p.style.opacity = item.classList.contains('off') ? 0 : 1;
+    });
+    legendEl.appendChild(item);
+  });
+})();
+
+/* ============================= NESTED LOOP GRID ============================= */
+(function(){
+  const gridEl = document.getElementById('loopGrid');
+  const nInput = document.getElementById('gridN');
+  const nVal = document.getElementById('gridNVal');
+  const runBtn = document.getElementById('runGrid');
+  const cellCount = document.getElementById('cellCount');
+  const cellTotal = document.getElementById('cellTotal');
+  let running = false;
+
+  function build(n){
+    gridEl.innerHTML='';
+    gridEl.style.gridTemplateColumns = `repeat(${n}, 16px)`;
+    for(let i=0;i<n*n;i++){
+      const c = document.createElement('div');
+      c.style.cssText = 'width:16px;height:16px;border-radius:3px;background:var(--paper-dim);border:1px solid var(--rule);transition:background .05s;';
+      gridEl.appendChild(c);
+    }
+    cellTotal.textContent = n*n;
+    cellCount.textContent = 0;
+  }
+  nInput.addEventListener('input', ()=>{ nVal.textContent = nInput.value; build(+nInput.value); });
+  build(+nInput.value);
+
+  runBtn.addEventListener('click', ()=>{
+    if(running) return;
+    running = true;
+    const n = +nInput.value;
+    build(n);
+    const cells = gridEl.children;
+    let i = 0;
+    const total = n*n;
+    const delay = Math.max(8, Math.min(45, 900/total));
+    const timer = setInterval(()=>{
+      if(i>=total){ clearInterval(timer); running=false; return; }
+      cells[i].style.background = 'var(--on2)';
+      cells[i].style.borderColor = 'var(--on2)';
+      cellCount.textContent = i+1;
+      i++;
+    }, delay);
+  });
+})();
+
+/* ============================= LOG DOUBLING BARS ============================= */
+(function(){
+  const wrap = document.getElementById('logBars');
+  const stepsEl = document.getElementById('logSteps');
+  const btn = document.getElementById('runLog');
+  const N = 64;
+  function vals(){
+    let v=[]; let i=1;
+    while(i<N){ v.push(i); i*=2; }
+    v.push(N);
+    return v;
+  }
+  const sequence = vals();
+  function render(activeIdx){
+    wrap.innerHTML='';
+    sequence.forEach((v,idx)=>{
+      const bar = document.createElement('div');
+      const h = 10 + (v/N)*100;
+      const active = idx<=activeIdx;
+      bar.style.cssText = `width:38px;height:${h}px;border-radius:5px 5px 0 0;background:${active?'var(--ologn)':'var(--paper-dim)'};border:1px solid ${active?'var(--ologn)':'var(--rule)'};display:flex;align-items:flex-start;justify-content:center;padding-top:4px;font-family:JetBrains Mono;font-size:.68rem;color:${active?'#fff':'var(--ink-faint)'};transition:background .2s;`;
+      bar.textContent = 'i='+v;
+      wrap.appendChild(bar);
+    });
+  }
+  render(-1);
+  let idx=-1, running=false;
+  btn.addEventListener('click', ()=>{
+    if(running) return;
+    running=true; idx=-1;
+    const timer = setInterval(()=>{
+      idx++;
+      render(idx);
+      stepsEl.textContent = idx+1;
+      if(idx>=sequence.length-1){ clearInterval(timer); running=false; }
+    }, 500);
+  });
+})();
+
+/* ============================= FIBONACCI RECURSION TREE ============================= */
+(function(){
+  const svg = document.getElementById('fibTree');
+  // build fib(4) tree structure manually
+  function node(label,x,y,base){ return {label,x,y,base}; }
+  const positions = [
+    {n:'fib(4)', x:320,y:26, base:false},
+    {n:'fib(3)', x:180,y:86, base:false}, {n:'fib(2)', x:460,y:86, base:false},
+    {n:'fib(2)', x:100,y:146, base:false}, {n:'fib(1)', x:260,y:146, base:true},
+    {n:'fib(1)', x:400,y:146, base:true}, {n:'fib(0)', x:520,y:146, base:true},
+    {n:'fib(1)', x:60,y:206, base:true}, {n:'fib(0)', x:140,y:206, base:true},
+  ];
+  const edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7],[3,8]];
+  let html='';
+  edges.forEach(([a,b])=>{
+    const p1=positions[a], p2=positions[b];
+    html += `<line x1="${p1.x}" y1="${p1.y+14}" x2="${p2.x}" y2="${p2.y-14}" stroke="var(--rule-strong)" stroke-width="1.5" class="fib-edge" style="opacity:0"/>`;
+  });
+  positions.forEach((p,i)=>{
+    const fill = p.base ? 'var(--o1-bg)' : 'var(--on-bg)';
+    const stroke = p.base ? 'var(--o1)' : 'var(--on)';
+    html += `<g class="fib-node" style="opacity:0">
+      <rect x="${p.x-32}" y="${p.y-14}" width="64" height="28" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="1.4"/>
+      <text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="var(--ink)">${p.n}</text>
+    </g>`;
+  });
+  svg.innerHTML = html;
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        svg.querySelectorAll('.fib-edge, .fib-node').forEach((el,i)=>{
+          setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity=1; }, i*90);
+        });
+        obs.disconnect();
+      }
+    });
+  }, {threshold:0.3});
+  obs.observe(svg);
+})();
+
+/* ============================= MERGE SORT TREE ============================= */
+(function(){
+  const svg = document.getElementById('mergeTree');
+  const levels = [
+    [{x:320,w:600,label:'n=8'}],
+    [{x:160,w:290,label:'n=4'},{x:480,w:290,label:'n=4'}],
+    [{x:80,w:135,label:'n=2'},{x:240,w:135,label:'n=2'},{x:400,w:135,label:'n=2'},{x:560,w:135,label:'n=2'}],
+    [{x:40,w:60,label:'1'},{x:120,w:60,label:'1'},{x:200,w:60,label:'1'},{x:280,w:60,label:'1'},{x:360,w:60,label:'1'},{x:440,w:60,label:'1'},{x:520,w:60,label:'1'},{x:600,w:60,label:'1'}],
+  ];
+  let html='';
+  const rowH = 58;
+  levels.forEach((row,li)=>{
+    const y = 22 + li*rowH;
+    row.forEach(b=>{
+      html += `<g class="merge-node" style="opacity:0">
+        <rect x="${b.x-b.w/2}" y="${y}" width="${b.w}" height="26" rx="6" fill="var(--onlogn-bg)" stroke="var(--onlogn)" stroke-width="1.2"/>
+        <text x="${b.x}" y="${y+17}" text-anchor="middle" font-family="JetBrains Mono" font-size="10.5" fill="var(--ink)">${b.label}</text>
+      </g>`;
+    });
+    html += `<text x="4" y="${y+17}" font-family="JetBrains Mono" font-size="10" fill="var(--ink-faint)">O(n) work</text>`;
+    // connectors to next level
+    if(li < levels.length-1){
+      const next = levels[li+1];
+      row.forEach((b,bi)=>{
+        const children = next.filter((c,ci)=> Math.abs(c.x - b.x) < (b.w/2)+5 );
+      });
+    }
+  });
+  // draw simple connecting lines level to level (approx, purely illustrative)
+  for(let li=0; li<levels.length-1; li++){
+    const y1 = 22+li*rowH+26, y2 = 22+(li+1)*rowH;
+    levels[li].forEach(b=>{
+      levels[li+1].forEach(c=>{
+        if(Math.abs(c.x-b.x) <= b.w/2 + 5){
+          html += `<line x1="${b.x}" y1="${y1}" x2="${c.x}" y2="${y2}" stroke="var(--rule)" stroke-width="1" class="merge-edge" style="opacity:0"/>`;
+        }
+      });
+    });
+  }
+  html += `<text x="4" y="${22+levels.length*rowH+2}" font-family="JetBrains Mono" font-size="10.5" fill="var(--ink-soft)">log n = 3 levels × O(n) per level = O(n log n)</text>`;
+  svg.innerHTML = html;
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        svg.querySelectorAll('.merge-edge').forEach(el=>{ el.style.transition='opacity .3s'; el.style.opacity=1; });
+        svg.querySelectorAll('.merge-node').forEach((el,i)=>{
+          setTimeout(()=>{ el.style.transition='opacity .35s'; el.style.opacity=1; }, i*60);
+        });
+        obs.disconnect();
+      }
+    });
+  }, {threshold:0.3});
+  obs.observe(svg);
+})();
+</script>
+</body>
+</html>
