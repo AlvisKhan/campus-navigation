@@ -438,11 +438,12 @@ html[data-theme="dark"] .theme-toggle .icon-moon{opacity:1; transform:rotate(0) 
       <!-- DIAGRAM: growth curve chart -->
       <div class="diagram">
         <div class="diagram-title">
-          <h4>Growth curves side‑by‑side (n = 1 → 20)</h4>
+          <h4>Growth curves side‑by‑side (n = 0 → 18)</h4>
+          <button class="btn" id="toggleScale" title="Toggle between standard linear view and semi-logarithmic scale">Switch to Log Scale</button>
         </div>
         <svg id="growthChart" viewBox="0 0 640 360" style="width:100%;height:auto;display:block;"></svg>
         <div class="legend" id="growthLegend"></div>
-        <p style="font-size:.8rem;color:var(--ink-faint);margin:10px 0 0">Click a legend item to toggle that curve. Notice how <span class="badge b-on2">O(n²)</span> and <span class="badge b-o2n">O(2ⁿ)</span> are barely distinguishable from the axis at small <code>n</code> — this is exactly why "it worked fine on my small test input" is not proof of a good algorithm.</p>
+        <p id="chartCaption" style="font-size:.8rem;color:var(--ink-faint);margin:10px 0 0">Standard view: notice how <span class="badge b-o2n">O(2ⁿ)</span> and <span class="badge b-on2">O(n²)</span> start low at small <code>n</code> and then explode upwards out of the chart, completely dwarfing linear and logarithmic growth. Click any legend item to toggle that curve.</p>
       </div>
     </section>
 
@@ -676,7 +677,7 @@ html[data-theme="dark"] .theme-toggle .icon-moon{opacity:1; transform:rotate(0) 
       <div class="diagram">
         <div class="diagram-title"><h4>Why 2T(n/2) + O(n) becomes O(n log n)</h4></div>
         <svg id="mergeTree" viewBox="0 0 640 280" style="width:100%;height:auto;display:block;"></svg>
-        <p style="font-size:.8rem;color:var(--ink-faint);margin-top:8px">Every level of the tree does <strong>O(n)</strong> total work (the merge cost adds up to n per row, no matter how many pieces it's split into). There are <strong>log n</strong> levels because the input halves each time. Total = <code>n</code> work × <code>log n</code> levels = <code>O(n log n)</code>.</p>
+        <p style="font-size:.8rem;color:var(--ink-faint);margin-top:8px">Every level of the tree does <strong>O(n)</strong> total work (merge operations sum to <code>cn</code> per row, plus <code>O(n)</code> at the base leaves). Halving <code>n</code> takes <strong>log₂ n = 3</strong> divisions, giving <strong>log₂ n + 1 = 4</strong> levels total. Total work = <code>(log n + 1) × O(n)</code> = <code>O(n log n)</code>.</p>
       </div>
 
       <h3>6.3 — The Master Theorem (shortcut for divide &amp; conquer)</h3>
@@ -1170,69 +1171,178 @@ document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
 (function(){
   const svg = document.getElementById('growthChart');
   const legendEl = document.getElementById('growthLegend');
-  const W = 640, H = 360, PAD = {l:44,r:14,t:14,b:34};
+  const toggleBtn = document.getElementById('toggleScale');
+  const captionEl = document.getElementById('chartCaption');
+  const W = 640, H = 360, PAD = {l:56, r:82, t:26, b:38};
   const plotW = W - PAD.l - PAD.r, plotH = H - PAD.t - PAD.b;
-  const N = 20;
-  const series = [
-    {key:'o1', label:'O(1)', color:'var(--o1)', fn: n => 1},
-    {key:'ologn', label:'O(log n)', color:'var(--ologn)', fn: n => Math.log2(n)},
-    {key:'on', label:'O(n)', color:'var(--on)', fn: n => n},
-    {key:'onlogn', label:'O(n log n)', color:'var(--onlogn)', fn: n => n*Math.log2(n||1)},
-    {key:'on2', label:'O(n²)', color:'var(--on2)', fn: n => n*n},
-    {key:'o2n', label:'O(2ⁿ)', color:'var(--o2n)', fn: n => Math.pow(2,n)},
-  ];
-  const maxY = Math.pow(2,N); // cap
+  const N = 18;
+
+  let isLogScale = false;
+  const hiddenKeys = new Set();
+
   function xFor(n){ return PAD.l + (n/N)*plotW; }
-  function yFor(v){
-    const clamped = Math.min(v, maxY);
-    const logv = clamped <= 0 ? 0 : Math.log(clamped+1)/Math.log(maxY+1);
-    return PAD.t + plotH - logv*plotH;
-  }
-  let svgHTML = '';
-  // axes
-  svgHTML += `<line x1="${PAD.l}" y1="${PAD.t}" x2="${PAD.l}" y2="${H-PAD.b}" stroke="var(--rule-strong)" stroke-width="1"/>`;
-  svgHTML += `<line x1="${PAD.l}" y1="${H-PAD.b}" x2="${W-PAD.r}" y2="${H-PAD.b}" stroke="var(--rule-strong)" stroke-width="1"/>`;
-  svgHTML += `<text x="${PAD.l}" y="${H-10}" font-size="10" fill="var(--ink-faint)" font-family="JetBrains Mono">n=0</text>`;
-  svgHTML += `<text x="${W-PAD.r-24}" y="${H-10}" font-size="10" fill="var(--ink-faint)" font-family="JetBrains Mono">n=${N}</text>`;
-  svgHTML += `<text x="6" y="${PAD.t+8}" font-size="10" fill="var(--ink-faint)" font-family="JetBrains Mono">work</text>`;
 
-  series.forEach(s=>{
-    let d = '';
-    for(let n=0;n<=N;n+=0.25){
-      const x = xFor(n), y = yFor(s.fn(n));
-      d += (n===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+  function render(){
+    let svgHTML = '';
+    // Clip path for curves
+    svgHTML += `<defs>
+      <clipPath id="chartClip">
+        <rect x="${PAD.l}" y="${PAD.t}" width="${plotW + 2}" height="${plotH}" />
+      </clipPath>
+    </defs>`;
+
+    let series = [];
+    let yFor;
+    let yLabel = '';
+    let yTicks = [];
+
+    if(!isLogScale){
+      // Standard Big-O view: linear work axis showing authentic asymptotic geometric shapes
+      const maxY = 100;
+      yFor = (v) => PAD.t + plotH - (Math.max(0, Math.min(v, maxY)) / maxY) * plotH;
+      yLabel = 'Operations / Time';
+      yTicks = [
+        {val: 25, label: '25'},
+        {val: 50, label: '50'},
+        {val: 75, label: '75'},
+        {val: 100, label: '100 (cap)'}
+      ];
+
+      series = [
+        {key:'o1', label:'O(1)', color:'var(--o1)', fn: n => 3, endLabel:'O(1)'},
+        {key:'ologn', label:'O(log n)', color:'var(--ologn)', fn: n => 3 + 4.2*Math.log2(Math.max(1,n)), endLabel:'O(log n)'},
+        {key:'on', label:'O(n)', color:'var(--on)', fn: n => 2.2*n, endLabel:'O(n)'},
+        {key:'onlogn', label:'O(n log n)', color:'var(--onlogn)', fn: n => 0.75*n*Math.log2(Math.max(1,n)), endLabel:'O(n log n)'},
+        {key:'on2', label:'O(n²)', color:'var(--on2)', fn: n => 0.36*n*n, endLabel:'O(n²)'},
+        {key:'o2n', label:'O(2ⁿ)', color:'var(--o2n)', fn: n => 0.45*Math.pow(2,n), endLabel:'O(2ⁿ)'},
+      ];
+    } else {
+      // Logarithmic view: log2(operations) scale
+      const maxLog = 18;
+      yFor = (v) => {
+        const lv = v <= 1 ? 0 : Math.log2(v);
+        return PAD.t + plotH - (Math.min(lv, maxLog) / maxLog) * plotH;
+      };
+      yLabel = 'log₂(Operations)';
+      yTicks = [
+        {val: Math.pow(2, 4), label: '2⁴'},
+        {val: Math.pow(2, 8), label: '2⁸'},
+        {val: Math.pow(2, 12), label: '2¹²'},
+        {val: Math.pow(2, 16), label: '2¹⁶'},
+      ];
+
+      series = [
+        {key:'o1', label:'O(1)', color:'var(--o1)', fn: n => 1, endLabel:'O(1)'},
+        {key:'ologn', label:'O(log n)', color:'var(--ologn)', fn: n => Math.max(1, Math.log2(Math.max(1,n))), endLabel:'O(log n)'},
+        {key:'on', label:'O(n)', color:'var(--on)', fn: n => Math.max(1, n), endLabel:'O(n)'},
+        {key:'onlogn', label:'O(n log n)', color:'var(--onlogn)', fn: n => Math.max(1, n*Math.log2(Math.max(1,n))), endLabel:'O(n log n)'},
+        {key:'on2', label:'O(n²)', color:'var(--on2)', fn: n => Math.max(1, n*n), endLabel:'O(n²)'},
+        {key:'o2n', label:'O(2ⁿ)', color:'var(--o2n)', fn: n => Math.pow(2,n), endLabel:'O(2ⁿ)'},
+      ];
     }
-    svgHTML += `<path id="path-${s.key}" d="${d}" fill="none" stroke="${s.color}" stroke-width="2.5" stroke-linecap="round" style="transition:opacity .2s"/>`;
-  });
-  svg.innerHTML = svgHTML;
 
-  // animate draw-in
-  const paths = series.map(s=>document.getElementById('path-'+s.key));
-  const chartObserver = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        paths.forEach(p=>{
-          const len = p.getTotalLength();
-          p.style.strokeDasharray = len;
-          p.style.strokeDashoffset = len;
-          p.getBoundingClientRect();
-          p.style.transition = 'stroke-dashoffset 1.4s ease';
-          p.style.strokeDashoffset = 0;
-        });
-        chartObserver.disconnect();
+    // Grid lines and ticks
+    yTicks.forEach(t => {
+      const y = yFor(t.val);
+      svgHTML += `<line x1="${PAD.l}" y1="${y.toFixed(1)}" x2="${PAD.l+plotW}" y2="${y.toFixed(1)}" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>`;
+      svgHTML += `<text x="${PAD.l-8}" y="${(y+3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="var(--ink-faint)" font-family="JetBrains Mono">${t.label}</text>`;
+    });
+
+    // Main Axes
+    svgHTML += `<line x1="${PAD.l}" y1="${PAD.t}" x2="${PAD.l}" y2="${H-PAD.b}" stroke="var(--rule-strong)" stroke-width="1.2"/>`;
+    svgHTML += `<line x1="${PAD.l}" y1="${H-PAD.b}" x2="${PAD.l+plotW}" y2="${H-PAD.b}" stroke="var(--rule-strong)" stroke-width="1.2"/>`;
+
+    // Axis Labels
+    svgHTML += `<text x="${PAD.l}" y="${H-12}" font-size="10" fill="var(--ink-faint)" font-family="JetBrains Mono">n=0</text>`;
+    svgHTML += `<text x="${(PAD.l+plotW/2).toFixed(1)}" y="${H-12}" text-anchor="middle" font-size="10" fill="var(--ink-soft)" font-family="JetBrains Mono">Input size (n)</text>`;
+    svgHTML += `<text x="${PAD.l+plotW}" y="${H-12}" text-anchor="end" font-size="10" fill="var(--ink-faint)" font-family="JetBrains Mono">n=${N}</text>`;
+    svgHTML += `<text x="${PAD.l-8}" y="${PAD.t-10}" text-anchor="start" font-size="10" font-weight="600" fill="var(--ink-soft)" font-family="JetBrains Mono">${yLabel}</text>`;
+
+    // Render Curves
+    svgHTML += `<g clip-path="url(#chartClip)">`;
+    const labelsHTML = [];
+
+    series.forEach(s => {
+      let d = '';
+      let exitPoint = null;
+      for(let n=0; n<=N; n+=0.25){
+        const val = s.fn(n);
+        const x = xFor(n);
+        const y = yFor(val);
+
+        if(y <= PAD.t && !exitPoint){
+          d += (n===0?'M':'L') + x.toFixed(1) + ',' + PAD.t.toFixed(1) + ' ';
+          exitPoint = { x, y: PAD.t, atTop: true };
+          break;
+        }
+
+        d += (n===0?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+        if(n >= N){
+          exitPoint = { x, y, atTop: false };
+        }
+      }
+
+      const opacity = hiddenKeys.has(s.key) ? 0 : 1;
+      svgHTML += `<path id="path-${s.key}" d="${d}" fill="none" stroke="${s.color}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:${opacity}; transition:opacity .2s"/>`;
+
+      if(exitPoint){
+        if(exitPoint.atTop){
+          labelsHTML.push(`<text id="lbl-${s.key}" x="${(exitPoint.x - 4).toFixed(1)}" y="${(PAD.t - 8).toFixed(1)}" text-anchor="end" font-size="10" font-weight="700" fill="${s.color}" font-family="JetBrains Mono" style="opacity:${opacity}; transition:opacity .2s">${s.endLabel} ↑</text>`);
+        } else {
+          labelsHTML.push(`<text id="lbl-${s.key}" x="${(exitPoint.x + 6).toFixed(1)}" y="${(exitPoint.y + 3.5).toFixed(1)}" font-size="10" font-weight="700" fill="${s.color}" font-family="JetBrains Mono" style="opacity:${opacity}; transition:opacity .2s">${s.endLabel}</text>`);
+        }
       }
     });
-  }, {threshold:0.3});
-  chartObserver.observe(svg);
 
-  // legend
-  series.forEach(s=>{
+    svgHTML += `</g>`;
+    svgHTML += labelsHTML.join('');
+    svg.innerHTML = svgHTML;
+  }
+
+  // Initial render
+  render();
+
+  // Scale toggle button
+  if(toggleBtn){
+    toggleBtn.addEventListener('click', ()=>{
+      isLogScale = !isLogScale;
+      toggleBtn.textContent = isLogScale ? 'Switch to Standard Linear' : 'Switch to Log Scale';
+      if(captionEl){
+        captionEl.innerHTML = isLogScale
+          ? 'Logarithmic view (semi-log): in log scale, exponential <span class="badge b-o2n">O(2ⁿ)</span> becomes a straight line (since log₂(2ⁿ) = n), while polynomial curves like <span class="badge b-on2">O(n²)</span> bend downward into sub-linear shapes.'
+          : 'Standard view: notice how <span class="badge b-o2n">O(2ⁿ)</span> and <span class="badge b-on2">O(n²)</span> start low at small <code>n</code> and then explode upwards out of the chart, completely dwarfing linear and logarithmic growth. Click any legend item to toggle that curve.';
+      }
+      render();
+    });
+  }
+
+  // Build Interactive Legend
+  const seriesMeta = [
+    {key:'o1', label:'O(1)', color:'var(--o1)'},
+    {key:'ologn', label:'O(log n)', color:'var(--ologn)'},
+    {key:'on', label:'O(n)', color:'var(--on)'},
+    {key:'onlogn', label:'O(n log n)', color:'var(--onlogn)'},
+    {key:'on2', label:'O(n²)', color:'var(--on2)'},
+    {key:'o2n', label:'O(2ⁿ)', color:'var(--o2n)'},
+  ];
+
+  legendEl.innerHTML = '';
+  seriesMeta.forEach(s => {
     const item = document.createElement('span');
     item.innerHTML = `<i style="background:${s.color}"></i>${s.label}`;
     item.addEventListener('click', ()=>{
-      item.classList.toggle('off');
-      const p = document.getElementById('path-'+s.key);
-      p.style.opacity = item.classList.contains('off') ? 0 : 1;
+      if(hiddenKeys.has(s.key)){
+        hiddenKeys.delete(s.key);
+        item.classList.remove('off');
+      } else {
+        hiddenKeys.add(s.key);
+        item.classList.add('off');
+      }
+      const p = document.getElementById('path-' + s.key);
+      const lbl = document.getElementById('lbl-' + s.key);
+      const op = hiddenKeys.has(s.key) ? 0 : 1;
+      if(p) p.style.opacity = op;
+      if(lbl) lbl.style.opacity = op;
     });
     legendEl.appendChild(item);
   });
@@ -1363,54 +1473,94 @@ document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
 (function(){
   const svg = document.getElementById('mergeTree');
   const levels = [
-    [{x:320,w:600,label:'n=8'}],
-    [{x:160,w:290,label:'n=4'},{x:480,w:290,label:'n=4'}],
-    [{x:80,w:135,label:'n=2'},{x:240,w:135,label:'n=2'},{x:400,w:135,label:'n=2'},{x:560,w:135,label:'n=2'}],
-    [{x:40,w:60,label:'1'},{x:120,w:60,label:'1'},{x:200,w:60,label:'1'},{x:280,w:60,label:'1'},{x:360,w:60,label:'1'},{x:440,w:60,label:'1'},{x:520,w:60,label:'1'},{x:600,w:60,label:'1'}],
+    {
+      levelLabel: 'Level 0',
+      workLabel: 'Merge: cn',
+      nodes: [{x:310, w:380, label:'n = 8'}]
+    },
+    {
+      levelLabel: 'Level 1',
+      workLabel: '2 × cn/2 = cn',
+      nodes: [{x:215, w:180, label:'n = 4'}, {x:405, w:180, label:'n = 4'}]
+    },
+    {
+      levelLabel: 'Level 2',
+      workLabel: '4 × cn/4 = cn',
+      nodes: [
+        {x:167.5, w:85, label:'n = 2'}, {x:262.5, w:85, label:'n = 2'},
+        {x:357.5, w:85, label:'n = 2'}, {x:452.5, w:85, label:'n = 2'}
+      ]
+    },
+    {
+      levelLabel: 'Leaves',
+      workLabel: '8 × c₀ = O(n)',
+      nodes: [
+        {x:142, w:38, label:'1'}, {x:189, w:38, label:'1'}, {x:237, w:38, label:'1'}, {x:284, w:38, label:'1'},
+        {x:336, w:38, label:'1'}, {x:383, w:38, label:'1'}, {x:431, w:38, label:'1'}, {x:478, w:38, label:'1'}
+      ]
+    }
   ];
-  let html='';
-  const rowH = 58;
-  levels.forEach((row,li)=>{
-    const y = 22 + li*rowH;
-    row.forEach(b=>{
+
+  const edges = [
+    // L0 to L1
+    [310, 46, 215, 72], [310, 46, 405, 72],
+    // L1 to L2
+    [215, 98, 167.5, 124], [215, 98, 262.5, 124],
+    [405, 98, 357.5, 124], [405, 98, 452.5, 124],
+    // L2 to L3
+    [167.5, 150, 142, 176], [167.5, 150, 189, 176],
+    [262.5, 150, 237, 176], [262.5, 150, 284, 176],
+    [357.5, 150, 336, 176], [357.5, 150, 383, 176],
+    [452.5, 150, 431, 176], [452.5, 150, 478, 176]
+  ];
+
+  let html = '';
+  const rowH = 52;
+
+  // Connecting lines
+  edges.forEach(([x1, y1, x2, y2]) => {
+    html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--rule-strong)" stroke-width="1.2" class="merge-edge" style="opacity:0"/>`;
+  });
+
+  // Nodes and side annotations
+  levels.forEach((row, li) => {
+    const y = 20 + li * rowH;
+
+    // Left label (level indicator)
+    html += `<text x="14" y="${y + 17}" font-family="JetBrains Mono" font-size="10" font-weight="600" fill="var(--ink-soft)">${row.levelLabel}</text>`;
+
+    // Nodes in row
+    row.nodes.forEach(b => {
+      const isLeaf = li === levels.length - 1;
+      const fill = isLeaf ? 'var(--o1-bg)' : 'var(--onlogn-bg)';
+      const stroke = isLeaf ? 'var(--o1)' : 'var(--onlogn)';
       html += `<g class="merge-node" style="opacity:0">
-        <rect x="${b.x-b.w/2}" y="${y}" width="${b.w}" height="26" rx="6" fill="var(--onlogn-bg)" stroke="var(--onlogn)" stroke-width="1.2"/>
-        <text x="${b.x}" y="${y+17}" text-anchor="middle" font-family="JetBrains Mono" font-size="10.5" fill="var(--ink)">${b.label}</text>
+        <rect x="${b.x - b.w / 2}" y="${y}" width="${b.w}" height="26" rx="6" fill="${fill}" stroke="${stroke}" stroke-width="1.2"/>
+        <text x="${b.x}" y="${y + 17}" text-anchor="middle" font-family="JetBrains Mono" font-size="10.5" fill="var(--ink)">${b.label}</text>
       </g>`;
     });
-    html += `<text x="4" y="${y+17}" font-family="JetBrains Mono" font-size="10" fill="var(--ink-faint)">O(n) work</text>`;
-    // connectors to next level
-    if(li < levels.length-1){
-      const next = levels[li+1];
-      row.forEach((b,bi)=>{
-        const children = next.filter((c,ci)=> Math.abs(c.x - b.x) < (b.w/2)+5 );
-      });
-    }
+
+    // Right label (cost for this level)
+    html += `<text x="515" y="${y + 17}" font-family="JetBrains Mono" font-size="10" font-weight="600" fill="var(--onlogn)">→ ${row.workLabel}</text>`;
   });
-  // draw simple connecting lines level to level (approx, purely illustrative)
-  for(let li=0; li<levels.length-1; li++){
-    const y1 = 22+li*rowH+26, y2 = 22+(li+1)*rowH;
-    levels[li].forEach(b=>{
-      levels[li+1].forEach(c=>{
-        if(Math.abs(c.x-b.x) <= b.w/2 + 5){
-          html += `<line x1="${b.x}" y1="${y1}" x2="${c.x}" y2="${y2}" stroke="var(--rule)" stroke-width="1" class="merge-edge" style="opacity:0"/>`;
-        }
-      });
-    });
-  }
-  html += `<text x="4" y="${22+levels.length*rowH+2}" font-family="JetBrains Mono" font-size="10.5" fill="var(--ink-soft)">log n = 3 levels × O(n) per level = O(n log n)</text>`;
+
+  // Divider and Bottom Summary
+  html += `<line x1="20" y1="228" x2="620" y2="228" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>`;
+  html += `<text x="320" y="254" text-anchor="middle" font-family="JetBrains Mono" font-size="11" font-weight="600" fill="var(--ink-soft)">Height = log₂ n = 3 divisions (4 levels total) × O(n) work per level = O(n log n)</text>`;
+
   svg.innerHTML = html;
-  const obs = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
       if(e.isIntersecting){
-        svg.querySelectorAll('.merge-edge').forEach(el=>{ el.style.transition='opacity .3s'; el.style.opacity=1; });
-        svg.querySelectorAll('.merge-node').forEach((el,i)=>{
-          setTimeout(()=>{ el.style.transition='opacity .35s'; el.style.opacity=1; }, i*60);
+        svg.querySelectorAll('.merge-edge').forEach(el => { el.style.transition = 'opacity .3s'; el.style.opacity = 1; });
+        svg.querySelectorAll('.merge-node').forEach((el, i) => {
+          setTimeout(() => { el.style.transition = 'opacity .35s'; el.style.opacity = 1; }, i * 45);
         });
         obs.disconnect();
       }
     });
-  }, {threshold:0.3});
+  }, {threshold: 0.3});
   obs.observe(svg);
 })();
 </script>
