@@ -1,5 +1,16 @@
 [
   {
+    "filename": "timetable.png",
+    "folder": "",
+    "title": "timetable",
+    "extension": "PNG",
+    "category": "image",
+    "icon": "🖼️",
+    "sizeBytes": 497247,
+    "sizeFormatted": "486 KB",
+    "lastModified": "2026-09-14T08:36:47.000Z"
+  },
+  {
     "filename": "time-space-complexity.html",
     "folder": "",
     "title": "Time &amp; Space Complexity — The Complete Field Guide",
