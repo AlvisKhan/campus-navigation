@@ -1,36 +1,14 @@
 [
   {
-    "filename": "ML_Book/CS431 Machine Learning — Mid-Sem Study Guide.html",
-    "folder": "ML_Book",
-    "title": "CS431 Machine Learning — Mid-Sem Study Guide",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 63399,
-    "sizeFormatted": "62 KB",
-    "lastModified": "2026-09-24T09:10:06.528Z"
-  },
-  {
-    "filename": "CS431-Midsem-Visual-Guide.html",
+    "filename": "Pathology_Questions_Topicwise.html",
     "folder": "",
-    "title": "CS431 · Midsem Study Guide",
+    "title": "Pathology • Topic-wise Question Bank",
     "extension": "HTML",
     "category": "web",
     "icon": "📄",
-    "sizeBytes": 789813,
-    "sizeFormatted": "771 KB",
-    "lastModified": "2026-09-23T07:57:44.004Z"
-  },
-  {
-    "filename": "ai-midsem-study-guide.html",
-    "folder": "",
-    "title": "AI Studio · CS 401 Midsem",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 76496,
-    "sizeFormatted": "75 KB",
-    "lastModified": "2026-09-16T07:39:23.112Z"
+    "sizeBytes": 22941500,
+    "sizeFormatted": "21.9 MB",
+    "lastModified": "2026-09-24T15:31:08.742Z"
   },
   {
     "filename": "timetable.png",
@@ -41,51 +19,7 @@
     "icon": "🖼️",
     "sizeBytes": 497247,
     "sizeFormatted": "486 KB",
-    "lastModified": "2026-09-14T08:36:47.000Z"
-  },
-  {
-    "filename": "time-space-complexity.html",
-    "folder": "",
-    "title": "Time &amp; Space Complexity — The Complete Field Guide",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 99195,
-    "sizeFormatted": "97 KB",
-    "lastModified": "2026-09-12T14:31:05.547Z"
-  },
-  {
-    "filename": "TOC_Interview_Prep.html",
-    "folder": "",
-    "title": "Theory of Computation — Interview Prep",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 62050,
-    "sizeFormatted": "61 KB",
-    "lastModified": "2026-09-07T20:22:28.656Z"
-  },
-  {
-    "filename": "computer-architecture-interview-prep.html",
-    "folder": "",
-    "title": "Computer Architecture — Interview Prep",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 66705,
-    "sizeFormatted": "65 KB",
-    "lastModified": "2026-09-07T19:41:43.768Z"
-  },
-  {
-    "filename": "PYTHON.html",
-    "folder": "",
-    "title": "Python Mastery Studio — Interactive Course, Playground & Interview Prep",
-    "extension": "HTML",
-    "category": "web",
-    "icon": "📄",
-    "sizeBytes": 127013,
-    "sizeFormatted": "124 KB",
-    "lastModified": "2026-09-06T06:23:08.000Z"
+    "lastModified": "2026-09-24T15:31:08.599Z"
   },
   {
     "filename": "jilmil_blackrock_interview_prep.html",
@@ -96,7 +30,29 @@
     "icon": "📄",
     "sizeBytes": 79842,
     "sizeFormatted": "78 KB",
-    "lastModified": "2026-09-03T21:36:13.822Z"
+    "lastModified": "2026-09-24T15:31:08.597Z"
+  },
+  {
+    "filename": "time-space-complexity.html",
+    "folder": "",
+    "title": "Time &amp; Space Complexity — The Complete Field Guide",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 99195,
+    "sizeFormatted": "97 KB",
+    "lastModified": "2026-09-24T15:31:08.597Z"
+  },
+  {
+    "filename": "ai-midsem-study-guide.html",
+    "folder": "",
+    "title": "AI Studio · CS 401 Midsem",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 76496,
+    "sizeFormatted": "75 KB",
+    "lastModified": "2026-09-24T15:31:08.596Z"
   },
   {
     "filename": "campus_navigation_interview_prep.html",
@@ -107,7 +63,62 @@
     "icon": "📄",
     "sizeBytes": 67717,
     "sizeFormatted": "66 KB",
-    "lastModified": "2026-09-03T10:31:07.754Z"
+    "lastModified": "2026-09-24T15:31:08.596Z"
+  },
+  {
+    "filename": "computer-architecture-interview-prep.html",
+    "folder": "",
+    "title": "Computer Architecture — Interview Prep",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 66705,
+    "sizeFormatted": "65 KB",
+    "lastModified": "2026-09-24T15:31:08.596Z"
+  },
+  {
+    "filename": "TOC_Interview_Prep.html",
+    "folder": "",
+    "title": "Theory of Computation — Interview Prep",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 62050,
+    "sizeFormatted": "61 KB",
+    "lastModified": "2026-09-24T15:31:08.595Z"
+  },
+  {
+    "filename": "ML_Book/CS431 Machine Learning — Mid-Sem Study Guide.html",
+    "folder": "ML_Book",
+    "title": "CS431 Machine Learning — Mid-Sem Study Guide",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 63399,
+    "sizeFormatted": "62 KB",
+    "lastModified": "2026-09-24T15:31:08.594Z"
+  },
+  {
+    "filename": "PYTHON.html",
+    "folder": "",
+    "title": "Python Mastery Studio — Interactive Course, Playground & Interview Prep",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 127013,
+    "sizeFormatted": "124 KB",
+    "lastModified": "2026-09-24T15:31:08.594Z"
+  },
+  {
+    "filename": "CS431-Midsem-Visual-Guide.html",
+    "folder": "",
+    "title": "CS431 · Midsem Study Guide",
+    "extension": "HTML",
+    "category": "web",
+    "icon": "📄",
+    "sizeBytes": 789813,
+    "sizeFormatted": "771 KB",
+    "lastModified": "2026-09-24T15:31:08.593Z"
   },
   {
     "filename": "rag-interview-prep.html",
