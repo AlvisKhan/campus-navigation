@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CS431 Machine Learning — Mid-Sem Study Guide</title>
+<style>
+:root{
+  --bg:#faf7f2; --panel:#ffffff; --ink:#232323; --sub:#5b5548;
+  --accent:#8a4b2e; --accent2:#2e6b5e; --line:#e6ddd0; --code:#f4ede0;
+  --yes:#2e6b5e; --no:#a33d3d; --warn:#b5791c;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);
+  --safe-right:env(safe-area-inset-right,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1c1a17; --panel:#242220; --ink:#eee7db; --sub:#b9ae9a;
+    --accent:#e0a072; --accent2:#7fd0bb; --line:#3a352c; --code:#2c2822;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1c1a17; --panel:#242220; --ink:#eee7db; --sub:#b9ae9a;
+  --accent:#e0a072; --accent2:#7fd0bb; --line:#3a352c; --code:#2c2822;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:76px;-webkit-text-size-adjust:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;line-height:1.55;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:Georgia,'Times New Roman',serif;color:var(--ink);line-height:1.25;word-break:break-word;}
+h1{font-size:1.7rem} h2{font-size:1.4rem;border-bottom:2px solid var(--accent);padding-bottom:6px;margin-top:0}
+h3{font-size:1.12rem;color:var(--accent)} h4{font-size:1rem;color:var(--accent2)}
+p{color:var(--ink);word-break:break-word;}
+a{color:var(--accent2);-webkit-tap-highlight-color:transparent;}
+
+.topbar{
+  position:sticky;top:0;z-index:50;background:var(--panel);border-bottom:1px solid var(--line);
+  padding:10px 16px;
+  padding-top:calc(10px + var(--safe-top));
+  padding-left:calc(16px + var(--safe-left));
+  padding-right:calc(16px + var(--safe-right));
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.topbar-title{display:flex;align-items:center;gap:8px;font-family:Georgia,serif;font-weight:700;font-size:1rem;color:var(--ink);min-width:0;}
+.topbar-title span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.topbar-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.btn-nav, .btn-theme{
+  background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 12px;
+  font-size:0.85rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:opacity 0.2s, transform 0.1s;
+}
+.btn-nav:active, .btn-theme:active{transform:scale(0.96);}
+.btn-theme{background:var(--code);color:var(--ink);border:1px solid var(--line);}
+.btn-nav{display:none;}
+
+.wrap{display:flex;max-width:1200px;margin:0 auto;}
+nav.side{
+  width:230px;flex:0 0 230px;position:sticky;top:52px;align-self:flex-start;height:calc(100vh - 60px);
+  overflow-y:auto;padding:16px 10px 40px 16px;font-size:0.86rem;-webkit-overflow-scrolling:touch;
+}
+nav.side a{display:block;color:var(--sub);text-decoration:none;padding:5px 8px;border-radius:6px;margin-bottom:2px;touch-action:manipulation;}
+nav.side a:hover,nav.side a.active{background:var(--code);color:var(--accent);}
+nav.side .grp{font-weight:700;color:var(--ink);margin-top:14px;font-size:0.78rem;text-transform:uppercase;letter-spacing:.04em;}
+.side-header{display:none;}
+.menu-overlay{display:none;}
+
+main{
+  flex:1;min-width:0;
+  padding:20px 22px 80px;
+  padding-bottom:calc(80px + var(--safe-bottom));
+  padding-left:calc(22px + var(--safe-left));
+  padding-right:calc(22px + var(--safe-right));
+}
+section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:22px;}
+.card{background:var(--code);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0;}
+.def{background:var(--code);border-radius:8px;padding:12px 16px;margin:10px 0;font-size:0.95rem;}
+.ex{border:1.5px dashed var(--accent2);border-radius:10px;padding:14px 16px;margin:14px 0;background:rgba(46,107,94,0.05);}
+.ex .tag{display:inline-block;background:var(--accent2);color:#fff;font-size:0.72rem;padding:2px 9px;border-radius:20px;font-weight:700;letter-spacing:.03em;margin-bottom:8px;}
+.pyq .tag{background:var(--warn);}
+.note{border-left:4px solid var(--warn);background:rgba(181,121,28,0.08);border-radius:8px;padding:10px 14px;font-size:0.9rem;margin:10px 0;}
+
+.table-wrap{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0;border-radius:8px;}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:0.9rem;overflow-x:auto;display:block;}
+table.fixed{display:table;}
+.table-wrap table{margin:0;display:table;width:100%;min-width:320px;}
+thead{background:var(--accent);color:#fff;}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:center;}
+tbody tr:nth-child(even){background:var(--code);}
+
+.formula{
+  background:var(--code);border-radius:8px;padding:10px 16px;margin:10px 0;
+  font-size:1.02rem;text-align:center;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;
+}
+.formula .frac{display:inline-block;vertical-align:middle;text-align:center;margin:0 3px;}
+.formula .frac > span{display:block;padding:0 4px;}
+.formula .frac .num{border-bottom:1.3px solid var(--ink);}
+sup{font-size:0.72em;} sub{font-size:0.72em;}
+.mean{text-decoration:overline;}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tocx{columns:1;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;background:var(--line);color:var(--sub);margin:2px 4px 2px 0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:700px){.grid2{grid-template-columns:1fr;}}
+
+.diagram{display:flex;justify-content:center;align-items:center;padding:8px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;}
+.diagram svg{max-width:100%;height:auto;}
+.diagram-scroll{display:block;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;}
+.diagram-hint{display:none;font-size:0.75rem;color:var(--sub);text-align:center;margin-top:4px;}
+@media(max-width:720px){.diagram-hint{display:block;}}
+
+.treebox{background:var(--panel);border:1.5px solid var(--accent);border-radius:8px;padding:5px 12px;font-size:0.82rem;text-align:center;}
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;margin:12px 0;}
+.flow .step{background:var(--code);border:1px solid var(--accent2);border-radius:8px;padding:8px 12px;font-size:0.82rem;text-align:center;}
+.flow .arrow{color:var(--accent);font-size:1.2rem;}
+details{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:8px 14px;background:var(--panel);}
+summary{cursor:pointer;font-weight:700;color:var(--accent);touch-action:manipulation;padding:4px 0;}
+.qbank li{margin-bottom:8px;}
+.chip{display:inline-block;font-size:0.7rem;background:var(--accent2);color:#fff;padding:1px 8px;border-radius:12px;margin-left:6px;}
+footer{text-align:center;color:var(--sub);font-size:0.8rem;padding:20px;padding-bottom:calc(20px + var(--safe-bottom));}
+#toTop{
+  position:fixed;right:calc(16px + var(--safe-right));bottom:calc(18px + var(--safe-bottom));
+  background:var(--accent);color:#fff;border:none;border-radius:50%;
+  width:44px;height:44px;font-size:1.15rem;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,0.28);
+  display:none;align-items:center;justify-content:center;z-index:60;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;transition:transform 0.15s, opacity 0.2s;
+}
+#toTop:active{transform:scale(0.92);}
+
+/* Responsive Breakpoints for Tablet & Phone */
+@media(max-width:900px){
+  .btn-nav{display:inline-flex;}
+  .menu-overlay{
+    display:block;position:fixed;inset:0;background:rgba(0,0,0,0.55);
+    backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+    z-index:99;opacity:0;pointer-events:none;transition:opacity 0.25s ease;
+  }
+  .menu-overlay.open{opacity:1;pointer-events:auto;}
+  nav.side{
+    position:fixed;top:0;left:0;bottom:0;width:290px;max-width:85vw;height:100vh;height:100dvh;
+    background:var(--panel);z-index:100;box-shadow:6px 0 28px rgba(0,0,0,0.3);
+    transform:translateX(-100%);transition:transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    padding:calc(16px + var(--safe-top)) 16px calc(24px + var(--safe-bottom));
+    display:block;
+  }
+  nav.side.open{transform:translateX(0);}
+  .side-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--line);
+  }
+  .side-header-title{font-family:Georgia,serif;font-weight:700;font-size:1.05rem;color:var(--ink);}
+  .side-close-btn{
+    background:var(--code);border:1px solid var(--line);color:var(--ink);
+    width:32px;height:32px;border-radius:50%;font-size:1.05rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;touch-action:manipulation;
+  }
+  nav.side a{padding:8px 10px;font-size:0.92rem;margin-bottom:3px;}
+  main{padding:14px 14px 70px;padding-bottom:calc(70px + var(--safe-bottom));}
+}
+
+@media(max-width:600px){
+  html{scroll-padding-top:64px;}
+  .topbar{padding:8px 12px;padding-top:calc(8px + var(--safe-top));}
+  .topbar-title{font-size:0.92rem;max-width:52vw;}
+  .btn-nav, .btn-theme{padding:6px 10px;font-size:0.78rem;min-height:36px;}
+  main{padding:10px 10px calc(70px + var(--safe-bottom));}
+  section{padding:16px 12px;border-radius:10px;margin-bottom:14px;}
+  h1{font-size:1.35rem;line-height:1.28;}
+  h2{font-size:1.18rem;line-height:1.28;padding-bottom:4px;margin-bottom:12px;}
+  h3{font-size:1.02rem;margin-top:16px;}
+  h4{font-size:0.94rem;}
+  p, li{font-size:0.92rem;line-height:1.55;}
+  .card, .def, .ex, .note{padding:10px 12px;margin:10px 0;font-size:0.88rem;}
+  .formula{font-size:0.86rem;padding:8px 10px;text-align:left;}
+  table{font-size:0.82rem;}
+  table.fixed{display:block;}
+  th,td{padding:5px 7px;}
+  .flow .step{padding:6px 10px;font-size:0.76rem;}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title">
+    <span>📘 CS431 · Mid-Sem Guide</span>
+  </div>
+  <div class="topbar-actions">
+    <button id="menuBtn" class="btn-nav" onclick="toggleMenu()" aria-label="Toggle Navigation">☰ Topics</button>
+    <button id="themeBtn" class="btn-theme" onclick="toggleTheme()" aria-label="Toggle Theme">🌓 Theme</button>
+  </div>
+</div>
+<div id="menuOverlay" class="menu-overlay" onclick="closeMenu()"></div>
+<div class="wrap">
+<nav class="side" id="sidenav">
+  <div class="side-header">
+    <div class="side-header-title">📖 CS431 Topics</div>
+    <button class="side-close-btn" onclick="closeMenu()" aria-label="Close menu">✕</button>
+  </div>
+  <div class="grp">Start</div>
+  <a href="#overview">Exam Overview</a>
+  <div class="grp">Unit 1 · Data</div>
+  <a href="#data-types">Data & Attribute Types</a>
+  <a href="#missing">Missing Data & Imputation</a>
+  <a href="#outliers">Outliers: Boxplot & Z-score</a>
+  <a href="#transform">Normalization & Scaling</a>
+  <a href="#discretize">Discretization & Binning</a>
+  <div class="grp">Unit 2 · Trees</div>
+  <a href="#entropy">Entropy & Information Gain</a>
+  <a href="#id3">ID3 — Worked Example</a>
+  <a href="#c45">C4.5 Gain Ratio — Worked Example</a>
+  <a href="#cart">CART & Gini — Worked Example</a>
+  <a href="#treecompare">ID3 vs C4.5 vs CART</a>
+  <div class="grp">Unit 3 · SVM & kNN</div>
+  <a href="#svm">Support Vector Machines</a>
+  <a href="#knn">k-Nearest Neighbour</a>
+  <div class="grp">Unit 4 · Naive Bayes</div>
+  <a href="#nb">Naive Bayes Classifier</a>
+  <a href="#nbcont">Naive Bayes for Continuous Data</a>
+  <div class="grp">Exam Prep</div>
+  <a href="#pyq">Solved PYQs (2025 & 2026)</a>
+  <a href="#probable">Probable Questions Bank</a>
+</nav>
+<main>
+
+<section id="overview">
+<h1>CS431 – Machine Learning · Mid-Semester Study Guide</h1>
+<p>Built from your teacher's slides (NIT Silchar, CS431) and both mid-sem question papers (Sept-2025, Sept-2026). Covers <b>Unit-1 (Data & Preprocessing)</b> through <b>Naive Bayes</b>, in your teacher's own notation.</p>
+<div class="card">
+<b>How the paper is usually structured (from both PYQs):</b>
+<table class="fixed">
+<thead><tr><th>Q.No</th><th>Typical theme</th><th>Marks</th></tr></thead>
+<tbody>
+<tr><td>Q1</td><td>Data types, attributes, basic definitions, short numericals</td><td>~10</td></tr>
+<tr><td>Q2</td><td>Outlier detection, boxplot/Z-score, normalization, information gain derivation</td><td>~10</td></tr>
+<tr><td>Q3</td><td>Feature relevance/PCA <b>or</b> Entropy + ID3/CART tree construction</td><td>~10</td></tr>
+</tbody>
+</table>
+<span class="badge">Total 30 marks</span> <span class="badge">Duration 1–2 hrs</span> <span class="badge">Answer all questions</span>
+</div>
+<p>💡 <b>Strategy:</b> Numericals (boxplot, Z-score, entropy/Gini, Pearson correlation, Naive Bayes) repeat every year with new numbers — practise the <i>method</i>, not just the answer.</p>
+</section>
+
+<!-- ========================= DATA TYPES ========================= -->
+<section id="data-types">
+<h2>1. Data & Attribute Types</h2>
+<div class="def"><b>Data</b> = quantities, characters or symbols on which a computer performs operations, stored/transmitted as electrical signals and recorded on magnetic, optical or mechanical media. A <b>dataset</b> is a structured collection of data; a <b>datapoint</b> is a single instance (row) in it.</div>
+
+<h3>Structured vs Unstructured</h3>
+<ul>
+<li><b>Structured</b> — fixed format, easily searchable (database tables, Excel sheets).</li>
+<li><b>Semi-structured</b> — partially organized (JSON, XML, emails).</li>
+<li><b>Unstructured</b> — no predefined format (images, audio, free text).</li>
+</ul>
+
+<h3>Attribute Taxonomy</h3>
+<div class="diagram-scroll">
+<svg viewBox="0 0 720 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;min-width:580px;display:block;margin:0 auto;">
+<style>.n{fill:var(--panel);stroke:var(--accent);stroke-width:1.4}.t{font:11px sans-serif;fill:var(--ink);text-anchor:middle}.l{stroke:var(--sub);stroke-width:1}</style>
+<rect class="n" x="300" y="6" width="120" height="30" rx="6"/><text class="t" x="360" y="25">Data Types</text>
+<line class="l" x1="360" y1="36" x2="180" y2="66"/><line class="l" x1="360" y1="36" x2="540" y2="66"/>
+<rect class="n" x="110" y="66" width="140" height="30" rx="6"/><text class="t" x="180" y="85">Qualitative</text>
+<rect class="n" x="470" y="66" width="140" height="30" rx="6"/><text class="t" x="540" y="85">Quantitative</text>
+<line class="l" x1="150" y1="96" x2="80" y2="130"/><line class="l" x1="210" y1="96" x2="210" y2="130"/><line class="l" x1="250" y1="96" x2="330" y2="130"/>
+<rect class="n" x="10" y="130" width="130" height="30" rx="6"/><text class="t" x="75" y="150">Nominal</text>
+<rect class="n" x="150" y="130" width="120" height="30" rx="6"/><text class="t" x="210" y="150">Ordinal</text>
+<rect class="n" x="280" y="130" width="120" height="30" rx="6"/><text class="t" x="340" y="150">Binary</text>
+<line class="l" x1="510" y1="96" x2="470" y2="130"/><line class="l" x1="570" y1="96" x2="620" y2="130"/>
+<rect class="n" x="410" y="130" width="120" height="30" rx="6"/><text class="t" x="470" y="150">Discrete</text>
+<rect class="n" x="550" y="130" width="130" height="30" rx="6"/><text class="t" x="615" y="150">Continuous</text>
+<line class="l" x1="340" y1="160" x2="290" y2="185"/><line class="l" x1="340" y1="160" x2="390" y2="185"/>
+<rect class="n" x="230" y="185" width="120" height="20" rx="5"/><text class="t" x="290" y="199" style="font-size:9px">Symmetric</text>
+<rect class="n" x="360" y="185" width="120" height="20" rx="5"/><text class="t" x="420" y="199" style="font-size:9px">Asymmetric</text>
+</svg>
+</div>
+<div class="diagram-hint">⇄ Swipe horizontally to explore full taxonomy tree</div>
+
+<table>
+<thead><tr><th>Type</th><th>Meaning</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td><b>Nominal</b></td><td>Labels only, no order</td><td>Color: Red / Yellow / Blue</td></tr>
+<tr><td><b>Ordinal</b></td><td>Natural order, unequal gaps</td><td>Pain level 1–10, grades A/B/C</td></tr>
+<tr><td><b>Binary</b></td><td>Only 2 states (0/1)</td><td>MRI Scan done? Yes/No</td></tr>
+<tr><td><b>Discrete</b></td><td>Finite/countable values</td><td>No. of children, dice roll</td></tr>
+<tr><td><b>Continuous</b></td><td>Infinite values in a range</td><td>Weight, temperature, height</td></tr>
+<tr><td><b>Interval-scaled</b></td><td>Ordered, equal units, <i>no true zero</i></td><td>Temperature °C (0°C ≠ "no heat")</td></tr>
+<tr><td><b>Ratio-scaled</b></td><td>Ordered, equal units, <i>true zero exists</i></td><td>Weight in kg (0 kg = no weight); ratios meaningful (10kg is 2× 5kg)</td></tr>
+</tbody>
+</table>
+<div class="note"><b>Tricky exam point:</b> An attribute like <i>Age</i> is technically continuous (can take any real value) but is often treated as <b>discrete</b> in a dataset because it is recorded as whole numbers (years). If the values given are spread out with large jumps (e.g. 5, 10, 11, 13, 89, 204, 276) and represent counts/whole units, justify as <b>discrete</b> — finite, countable set of values actually observed, even though the underlying concept is continuous.</div>
+
+<h3>ML Classification Overview</h3>
+<div class="flow">
+<div class="step">Supervised<br><small>(labelled data)</small></div><div class="arrow">→</div>
+<div class="step">Classification<br><small>(categorical output)</small></div>
+</div>
+<div class="flow">
+<div class="step">Unsupervised<br><small>(no labels)</small></div><div class="arrow">→</div>
+<div class="step">Clustering / Association</div>
+</div>
+<p><b>Machine Learning (Tom Mitchell):</b> "A computer program is said to <i>learn</i> from experience <b>E</b> with respect to some task <b>T</b> and performance measure <b>P</b>, if its performance at T, measured by P, improves with experience E."</p>
+
+<div class="ex pyq"><span class="tag">PYQ 2026 · Q1b, Q1c</span>
+<b>[b] What is Machine Learning?</b> — see Mitchell's definition above; in short, a system that improves its performance on a task automatically through experience/data rather than being explicitly programmed with fixed rules.<br><br>
+<b>[c]</b> Equation: x<sub>2</sub> = w<sub>1</sub>/w<sub>2</sub>·x<sub>1</sub> + c/w<sub>2</sub>. <b>What does "learning" mean here?</b><br>
+This is a straight line in the form <i>y = mx + c</i> used as a linear decision boundary separating two classes. "Learning" here means <b>finding the best values of the parameters w<sub>1</sub>, w<sub>2</sub>, c</b> from the training data so that the line correctly separates the classes (minimizes classification error) — the algorithm is not told these weights; it estimates/learns them from examples.<br><br>
+<b>[d] "Supervised learning is slow and costly" — explain with justification.</b><br>
+Supervised learning needs a large amount of <b>manually labelled</b> training data before the model can learn — labelling (by domain experts) is time-consuming and expensive. Also, training itself (especially with many features/samples) requires repeated computation (e.g., calculating entropy/Gini for every attribute-split, or solving optimization problems in SVM) which grows with data size — hence "slow and costly" compared to unsupervised learning, which needs no labels.
+</div>
+</section>
+
+<!-- ========================= MISSING DATA ========================= -->
+<section id="missing">
+<h2>2. Missing Data & Imputation</h2>
+<div class="def"><b>Data Imputation</b>: replacing missing data with a substitute value to retain as much information from the dataset as possible (raw deletion wastes data and can bias the model).</div>
+
+<h3>Ways to handle missing data</h3>
+<table>
+<thead><tr><th>Method</th><th>Idea</th><th>Caveat</th></tr></thead>
+<tbody>
+<tr><td>Ignore the tuple</td><td>Drop the row</td><td>Fine only if class label missing & dataset large</td></tr>
+<tr><td>Manual fill</td><td>Domain expert fills by hand</td><td>Slow, infeasible for big data</td></tr>
+<tr><td>Global constant</td><td>Fill with "Unknown" / ∞</td><td>May create a spurious new class</td></tr>
+<tr><td>Mean / Mode</td><td>Numeric→mean/median; Categorical→mode</td><td>Deflates variance if overused</td></tr>
+<tr><td>Class-wise mean</td><td>Mean of same-class samples</td><td>Smarter — respects class structure</td></tr>
+<tr><td><b>k-NN imputation</b></td><td>Average of k nearest neighbours</td><td>Most information-rich; costly to compute</td></tr>
+<tr><td>Model-based</td><td>Predict via regression / Bayes / decision tree</td><td>Uses most information from data</td></tr>
+</tbody>
+</table>
+
+<div class="ex"><span class="tag">Solved Example</span> <b>k-NN Imputation</b>
+<p>Fill the missing <i>Age</i> values (k=1 and k=2) using Euclidean distance on Height & Weight:</p>
+<table><thead><tr><th>ID</th><th>Height</th><th>Weight</th><th>Age</th></tr></thead>
+<tbody><tr><td>1</td><td>170</td><td>70</td><td>25</td></tr><tr><td>2</td><td>165</td><td>65</td><td>?</td></tr>
+<tr><td>3</td><td>180</td><td>80</td><td>30</td></tr><tr><td>4</td><td>175</td><td>75</td><td>?</td></tr>
+<tr><td>5</td><td>160</td><td>60</td><td>22</td></tr></tbody></table>
+<p><b>For ID 2 (165,65):</b> distances → to ID1: √((170-165)²+(70-65)²)=√50=7.07; to ID3: √(15²+15²)=21.2; to ID5: √(5²+5²)=7.07.
+<br>k=1: nearest is a tie (ID1 & ID5) — practically pick the closer/first → Age≈25.
+<br>k=2: two nearest = ID1(25), ID5(22) → Age = (25+22)/2 = <b>23.5</b></p>
+<p><b>For ID 4 (175,75):</b> distances → ID1:√(5²+5²)=7.07; ID3:√(5²+5²)=7.07; ID5:√(15²+15²)=21.2.
+<br>k=1: tie ID1/ID3 → Age≈27–28. k=2: use ID1(25) & ID3(30) → Age = (25+30)/2 = <b>27.5</b></p>
+</div>
+
+<h3>Label Encoding (for ordinal-like binning)</h3>
+<div class="ex pyq"><span class="tag">PYQ 2025 · Q1e</span>
+<p>Ages of 25 students: 18(×6), 19(×6), 20(×6), 21, 22(×2), 23, NA(×3). Encode into <b>3 labels</b>.</p>
+<p>Split the sorted range into three equal bands: <b>Label 1</b> = 18–19 (Young), <b>Label 2</b> = 20–21 (Mid), <b>Label 3</b> = 22–23 (Senior). Each value is replaced by its label number (1, 2 or 3); NA rows are treated separately (ignored or imputed with the mode, here mode = 18/19).</p>
+</div>
+</section>
+
+<!-- ========================= OUTLIERS ========================= -->
+<section id="outliers">
+<h2>3. Outlier Detection: Box Plot & Z-Score</h2>
+<div class="def"><b>Outlier</b> — a data point that differs significantly from the rest of the observations; may indicate variability, measurement error, or a rare event.</div>
+
+<h3>Box Plot Method</h3>
+<div class="diagram">
+<svg viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:420px">
+<style>.ax{stroke:var(--sub);stroke-width:1}.bx{fill:var(--code);stroke:var(--accent);stroke-width:1.4}.tx{font:10px sans-serif;fill:var(--ink);text-anchor:middle}</style>
+<line class="ax" x1="20" y1="70" x2="400" y2="70"/>
+<line class="ax" x1="20" y1="55" x2="20" y2="85"/><text class="tx" x="20" y="100">Min</text>
+<line class="ax" x1="380" y1="55" x2="380" y2="85"/><text class="tx" x="380" y="100">Max</text>
+<line class="ax" x1="20" y1="70" x2="100" y2="70"/>
+<rect class="bx" x="100" y="45" width="180" height="50"/>
+<line class="ax" x1="200" y1="45" x2="200" y2="95" stroke-width="2"/><text class="tx" x="200" y="35">Median (Q2)</text>
+<text class="tx" x="100" y="112">Q1</text><text class="tx" x="280" y="112">Q3</text>
+<line class="ax" x1="280" y1="70" x2="380" y2="70"/>
+<circle cx="10" cy="70" r="3" fill="var(--accent)"/><text class="tx" x="10" y="20" fill="var(--accent)">Outlier</text>
+</svg>
+</div>
+<div class="formula">IQR = Q<sub>3</sub> − Q<sub>1</sub></div>
+<div class="formula">Lower Whisker = Q<sub>1</sub> − 1.5 × IQR &nbsp;&nbsp;|&nbsp;&nbsp; Upper Whisker = Q<sub>3</sub> + 1.5 × IQR</div>
+<p>Any point below the Lower Whisker or above the Upper Whisker is flagged an <b>outlier</b>.</p>
+
+<div class="ex pyq"><span class="tag">PYQ 2025 · Q2d</span> <b>Derive Upper/Lower Whisker for a standard normal, range ±2.9σ</b>
+<p>For X ~ N(μ,σ²), standardize Z = (X−μ)/σ. Given Q1 = −0.5543σ, Q3 = +0.5543σ (≈ z-values at 25th/75th percentile):</p>
+<div class="formula">IQR = Q<sub>3</sub> − Q<sub>1</sub> = 1.1086σ &nbsp;⇒&nbsp; 1.5×IQR = 1.663σ</div>
+<div class="formula">Upper Whisker = Q<sub>3</sub> + 1.5·IQR = 0.5543σ + 1.663σ = 2.217σ</div>
+<div class="formula">Lower Whisker = Q<sub>1</sub> − 1.5·IQR = −0.5543σ − 1.663σ = −2.217σ</div>
+<p>To force the anomaly boundary out to <b>±2.9σ</b>, the multiplying factor k must satisfy Q<sub>3</sub>+k·IQR = 2.9σ ⇒ k = (2.9−0.5543)/1.1086 ≈ <b>2.115</b> (i.e. use "2.9σ rule" instead of the standard "1.5×IQR" when extreme anomalies only are wanted).</p>
+</div>
+
+<h3>Z-Score Method</h3>
+<div class="formula">z = <span class="frac"><span class="num">x − <span class="mean">x</span></span><span>σ</span></span></div>
+<p>Typically |z| &gt; 3 (or sometimes &gt;2) flags an outlier — it tells you how many standard deviations a point is from the mean.</p>
+<div class="ex"><span class="tag">Solved Example</span>
+<table><thead><tr><th>X</th><th>4.3</th><th>4.5</th><th>4.7</th><th>8.5</th><th>13.2</th></tr></thead>
+<tbody><tr><td>Z</td><td>−0.55</td><td>−0.48</td><td>−0.42</td><td>0.84</td><td>2.40</td></tr></tbody></table>
+<p>(μ=5.956, σ=3.016). All |z| &lt; 3 here, so by the standard rule none is flagged — but 13.2 is the most extreme and worth flagging if a stricter threshold (|z|&gt;2) is used.</p>
+</div>
+
+<div class="ex pyq"><span class="tag">PYQ 2025 · Q2b (method)</span> <b>Boxplot on Blood Pressure / Skin Thickness — how to answer</b>
+<ol>
+<li>Sort the column values; find Q1 (25th percentile), Median, Q3 (75th percentile).</li>
+<li>Compute IQR = Q3−Q1, then whiskers = Q1−1.5·IQR and Q3+1.5·IQR.</li>
+<li>Any value outside the whiskers → outlier (e.g., BloodPressure = <b>296</b> and <b>0</b> in Table 1 are clear outliers — 296 mmHg is physiologically extreme, 0 is a missing-data placeholder mis-recorded as zero).</li>
+<li>Remove the flagged outliers, recompute <b>mean</b> and <b>standard deviation</b>: removing high/low extreme values pulls the mean toward the bulk of the data and <b>reduces the standard deviation</b> (less spread) — always state this direction of change as your justification.</li>
+</ol>
+</div>
+</section>
+
+<!-- ========================= TRANSFORM ========================= -->
+<section id="transform">
+<h2>4. Normalization / Scaling (Continuous Data Processing)</h2>
+<p>Normalization rescales attributes so no single feature dominates purely because of its numeric range — essential before distance-based methods (k-NN, k-Means) and neural nets.</p>
+
+<div class="grid2">
+<div class="card"><h4>Min-Max Normalization</h4>
+<div class="formula">v′ = <span class="frac"><span class="num">v − min<sub>A</sub></span><span>max<sub>A</sub> − min<sub>A</sub></span></span> × (new_max<sub>A</sub> − new_min<sub>A</sub>) + new_min<sub>A</sub></div>
+<p>Maps to a chosen range, e.g. [0,1]. Preserves relationships between original values, but sensitive to new outliers.</p>
+</div>
+<div class="card"><h4>Z-score Normalization</h4>
+<div class="formula">v′ = <span class="frac"><span class="num">v − <span class="mean">A</span></span><span>σ<sub>A</sub></span></span></div>
+<p>Useful when min/max of the attribute are unknown or unstable (may exceed [0,1] range).</p>
+</div>
+</div>
+<div class="card"><h4>Decimal Scaling</h4>
+<div class="formula">v′ = <span class="frac"><span class="num">v</span><span>10<sup>j</sup></span></span>, &nbsp; j = smallest integer such that max|v′| &lt; 1</div>
+<p>Example: values range up to 986 → divide by 1000 (j=3) → 986 becomes 0.986.</p>
+</div>
+
+<div class="ex"><span class="tag">Solved Example</span> Min–Max to [0,1]: values 5,16,32,17 with min=5, max=32.
+<p>v′(16) = (16−5)/(32−5) = 11/27 = <b>0.407</b>. Similarly v′(32) = 27/27 = <b>1.0</b>, v′(5) = <b>0</b>.</p>
+</div>
+</section>
+
+<!-- ========================= DISCRETIZE ========================= -->
+<section id="discretize">
+<h2>5. Discretization, Binning & Concept Hierarchy</h2>
+<p><b>Discretization</b> converts a continuous attribute into categorical intervals (needed e.g. for Decision Trees / Naive Bayes with categorical assumptions).</p>
+<table>
+<thead><tr><th>Method</th><th>Idea</th><th>Supervised?</th></tr></thead>
+<tbody>
+<tr><td>Equal-width binning</td><td>Divide range into k intervals of equal width</td><td>No</td></tr>
+<tr><td>Equal-frequency binning</td><td>Each bin gets (roughly) the same count of points</td><td>No</td></tr>
+<tr><td>Clustering</td><td>Group by proximity/density (e.g. k-Means)</td><td>No</td></tr>
+<tr><td>Decision-tree / χ² based</td><td>Uses the class label to choose cut-points</td><td>Yes</td></tr>
+</tbody>
+</table>
+
+<div class="ex"><span class="tag">Solved Example</span> Data: 5, 10, 11, 13, 15, 35, 50, 55, 72, 89, 204, 215 (12 values)
+<p><b>Equal-width, 3 bins:</b> width = (215−5)/3 = 70 → Bin1:[5,75) has 5,10,11,13,15,35,50,55,72 · Bin2:[75,145) has 89 · Bin3:[145,215] has 204,215.</p>
+<p><b>Equal-frequency, 3 bins (4 each):</b> Bin1: 5,10,11,13 · Bin2: 15,35,50,55 · Bin3: 72,89,204,215.</p>
+</div>
+
+<h3>Binning for Smoothing (Noise Removal)</h3>
+<p>Sorted price: 4, 8, 15, 21, 21, 24, 25, 28, 34 → equal-frequency bins of 3:</p>
+<table><thead><tr><th>Bin</th><th>Values</th><th>By Mean</th><th>By Median</th><th>By Boundary</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>4,8,15</td><td>9,9,9</td><td>8,8,8</td><td>4,4,15</td></tr>
+<tr><td>2</td><td>21,21,24</td><td>22,22,22</td><td>21,21,21</td><td>21,21,24</td></tr>
+<tr><td>3</td><td>25,28,34</td><td>29,29,29</td><td>28,28,28</td><td>25,25,34</td></tr>
+</tbody></table>
+
+<div class="ex pyq"><span class="tag">PYQ 2025 · Q1f</span> Apply binning (equal-frequency, 3 bins) with pre-processing to: 5, 10, 11, 13, 15, 35, 50, 55, 72, 89, 204, 215.
+<p><i>Pre-processing note:</i> first check for outliers (204, 215 are far from the rest — could optionally cap them). Then apply equal-frequency binning (4 per bin, as solved above) and smooth by bin means/medians/boundaries as required.</p>
+</div>
+
+<p><b>Concept Hierarchy:</b> a sequence of mappings from low-level (detailed) to high-level (general) concepts, e.g. Silchar → Assam → India, or Price: 1–30 → 1–50 → 1–100. Can be built manually or automatically (via discretization).</p>
+</section>
+
+<!-- ========================= ENTROPY ========================= -->
+<section id="entropy">
+<h2>6. Entropy & Information Gain (Decision Trees)</h2>
+<div class="def">A <b>Decision Tree</b> recursively splits data using the attribute that best separates classes, starting from a <b>Root Node</b> down to <b>Leaf Nodes</b> (predictions), via internal <b>Decision Nodes</b>.</div>
+
+<h3>Impurity Measures</h3>
+<div class="grid2">
+<div class="card"><b>Entropy</b>
+<div class="formula">Entropy(D) = −Σ<sub>i=1</sub><sup>k</sup> p<sub>i</sub> log<sub>2</sub>(p<sub>i</sub>)</div></div>
+<div class="card"><b>Gini Index</b>
+<div class="formula">Gini(D) = 1 − Σ<sub>i=1</sub><sup>k</sup> p<sub>i</sub><sup>2</sup></div></div>
+</div>
+<div class="card"><b>Classification Error</b>
+<div class="formula">Error(D) = 1 − max(p<sub>i</sub>)</div></div>
+
+<p><b>Why the negative sign?</b> Since 0 &lt; p<sub>i</sub> &lt; 1, log₂(p<sub>i</sub>) is always negative (e.g. log₂0.5 = −1), so Σp<sub>i</sub>log₂(p<sub>i</sub>) ≤ 0. The leading minus sign flips this to a non-negative quantity. Entropy = 0 for a pure node (all one class); Entropy = 1 (max) when classes are perfectly mixed 50-50 — <b>higher entropy = higher uncertainty/impurity</b>.</p>
+
+<h3>Information Gain (used by ID3)</h3>
+<div class="formula">Info(D) = −Σ<sub>i=1</sub><sup>m</sup> p<sub>i</sub> log<sub>2</sub>(p<sub>i</sub>) &nbsp;&nbsp;(entropy before split)</div>
+<div class="formula">Info<sub>A</sub>(D) = Σ<sub>j=1</sub><sup>v</sup> <span class="frac"><span class="num">|D<sub>j</sub>|</span><span>|D|</span></span> × Info(D<sub>j</sub>) &nbsp;&nbsp;(weighted entropy after splitting on A)</div>
+<div class="formula">Gain(A) = Info(D) − Info<sub>A</sub>(D)</div>
+<p>The attribute with the <b>highest Gain</b> is chosen at each step (root first, then recursively for children).</p>
+</section>
+
+<!-- ========================= ID3 EXAMPLE ========================= -->
+<section id="id3">
+<h2>7. ID3 — Fully Worked Example</h2>
+<div class="ex"><span class="tag">Solved Example (teacher's dataset)</span>
+<p>Target: <b>Where</b> (Home=3, Work=3), features: Action, Author, Thread, Length.</p>
+<table><thead><tr><th>Action</th><th>Author</th><th>Thread</th><th>Length</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td>skips</td><td>known</td><td>new</td><td>long</td><td>Home</td></tr>
+<tr><td>reads</td><td>unknown</td><td>new</td><td>short</td><td>Work</td></tr>
+<tr><td>skips</td><td>unknown</td><td>old</td><td>long</td><td>Work</td></tr>
+<tr><td>skips</td><td>known</td><td>old</td><td>long</td><td>Home</td></tr>
+<tr><td>reads</td><td>known</td><td>new</td><td>short</td><td>Home</td></tr>
+<tr><td>skips</td><td>known</td><td>old</td><td>long</td><td>Work</td></tr>
+</tbody></table>
+
+<p><b>Step 1 — base entropy:</b></p>
+<div class="formula">Info(D) = −(3/6)log₂(3/6) − (3/6)log₂(3/6) = <b>1.000</b></div>
+
+<p><b>Step 2 — weighted entropy per attribute:</b></p>
+<table><thead><tr><th>Attribute</th><th>Split counts (Home,Work)</th><th>Info<sub>A</sub>(D)</th><th>Gain(A)</th></tr></thead>
+<tbody>
+<tr><td>Action</td><td>skips(2,2), reads(1,1)</td><td>1.000</td><td>0.000</td></tr>
+<tr><td><b>Author</b></td><td>known(3,1), unknown(0,2)</td><td><b>0.540</b></td><td><b>0.460</b></td></tr>
+<tr><td>Thread</td><td>new(2,1), old(1,2)</td><td>0.918</td><td>0.082</td></tr>
+<tr><td>Length</td><td>long(2,2), short(1,1)</td><td>1.000</td><td>0.000</td></tr>
+</tbody></table>
+<p>✅ <b>Author</b> gives the highest Gain (0.460) → chosen as <b>Root Node</b>. (unknown branch is already pure → Work; known branch (3 Home, 1 Work) needs further splitting on the remaining attributes.)</p>
+</div>
+</section>
+
+<!-- ========================= C4.5 EXAMPLE ========================= -->
+<section id="c45">
+<h2>8. C4.5 (Gain Ratio) — Fully Worked Example</h2>
+<div class="note"><b>Why Gain Ratio?</b> Plain Information Gain is biased toward attributes with many distinct values (e.g. Student-ID gives IG = max but is useless for generalisation → overfitting). C4.5 fixes this by normalising Gain with <b>Split Information</b>.</div>
+<div class="formula">SplitInfo(A) = −Σ<sub>v</sub> <span class="frac"><span class="num">|D<sub>v</sub>|</span><span>|D|</span></span> log<sub>2</sub><span class="frac"><span class="num">|D<sub>v</sub>|</span><span>|D|</span></span></div>
+<div class="formula">GainRatio(A) = <span class="frac"><span class="num">Gain(A)</span><span>SplitInfo(A)</span></span></div>
+
+<div class="ex"><span class="tag">Same dataset as above</span>
+<table><thead><tr><th>Attribute</th><th>Gain(A)</th><th>SplitInfo(A)</th><th>GainRatio(A)</th></tr></thead>
+<tbody>
+<tr><td>Action</td><td>0.000</td><td>0.918</td><td>0.000</td></tr>
+<tr><td><b>Author</b></td><td>0.4591</td><td>0.9183</td><td><b>0.500</b></td></tr>
+<tr><td>Thread</td><td>0.0817</td><td>1.000</td><td>0.0817</td></tr>
+<tr><td>Length</td><td>0.000</td><td>0.918</td><td>0.000</td></tr>
+</tbody></table>
+<p>✅ <b>Author</b> again wins (highest Gain Ratio = 0.500) → Root Node for C4.5 as well, here.</p>
+</div>
+</section>
+
+<!-- ========================= CART EXAMPLE ========================= -->
+<section id="cart">
+<h2>9. CART & Gini Index — Fully Worked Example</h2>
+<div class="def"><b>CART</b> (Classification And Regression Trees) always makes <b>binary splits</b> and uses the <b>Gini Index</b> for classification (MSE for regression).</div>
+<div class="formula">Gini<sub>split</sub> = <span class="frac"><span class="num">|D<sub>L</sub>|</span><span>|D|</span></span>Gini(D<sub>L</sub>) + <span class="frac"><span class="num">|D<sub>R</sub>|</span><span>|D|</span></span>Gini(D<sub>R</sub>)</div>
+<p>Pick the split (attribute + threshold) that gives the <b>lowest weighted Gini</b> / <b>largest ΔGini = Gini(D) − Gini<sub>split</sub></b>.</p>
+
+<div class="ex"><span class="tag">Solved Example</span>
+<table><thead><tr><th>Age</th><th>Income</th><th>Buy</th></tr></thead><tbody>
+<tr><td>22</td><td>25</td><td>No</td></tr><tr><td>25</td><td>30</td><td>No</td></tr><tr><td>28</td><td>35</td><td>Yes</td></tr>
+<tr><td>35</td><td>45</td><td>Yes</td></tr><tr><td>40</td><td>50</td><td>Yes</td></tr><tr><td>45</td><td>60</td><td>Yes</td></tr>
+</tbody></table>
+<p><b>Parent Gini:</b> p<sub>Yes</sub>=4/6, p<sub>No</sub>=2/6 → Gini(D)=1−[(4/6)²+(2/6)²]= <b>0.4444</b></p>
+<p><b>Best Age split (≤37.5):</b> Left={No,No,Yes,Yes} Gini=0.5; Right={Yes,Yes} Gini=0 → Weighted = (4/6)(0.5)+(2/6)(0)= 0.333... — checking every threshold, the minimum weighted Gini is <b>0.1667</b> at <b>Age ≤ 37.5</b>.</p>
+<p><b>Best Income split:</b> minimum weighted Gini <b>0.1667</b> at <b>Income ≤ 47.5</b> — a tie with Age.</p>
+<p>✅ Since both are tied (ΔGini = 0.4444 − 0.1667 = 0.2777), CART may pick either — assume <b>Age ≤ 37.5</b> as Root. Left child {22,25,28,35} is further split at Age≤31.5. <b>Prediction:</b> Age=29,Income=40 → 29≤37.5 (left) → 29≤31.5 (left) → <b>No</b>. Age=42 → 42&gt;37.5 → <b>Yes</b>.</p>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px">
+<style>.n{fill:var(--code);stroke:var(--accent);stroke-width:1.4;rx:6}.t{font:10px sans-serif;fill:var(--ink);text-anchor:middle}.l{stroke:var(--sub)}</style>
+<rect class="n" x="110" y="6" width="100" height="30"/><text class="t" x="160" y="25">Age ≤ 37.5?</text>
+<line class="l" x1="140" y1="36" x2="70" y2="66"/><line class="l" x1="180" y1="36" x2="250" y2="66"/>
+<rect class="n" x="20" y="66" width="100" height="30"/><text class="t" x="70" y="85">Age ≤ 31.5?</text>
+<rect class="n" x="200" y="66" width="100" height="30"/><text class="t" x="250" y="85">Predict: Yes</text>
+<line class="l" x1="50" y1="96" x2="25" y2="126"/><line class="l" x1="90" y1="96" x2="115" y2="126"/>
+<rect class="n" x="0" y="126" width="80" height="26"/><text class="t" x="40" y="143">Predict: No</text>
+<rect class="n" x="90" y="126" width="80" height="26"/><text class="t" x="130" y="143">Predict: Yes</text>
+</svg>
+</div>
+
+<h3>Full worked PYQ-style dataset: Table 2 (Weather → Play)</h3>
+<div class="ex pyq"><span class="tag">PYQ 2025 · Q3b–e (full solution)</span>
+<table><thead><tr><th>Weather</th><th>Temp</th><th>Humidity</th><th>Wind</th><th>Play</th></tr></thead><tbody>
+<tr><td>Sunny</td><td>Hot</td><td>High</td><td>Weak</td><td>No</td></tr>
+<tr><td>Sunny</td><td>Hot</td><td>High</td><td>Strong</td><td>No</td></tr>
+<tr><td>Overcast</td><td>Hot</td><td>High</td><td>Weak</td><td>Yes</td></tr>
+<tr><td>Rain</td><td>Mild</td><td>High</td><td>Weak</td><td>Yes</td></tr>
+<tr><td>Rain</td><td>Cool</td><td>Normal</td><td>Weak</td><td>Yes</td></tr>
+<tr><td>Rain</td><td>Cool</td><td>Normal</td><td>Strong</td><td>No</td></tr>
+<tr><td>Overcast</td><td>Cool</td><td>Normal</td><td>Strong</td><td>Yes</td></tr>
+<tr><td>Sunny</td><td>Mild</td><td>High</td><td>Weak</td><td>No</td></tr>
+</tbody></table>
+<p><b>(a) Entropy(D):</b> Play = 4 Yes, 4 No → Entropy(D) = −(4/8)log₂(4/8) −(4/8)log₂(4/8) = <b>1.000</b> (max impurity, perfectly balanced).</p>
+<p><b>(b) ID3 root (Information Gain):</b></p>
+<table><thead><tr><th>Attribute</th><th>Info<sub>A</sub>(D)</th><th>Gain</th></tr></thead><tbody>
+<tr><td><b>Weather</b></td><td>0.344</td><td><b>0.656</b></td></tr>
+<tr><td>Temperature</td><td>0.939</td><td>0.061</td></tr>
+<tr><td>Humidity</td><td>0.951</td><td>0.049</td></tr>
+<tr><td>Wind</td><td>0.951</td><td>0.049</td></tr>
+</tbody></table>
+<p>(Sunny and Overcast subsets are <i>pure</i> — 0 entropy each — which is why Weather wins by a big margin.) → <b>Root = Weather.</b></p>
+<p><b>(c) CART root (Gini, binary split):</b> best split is <b>Sunny vs {Overcast, Rain}</b>: Gini(D)=0.5, weighted Gini after split = 0.20 → ΔGini = <b>0.30</b>, the largest reduction among all attribute splits (Temperature/Humidity/Wind best ΔGini ≈ 0.033). → <b>Root = Weather</b> as well.</p>
+<p><b>(d) Compare ID3 & CART root:</b> <b>Same attribute (Weather)</b> is selected by both. Reason: Weather creates two perfectly pure subsets (Sunny→all No, Overcast→all Yes), which maximises impurity reduction under <i>both</i> Entropy-based Information Gain and Gini-based CART criteria — when a split produces pure children, it tends to win regardless of which impurity measure is used.</p>
+</div>
+</section>
+
+<!-- ========================= TREE COMPARE ========================= -->
+<section id="treecompare">
+<h2>10. ID3 vs C4.5 vs CART</h2>
+<table>
+<thead><tr><th></th><th>ID3</th><th>C4.5</th><th>CART</th></tr></thead>
+<tbody>
+<tr><td>Split criterion</td><td>Information Gain</td><td>Gain Ratio</td><td>Gini Index / MSE</td></tr>
+<tr><td>Tree type</td><td>Multi-way</td><td>Multi-way</td><td>Strictly binary</td></tr>
+<tr><td>Handles continuous attrs?</td><td>No (needs discretizing)</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Handles missing values?</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Bias</td><td>Favours high-cardinality attrs</td><td>Corrects that bias</td><td>Unbiased by cardinality (binary)</td></tr>
+<tr><td>Pruning</td><td>None</td><td>Yes (error-based)</td><td>Yes (cost-complexity)</td></tr>
+<tr><td>Regression support</td><td>No</td><td>No</td><td>Yes</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ========================= SVM ========================= -->
+<section id="svm">
+<h2>11. Support Vector Machines (SVM)</h2>
+<div class="def">SVM finds the hyperplane that separates two classes with the <b>maximum margin</b> — the widest possible "street" between classes. Points on the margin boundary are the <b>support vectors</b>.</div>
+
+<div class="diagram">
+<svg viewBox="0 0 300 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px">
+<style>.p1{fill:var(--yes)}.p2{fill:var(--no)}.hp{stroke:var(--accent);stroke-width:2}.mg{stroke:var(--accent);stroke-width:1;stroke-dasharray:4 3}</style>
+<line class="hp" x1="20" y1="140" x2="280" y2="20"/>
+<line class="mg" x1="0" y1="150" x2="260" y2="30"/>
+<line class="mg" x1="40" y1="150" x2="300" y2="30"/>
+<circle class="p1" cx="60" cy="120" r="6"/><circle class="p1" cx="90" cy="130" r="6"/><circle class="p1" cx="40" cy="100" r="6"/>
+<circle class="p2" cx="220" cy="50" r="6"/><circle class="p2" cx="250" cy="60" r="6"/><circle class="p2" cx="200" cy="30" r="6"/>
+<text x="55" y="25" font-size="10" fill="var(--ink)">margin</text>
+</svg>
+</div>
+
+<h3>Hard-Margin Formulation</h3>
+<div class="formula">Hyperplane: w·x + b = 0 &nbsp;→&nbsp; classify as sign(w·x + b)</div>
+<div class="formula">Minimize &nbsp;½‖w‖<sup>2</sup> &nbsp; subject to &nbsp; y<sub>i</sub>(w·x<sub>i</sub> + b) ≥ 1 &nbsp; ∀i</div>
+<p>Solved via Lagrange multipliers α<sub>i</sub> ≥ 0 (dual problem) — points with α<sub>i</sub> &gt; 0 are the <b>support vectors</b>; all others have α<sub>i</sub>=0 and don't affect the boundary.</p>
+
+<h3>Soft-Margin (non-separable data)</h3>
+<div class="formula">Minimize &nbsp;½‖w‖<sup>2</sup> + C·Σξ<sub>i</sub> &nbsp; subject to &nbsp; y<sub>i</sub>(w·x<sub>i</sub> + b) ≥ 1 − ξ<sub>i</sub>, ξ<sub>i</sub> ≥ 0</div>
+<p><b>ξ<sub>i</sub></b> (slack) allows some points to violate the margin. <b>C</b> controls the trade-off: small C → wider margin, more tolerant of misclassification; large C → narrow margin, fewer errors but risk of overfitting.</p>
+
+<h3>Kernel Trick (non-linear SVM)</h3>
+<p>Map data to a higher-dimensional space Φ(x) where it becomes linearly separable. Since the dual form only needs <b>dot products</b> Φ(x<sub>i</sub>)·Φ(x<sub>j</sub>), a <b>kernel function</b> K(x<sub>i</sub>,x<sub>j</sub>) computes this without explicitly transforming the data (saves huge computation).</p>
+<table><thead><tr><th>Kernel</th><th>Formula</th></tr></thead><tbody>
+<tr><td>Linear</td><td>K(x,y) = x·y</td></tr>
+<tr><td>Polynomial</td><td>K(x,y) = (x·y + c)<sup>d</sup></td></tr>
+<tr><td>RBF (Gaussian)</td><td>K(x,y) = exp(−‖x−y‖<sup>2</sup> / 2σ<sup>2</sup>)</td></tr>
+</tbody></table>
+
+<div class="ex"><span class="tag">Worked idea (small numeric example)</span>
+<p>Points: x₁=(2,2) class −1; x₂=(4,5) class +1; x₃=(7,4) class +1. Solve the dual to get multipliers α<sub>i</sub>, then:</p>
+<div class="formula">w = Σ α<sub>i</sub> y<sub>i</sub> x<sub>i</sub> &nbsp;&nbsp;&nbsp; b = y<sub>k</sub> − w·x<sub>k</sub> &nbsp;(for any support vector k)</div>
+<p>Once w and b are found, classify a new point x as <b>Class +1 if w·x+b &gt; 0</b>, else <b>Class −1</b>. (Exact α values need solving the quadratic program — in exams, they are usually given or a 2–3 point toy example is used so α can be found by solving 2 simultaneous equations from the margin constraints y<sub>i</sub>(w·x<sub>i</sub>+b)=1.)</p>
+</div>
+</section>
+
+<!-- ========================= KNN ========================= -->
+<section id="knn">
+<h2>12. k-Nearest Neighbour (k-NN) — Lazy Learner</h2>
+<table>
+<thead><tr><th>Lazy Learners (k-NN)</th><th>Eager Learners (Decision Tree, SVM, Naive Bayes)</th></tr></thead>
+<tbody><tr><td>No model built during training; just stores data</td><td>Builds a general model during training</td></tr>
+<tr><td>Fast training, slow prediction</td><td>Slow training, fast prediction</td></tr></tbody>
+</table>
+
+<h3>Distance Metrics</h3>
+<div class="formula">Euclidean: d(x,y) = √(Σ (x<sub>i</sub> − y<sub>i</sub>)<sup>2</sup>)</div>
+<div class="formula">Manhattan: d(x,y) = Σ |x<sub>i</sub> − y<sub>i</sub>|</div>
+<div class="formula">Minkowski (general): d(x,y) = ( Σ |x<sub>i</sub> − y<sub>i</sub>|<sup>p</sup> )<sup>1/p</sup> &nbsp;(p=1→Manhattan, p=2→Euclidean)</div>
+<div class="formula">Cosine distance = 1 − <span class="frac"><span class="num">x·y</span><span>‖x‖‖y‖</span></span></div>
+
+<div class="ex"><span class="tag">Solved Example</span>
+<table><thead><tr><th>Income</th><th>30</th><th>32</th><th>35</th><th>35</th><th>40</th><th>42</th><th>43</th><th>44</th><th>50</th></tr></thead>
+<tbody><tr><td>Loan</td><td>N</td><td>N</td><td>Y</td><td>N</td><td>Y</td><td>N</td><td>Y</td><td>Y</td><td>Y</td></tr></tbody></table>
+<p>Predict for Income = 39.5 :</p>
+<p><b>1-NN:</b> nearest value is 40 (dist 0.5) → Loan = <b>Yes</b>.</p>
+<p><b>3-NN:</b> three nearest = 40, 42, 43 → labels Y, N, Y → majority vote → Loan = <b>Yes</b>.</p>
+</div>
+
+<h3>Choosing k</h3>
+<div class="formula">Rule of thumb: k ≈ √n &nbsp;(n = number of training samples)</div>
+<ul><li>Use an <b>odd</b> k for binary classification (avoids ties).</li>
+<li><b>Elbow Method:</b> plot validation error vs. k; pick k where the error curve flattens ("elbow").</li>
+<li>Always <b>normalize features</b> first — k-NN is distance-based, so unscaled features bias the result.</li>
+<li>Too large k → oversmoothing, biased toward the majority class; too small k → overfits to noise.</li></ul>
+</section>
+
+<!-- ========================= NAIVE BAYES ========================= -->
+<section id="nb">
+<h2>13. Naive Bayes Classifier</h2>
+<div class="def">A <b>probabilistic classifier</b> based on Bayes' Theorem with a "naive" assumption: all features are <b>conditionally independent</b> given the class.</div>
+
+<div class="formula">P(C|X) = <span class="frac"><span class="num">P(X|C) · P(C)</span><span>P(X)</span></span></div>
+<p>P(C|X)=<b>Posterior</b> (probability of class C given evidence X), P(X|C)=<b>Likelihood</b>, P(C)=<b>Prior</b>, P(X)=<b>Evidence</b> (same for all classes, so can be dropped for comparison).</p>
+
+<div class="formula">Naive assumption: P(X|C) = P(x<sub>1</sub>|C) × P(x<sub>2</sub>|C) × ... × P(x<sub>n</sub>|C)</div>
+<div class="formula">⇒ P(C|X) ∝ P(C) × Π<sub>i=1</sub><sup>n</sup> P(x<sub>i</sub>|C)</div>
+<p>Pick the class C that <b>maximises</b> this product (this is called MAP — Maximum A Posteriori).</p>
+
+<div class="ex"><span class="tag">Solved Example — "Is the car stolen?"</span>
+<table><thead><tr><th>Color</th><th>Type</th><th>Origin</th><th>Stolen?</th></tr></thead><tbody>
+<tr><td>Red</td><td>Sports</td><td>Domestic</td><td>Yes</td></tr><tr><td>Red</td><td>Sports</td><td>Domestic</td><td>No</td></tr>
+<tr><td>Red</td><td>Sports</td><td>Domestic</td><td>Yes</td></tr><tr><td>Yellow</td><td>Sports</td><td>Domestic</td><td>No</td></tr>
+<tr><td>Yellow</td><td>Sports</td><td>Imported</td><td>Yes</td></tr><tr><td>Yellow</td><td>SUV</td><td>Imported</td><td>No</td></tr>
+<tr><td>Yellow</td><td>SUV</td><td>Imported</td><td>Yes</td></tr><tr><td>Yellow</td><td>SUV</td><td>Domestic</td><td>No</td></tr>
+<tr><td>Red</td><td>SUV</td><td>Imported</td><td>No</td></tr><tr><td>Red</td><td>Sports</td><td>Imported</td><td>Yes</td></tr>
+</tbody></table>
+<p>Predict for <b>X = (Red, SUV, Domestic)</b>.</p>
+<p><b>Priors:</b> P(Yes)=5/10=0.5, P(No)=5/10=0.5</p>
+<p><b>Likelihoods (given Yes, 5 rows):</b> P(Red|Yes)=3/5=0.6, P(SUV|Yes)=1/5=0.2, P(Domestic|Yes)=2/5=0.4</p>
+<p><b>Likelihoods (given No, 5 rows):</b> P(Red|No)=2/5=0.4, P(SUV|No)=2/5=0.4, P(Domestic|No)=3/5=0.6</p>
+<div class="formula">P(Yes|X) ∝ 0.5 × 0.6 × 0.2 × 0.4 = 0.024</div>
+<div class="formula">P(No|X) ∝ 0.5 × 0.4 × 0.4 × 0.6 = 0.048</div>
+<p>Since 0.048 &gt; 0.024, → <b>Predicted class = Not Stolen.</b></p>
+</div>
+
+<h3>Zero-Probability Problem & Laplace (Add-1) Smoothing</h3>
+<p>If a combination never appears in training data, its conditional probability is exactly 0, which forces the <i>whole product</i> to 0 regardless of other evidence — even though the combination may simply be unseen, not impossible.</p>
+<div class="formula">P(x<sub>i</sub>|C) = <span class="frac"><span class="num">count(x<sub>i</sub>, C) + 1</span><span>count(C) + d</span></span> &nbsp;(Laplace smoothing; d = no. of distinct values of that attribute)</div>
+
+<div class="ex pyq"><span class="tag">PYQ-style</span>
+<table><thead><tr><th>Color</th><th>Type</th><th>Origin</th><th>Stolen?</th></tr></thead><tbody>
+<tr><td>Red</td><td>Sports</td><td>Domestic</td><td>Yes</td></tr><tr><td>Red</td><td>Sports</td><td>Domestic</td><td>Yes</td></tr>
+<tr><td>Red</td><td>SUV</td><td>Domestic</td><td>Yes</td></tr><tr><td>Yellow</td><td>Sports</td><td>Domestic</td><td>No</td></tr>
+<tr><td>Yellow</td><td>Sports</td><td>Imported</td><td>Yes</td></tr><tr><td>Yellow</td><td>SUV</td><td>Imported</td><td>No</td></tr>
+<tr><td>Yellow</td><td>SUV</td><td>Imported</td><td>No</td></tr>
+</tbody></table>
+<p>Predict for X = (Red, Sports, Imported). Here P(Red|No) = 0 (no "Red & No" row exists) → without smoothing, P(No|X)=0 outright. This <b>doesn't mean</b> a red imported sports car can never be "Not Stolen" — it only means it wasn't seen in this small training sample. Apply Laplace smoothing (add 1 to every count, add d = number of category-values to the denominator) to avoid zeroing out the whole posterior.</p>
+</div>
+</section>
+
+<!-- ========================= NB CONTINUOUS ========================= -->
+<section id="nbcont">
+<h2>14. Naive Bayes for Continuous Data (Gaussian NB)</h2>
+<p>When a feature is continuous (e.g., height, temperature) rather than categorical, we can't build a frequency table. Instead, assume the feature is <b>normally distributed within each class</b> and use the Gaussian probability density function:</p>
+<div class="formula">P(x<sub>i</sub> | C) = <span class="frac"><span class="num">1</span><span>√(2π σ<sub>C</sub><sup>2</sup>)</span></span> · exp<span>( −(x<sub>i</sub> − <span class="mean">x</span><sub>C</sub>)<sup>2</sup> / 2σ<sub>C</sub><sup>2</sup> )</span></div>
+<p>where <span class="mean">x</span><sub>C</sub> and σ<sub>C</sub> are the mean and standard deviation of that feature <i>computed only from the rows belonging to class C</i>.</p>
+
+<div class="ex"><span class="tag">Solved Example</span>
+<p>Class "Male" heights (cm): 170, 175, 180 → mean=175, σ≈5. Predict P(height=178 | Male):</p>
+<div class="formula">P(178|Male) = <span class="frac"><span class="num">1</span><span>√(2π·25)</span></span> · exp( −(178−175)<sup>2</sup>/(2·25) ) = 0.0798 × exp(−0.18) = 0.0798×0.835 ≈ <b>0.0666</b></div>
+<p>This density value is then multiplied with the other (categorical or continuous) feature likelihoods and the prior, exactly as in the discrete case, to get the posterior for "Male".</p>
+</div>
+<div class="note">Alternative for continuous data: first <b>discretize</b> the attribute (equal-width/equal-frequency binning, Section 5) and then apply ordinary categorical Naive Bayes — mention both approaches in the exam if asked "how does Naive Bayes handle continuous attributes?"</div>
+</section>
+
+<!-- ========================= PYQ ========================= -->
+<section id="pyq">
+<h2>15. Additional Solved PYQ Highlights</h2>
+
+<div class="ex pyq"><span class="tag">PYQ 2026 · Q2a</span> <b>Why is NearMiss-1 better than RUS (Random Under-Sampling) for imbalanced data?</b>
+<p><b>RUS</b> removes majority-class points completely at random, which can discard informative points near the decision boundary. <b>NearMiss-1</b> instead selectively keeps only those majority-class points whose <b>average distance to the k nearest minority-class points is smallest</b> — i.e., it keeps majority points that lie close to the boundary, preserving the information needed to distinguish the classes. This gives a more informative, boundary-aware reduced dataset than RUS's blind random removal.</p>
+</div>
+
+<div class="ex pyq"><span class="tag">PYQ 2026 · Q2c</span> <b>Cosine Similarity — mathematical formulation</b>
+<div class="formula">Cosine Similarity(x, y) = <span class="frac"><span class="num">x · y</span><span>‖x‖ ‖y‖</span></span> = <span class="frac"><span class="num">Σ x<sub>i</sub>y<sub>i</sub></span><span>√(Σx<sub>i</sub><sup>2</sup>) · √(Σy<sub>i</sub><sup>2</sup>)</span></span></div>
+<p>Measures the cosine of the angle between two vectors (range −1 to 1; 1 = identical direction). Distance = 1 − Cosine Similarity. Commonly used for text/high-dimensional sparse data where magnitude matters less than direction.</p>
+</div>
+
+<div class="ex pyq"><span class="tag">PYQ 2026 · Q3a & 3b</span> <b>3 methods to determine feature relevance & Pearson Correlation</b>
+<p>Methods: (1) Correlation coefficient (Pearson, for numeric-numeric), (2) Chi-square test (for categorical features), (3) Information Gain / Mutual Information (feature vs class label). Others accepted: Variance threshold, ANOVA F-test.</p>
+<div class="formula">r = <span class="frac"><span class="num">Σ(x<sub>i</sub> − <span class="mean">x</span>)(y<sub>i</sub> − <span class="mean">y</span>)</span><span>√Σ(x<sub>i</sub>−<span class="mean">x</span>)<sup>2</sup> · √Σ(y<sub>i</sub>−<span class="mean">y</span>)<sup>2</sup></span></span></div>
+<table><thead><tr><th>X</th><th>600</th><th>800</th><th>1000</th></tr></thead><tbody><tr><td>Y</td><td>1200</td><td>1000</td><td>2000</td></tr></tbody></table>
+<p><span class="mean">x</span>=800, <span class="mean">y</span>=1400. Deviations: dx = −200,0,200 · dy = −200,−400,600.</p>
+<p>Σdx·dy = 40000+0+120000 = 160000 &nbsp;|&nbsp; Σdx² = 80000 &nbsp;|&nbsp; Σdy² = 560000</p>
+<div class="formula">r = <span class="frac"><span class="num">160000</span><span>√(80000 × 560000)</span></span> = <span class="frac"><span class="num">160000</span><span>211660</span></span> ≈ <b>0.756</b></div>
+<p>r ≈ 0.756 → a <b>strong positive</b> correlation between X and Y.</p>
+</div>
+
+<div class="ex pyq"><span class="tag">PYQ 2026 · Q3c, 3d, 3e</span>
+<p><b>Need for PCA:</b> Reduces a high-dimensional feature space to fewer uncorrelated "principal components" that retain most of the variance — fights the curse of dimensionality, removes redundancy/multicollinearity, speeds up training, and helps visualization, at some cost of interpretability.</p>
+<p><b>Advantages of feature selection:</b> Reduces overfitting, shortens training time, improves model interpretability, removes noisy/irrelevant features, and can improve accuracy by removing misleading attributes.</p>
+<p><b>Wrapper vs Filter:</b> <b>Filter</b> methods score features independently of any model (correlation, chi-square, information gain) — fast, model-agnostic. <b>Wrapper</b> methods evaluate feature subsets by actually training a model (e.g., forward selection, backward elimination, RFE) — slower but usually more accurate since it accounts for feature interactions.</p>
+</div>
+</section>
+
+<!-- ========================= PROBABLE ========================= -->
+<section id="probable">
+<h2>16. Probable Questions Bank (self-generated, exam-ready)</h2>
+<p>Based on repeated patterns across both PYQs, these are likely to reappear in some form:</p>
+<ol class="qbank">
+<li><b>Differentiate Gini Index and Entropy as impurity measures.</b> — Both range differently: Entropy ∈ [0,1] (binary case, log-based), Gini ∈ [0,0.5] (binary case, quadratic). Gini is computationally cheaper (no log). Both give 0 for pure nodes and max value for a 50-50 split. ID3/C4.5 use entropy-based gain; CART uses Gini.</li>
+<li><b>Why does Information Gain favour high-cardinality attributes? Give an example.</b> — see Section 8's note; e.g. splitting on a unique "Roll No" makes every leaf pure (entropy 0) giving max Gain, but this overfits and has zero generalising power. Gain Ratio (C4.5) penalises this via SplitInfo.</li>
+<li><b>Compute Entropy and Information Gain for a small dataset</b> (practice with Table 1 / Table 2 style data — see Sections 7 & 9).</li>
+<li><b>Explain the Bias-Variance role of k in k-NN.</b> — Small k → low bias, high variance (overfits to noise); Large k → high bias, low variance (oversmooths, underfits). Use cross-validation / elbow method to balance.</li>
+<li><b>Why is the SVM margin maximised rather than just finding any separating hyperplane?</b> — A maximum-margin boundary generalises better to unseen data (lower expected test error) — it's the most "confident" separator, least sensitive to small perturbations in the data.</li>
+<li><b>What is the role of the parameter C in soft-margin SVM?</b> — see Section 11: controls the trade-off between margin width and misclassification tolerance.</li>
+<li><b>Explain the "naive" assumption in Naive Bayes — is it realistic? Why does NB still work well?</b> — Assumes features are conditionally independent given the class, which is rarely exactly true in real data (e.g. Color and Type of a car may be correlated). Yet NB still performs well in practice because it only needs the <i>ranking</i> of posterior probabilities to be correct for classification, not their exact values — errors in the independence assumption often cancel out.</li>
+<li><b>Difference between Filter and Wrapper feature-selection methods.</b> — see Section 15.</li>
+<li><b>Explain Min-Max vs Z-score normalization — when would you prefer one over the other?</b> — Min-Max is bounded but sensitive to new outliers (a single new max/min re-scales everything); Z-score handles unknown/unbounded ranges better and is less sensitive to a single extreme value, but the output isn't bounded to a fixed range.</li>
+<li><b>What is the difference between Discretization by Binning and by Clustering?</b> — Binning uses only value order/position (equal width or equal frequency) and ignores natural groupings; Clustering (e.g. k-Means) groups by actual density/proximity of values, producing more "natural" bins but is more computationally expensive.</li>
+<li><b>Given a small table with a missing/None value, justify which imputation method to use and why.</b> — Practice framing: identify if the attribute is numeric (mean/median or k-NN) or categorical (mode or class-conditional mode); justify based on % missing and whether missingness looks random.</li>
+<li><b>Explain Eager vs Lazy learners with two examples each.</b> — Lazy: k-NN, case-based reasoning (no training phase, all computation deferred to prediction time). Eager: Decision Tree, SVM, Naive Bayes (build an explicit model upfront).</li>
+</ol>
+
+<details><summary>Quick formula cheat-sheet (tap to expand)</summary>
+<div class="scroll">
+<table class="fixed">
+<tbody>
+<tr><td>Entropy</td><td>−Σp<sub>i</sub>log₂p<sub>i</sub></td></tr>
+<tr><td>Gini</td><td>1 − Σp<sub>i</sub>²</td></tr>
+<tr><td>Info Gain</td><td>Info(D) − Info<sub>A</sub>(D)</td></tr>
+<tr><td>Gain Ratio</td><td>Gain(A) / SplitInfo(A)</td></tr>
+<tr><td>IQR / Whiskers</td><td>Q3−Q1 &nbsp;/&nbsp; Q1−1.5·IQR, Q3+1.5·IQR</td></tr>
+<tr><td>Z-score</td><td>(x−mean)/σ</td></tr>
+<tr><td>Min-Max</td><td>(v−min)/(max−min)·(newMax−newMin)+newMin</td></tr>
+<tr><td>Pearson r</td><td>Σ(dx·dy) / √(Σdx²·Σdy²)</td></tr>
+<tr><td>Bayes' theorem</td><td>P(C|X)=P(X|C)P(C)/P(X)</td></tr>
+<tr><td>Euclidean dist.</td><td>√Σ(xᵢ−yᵢ)²</td></tr>
+</tbody>
+</table>
+</div>
+</details>
+</section>
+
+<footer>Made for your CS431 mid-sem prep · Good luck! 🎯</footer>
+</main>
+</div>
+<button id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">↑</button>
+<script>
+function toggleTheme(){
+  const r=document.documentElement;
+  const cur=r.getAttribute('data-theme');
+  r.setAttribute('data-theme', cur==='dark'?'light':'dark');
+}
+
+function toggleMenu(show){
+  const sidenav = document.getElementById('sidenav');
+  const overlay = document.getElementById('menuOverlay');
+  const willOpen = typeof show === 'boolean' ? show : !sidenav.classList.contains('open');
+  sidenav.classList.toggle('open', willOpen);
+  overlay.classList.toggle('open', willOpen);
+  document.body.style.overflow = (willOpen && window.innerWidth <= 900) ? 'hidden' : '';
+}
+
+function closeMenu(){
+  toggleMenu(false);
+}
+
+// Auto-wrap tables that are not already inside a scroll wrapper
+document.querySelectorAll('table').forEach(tbl => {
+  if (!tbl.parentElement.classList.contains('table-wrap') && !tbl.parentElement.classList.contains('scroll')) {
+    const wrap = document.createElement('div');
+    wrap.className = 'table-wrap';
+    tbl.parentNode.insertBefore(wrap, tbl);
+    wrap.appendChild(tbl);
+  }
+});
+
+// Close drawer on link click on mobile
+document.querySelectorAll('nav.side a').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      closeMenu();
+    }
+  });
+});
+
+// Scrollspy and back-to-top handler
+window.addEventListener('scroll',()=>{
+  const toTop = document.getElementById('toTop');
+  if (toTop) {
+    toTop.style.display = window.scrollY > 400 ? 'flex' : 'none';
+  }
+  let secs = document.querySelectorAll('section[id]');
+  let links = document.querySelectorAll('nav.side a');
+  let cur = '';
+  secs.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) cur = s.id;
+  });
+  links.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + cur);
+  });
+});
+</script>
+</body>
+</html>
