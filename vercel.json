@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/alvis/OOP:rest*",
+      "destination": "/alvis/OOP_in_Cpp_Interactive_Mastery_Guide.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

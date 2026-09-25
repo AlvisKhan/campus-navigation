@@ -575,8 +575,9 @@
 
       emptyState.style.display = 'none';
       grid.innerHTML = filtered.map(file => {
-        const fileUrl = `/alvis/${file.filename}`;
-        const fullUrl = `${window.location.origin}/alvis/${file.filename}`;
+        const encodedFilename = file.filename.split('/').map(encodeURIComponent).join('/');
+        const fileUrl = `/alvis/${encodedFilename}`;
+        const fullUrl = `${window.location.origin}/alvis/${encodedFilename}`;
         const extClass = getBadgeClass(file.category || 'other');
         const icon = file.icon || '📄';
         const ext = file.extension || 'FILE';
