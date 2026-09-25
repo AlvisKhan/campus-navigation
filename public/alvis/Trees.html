@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trees: Zero to Hero — C++ Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#101613; --bg2:#1a2320; --bg3:#212b26;
+  --gold:#d4a33f; --gold-dim:#8a6f2e;
+  --sage:#8fae86; --text:#e8e4d8; --muted:#93a094;
+  --code-bg:#0b0f0d; --border:#2b362f;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ } }
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:calc(20px + env(safe-area-inset-top,0px));}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.6;font-size:16px;}
+h1,h2,h3,h4{font-family:'Source Serif 4',Georgia,serif;font-weight:600;color:#f2eee0;margin:0 0 .5em;}
+code,pre,.mono{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;}
+a{color:var(--gold);}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh;max-width:1200px;margin:0 auto;}
+@media (max-width:820px){.layout{display:block;} nav.side{position:static !important;width:100% !important;height:auto !important;border-right:none !important;border-bottom:1px solid var(--border);}}
+nav.side{position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 18px;border-right:1px solid var(--border);background:var(--bg2);}
+nav.side .brand{font-family:'Source Serif 4',serif;font-size:1.3rem;color:var(--gold);margin-bottom:4px;}
+nav.side .tag{font-size:.78rem;color:var(--muted);margin-bottom:22px;}
+nav.side a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:7px 10px;border-radius:6px;border-left:2px solid transparent;margin-bottom:2px;}
+nav.side a:hover{color:var(--text);background:var(--bg3);}
+nav.side a.step{color:var(--sage);font-weight:500;}
+main{padding:40px clamp(20px,4vw,64px) 100px;overflow-x:hidden;}
+.hero{margin-bottom:56px;}
+.hero h1{font-size:clamp(2rem,4vw,2.7rem);line-height:1.1;max-width:11ch;}
+.hero p{color:var(--muted);max-width:60ch;font-size:1.05rem;}
+section{margin-bottom:64px;scroll-margin-top:20px;}
+section h2{font-size:1.5rem;border-bottom:1px solid var(--border);padding-bottom:10px;display:flex;gap:12px;align-items:baseline;}
+section h2 .n{color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:1rem;}
+section h3{font-size:1.1rem;color:var(--sage);margin-top:28px;}
+p{max-width:74ch;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin:18px 0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:700px){.grid2{grid-template-columns:1fr;}}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px 18px;overflow-x:auto;font-size:.85rem;line-height:1.55;margin:14px 0;}
+pre code{color:#d7e3d2;}
+.kw{color:#e3a5c9}.tp{color:#7fb3d5}.cm{color:#6b7a6f;font-style:italic}.st{color:#d4a33f}.fn{color:#8fae86}
+.badge{display:inline-block;background:var(--bg3);border:1px solid var(--border);color:var(--sage);font-size:.72rem;padding:2px 9px;border-radius:20px;margin-left:8px;}
+.tip{border-left:3px solid var(--gold);background:rgba(212,163,63,.08);padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:.93rem;}
+.tip strong{color:var(--gold);}
+.linkbox{border-left:3px solid var(--sage);background:rgba(143,174,134,.08);padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;font-size:.93rem;}
+.linkbox strong{color:var(--sage);}
+svg{max-width:100%;height:auto;display:block;margin:0 auto;}
+.viz-controls{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+button{font-family:'Inter',sans-serif;background:var(--gold);color:#181008;border:none;padding:8px 16px;border-radius:6px;font-size:.85rem;font-weight:600;cursor:pointer;}
+button:hover{background:#e3b552;}
+button.ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+button.ghost:hover{color:var(--text);border-color:var(--sage);}
+.order-out{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:.95rem;min-height:1.4em;}
+.tabs{display:flex;gap:6px;margin:14px 0 0;flex-wrap:wrap;}
+.tabbtn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px 6px 0 0;font-size:.82rem;cursor:pointer;}
+.tabbtn.active{color:var(--gold);border-bottom:2px solid var(--gold);}
+.tabpanel{display:none;}
+.tabpanel.active{display:block;}
+details{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin:12px 0;}
+summary{cursor:pointer;color:var(--sage);font-weight:500;}
+details[open] summary{margin-bottom:10px;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.qopt{text-align:left;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 14px;border-radius:6px;cursor:pointer;font-size:.9rem;}
+.qopt:hover{border-color:var(--sage);}
+.qopt.correct{border-color:#8fae86;background:rgba(143,174,134,.15);}
+.qopt.wrong{border-color:#c97a7a;background:rgba(201,122,122,.15);}
+.feedback{margin-top:10px;font-size:.88rem;color:var(--muted);min-height:1.3em;}
+footer{padding:30px clamp(20px,4vw,64px) 60px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--border);}
+.node-tag{fill:var(--bg3);stroke:var(--sage);}
+.node-tag.active{fill:var(--gold);stroke:var(--gold);}
+.node-txt{fill:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;}
+.edge{stroke:var(--border);stroke-width:2;}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="side">
+  <div class="brand">🌲 Trees</div>
+  <div class="tag">Zero → Hero, in C++</div>
+  <a class="step" href="#terms">1. What is a Tree</a>
+  <a class="step" href="#types">2. Types of Trees</a>
+  <a class="step" href="#node">3. The Node</a>
+  <a class="step" href="#dfs">4. DFS Traversals</a>
+  <a class="step" href="#stack-link">5. Stack ↔ Trees</a>
+  <a class="step" href="#bfs">6. BFS / Level Order</a>
+  <a class="step" href="#queue-link">7. Queue ↔ Trees</a>
+  <a class="step" href="#bst">8. Binary Search Tree</a>
+  <a class="step" href="#height">9. Height, Diameter, Balance</a>
+  <a class="step" href="#lca">10. Lowest Common Ancestor</a>
+  <a class="step" href="#invert">11. Invert &amp; Symmetric</a>
+  <a class="step" href="#cheatsheet">12. Pattern Cheat-Sheet</a>
+  <a class="step" href="#complexity">13. Complexity Table</a>
+  <a class="step" href="#practice">14. Practice Set</a>
+  <a class="step" href="#quiz">15. Quick Quiz</a>
+</nav>
+<main>
+  <div class="hero">
+    <h1>Trees, from first node to interview-ready</h1>
+    <p>A tree is nothing but a linked list that learned to branch. Everything below is built in C++, and every traversal is chosen specifically to make Stack and Queue problems feel obvious afterward — because that's literally what a traversal <em>is</em>.</p>
+  </div>
+
+  <section id="terms">
+    <h2><span class="n">01</span> What is a Tree</h2>
+    <p>A tree is a hierarchical structure of <strong>nodes</strong> connected by <strong>edges</strong>, with no cycles. One node is the <strong>root</strong>; every other node has exactly one <strong>parent</strong> and zero or more <strong>children</strong>. Nodes with no children are <strong>leaves</strong>.</p>
+    <div class="card">
+      <svg viewBox="0 0 360 190" width="100%">
+        <line class="edge" x1="180" y1="30" x2="90" y2="90"/>
+        <line class="edge" x1="180" y1="30" x2="270" y2="90"/>
+        <line class="edge" x1="90" y1="90" x2="45" y2="150"/>
+        <line class="edge" x1="90" y1="90" x2="135" y2="150"/>
+        <line class="edge" x1="270" y1="90" x2="315" y2="150"/>
+        <circle class="node-tag active" cx="180" cy="30" r="20"/><text class="node-txt" x="180" y="35" text-anchor="middle">10</text>
+        <circle class="node-tag" cx="90" cy="90" r="20"/><text class="node-txt" x="90" y="95" text-anchor="middle">5</text>
+        <circle class="node-tag" cx="270" cy="90" r="20"/><text class="node-txt" x="270" y="95" text-anchor="middle">15</text>
+        <circle class="node-tag" cx="45" cy="150" r="20"/><text class="node-txt" x="45" y="155" text-anchor="middle">2</text>
+        <circle class="node-tag" cx="135" cy="150" r="20"/><text class="node-txt" x="135" y="155" text-anchor="middle">7</text>
+        <circle class="node-tag" cx="315" cy="150" r="20"/><text class="node-txt" x="315" y="155" text-anchor="middle">20</text>
+      </svg>
+    </div>
+    <p><strong>10</strong> is the root. <strong>5</strong> and <strong>15</strong> are its children (and each other's siblings). <strong>2, 7, 20</strong> are leaves. The <strong>height</strong> of a node is the longest path down to a leaf (root here has height 2); the <strong>depth</strong> of a node is its distance from the root.</p>
+  </section>
+
+  <section id="types">
+    <h2><span class="n">02</span> Types of Trees You'll Actually Meet</h2>
+    <div class="grid2">
+      <div class="card"><h3 style="margin-top:0">Binary Tree</h3><p style="margin:0">Each node has at most 2 children — <span class="mono">left</span> and <span class="mono">right</span>. No ordering rule.</p></div>
+      <div class="card"><h3 style="margin-top:0">Binary Search Tree (BST)</h3><p style="margin:0">A binary tree where left subtree &lt; node &lt; right subtree, always. Enables fast search.</p></div>
+      <div class="card"><h3 style="margin-top:0">Complete Binary Tree</h3><p style="margin:0">Every level full except possibly the last, filled left to right. Basis of heaps.</p></div>
+      <div class="card"><h3 style="margin-top:0">Balanced Tree</h3><p style="margin:0">Height stays O(log n) — e.g. AVL, Red-Black. Keeps operations fast.</p></div>
+    </div>
+    <p>Almost every interview question builds on the plain <strong>Binary Tree</strong> and <strong>BST</strong>, so that's our focus.</p>
+  </section>
+
+  <section id="node">
+    <h2><span class="n">03</span> The Node, in C++</h2>
+    <p>Everything starts with one struct. Memorize this shape — it's the atom of every tree problem.</p>
+    <pre><code><span class="kw">struct</span> <span class="tp">Node</span> {
+    <span class="tp">int</span> data;
+    <span class="tp">Node</span>* left;
+    <span class="tp">Node</span>* right;
+    <span class="tp">Node</span>(<span class="tp">int</span> val) : data(val), left(<span class="kw">nullptr</span>), right(<span class="kw">nullptr</span>) {}
+};
+
+<span class="cm">// building the tree from the diagram above, by hand</span>
+<span class="tp">Node</span>* root = <span class="kw">new</span> <span class="tp">Node</span>(10);
+root->left        = <span class="kw">new</span> <span class="tp">Node</span>(5);
+root->right        = <span class="kw">new</span> <span class="tp">Node</span>(15);
+root->left->left   = <span class="kw">new</span> <span class="tp">Node</span>(2);
+root->left->right  = <span class="kw">new</span> <span class="tp">Node</span>(7);
+root->right->right = <span class="kw">new</span> <span class="tp">Node</span>(20);</code></pre>
+    <div class="tip"><strong>Why a pointer to Node, not a Node?</strong> A tree's size isn't known ahead of time — pointers let each node live independently on the heap and link dynamically, exactly like a linked list's <span class="mono">next</span>, just doubled into <span class="mono">left</span>/<span class="mono">right</span>.</div>
+  </section>
+
+  <section id="dfs">
+    <h2><span class="n">04</span> DFS Traversals — Preorder, Inorder, Postorder</h2>
+    <p>Depth-first means: go as deep as possible before backing up. The three orders only differ in <em>when</em> you visit the node relative to its children.</p>
+    <div class="card">
+      <p style="margin-top:0">Click through the tree below and watch each order unfold:</p>
+      <svg id="dfsSvg" viewBox="0 0 360 190" width="100%">
+        <line class="edge" x1="180" y1="30" x2="90" y2="90"/>
+        <line class="edge" x1="180" y1="30" x2="270" y2="90"/>
+        <line class="edge" x1="90" y1="90" x2="45" y2="150"/>
+        <line class="edge" x1="90" y1="90" x2="135" y2="150"/>
+        <line class="edge" x1="270" y1="90" x2="315" y2="150"/>
+        <circle id="dn-10" class="node-tag" cx="180" cy="30" r="20"/><text class="node-txt" x="180" y="35" text-anchor="middle">10</text>
+        <circle id="dn-5" class="node-tag" cx="90" cy="90" r="20"/><text class="node-txt" x="90" y="95" text-anchor="middle">5</text>
+        <circle id="dn-15" class="node-tag" cx="270" cy="90" r="20"/><text class="node-txt" x="270" y="95" text-anchor="middle">15</text>
+        <circle id="dn-2" class="node-tag" cx="45" cy="150" r="20"/><text class="node-txt" x="45" y="155" text-anchor="middle">2</text>
+        <circle id="dn-7" class="node-tag" cx="135" cy="150" r="20"/><text class="node-txt" x="135" y="155" text-anchor="middle">7</text>
+        <circle id="dn-20" class="node-tag" cx="315" cy="150" r="20"/><text class="node-txt" x="315" y="155" text-anchor="middle">20</text>
+      </svg>
+      <div class="viz-controls">
+        <button onclick="runDFS('pre')">Preorder</button>
+        <button onclick="runDFS('in')">Inorder</button>
+        <button onclick="runDFS('post')">Postorder</button>
+        <button class="ghost" onclick="clearDFS()">Reset</button>
+      </div>
+      <div class="order-out" id="dfsOut"></div>
+    </div>
+    <div class="tabs">
+      <button class="tabbtn active" onclick="showTab('pre')">Preorder</button>
+      <button class="tabbtn" onclick="showTab('in')">Inorder</button>
+      <button class="tabbtn" onclick="showTab('post')">Postorder</button>
+    </div>
+    <div class="tabpanel active" id="tab-pre">
+      <pre><code><span class="cm">// Node -> Left -> Right. Use to copy/serialize a tree.</span>
+<span class="tp">void</span> <span class="fn">preorder</span>(<span class="tp">Node</span>* root) {
+    <span class="kw">if</span> (root == <span class="kw">nullptr</span>) <span class="kw">return</span>;
+    cout << root->data << <span class="st">" "</span>;   <span class="cm">// visit</span>
+    preorder(root->left);
+    preorder(root->right);
+}</code></pre>
+    </div>
+    <div class="tabpanel" id="tab-in">
+      <pre><code><span class="cm">// Left -> Node -> Right. On a BST, this prints sorted order.</span>
+<span class="tp">void</span> <span class="fn">inorder</span>(<span class="tp">Node</span>* root) {
+    <span class="kw">if</span> (root == <span class="kw">nullptr</span>) <span class="kw">return</span>;
+    inorder(root->left);
+    cout << root->data << <span class="st">" "</span>;   <span class="cm">// visit</span>
+    inorder(root->right);
+}</code></pre>
+    </div>
+    <div class="tabpanel" id="tab-post">
+      <pre><code><span class="cm">// Left -> Right -> Node. Use to delete a tree, post free children first.</span>
+<span class="tp">void</span> <span class="fn">postorder</span>(<span class="tp">Node</span>* root) {
+    <span class="kw">if</span> (root == <span class="kw">nullptr</span>) <span class="kw">return</span>;
+    postorder(root->left);
+    postorder(root->right);
+    cout << root->data << <span class="st">" "</span>;   <span class="cm">// visit</span>
+}</code></pre>
+    </div>
+    <p>All three are <strong>O(n)</strong> time (visit every node once) and <strong>O(h)</strong> extra space for the recursion stack, where h is the tree's height.</p>
+  </section>
+
+  <section id="stack-link">
+    <h2><span class="n">05</span> Stack ↔ Trees: the recursion <em>is</em> a stack</h2>
+    <div class="linkbox"><strong>The key insight:</strong> when you call <span class="mono">preorder(root->left)</span> recursively, C++ pushes a stack frame. Recursive DFS is secretly using the call stack as its data structure. Replace the call stack with your own <span class="mono">std::stack</span>, and you get <em>iterative</em> DFS — the classic building block for stack questions.</div>
+    <pre><code><span class="cm">// Iterative preorder — explicit stack does what the call stack did</span>
+<span class="tp">vector</span>&lt;<span class="tp">int</span>&gt; <span class="fn">preorderIter</span>(<span class="tp">Node</span>* root) {
+    <span class="tp">vector</span>&lt;<span class="tp">int</span>&gt; result;
+    <span class="kw">if</span> (!root) <span class="kw">return</span> result;
+    <span class="tp">stack</span>&lt;<span class="tp">Node</span>*&gt; st;
+    st.push(root);
+    <span class="kw">while</span> (!st.empty()) {
+        <span class="tp">Node</span>* cur = st.top(); st.pop();
+        result.push_back(cur->data);
+        <span class="cm">// push right FIRST so left gets popped (visited) first</span>
+        <span class="kw">if</span> (cur->right) st.push(cur->right);
+        <span class="kw">if</span> (cur->left)  st.push(cur->left);
+    }
+    <span class="kw">return</span> result;
+}</code></pre>
+    <p>This is exactly the pattern behind "evaluate expression tree", "flatten binary tree", and half of LeetCode's stack tag. Once you see <em>recursion = implicit stack</em>, converting any recursive tree function into an iterative one is mechanical: whatever you'd push onto the call stack (the next thing to process), push it onto a real <span class="mono">std::stack</span> instead.</p>
+    <div class="card">
+      <p style="margin-top:0">Watch <span class="mono">preorder(root)</span> actually push and pop call frames as it runs on our 6-node tree:</p>
+      <div class="viz-controls">
+        <button onclick="runStackDemo()">Trace the call stack</button>
+        <button class="ghost" onclick="clearStackDemo()">Reset</button>
+      </div>
+      <div id="stackDemo" style="display:flex;flex-direction:column-reverse;gap:4px;margin-top:14px;min-height:220px;max-width:160px;"></div>
+    </div>
+  </section>
+
+  <section id="bfs">
+    <h2><span class="n">06</span> BFS — Level Order Traversal</h2>
+    <p>Where DFS goes deep first, <strong>BFS</strong> goes wide: visit every node at depth 0, then depth 1, then depth 2… This needs a queue, because a queue processes things in the order they were discovered (FIFO) — same order the levels were discovered.</p>
+    <pre><code><span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="tp">int</span>&gt;&gt; <span class="fn">levelOrder</span>(<span class="tp">Node</span>* root) {
+    <span class="tp">vector</span>&lt;<span class="tp">vector</span>&lt;<span class="tp">int</span>&gt;&gt; result;
+    <span class="kw">if</span> (!root) <span class="kw">return</span> result;
+    <span class="tp">queue</span>&lt;<span class="tp">Node</span>*&gt; q;
+    q.push(root);
+    <span class="kw">while</span> (!q.empty()) {
+        <span class="tp">int</span> sz = q.size();          <span class="cm">// nodes in THIS level</span>
+        <span class="tp">vector</span>&lt;<span class="tp">int</span>&gt; level;
+        <span class="kw">for</span> (<span class="tp">int</span> i = 0; i < sz; i++) {
+            <span class="tp">Node</span>* cur = q.front(); q.pop();
+            level.push_back(cur->data);
+            <span class="kw">if</span> (cur->left)  q.push(cur->left);
+            <span class="kw">if</span> (cur->right) q.push(cur->right);
+        }
+        result.push_back(level);
+    }
+    <span class="kw">return</span> result;
+}</code></pre>
+    <div class="card">
+      <p style="margin-top:0">On the same tree, level order visits: <span class="mono">10 → 5,15 → 2,7,20</span></p>
+      <button onclick="runBFS()">Run Level Order</button>
+      <button class="ghost" onclick="clearDFS()">Reset</button>
+      <div class="order-out" id="bfsOut"></div>
+    </div>
+  </section>
+
+  <section id="queue-link">
+    <h2><span class="n">07</span> Queue ↔ Trees: the "snapshot the size" trick</h2>
+    <div class="linkbox"><strong>The key insight:</strong> the line <span class="mono">int sz = q.size();</span> before the inner loop is the single most reused trick in queue-based tree problems. It freezes "how many nodes are in the queue right now" so the inner loop processes exactly one level, even though you keep pushing next-level children into the same queue mid-loop.</div>
+    <p>Master that one snapshot-the-size pattern and you can solve: zigzag level order, right-side view, level averages, min depth via BFS, and any "process layer by layer" queue question — they're all this loop with one extra tweak.</p>
+  </section>
+
+  <section id="bst">
+    <h2><span class="n">08</span> Binary Search Tree — Search &amp; Insert</h2>
+    <p>A BST layers ordering on top of the shape you already know: at every node, everything smaller goes left, everything bigger goes right. That one rule makes search <strong>O(log n)</strong> on a balanced tree, instead of O(n).</p>
+    <pre><code><span class="tp">Node</span>* <span class="fn">insert</span>(<span class="tp">Node</span>* root, <span class="tp">int</span> val) {
+    <span class="kw">if</span> (root == <span class="kw">nullptr</span>) <span class="kw">return new</span> <span class="tp">Node</span>(val);
+    <span class="kw">if</span> (val < root->data) root->left  = insert(root->left, val);
+    <span class="kw">else</span>                  root->right = insert(root->right, val);
+    <span class="kw">return</span> root;
+}
+
+<span class="tp">bool</span> <span class="fn">search</span>(<span class="tp">Node</span>* root, <span class="tp">int</span> val) {
+    <span class="kw">if</span> (root == <span class="kw">nullptr</span>) <span class="kw">return false</span>;
+    <span class="kw">if</span> (root->data == val) <span class="kw">return true</span>;
+    <span class="kw">return</span> val < root->data ? search(root->left, val)
+                              : search(root->right, val);
+}</code></pre>
+    <div class="tip"><strong>Remember section 04?</strong> Run <span class="mono">inorder()</span> on any BST and the output is always sorted ascending — left, then node, then right means smaller-node-bigger, level after level. That's a free sanity check when debugging a BST.</div>
+  </section>
+
+  <section id="height">
+    <h2><span class="n">09</span> Height, Diameter &amp; Balance</h2>
+    <p><strong>Height</strong> is computed bottom-up: a leaf's subtree has height 1 (or 0, pick a convention and stay consistent), and every other node is <span class="mono">1 + max(leftHeight, rightHeight)</span>. This is a postorder shape — you need both children's answers before you know your own.</p>
+    <pre><code><span class="tp">int</span> <span class="fn">height</span>(<span class="tp">Node</span>* root) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span> 0;
+    <span class="kw">return</span> 1 + max(height(root->left), height(root->right));
+}</code></pre>
+    <h3>Diameter — the trap question</h3>
+    <p>Diameter is the longest path between <em>any</em> two nodes, and it does <strong>not</strong> have to pass through the root. The naive approach recomputes height at every node — O(n²). The trick: compute height and update a running diameter in the <em>same</em> postorder pass.</p>
+    <div class="card">
+      <svg viewBox="0 0 360 190" width="100%">
+        <line class="edge" x1="180" y1="30" x2="90" y2="90"/>
+        <line class="edge" x1="180" y1="30" x2="270" y2="90"/>
+        <line class="edge" style="stroke:var(--gold);stroke-width:3" x1="90" y1="90" x2="45" y2="150"/>
+        <line class="edge" x1="90" y1="90" x2="135" y2="150"/>
+        <line class="edge" style="stroke:var(--gold);stroke-width:3" x1="270" y1="90" x2="315" y2="150"/>
+        <circle class="node-tag" cx="180" cy="30" r="20"/><text class="node-txt" x="180" y="35" text-anchor="middle">10</text>
+        <circle class="node-tag active" cx="90" cy="90" r="20"/><text class="node-txt" x="90" y="95" text-anchor="middle">5</text>
+        <circle class="node-tag active" cx="270" cy="90" r="20"/><text class="node-txt" x="270" y="95" text-anchor="middle">15</text>
+        <circle class="node-tag active" cx="45" cy="150" r="20"/><text class="node-txt" x="45" y="155" text-anchor="middle">2</text>
+        <circle class="node-tag" cx="135" cy="150" r="20"/><text class="node-txt" x="135" y="155" text-anchor="middle">7</text>
+        <circle class="node-tag active" cx="315" cy="150" r="20"/><text class="node-txt" x="315" y="155" text-anchor="middle">20</text>
+      </svg>
+      <p style="text-align:center;color:var(--muted);font-size:.85rem;margin:6px 0 0">Gold path: 2 → 5 → 10 → 15 → 20, a diameter of 4 edges — it passes straight through the root here, but in general it might not.</p>
+    </div>
+    <pre><code><span class="tp">int</span> diameter = 0;
+<span class="tp">int</span> <span class="fn">heightAndDiameter</span>(<span class="tp">Node</span>* root) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span> 0;
+    <span class="tp">int</span> lh = heightAndDiameter(root->left);
+    <span class="tp">int</span> rh = heightAndDiameter(root->right);
+    diameter = max(diameter, lh + rh);   <span class="cm">// path through THIS node</span>
+    <span class="kw">return</span> 1 + max(lh, rh);
+}</code></pre>
+    <h3>Balanced Check</h3>
+    <pre><code><span class="cm">// naive: O(n²). Better: fold the check into the height computation,</span>
+<span class="cm">// returning -1 as a sentinel the moment any subtree is unbalanced.</span>
+<span class="tp">int</span> <span class="fn">checkHeight</span>(<span class="tp">Node</span>* root) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span> 0;
+    <span class="tp">int</span> lh = checkHeight(root->left);
+    <span class="kw">if</span> (lh == -1) <span class="kw">return</span> -1;
+    <span class="tp">int</span> rh = checkHeight(root->right);
+    <span class="kw">if</span> (rh == -1) <span class="kw">return</span> -1;
+    <span class="kw">if</span> (abs(lh - rh) > 1) <span class="kw">return</span> -1;
+    <span class="kw">return</span> 1 + max(lh, rh);
+}
+<span class="tp">bool</span> <span class="fn">isBalanced</span>(<span class="tp">Node</span>* root) { <span class="kw">return</span> checkHeight(root) != -1; }</code></pre>
+    <div class="tip"><strong>Pattern to remember:</strong> "compute one thing bottom-up while updating a global/outer answer along the way" solves diameter, balance-check, max path sum, and more. It's postorder DFS wearing different clothes.</div>
+  </section>
+
+  <section id="lca">
+    <h2><span class="n">10</span> Lowest Common Ancestor (general Binary Tree)</h2>
+    <p>Not a BST this time — no ordering to exploit. The idea: search left and right for the two target nodes; if one is found on each side, the current node <em>is</em> the split point, i.e. the LCA.</p>
+    <div class="card">
+      <svg viewBox="0 0 360 190" width="100%">
+        <line class="edge" style="stroke:var(--gold);stroke-width:3" x1="180" y1="30" x2="90" y2="90"/>
+        <line class="edge" x1="180" y1="30" x2="270" y2="90"/>
+        <line class="edge" style="stroke:var(--gold);stroke-width:3" x1="90" y1="90" x2="45" y2="150"/>
+        <line class="edge" style="stroke:var(--gold);stroke-width:3" x1="90" y1="90" x2="135" y2="150"/>
+        <line class="edge" x1="270" y1="90" x2="315" y2="150"/>
+        <circle class="node-tag" cx="180" cy="30" r="20"/><text class="node-txt" x="180" y="35" text-anchor="middle">10</text>
+        <circle class="node-tag active" cx="90" cy="90" r="20"/><text class="node-txt" x="90" y="95" text-anchor="middle">5</text>
+        <circle class="node-tag" cx="270" cy="90" r="20"/><text class="node-txt" x="270" y="95" text-anchor="middle">15</text>
+        <circle class="node-tag active" cx="45" cy="150" r="20"/><text class="node-txt" x="45" y="155" text-anchor="middle">2</text>
+        <circle class="node-tag active" cx="135" cy="150" r="20"/><text class="node-txt" x="135" y="155" text-anchor="middle">7</text>
+        <circle class="node-tag" cx="315" cy="150" r="20"/><text class="node-txt" x="315" y="155" text-anchor="middle">20</text>
+      </svg>
+      <p style="text-align:center;color:var(--muted);font-size:.85rem;margin:6px 0 0">LCA(2, 7) = <strong>5</strong> — the deepest node that has both 2 and 7 somewhere below it.</p>
+    </div>
+    <pre><code><span class="tp">Node</span>* <span class="fn">lowestCommonAncestor</span>(<span class="tp">Node</span>* root, <span class="tp">Node</span>* p, <span class="tp">Node</span>* q) {
+    <span class="kw">if</span> (!root || root == p || root == q) <span class="kw">return</span> root;
+    <span class="tp">Node</span>* left  = lowestCommonAncestor(root->left, p, q);
+    <span class="tp">Node</span>* right = lowestCommonAncestor(root->right, p, q);
+    <span class="kw">if</span> (left && right) <span class="kw">return</span> root;   <span class="cm">// found one on each side</span>
+    <span class="kw">return</span> left ? left : right;        <span class="cm">// both were on the same side</span>
+}</code></pre>
+  </section>
+
+  <section id="invert">
+    <h2><span class="n">11</span> Invert &amp; Symmetric — the classic swap tricks</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-top:0">Invert a Binary Tree</h3>
+        <pre style="margin:0"><code><span class="tp">Node</span>* <span class="fn">invert</span>(<span class="tp">Node</span>* root) {
+    <span class="kw">if</span> (!root) <span class="kw">return</span> <span class="kw">nullptr</span>;
+    swap(root->left, root->right);
+    invert(root->left);
+    invert(root->right);
+    <span class="kw">return</span> root;
+}</code></pre>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0">Check Symmetric</h3>
+        <pre style="margin:0"><code><span class="tp">bool</span> <span class="fn">mirror</span>(<span class="tp">Node</span>* a, <span class="tp">Node</span>* b) {
+    <span class="kw">if</span> (!a && !b) <span class="kw">return true</span>;
+    <span class="kw">if</span> (!a || !b || a->data != b->data)
+        <span class="kw">return false</span>;
+    <span class="kw">return</span> mirror(a->left, b->right)
+        && mirror(a->right, b->left);
+}</code></pre>
+      </div>
+    </div>
+    <p style="margin-top:14px">Both are the same idea as everything above: express the answer for a node in terms of the answer for its children, and let recursion (the call stack, from Section 05) do the bookkeeping.</p>
+  </section>
+
+  <section id="cheatsheet">
+    <h2><span class="n">12</span> Interview Pattern Cheat-Sheet</h2>
+    <div class="grid2">
+      <div class="card"><h3 style="margin-top:0">"Level by level"</h3><p style="margin:0">BFS + <span class="mono">size-snapshot</span> queue trick. → right side view, zigzag, min depth, level averages.</p></div>
+      <div class="card"><h3 style="margin-top:0">"Bottom-up combine"</h3><p style="margin:0">Postorder, return a value built from both children. → height, diameter, balance, max path sum.</p></div>
+      <div class="card"><h3 style="margin-top:0">"Path from root"</h3><p style="margin:0">Preorder, carry a running list/sum down as a parameter. → root-to-leaf paths, path sum, longest path.</p></div>
+      <div class="card"><h3 style="margin-top:0">"Ordering shortcut"</h3><p style="margin:0">Exploit BST's left&lt;node&lt;right. → LCA in BST, validate BST, kth smallest, closest value.</p></div>
+      <div class="card"><h3 style="margin-top:0">"Iterative with stack"</h3><p style="margin:0">Explicit <span class="mono">std::stack</span> replaces recursion. → inorder/preorder without recursion, flatten tree.</p></div>
+      <div class="card"><h3 style="margin-top:0">"Two-node search"</h3><p style="margin:0">Search both subtrees, combine at the split. → LCA in general binary tree.</p></div>
+    </div>
+  </section>
+
+  <section id="complexity">
+    <h2><span class="n">13</span> Complexity Table</h2>
+    <div class="card" style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;min-width:480px">
+        <tr style="color:var(--sage);text-align:left;border-bottom:1px solid var(--border)"><th style="padding:8px 10px">Operation</th><th style="padding:8px 10px">Balanced BST</th><th style="padding:8px 10px">Skewed BST</th><th style="padding:8px 10px">Any Traversal</th></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px">Search</td><td style="padding:8px 10px">O(log n)</td><td style="padding:8px 10px">O(n)</td><td style="padding:8px 10px">—</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px">Insert</td><td style="padding:8px 10px">O(log n)</td><td style="padding:8px 10px">O(n)</td><td style="padding:8px 10px">—</td></tr>
+        <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 10px">Delete</td><td style="padding:8px 10px">O(log n)</td><td style="padding:8px 10px">O(n)</td><td style="padding:8px 10px">—</td></tr>
+        <tr><td style="padding:8px 10px">Traverse all nodes</td><td style="padding:8px 10px">—</td><td style="padding:8px 10px">—</td><td style="padding:8px 10px">O(n) time, O(h) space</td></tr>
+      </table>
+      <p style="margin:12px 0 0;color:var(--muted);font-size:.85rem">A skewed BST (every node has only one child) degrades to a linked list — this is exactly why AVL / Red-Black trees exist: they rebalance on insert so height stays O(log n).</p>
+    </div>
+  </section>
+
+  <section id="practice">
+    <h2><span class="n">14</span> Practice Set — do these in order</h2>
+    <details><summary>1. Maximum Depth of a Binary Tree</summary><p>Return <span class="mono">1 + max(depth(left), depth(right))</span>, base case <span class="mono">nullptr → 0</span>. Pure recursion, no stack/queue needed — warm-up.</p></details>
+    <details><summary>2. Iterative Inorder Traversal (uses Section 05)</summary><p>Push all left children onto a stack until null, pop &amp; visit, then move to the popped node's right child and repeat. Harder than preorder because "visit" happens in the middle, not first.</p></details>
+    <details><summary>3. Binary Tree Right Side View (uses Section 07)</summary><p>Do level order BFS; in each level's inner loop, the <em>last</em> node processed (<span class="mono">i == sz-1</span>) is the one visible from the right.</p></details>
+    <details><summary>4. Validate a Binary Search Tree</summary><p>Don't just compare each node to its children — pass down a valid <span class="mono">(min, max)</span> range and shrink it as you recurse.</p></details>
+    <details><summary>5. Lowest Common Ancestor in a BST</summary><p>Use the ordering: if both values are less than root, go left; both greater, go right; otherwise root is the split point — that's your answer.</p></details>
+    <details><summary>6. Zigzag Level Order Traversal</summary><p>Same queue loop as Section 06/07, but reverse alternating levels (track a boolean that flips each pass, or push into a deque).</p></details>
+    <details><summary>7. Diameter of a Binary Tree</summary><p>Straight from Section 09 — one postorder pass, update a global/outer <span class="mono">diameter</span> as <span class="mono">lh + rh</span> at every node while returning height upward.</p></details>
+    <details><summary>8. Kth Smallest Element in a BST</summary><p>Inorder traversal on a BST is sorted — do an iterative inorder (Section 05's stack trick) and stop the moment you've popped k nodes.</p></details>
+    <details><summary>9. Serialize and Deserialize a Binary Tree</summary><p>Preorder-with-nulls: serialize with preorder, writing a sentinel (e.g. "#") for every null child. Deserialize by consuming that same string with a preorder-shaped recursive rebuild — a nice test of Sections 04 and 05 together.</p></details>
+  </section>
+
+  <section id="quiz">
+    <h2><span class="n">15</span> Quick Quiz</h2>
+    <div class="card">
+      <p style="margin-top:0"><strong>Q1.</strong> To convert a recursive DFS into an iterative one, what do you replace the call stack with?</p>
+      <div class="quiz-opts" data-correct="1">
+        <button class="qopt">A queue, since traversal order matters</button>
+        <button class="qopt">An explicit std::stack</button>
+        <button class="qopt">A separate recursive function</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+    <div class="card">
+      <p style="margin-top:0"><strong>Q2.</strong> Why does level-order traversal need a queue instead of a stack?</p>
+      <div class="quiz-opts" data-correct="0">
+        <button class="qopt">FIFO order matches the order nodes are discovered level by level</button>
+        <button class="qopt">Queues use less memory than stacks</button>
+        <button class="qopt">Because recursion can't be used for BFS at all</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+    <div class="card">
+      <p style="margin-top:0"><strong>Q3.</strong> Inorder traversal on a BST always prints:</p>
+      <div class="quiz-opts" data-correct="2">
+        <button class="qopt">Nodes in insertion order</button>
+        <button class="qopt">Nodes in reverse sorted order</button>
+        <button class="qopt">Nodes in ascending sorted order</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+    <div class="card">
+      <p style="margin-top:0"><strong>Q4.</strong> Why can't a binary tree's diameter always be found by just checking the root's left-height + right-height?</p>
+      <div class="quiz-opts" data-correct="1">
+        <button class="qopt">Because height is always wrong for unbalanced trees</button>
+        <button class="qopt">Because the longest path may lie entirely within a subtree, never reaching the root</button>
+        <button class="qopt">Because diameter only applies to BSTs</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+    <div class="card">
+      <p style="margin-top:0"><strong>Q5.</strong> In the general-tree LCA algorithm, what does it mean when a node's recursive calls return a non-null result from <em>both</em> left and right?</p>
+      <div class="quiz-opts" data-correct="0">
+        <button class="qopt">This node is the LCA — the two targets were found on opposite sides</button>
+        <button class="qopt">The tree is unbalanced</button>
+        <button class="qopt">One of the two target nodes doesn't exist in the tree</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+</main>
+</div>
+<footer>Built for going from zero to confidently reaching for a stack or a queue the moment a tree problem shows up. Every C++ snippet above compiles as-is with <span class="mono">&lt;iostream&gt;, &lt;vector&gt;, &lt;stack&gt;, &lt;queue&gt;</span>.</footer>
+
+<script>
+const order = {pre:['10','5','2','7','15','20'], in:['2','5','7','10','15','20'], post:['2','7','5','20','15','10']};
+let dfsTimer=null;
+function clearDFS(){
+  document.querySelectorAll('.node-tag').forEach(n=>n.classList.remove('active'));
+  document.getElementById('dfsOut').textContent='';
+  document.getElementById('bfsOut').textContent='';
+  if(dfsTimer) clearInterval(dfsTimer);
+}
+function runDFS(mode){
+  clearDFS();
+  const seq = order[mode];
+  let i=0, shown=[];
+  dfsTimer = setInterval(()=>{
+    if(i>0) document.getElementById('dn-'+seq[i-1]).classList.remove('active');
+    if(i>=seq.length){ clearInterval(dfsTimer); return; }
+    document.getElementById('dn-'+seq[i]).classList.add('active');
+    shown.push(seq[i]);
+    document.getElementById('dfsOut').textContent = shown.join(' → ');
+    i++;
+  }, 550);
+}
+function runBFS(){
+  clearDFS();
+  const seq = ['10','5','15','2','7','20'];
+  let i=0, shown=[];
+  dfsTimer = setInterval(()=>{
+    if(i>0) document.getElementById('dn-'+seq[i-1]).classList.remove('active');
+    if(i>=seq.length){ clearInterval(dfsTimer); return; }
+    document.getElementById('dn-'+seq[i]).classList.add('active');
+    shown.push(seq[i]);
+    document.getElementById('bfsOut').textContent = shown.join(' → ');
+    i++;
+  }, 550);
+}
+const stackOps = [
+  {a:'push',v:'10'},{a:'push',v:'5'},{a:'push',v:'2'},{a:'pop',v:'2'},
+  {a:'push',v:'7'},{a:'pop',v:'7'},{a:'pop',v:'5'},{a:'push',v:'15'},
+  {a:'push',v:'20'},{a:'pop',v:'20'},{a:'pop',v:'15'},{a:'pop',v:'10'}
+];
+let stackTimer=null, stackFrames=[];
+function clearStackDemo(){
+  if(stackTimer) clearInterval(stackTimer);
+  stackFrames=[];
+  document.getElementById('stackDemo').innerHTML='';
+}
+function renderStack(){
+  const el = document.getElementById('stackDemo');
+  el.innerHTML = stackFrames.map(v=>`<div style="background:var(--bg3);border:1px solid var(--gold);color:var(--gold);font-family:'JetBrains Mono',monospace;padding:8px 12px;border-radius:6px;text-align:center">preorder(${v})</div>`).join('');
+}
+function runStackDemo(){
+  clearStackDemo();
+  let i=0;
+  stackTimer = setInterval(()=>{
+    if(i>=stackOps.length){ clearInterval(stackTimer); return; }
+    const op = stackOps[i];
+    if(op.a==='push') stackFrames.push(op.v);
+    else stackFrames.pop();
+    renderStack();
+    i++;
+  }, 500);
+}
+function showTab(name){
+  document.querySelectorAll('.tabbtn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+document.querySelectorAll('.quiz-opts').forEach(group=>{
+  const correctIdx = parseInt(group.getAttribute('data-correct'));
+  const fb = group.nextElementSibling;
+  group.querySelectorAll('.qopt').forEach((btn,idx)=>{
+    btn.addEventListener('click', ()=>{
+      group.querySelectorAll('.qopt').forEach(b=>{b.classList.remove('correct','wrong'); b.disabled=true;});
+      if(idx===correctIdx){ btn.classList.add('correct'); fb.textContent='Correct.'; }
+      else { btn.classList.add('wrong'); group.children[correctIdx].classList.add('correct'); fb.textContent='Not quite — the right answer is highlighted.'; }
+    });
+  });
+});
+</script>
+</body>
+</html>
