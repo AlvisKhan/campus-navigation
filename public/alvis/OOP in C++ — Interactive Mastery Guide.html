@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OOP in C++ — Interactive Mastery Guide</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#161a22; --panel2:#1c212b; --border:#2a3040;
+  --text:#e8ecf3; --muted:#93a0b4; --accent:#6ee7c8; --accent2:#7aa2ff;
+  --warn:#ffb454; --danger:#ff7a7a; --code-bg:#0b0e14; --code-text:#d9e2ef;
+  --kw:#ff8fc7; --str:#c3e88d; --com:#5c6773; --type:#7aa2ff; --num:#ffcb6b;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+}
+:root:not([data-theme="dark"]) {}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f4f6fb; --panel:#ffffff; --panel2:#eef1f8; --border:#dde3ee;
+    --text:#1b2130; --muted:#5b6577; --accent:#0e9f74; --accent2:#3457d5;
+    --code-bg:#0f1320; --code-text:#e6ecf7;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f4f6fb; --panel:#ffffff; --panel2:#eef1f8; --border:#dde3ee;
+  --text:#1b2130; --muted:#5b6577; --accent:#0e9f74; --accent2:#3457d5;
+  --code-bg:#0f1320; --code-text:#e6ecf7;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+  display:flex; min-height:100vh;
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px}
+
+/* ---------- Sidebar ---------- */
+#sidebar{
+  width:270px; flex:0 0 270px; background:var(--panel);
+  border-right:1px solid var(--border); padding:18px 12px 24px;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  padding-top:calc(18px + env(safe-area-inset-top,0px));
+}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.brand-dot{width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.brand h1{font-size:15px;margin:0;letter-spacing:.3px}
+.brand p{margin:2px 0 0;font-size:11px;color:var(--muted)}
+nav .navgroup{margin-bottom:6px}
+nav .navlabel{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:10px 10px 4px}
+nav button.navitem{
+  display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:none;
+  color:var(--text); padding:9px 10px; border-radius:8px; font-size:13.5px; cursor:pointer;
+}
+nav button.navitem .num{font-size:10px;color:var(--muted);width:18px;flex:0 0 18px}
+nav button.navitem:hover{background:var(--panel2)}
+nav button.navitem.active{background:linear-gradient(90deg,rgba(110,231,200,.16),transparent);color:var(--accent);font-weight:600}
+#progressWrap{margin:14px 8px 0;padding:12px;background:var(--panel2);border-radius:10px;border:1px solid var(--border)}
+#progressWrap .label{font-size:11px;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+#progressBarOuter{height:7px;background:var(--border);border-radius:6px;overflow:hidden}
+#progressBarInner{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s}
+#themeBtn{margin:14px 8px 0;width:calc(100% - 16px);padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--panel2);color:var(--text);cursor:pointer;font-size:12px}
+
+/* ---------- Main ---------- */
+#main{flex:1; min-width:0; padding:28px 34px 80px; max-width:980px}
+.section{display:none; animation:fade .25s ease}
+.section.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+h2.title{font-size:26px;margin:0 0 6px;display:flex;align-items:center;gap:10px}
+h2.title .pill{font-size:11px;background:var(--panel2);border:1px solid var(--border);color:var(--muted);padding:3px 9px;border-radius:20px;font-weight:600}
+.subtitle{color:var(--muted);font-size:14.5px;margin:0 0 22px;max-width:70ch}
+h3{font-size:17px;margin:28px 0 10px;color:var(--accent2)}
+p{line-height:1.65;font-size:14.5px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin:14px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}#sidebar{position:fixed;left:0;z-index:50;transform:translateX(-100%);transition:transform .25s;box-shadow:8px 0 30px rgba(0,0,0,.3)}#sidebar.open{transform:translateX(0)}#main{padding:22px 16px 80px}#menuBtn{display:inline-flex !important}}
+.callout{border-radius:10px;padding:12px 14px;margin:14px 0;font-size:13.5px;line-height:1.55;border:1px solid; display:flex; gap:10px}
+.callout .ico{font-size:16px}
+.callout.tip{background:rgba(110,231,200,.08);border-color:rgba(110,231,200,.35)}
+.callout.warn{background:rgba(255,180,84,.08);border-color:rgba(255,180,84,.35)}
+.callout.interview{background:rgba(122,162,255,.08);border-color:rgba(122,162,255,.35)}
+.callout.danger{background:rgba(255,122,122,.08);border-color:rgba(255,122,122,.35)}
+
+/* code */
+.codewrap{position:relative;margin:14px 0}
+pre{background:var(--code-bg); color:var(--code-text); padding:16px 16px 14px; border-radius:10px; overflow-x:auto; font-size:13px; line-height:1.55; margin:0; border:1px solid var(--border)}
+pre code{font-family:'Cascadia Code','Fira Code',Consolas,monospace}
+.codewrap .tag{position:absolute;top:8px;right:10px;font-size:10px;color:#8a94a6;background:#00000033;padding:2px 7px;border-radius:5px}
+.kw{color:var(--kw)} .str{color:var(--str)} .com{color:var(--com);font-style:italic} .type{color:var(--type)} .num{color:var(--num)}
+
+/* diagram frame */
+.diagram{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:14px;margin:16px 0;overflow-x:auto;text-align:center}
+.diagram svg{max-width:100%;height:auto}
+.diagram .caption{font-size:12px;color:var(--muted);margin-top:8px}
+
+/* accordion (interview Q&A) */
+.qa{border:1px solid var(--border);border-radius:10px;margin:9px 0;overflow:hidden;background:var(--panel)}
+.qa summary{padding:13px 16px;cursor:pointer;font-weight:600;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary .arrow{transition:transform .2s;color:var(--muted);flex:0 0 auto}
+.qa[open] summary .arrow{transform:rotate(90deg)}
+.qa .qa-body{padding:0 16px 16px;font-size:13.5px;line-height:1.6;color:var(--text)}
+.qa[open] summary{border-bottom:1px solid var(--border)}
+.difftag{font-size:10px;padding:2px 8px;border-radius:12px;border:1px solid var(--border);color:var(--muted)}
+.difftag.easy{color:var(--accent);border-color:var(--accent)}
+.difftag.med{color:var(--warn);border-color:var(--warn)}
+.difftag.hard{color:var(--danger);border-color:var(--danger)}
+
+/* mini quiz */
+.quiz{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;margin:16px 0}
+.quiz .q{font-weight:600;margin-bottom:10px;font-size:14px}
+.opt{display:block;width:100%;text-align:left;padding:9px 12px;margin:6px 0;border-radius:8px;border:1px solid var(--border);background:var(--panel2);color:var(--text);cursor:pointer;font-size:13px}
+.opt:hover{border-color:var(--accent2)}
+.opt.correct{border-color:var(--accent);background:rgba(110,231,200,.12)}
+.opt.wrong{border-color:var(--danger);background:rgba(255,122,122,.12)}
+.quizfeedback{margin-top:8px;font-size:13px;font-weight:600}
+
+/* table */
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+th,td{padding:9px 12px;border:1px solid var(--border);text-align:left}
+th{background:var(--panel2);color:var(--accent2)}
+
+.navfooter{display:flex;justify-content:space-between;margin-top:36px;gap:10px}
+.navfooter button{padding:10px 16px;border-radius:9px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;font-size:13.5px}
+.navfooter button:hover{border-color:var(--accent2)}
+#menuBtn{display:none;position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:14px;z-index:60;background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 11px;cursor:pointer;font-size:16px}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.badge{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--panel2);border:1px solid var(--border);color:var(--muted)}
+</style>
+</head>
+<body>
+
+<button id="menuBtn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<aside id="sidebar">
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div><h1>OOP in C++</h1><p>Interactive Mastery Guide</p></div>
+  </div>
+  <nav id="navList"></nav>
+  <div id="progressWrap">
+    <div class="label"><span>Progress</span><span id="progressPct">0%</span></div>
+    <div id="progressBarOuter"><div id="progressBarInner"></div></div>
+  </div>
+  <button id="themeBtn" onclick="toggleTheme()">🌓 Toggle theme</button>
+</aside>
+
+<main id="main"></main>
+
+<script>
+/* ================= THEME ================= */
+function toggleTheme(){
+  const r=document.documentElement;
+  const cur = r.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  r.setAttribute('data-theme', cur==='dark' ? 'light':'dark');
+}
+
+/* ================= CONTENT DATA ================= */
+const sections = [
+{id:'intro', label:'Why OOP?', content: `
+<h2 class="title">Why Object-Oriented Programming? <span class="pill">Foundations</span></h2>
+<p class="subtitle">Understand the problem OOP solves before memorizing its vocabulary — this is what interviewers actually probe for.</p>
+<div class="card">
+<p>Procedural code (plain functions + global data) becomes unmanageable as programs grow: data and the functions that operate on it live far apart, so anyone can mutate anything, and reuse means copy-paste. <b>OOP bundles data and behavior into one unit (a class)</b> and controls how the outside world may touch that data.</p>
+<p>C++ OOP rests on <b>four pillars</b>:</p>
+</div>
+<div class="diagram">
+<svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg">
+  <defs><style>.pbox{fill:var(--panel2);stroke:var(--border);stroke-width:1.5}.ptxt{fill:var(--text);font-family:inherit;font-size:13px;font-weight:600}.pdesc{fill:var(--muted);font-family:inherit;font-size:10.5px}.pnum{fill:var(--accent);font-family:inherit;font-size:20px;font-weight:700}</style></defs>
+  <circle cx="380" cy="110" r="55" fill="none" stroke="var(--accent2)" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="380" y="106" text-anchor="middle" class="ptxt" fill="var(--accent2)">OOP</text>
+  <text x="380" y="122" text-anchor="middle" class="pdesc">4 Pillars</text>
+  <g>
+    <rect x="20" y="15" width="160" height="70" rx="10" class="pbox"/>
+    <text x="100" y="38" text-anchor="middle" class="pnum">01</text>
+    <text x="100" y="58" text-anchor="middle" class="ptxt">Encapsulation</text>
+    <text x="100" y="74" text-anchor="middle" class="pdesc">bind data + methods</text>
+  </g>
+  <g>
+    <rect x="580" y="15" width="160" height="70" rx="10" class="pbox"/>
+    <text x="660" y="38" text-anchor="middle" class="pnum">02</text>
+    <text x="660" y="58" text-anchor="middle" class="ptxt">Abstraction</text>
+    <text x="660" y="74" text-anchor="middle" class="pdesc">hide complexity</text>
+  </g>
+  <g>
+    <rect x="20" y="135" width="160" height="70" rx="10" class="pbox"/>
+    <text x="100" y="158" text-anchor="middle" class="pnum">03</text>
+    <text x="100" y="178" text-anchor="middle" class="ptxt">Inheritance</text>
+    <text x="100" y="194" text-anchor="middle" class="pdesc">reuse & extend</text>
+  </g>
+  <g>
+    <rect x="580" y="135" width="160" height="70" rx="10" class="pbox"/>
+    <text x="660" y="158" text-anchor="middle" class="pnum">04</text>
+    <text x="660" y="178" text-anchor="middle" class="ptxt">Polymorphism</text>
+    <text x="660" y="194" text-anchor="middle" class="pdesc">one interface, many forms</text>
+  </g>
+  <line x1="180" y1="50" x2="330" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+  <line x1="580" y1="50" x2="430" y2="90" stroke="var(--border)" stroke-width="1.5"/>
+  <line x1="180" y1="170" x2="330" y2="130" stroke="var(--border)" stroke-width="1.5"/>
+  <line x1="580" y1="170" x2="430" y2="130" stroke="var(--border)" stroke-width="1.5"/>
+</svg>
+<div class="caption">The four pillars — every OOP interview question maps back to one of these.</div>
+</div>
+<div class="callout interview"><span class="ico">🎯</span><div><b>Interview framing:</b> When asked "What is OOP?", give the pillars in one line each with a one-line C++ example, don't just define — interviewers want to see you connect concept → code.</div></div>
+`},
+
+{id:'classes', label:'Classes & Objects', content: `
+<h2 class="title">Classes &amp; Objects <span class="pill">Core</span></h2>
+<p class="subtitle">A <b>class</b> is a blueprint; an <b>object</b> is a concrete instance built from it, occupying its own memory.</p>
+<div class="codewrap"><span class="tag">C++</span><pre><code><span class="kw">class</span> <span class="type">Car</span> {
+<span class="kw">private</span>:
+    <span class="type">std::string</span> brand;
+    <span class="type">int</span> speed = <span class="num">0</span>;
+
+<span class="kw">public</span>:
+    <span class="type">Car</span>(<span class="type">std::string</span> b) : brand(b) {}   <span class="com">// constructor, init list</span>
+
+    <span class="type">void</span> accelerate(<span class="type">int</span> by) { speed += by; }
+    <span class="type">int</span> getSpeed() <span class="kw">const</span> { <span class="kw">return</span> speed; }
+};
+
+<span class="type">int</span> main() {
+    <span class="type">Car</span> tesla(<span class="str">"Tesla"</span>);   <span class="com">// object created on the stack</span>
+    tesla.accelerate(<span class="num">40</span>);
+    <span class="type">Car</span>* bmw = <span class="kw">new</span> <span class="type">Car</span>(<span class="str">"BMW"</span>); <span class="com">// object on the heap</span>
+    <span class="kw">delete</span> bmw;                 <span class="com">// must free heap objects manually</span>
+}</code></pre></div>
+<div class="grid2">
+<div class="card"><h3 style="margin-top:0">Stack objects</h3><p style="font-size:13px">Lifetime is scope-bound; destructor runs automatically when the object goes out of scope. Fast, no leak risk.</p></div>
+<div class="card"><h3 style="margin-top:0">Heap objects (<code>new</code>)</h3><p style="font-size:13px">Lifetime is manual — you must <code>delete</code> it, or wrap it in a smart pointer (<code>std::unique_ptr</code>, <code>std::shared_ptr</code>) so RAII deletes it for you.</p></div>
+</div>
+<div class="callout tip"><span class="ico">💡</span><div><b>Default access:</b> members of a <code>class</code> are <code>private</code> by default; members of a <code>struct</code> are <code>public</code> by default. That's the <em>only</em> functional difference between them in C++.</div></div>
+<div class="quiz" data-qid="q1">
+<div class="q">Quick check: what happens if you forget the <code>delete bmw;</code> line above?</div>
+<button class="opt" data-correct="false">Compiler error</button>
+<button class="opt" data-correct="true">Memory leak — the Car object stays allocated forever</button>
+<button class="opt" data-correct="false">The program crashes immediately</button>
+<div class="quizfeedback"></div>
+</div>
+`},
+
+{id:'encapsulation', label:'Encapsulation', content: `
+<h2 class="title">Encapsulation <span class="pill">Pillar 1</span></h2>
+<p class="subtitle">Bundle data with the methods that operate on it, and restrict direct access using access specifiers.</p>
+<table>
+<tr><th>Specifier</th><th>Accessible from</th></tr>
+<tr><td><code>private</code></td><td>Only inside the same class (and its friends)</td></tr>
+<tr><td><code>protected</code></td><td>Same class + derived classes</td></tr>
+<tr><td><code>public</code></td><td>Anywhere the object is visible</td></tr>
+</table>
+<div class="codewrap"><span class="tag">C++</span><pre><code><span class="kw">class</span> <span class="type">BankAccount</span> {
+    <span class="type">double</span> balance;                 <span class="com">// private by default</span>
+<span class="kw">public</span>:
+    <span class="type">BankAccount</span>(<span class="type">double</span> b) : balance(b) {}
+
+    <span class="type">void</span> deposit(<span class="type">double</span> amt) {
+        <span class="kw">if</span> (amt > <span class="num">0</span>) balance += amt;   <span class="com">// validation lives WITH the data</span>
+    }
+    <span class="type">bool</span> withdraw(<span class="type">double</span> amt) {
+        <span class="kw">if</span> (amt > balance) <span class="kw">return</span> <span class="kw">false</span>;
+        balance -= amt; <span class="kw">return</span> <span class="kw">true</span>;
+    }
+    <span class="type">double</span> getBalance() <span class="kw">const</span> { <span class="kw">return</span> balance; } <span class="com">// controlled read access</span>
+};</code></pre></div>
+<p>No outside code can set <code>balance = -500;</code> directly — every mutation is forced through validated methods. That's encapsulation doing real work, not just "getters and setters."</p>
+<div class="callout interview"><span class="ico">🎯</span><div><b>Common trap question:</b> "Isn't encapsulation just making fields private and adding getters/setters?" — Good answer: no, that alone is just data hiding; encapsulation is about protecting <em>invariants</em> (rules the data must always satisfy) by controlling every path to modify it.</div></div>
+`},
+
+{id:'abstraction', label:'Abstraction', content: `
+<h2 class="title">Abstraction <span class="pill">Pillar 2</span></h2>
+<p class="subtitle">Expose <em>what</em> an object does, hide <em>how</em> it does it — achieved in C++ via abstract classes / pure virtual functions.</p>
+<div class="codewrap"><span class="tag">C++</span><pre><code><span class="kw">class</span> <span class="type">Shape</span> {              <span class="com">// abstract class (interface)</span>
+<span class="kw">public</span>:
+    <span class="kw">virtual</span> <span class="type">double</span> area() <span class="kw">const</span> = <span class="num">0</span>;   <span class="com">// pure virtual -> makes Shape abstract</span>
+    <span class="kw">virtual</span> ~<span class="type">Shape</span>() = <span class="kw">default</span>;         <span class="com">// ALWAYS virtual-destruct a base class</span>
+};
+
+<span class="kw">class</span> <span class="type">Circle</span> : <span class="kw">public</span> <span class="type">Shape</span> {
+    <span class="type">double</span> r;
+<span class="kw">public</span>:
+    <span class="type">Circle</span>(<span class="type">double</span> radius) : r(radius) {}
+    <span class="type">double</span> area() <span class="kw">const</span> <span class="kw">override</span> { <span class="kw">return</span> <span class="num">3.14159</span> * r * r; }
+};
+
+<span class="com">// caller only knows "it's a Shape with an area()" — not HOW area is computed</span>
+<span class="type">void</span> printArea(<span class="kw">const</span> <span class="type">Shape</span>& s) { std::cout << s.area(); }</code></pre></div>
+<div class="callout warn"><span class="ico">⚠️</span><div><b>Abstraction vs Encapsulation — the #1 confused pair:</b> Encapsulation is an <em>implementation technique</em> (bundling + access control). Abstraction is a <em>design-level</em> idea (hiding complexity behind a simple interface). A class can be encapsulated without being abstract, and vice versa.</div></div>
+`},
+
+{id:'inheritance', label:'Inheritance', content: `
+<h2 class="title">Inheritance <span class="pill">Pillar 3</span></h2>
+<p class="subtitle">A derived class reuses and extends a base class's members. C++ uniquely supports <b>multiple inheritance</b>.</p>
+<div class="codewrap"><span class="tag">C++</span><pre><code><span class="kw">class</span> <span class="type">Animal</span> {
+<span class="kw">protected</span>:
+    <span class="type">std::string</span> name;
+<span class="kw">public</span>:
+    <span class="type">Animal</span>(<span class="type">std::string</span> n) : name(n) {}
+    <span class="kw">virtual</span> <span class="type">void</span> speak() <span class="kw">const</span> { std::cout << name << <span class="str">" makes a sound\\n"</span>; }
+};
+
+<span class="kw">class</span> <span class="type">Dog</span> : <span class="kw">public</span> <span class="type">Animal</span> {           <span class="com">// public inheritance = "is-a"</span>
+<span class="kw">public</span>:
+    <span class="type">Dog</span>(<span class="type">std::string</span> n) : <span class="type">Animal</span>(n) {}  <span class="com">// must call base ctor</span>
+    <span class="type">void</span> speak() <span class="kw">const</span> <span class="kw">override</span> { std::cout << name << <span class="str">" barks\\n"</span>; }
+};</code></pre></div>
+<div class="grid2">
+<div class="card"><h3 style="margin-top:0">Types of inheritance</h3>
+<p style="font-size:13px">Single · Multilevel (A→B→C) · Hierarchical (one base, many derived) · Multiple (one derived, many bases) · Hybrid (mix)</p></div>
+<div class="card"><h3 style="margin-top:0"><code>public</code> vs <code>protected</code> vs <code>private</code> inheritance</h3>
+<p style="font-size:13px"><code>public</code>: base's public/protected stay same (true "is-a"). <code>protected</code>/<code>private</code>: base members become more restricted in the derived class — rarely used, mostly "implemented-in-terms-of".</p></div>
+</div>
+<h3>The Diamond Problem</h3>
+<p>When a class inherits from two classes that share a common base, that base gets duplicated — ambiguous.</p>
+<div class="diagram">
+<svg viewBox="0 0 420 260" xmlns="http://www.w3.org/2000/svg">
+<style>.dbox{fill:var(--panel2);stroke:var(--border);stroke-width:1.5}.dtxt{fill:var(--text);font-family:inherit;font-size:13px;font-weight:600}.darr{stroke:var(--accent2);stroke-width:1.6;marker-end:url(#arrow)}</style>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent2)"/></marker></defs>
+<rect x="150" y="15" width="120" height="45" rx="8" class="dbox"/><text x="210" y="42" text-anchor="middle" class="dtxt">Animal</text>
+<rect x="30" y="110" width="120" height="45" rx="8" class="dbox"/><text x="90" y="137" text-anchor="middle" class="dtxt">Swimmer</text>
+<rect x="270" y="110" width="120" height="45" rx="8" class="dbox"/><text x="330" y="137" text-anchor="middle" class="dtxt">Flyer</text>
+<rect x="150" y="200" width="120" height="45" rx="8" class="dbox"/><text x="210" y="227" text-anchor="middle" class="dtxt">Duck</text>
+<line x1="180" y1="60" x2="105" y2="108" class="darr"/>
+<line x1="240" y1="60" x2="315" y2="108" class="darr"/>
+<line x1="120" y1="155" x2="185" y2="198" class="darr"/>
+<line x1="300" y1="155" x2="235" y2="198" class="darr"/>
+</svg>
+<div class="caption">Duck gets TWO copies of Animal (via Swimmer and via Flyer) → ambiguous <code>duck.name</code></div>
+</div>
+<div class="codewrap"><span class="tag">Fix: virtual inheritance</span><pre><code><span class="kw">class</span> <span class="type">Swimmer</span> : <span class="kw">virtual</span> <span class="kw">public</span> <span class="type">Animal</span> { ... };
+<span class="kw">class</span> <span class="type">Flyer</span>   : <span class="kw">virtual</span> <span class="kw">public</span> <span class="type">Animal</span> { ... };
+<span class="kw">class</span> <span class="type">Duck</span> : <span class="kw">public</span> <span class="type">Swimmer</span>, <span class="kw">public</span> <span class="type">Flyer</span> {};
+<span class="com">// now Duck has exactly ONE shared Animal sub-object</span></code></pre></div>
+<div class="callout interview"><span class="ico">🎯</span><div><b>Interview gold:</b> Say explicitly — "virtual inheritance solves the diamond problem by making the base a single shared sub-object rather than duplicating it," and mention it has a small performance/memory cost via extra indirection.</div></div>
+`},
+
+{id:'polymorphism', label:'Polymorphism', content: `
+<h2 class="title">Polymorphism <span class="pill">Pillar 4</span></h2>
+<p class="subtitle">"Many forms" — the same call behaves differently depending on context. Two kinds in C++.</p>
+<div class="grid2">
+<div class="card"><h3 style="margin-top:0">Compile-time (static)</h3>
+<p style="font-size:13px">Resolved by the compiler before the program runs.</p>
+<ul style="font-size:13px"><li><b>Function overloading</b> — same name, different parameters</li><li><b>Operator overloading</b></li><li>Templates (generic code)</li></ul></div>
+<div class="card"><h3 style="margin-top:0">Runtime (dynamic)</h3>
+<p style="font-size:13px">Resolved while the program is running, using <b>virtual functions</b>.</p>
+<ul style="font-size:13px"><li>Achieved through base-class pointers/references + <code>virtual</code></li><li>Enables one interface, many implementations</li></ul></div>
+</div>
+<div class="codewrap"><span class="tag">Compile-time example</span><pre><code><span class="type">int</span> add(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a + b; }
+<span class="type">double</span> add(<span class="type">double</span> a, <span class="type">double</span> b) { <span class="kw">return</span> a + b; } <span class="com">// overload: chosen at compile time</span></code></pre></div>
+<div class="codewrap"><span class="tag">Runtime example — the classic interview snippet</span><pre><code><span class="type">Animal</span>* a = <span class="kw">new</span> <span class="type">Dog</span>(<span class="str">"Rex"</span>);
+a->speak();          <span class="com">// prints "Rex barks" — Dog::speak() runs, NOT Animal::speak()</span>
+<span class="kw">delete</span> a;         <span class="com">// virtual destructor in Animal ensures ~Dog() runs too</span></code></pre></div>
+<h3>How it actually works: vtable &amp; vptr</h3>
+<div class="diagram">
+<svg viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg">
+<style>.vb{fill:var(--panel2);stroke:var(--border);stroke-width:1.5}.vt{fill:var(--text);font-family:inherit;font-size:12px}.vh{fill:var(--accent2);font-family:inherit;font-size:12.5px;font-weight:700}.va{stroke:var(--accent);stroke-width:1.6;marker-end:url(#a2)}</style>
+<defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="var(--accent)"/></marker></defs>
+<rect x="20" y="20" width="150" height="70" rx="8" class="vb"/>
+<text x="95" y="38" text-anchor="middle" class="vh">Dog object</text>
+<text x="95" y="58" text-anchor="middle" class="vt">vptr ──┐</text>
+<text x="95" y="76" text-anchor="middle" class="vt">name = "Rex"</text>
+<rect x="260" y="20" width="170" height="70" rx="8" class="vb"/>
+<text x="345" y="38" text-anchor="middle" class="vh">Dog's vtable</text>
+<text x="345" y="58" text-anchor="middle" class="vt">speak → Dog::speak()</text>
+<text x="345" y="76" text-anchor="middle" class="vt">~Animal → ~Dog()</text>
+<line x1="150" y1="55" x2="258" y2="45" class="va"/>
+<text x="320" y="150" text-anchor="middle" class="vt" style="font-size:11.5px">Every object with virtual functions secretly stores a hidden</text>
+<text x="320" y="168" text-anchor="middle" class="vt" style="font-size:11.5px">pointer (vptr) to its class's vtable — a lookup array of</text>
+<text x="320" y="186" text-anchor="middle" class="vt" style="font-size:11.5px">function pointers, resolved at each call, at a small runtime cost.</text>
+</svg>
+</div>
+<div class="callout danger"><span class="ico">🚨</span><div><b>Object slicing — classic gotcha:</b> <code>Animal a = Dog("Rex");</code> (pass/assign <em>by value</em>, not pointer/reference) copies only the Animal part — the Dog part is "sliced off." Polymorphism only works through pointers or references.</div></div>
+`},
+
+{id:'ctordtor', label:'Constructors & Destructors', content: `
+<h2 class="title">Constructors &amp; Destructors</h2>
+<p class="subtitle">Object lifecycle management — one of the heaviest-tested interview areas.</p>
+<table>
+<tr><th>Type</th><th>Purpose</th></tr>
+<tr><td>Default constructor</td><td>No args; sets up a valid empty state</td></tr>
+<tr><td>Parameterized constructor</td><td>Initializes with given values</td></tr>
+<tr><td>Copy constructor</td><td><code>T(const T& other)</code> — makes a new object as a copy</td></tr>
+<tr><td>Move constructor</td><td><code>T(T&& other)</code> — "steals" resources from a temporary (C++11)</td></tr>
+<tr><td>Destructor</td><td><code>~T()</code> — cleans up when object dies</td></tr>
+</table>
+<div class="codewrap"><span class="tag">Rule of Three / Five</span><pre><code><span class="kw">class</span> <span class="type">Buffer</span> {
+    <span class="type">int</span>* data; <span class="type">size_t</span> size;
+<span class="kw">public</span>:
+    <span class="type">Buffer</span>(<span class="type">size_t</span> n) : data(<span class="kw">new</span> <span class="type">int</span>[n]), size(n) {}
+    ~<span class="type">Buffer</span>() { <span class="kw">delete</span>[] data; }                       <span class="com">// 1. Destructor</span>
+    <span class="type">Buffer</span>(<span class="kw">const</span> <span class="type">Buffer</span>& o) : data(<span class="kw">new</span> <span class="type">int</span>[o.size]), size(o.size) {
+        std::copy(o.data, o.data+size, data);                <span class="com">// 2. Copy ctor</span>
+    }
+    <span class="type">Buffer</span>& <span class="kw">operator</span>=(<span class="kw">const</span> <span class="type">Buffer</span>& o) { <span class="com">/* 3. Copy assign */</span> <span class="kw">return</span> *<span class="kw">this</span>; }
+};</code></pre></div>
+<div class="callout warn"><span class="ico">⚠️</span><div><b>Rule of Three:</b> if you write a custom destructor, copy constructor, or copy-assignment operator, you almost certainly need <em>all three</em> — because it means your class manages a raw resource (memory, file handle, socket) that the compiler's default shallow-copy would mishandle. <b>Rule of Five</b> extends this to move constructor + move assignment for performance.</div></div>
+<h3>Construction &amp; destruction order in inheritance</h3>
+<p><b>Construction:</b> Base → Derived (base must exist first so derived can build on it).<br><b>Destruction:</b> Derived → Base (exact reverse — clean up the specialization before the foundation).</p>
+<div class="callout interview"><span class="ico">🎯</span><div><b>Why base destructors MUST be <code>virtual</code>:</b> without it, <code>delete basePtr;</code> where basePtr actually points to a Derived object only calls <code>~Base()</code> — the derived part never gets cleaned up. Undefined behavior + resource leaks. Always make a base class destructor <code>virtual</code> if the class is meant to be inherited from and used polymorphically.</div></div>
+`},
+
+{id:'staticfriend', label:'Static, Friend & this', content: `
+<h2 class="title">Static Members, Friend, and <code>this</code></h2>
+<div class="codewrap"><span class="tag">static</span><pre><code><span class="kw">class</span> <span class="type">Counter</span> {
+    <span class="kw">static</span> <span class="type">int</span> count;     <span class="com">// ONE copy shared by ALL objects</span>
+<span class="kw">public</span>:
+    <span class="type">Counter</span>() { count++; }
+    <span class="kw">static</span> <span class="type">int</span> getCount() { <span class="kw">return</span> count; } <span class="com">// no 'this' — can't touch non-static members</span>
+};
+<span class="type">int</span> <span class="type">Counter</span>::count = <span class="num">0</span>;  <span class="com">// must define storage outside the class</span></code></pre></div>
+<p><code>static</code> data members belong to the <em>class</em>, not any one object — useful for counters, shared config, or object pools.</p>
+<div class="codewrap"><span class="tag">friend</span><pre><code><span class="kw">class</span> <span class="type">Box</span> {
+    <span class="type">int</span> width;
+    <span class="kw">friend</span> <span class="type">void</span> printWidth(<span class="kw">const</span> <span class="type">Box</span>&); <span class="com">// grants external access to privates</span>
+};
+<span class="type">void</span> printWidth(<span class="kw">const</span> <span class="type">Box</span>& b) { std::cout << b.width; } <span class="com">// allowed — friend</span></code></pre></div>
+<div class="callout warn"><span class="ico">⚠️</span><div><b>Use <code>friend</code> sparingly</b> — it breaks encapsulation deliberately. Justify it (e.g., operator<< overloads, tightly-coupled helper classes) rather than reaching for it as a shortcut.</div></div>
+<div class="codewrap"><span class="tag">this pointer</span><pre><code><span class="type">Box</span>& setWidth(<span class="type">int</span> w) { <span class="kw">this</span>->width = w; <span class="kw">return</span> *<span class="kw">this</span>; } <span class="com">// enables chaining: box.setWidth(5).setHeight(3);</span></code></pre></div>
+`},
+
+{id:'operator', label:'Operator Overloading', content: `
+<h2 class="title">Operator Overloading</h2>
+<p class="subtitle">Give user-defined types natural syntax — but only where it reads intuitively.</p>
+<div class="codewrap"><span class="tag">C++</span><pre><code><span class="kw">class</span> <span class="type">Vec2</span> {
+<span class="kw">public</span>:
+    <span class="type">double</span> x, y;
+    <span class="type">Vec2</span> <span class="kw">operator</span>+(<span class="kw">const</span> <span class="type">Vec2</span>& o) <span class="kw">const</span> {
+        <span class="kw">return</span> {x + o.x, y + o.y};                 <span class="com">// member operator</span>
+    }
+    <span class="kw">friend</span> <span class="type">std::ostream</span>& <span class="kw">operator</span><<(<span class="type">std::ostream</span>& os, <span class="kw">const</span> <span class="type">Vec2</span>& v) {
+        <span class="kw">return</span> os << <span class="str">"("</span> << v.x << <span class="str">", "</span> << v.y << <span class="str">")"</span>;  <span class="com">// non-member, needs friend</span>
+    }
+};
+<span class="com">// Vec2 a{1,2}, b{3,4};  std::cout << (a + b);  → (4, 6)</span></code></pre></div>
+<div class="callout tip"><span class="ico">💡</span><div><b>Member vs non-member:</b> overload as a <em>member</em> when the left operand is always your class (<code>+</code>, <code>-</code>, <code>[]</code>, <code>()</code>, <code>-></code>). Use a <em>non-member (often friend)</em> function when the left operand might not be your type, e.g. <code>std::cout << myObj</code> or when you want symmetry like <code>5 + myObj</code>.</div></div>
+`},
+
+{id:'abstractvsinterface', label:'Abstract Classes & Interfaces', content: `
+<h2 class="title">Abstract Classes, Interfaces &amp; Keywords</h2>
+<div class="codewrap"><span class="tag">Pure interface (all pure virtual)</span><pre><code><span class="kw">class</span> <span class="type">IDrawable</span> {           <span class="com">// C++ has no 'interface' keyword — this IS the idiom</span>
+<span class="kw">public</span>:
+    <span class="kw">virtual</span> <span class="type">void</span> draw() = <span class="num">0</span>;
+    <span class="kw">virtual</span> ~<span class="type">IDrawable</span>() = <span class="kw">default</span>;
+};</code></pre></div>
+<table>
+<tr><th>Keyword</th><th>Meaning</th></tr>
+<tr><td><code>virtual</code></td><td>Marks a function for dynamic dispatch (resolved via vtable at runtime)</td></tr>
+<tr><td><code>override</code></td><td>Compiler-checked promise that this really overrides a base virtual (catches signature typos)</td></tr>
+<tr><td><code>final</code></td><td>Prevents further overriding (on a method) or further inheritance (on a class)</td></tr>
+<tr><td><code>= 0</code></td><td>Pure virtual — no implementation required, makes the class abstract (can't be instantiated)</td></tr>
+</table>
+<div class="callout interview"><span class="ico">🎯</span><div><b>Can an abstract class have a constructor?</b> Yes — it's called when a derived class object is constructed, even though you can never instantiate the abstract class directly. Useful for initializing shared base-class state.</div></div>
+`},
+
+{id:'templates', label:'Templates & Generics', content: `
+<h2 class="title">Templates — Generic Programming</h2>
+<p class="subtitle">Write code once, work with any type — resolved entirely at compile time (a form of static polymorphism).</p>
+<div class="codewrap"><span class="tag">Function & class templates</span><pre><code><span class="kw">template</span>&lt;<span class="kw">typename</span> T&gt;
+T maxOf(T a, T b) { <span class="kw">return</span> (a > b) ? a : b; }   <span class="com">// works for int, double, string...</span>
+
+<span class="kw">template</span>&lt;<span class="kw">typename</span> T&gt;
+<span class="kw">class</span> <span class="type">Stack</span> {
+    std::vector&lt;T&gt; data;
+<span class="kw">public</span>:
+    <span class="type">void</span> push(T v) { data.push_back(v); }
+    T pop() { T v = data.back(); data.pop_back(); <span class="kw">return</span> v; }
+};
+<span class="com">// Stack<int> s;  Stack<std::string> s2;  — same code, different types</span></code></pre></div>
+<div class="callout tip"><span class="ico">💡</span><div><b>Templates vs virtual functions:</b> templates give polymorphism with <em>zero runtime cost</em> (resolved at compile time, so no vtable lookup) but require the type to be known at compile time. Virtual functions give runtime flexibility (decide the type while the program runs) at a small performance cost. Interviewers love this trade-off question.</div></div>
+`},
+
+{id:'solid', label:'SOLID Principles', content: `
+<h2 class="title">SOLID — Design Principles Interviewers Love</h2>
+<p class="subtitle">OOP theory questions often pivot into SOLID. Know one C++-flavored example for each.</p>
+<div class="card"><b>S — Single Responsibility:</b> a class should have one reason to change. <span style="color:var(--muted)">e.g. keep <code>InvoicePrinter</code> separate from <code>Invoice</code> so print-format changes don't touch billing logic.</span></div>
+<div class="card"><b>O — Open/Closed:</b> open for extension, closed for modification. <span style="color:var(--muted)">Add a new <code>Shape</code> subclass instead of editing an existing area()-switch statement.</span></div>
+<div class="card"><b>L — Liskov Substitution:</b> a derived class object must be usable anywhere a base class object is expected, without breaking correctness. <span style="color:var(--muted)">Classic violation: <code>Square : public Rectangle</code> that overrides setWidth to also change height — breaks callers expecting independent width/height.</span></div>
+<div class="card"><b>I — Interface Segregation:</b> prefer several small, focused interfaces over one bloated one. <span style="color:var(--muted)">Split <code>IPrinter</code> and <code>IScanner</code> instead of forcing every device to implement both.</span></div>
+<div class="card"><b>D — Dependency Inversion:</b> depend on abstractions, not concrete classes. <span style="color:var(--muted)">A <code>Notifier</code> should depend on an <code>IMessageSender</code> interface, not a concrete <code>EmailSender</code>, so you can swap in SMS later.</span></div>
+`},
+
+{id:'qa', label:'Rapid-Fire Interview Q&A', content: `
+<h2 class="title">Rapid-Fire Interview Q&amp;A <span class="pill">Practice</span></h2>
+<p class="subtitle">Click each question. Try to answer out loud before revealing.</p>
+
+<details class="qa"><summary>Overloading vs Overriding — what's the difference? <span class="difftag easy">Easy</span><span class="arrow">▸</span></summary>
+<div class="qa-body">Overloading: same function name, different parameter list, resolved at <b>compile time</b>, same scope. Overriding: derived class redefines a base class's <code>virtual</code> function with the <b>same signature</b>, resolved at <b>runtime</b> via the vtable.</div></details>
+
+<details class="qa"><summary>Why should a base class destructor be virtual? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">If you <code>delete</code> a derived object through a base pointer and the destructor isn't virtual, only the base part is destroyed — the derived part's resources leak and behavior is undefined. Marking it virtual ensures the full derived destructor chain runs.</div></details>
+
+<details class="qa"><summary>What is object slicing? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">Assigning a derived object to a base object <em>by value</em> copies only the base portion, discarding derived-specific members and vtable behavior. Fix: always use pointers or references for polymorphic use.</div></details>
+
+<details class="qa"><summary>What's stored in a vtable, and who has a vptr? <span class="difftag hard">Hard</span><span class="arrow">▸</span></summary>
+<div class="qa-body">A vtable is a per-class array of function pointers to the most-derived override of each virtual function. Every object of a class with at least one virtual function carries a hidden vptr pointing to its class's vtable, added by the compiler — this is why such objects are slightly larger.</div></details>
+
+<details class="qa"><summary>Diamond problem — what causes it and how do you fix it? <span class="difftag hard">Hard</span><span class="arrow">▸</span></summary>
+<div class="qa-body">Two base classes independently inherit from a common ancestor, and a further class inherits from both — creating two copies of the ancestor, causing ambiguous member access. Fix: <code>virtual</code> inheritance from the common ancestor so only one shared sub-object exists.</div></details>
+
+<details class="qa"><summary>Can a constructor be virtual? Can a destructor? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">Constructors can never be virtual (the vtable isn't fully set up until construction completes — the object's type must be known before construction starts). Destructors <em>can and often should</em> be virtual in a polymorphic base class.</div></details>
+
+<details class="qa"><summary>What is the Rule of Three / Rule of Five? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">If a class manages a resource and needs a custom destructor, copy constructor, or copy-assignment operator, it needs all three (Rule of Three) — the compiler's default memberwise copy will double-free or leak. Rule of Five (C++11+) adds move constructor and move assignment for efficient resource transfer.</div></details>
+
+<details class="qa"><summary>Difference between an abstract class and an interface in C++? <span class="difftag easy">Easy</span><span class="arrow">▸</span></summary>
+<div class="qa-body">C++ has no dedicated <code>interface</code> keyword. An "interface" is just a class with only pure virtual functions and no data members — a stricter, conventional subset of what a general abstract class (which may mix pure virtual and concrete methods, and have data) can be.</div></details>
+
+<details class="qa"><summary>What happens if you call a virtual function from a constructor? <span class="difftag hard">Hard</span><span class="arrow">▸</span></summary>
+<div class="qa-body">It calls the version defined at the <em>current</em> construction level, not any derived override — because the derived part of the object doesn't exist yet and the vtable pointer still reflects the base class during base construction. This surprises many candidates; call out the exception explicitly.</div></details>
+
+<details class="qa"><summary>Composition vs Inheritance — which should you prefer? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">"Favor composition over inheritance" — inheritance creates tight coupling and a rigid "is-a" hierarchy that's hard to change later; composition ("has-a", holding another object as a member) is more flexible and easier to test/swap. Use inheritance only for genuine is-a relationships with real polymorphic need.</div></details>
+
+<details class="qa"><summary>What is multiple inheritance and what problems can it cause? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">A class inheriting from more than one base class directly. It enables mixing capabilities from unrelated hierarchies, but risks the diamond problem and can make code harder to reason about — many languages (Java, C#) disallow it for classes and use interfaces instead.</div></details>
+</div>
+`},
+
+{id:'cheatsheet', label:'Cheat Sheet', content: `
+<h2 class="title">One-Page Cheat Sheet <span class="pill">Review before interview</span></h2>
+<div class="grid2">
+<div class="card"><h3 style="margin-top:0">Say this for each pillar</h3>
+<p style="font-size:13px"><b>Encapsulation:</b> bundle + guard invariants.<br><b>Abstraction:</b> simple interface, hidden complexity.<br><b>Inheritance:</b> reuse via is-a; watch the diamond.<br><b>Polymorphism:</b> one call, many behaviors, via vtable.</p></div>
+<div class="card"><h3 style="margin-top:0">Always mention</h3>
+<p style="font-size:13px">• Virtual destructor for polymorphic base classes<br>• Rule of Three/Five when resources are involved<br>• Slicing risk with by-value polymorphism<br>• Prefer composition when "is-a" is shaky</p></div>
+</div>
+<div class="badge-row">
+<span class="badge">virtual</span><span class="badge">override</span><span class="badge">final</span><span class="badge">= 0 pure virtual</span>
+<span class="badge">friend</span><span class="badge">static</span><span class="badge">this</span><span class="badge">vtable / vptr</span>
+<span class="badge">Rule of Five</span><span class="badge">SOLID</span><span class="badge">diamond problem</span><span class="badge">object slicing</span>
+</div>
+<div class="callout tip"><span class="ico">✅</span><div>You've now covered every core OOP topic asked in C++ technical interviews. Revisit the <b>Rapid-Fire Q&amp;A</b> tab the night before your interview — that's the highest-yield section.</div></div>
+`}
+];
+
+/* ================= RENDER ================= */
+const main = document.getElementById('main');
+const navList = document.getElementById('navList');
+sections.forEach((s,i)=>{
+  const btn = document.createElement('button');
+  btn.className='navitem'; btn.dataset.idx=i;
+  btn.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><span>${s.label}</span>`;
+  btn.onclick = ()=>showSection(i);
+  navList.appendChild(btn);
+
+  const div = document.createElement('div');
+  div.className='section'; div.id='sec-'+s.id;
+  div.innerHTML = s.content + `<div class="navfooter">
+    <button onclick="showSection(${i-1})" ${i===0?'disabled style="opacity:.3"':''}>← Previous</button>
+    <button onclick="showSection(${i+1})" ${i===sections.length-1?'disabled style="opacity:.3"':''}>Next →</button>
+  </div>`;
+  main.appendChild(div);
+});
+
+let visited = new Set();
+function showSection(i){
+  if(i<0||i>=sections.length) return;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.navitem').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+sections[i].id).classList.add('active');
+  document.querySelector(`.navitem[data-idx="${i}"]`).classList.add('active');
+  visited.add(i);
+  updateProgress();
+  window.scrollTo(0,0);
+  main.scrollTo && main.scrollTo(0,0);
+  document.getElementById('sidebar').classList.remove('open');
+  try{ localStorage.setItem('oop_last_section', i); }catch(e){}
+}
+function updateProgress(){
+  const pct = Math.round((visited.size/sections.length)*100);
+  document.getElementById('progressBarInner').style.width = pct+'%';
+  document.getElementById('progressPct').textContent = pct+'%';
+}
+
+/* quiz interactivity (delegated) */
+document.addEventListener('click', (e)=>{
+  if(e.target.classList.contains('opt')){
+    const quiz = e.target.closest('.quiz');
+    const opts = quiz.querySelectorAll('.opt');
+    const fb = quiz.querySelector('.quizfeedback');
+    opts.forEach(o=>o.disabled=true);
+    if(e.target.dataset.correct==='true'){
+      e.target.classList.add('correct');
+      fb.textContent='✅ Correct!'; fb.style.color='var(--accent)';
+    } else {
+      e.target.classList.add('wrong');
+      quiz.querySelector('[data-correct="true"]').classList.add('correct');
+      fb.textContent='❌ Not quite — correct answer highlighted.'; fb.style.color='var(--danger)';
+    }
+  }
+});
+
+/* restore last position (per-viewer convenience) */
+let start = 0;
+try{
+  const saved = localStorage.getItem('oop_last_section');
+  if(saved!==null) start = parseInt(saved,10)||0;
+}catch(e){}
+showSection(start);
+</script>
+</body>
+</html>
