@@ -211,60 +211,154 @@ const sections = [
 <div class="codewrap"><span class="tag">C++</span><pre><code><span class="kw">class</span> <span class="type">Car</span> {
 <span class="kw">private</span>:
     <span class="type">std::string</span> brand;
-    <span class="type">int</span> speed = <span class="num">0</span>;
+    <span class="type">int</span> speed = <span class="num">0</span>;                         <span class="com">// in-class default initialization (C++11)</span>
 
 <span class="kw">public</span>:
-    <span class="type">Car</span>(<span class="type">std::string</span> b) : brand(b) {}   <span class="com">// constructor, init list</span>
+    <span class="kw">explicit</span> <span class="type">Car</span>(<span class="type">std::string</span> b) : brand(b) {} <span class="com">// 'explicit' prevents accidental conversion</span>
 
     <span class="type">void</span> accelerate(<span class="type">int</span> by) { speed += by; }
-    <span class="type">int</span> getSpeed() <span class="kw">const</span> { <span class="kw">return</span> speed; }
+    <span class="type">int</span> getSpeed() <span class="kw">const</span> { <span class="kw">return</span> speed; }    <span class="com">// const getter: does not mutate state</span>
 };
 
+<span class="type">void</span> inspectCar(<span class="kw">const</span> <span class="type">Car</span>& c) {
+    std::cout << c.getSpeed();
+}
+
 <span class="type">int</span> main() {
-    <span class="type">Car</span> tesla(<span class="str">"Tesla"</span>);   <span class="com">// object created on the stack</span>
+    <span class="type">Car</span> tesla(<span class="str">"Tesla"</span>);         <span class="com">// Stack allocation: scope-bound, destroyed automatically</span>
     tesla.accelerate(<span class="num">40</span>);
-    <span class="type">Car</span>* bmw = <span class="kw">new</span> <span class="type">Car</span>(<span class="str">"BMW"</span>); <span class="com">// object on the heap</span>
-    <span class="kw">delete</span> bmw;                 <span class="com">// must free heap objects manually</span>
+
+    <span class="com">// inspectCar("Audi");      // COMPILE ERROR! Blocked by 'explicit' keyword</span>
+
+    <span class="type">Car</span>* bmw = <span class="kw">new</span> <span class="type">Car</span>(<span class="str">"BMW"</span>);  <span class="com">// Heap allocation: manual lifetime via new</span>
+    <span class="kw">delete</span> bmw;                 <span class="com">// Must free heap objects manually (or use smart pointers)</span>
 }</code></pre></div>
 <div class="grid2">
-<div class="card"><h3 style="margin-top:0">Stack objects</h3><p style="font-size:13px">Lifetime is scope-bound; destructor runs automatically when the object goes out of scope. Fast, no leak risk.</p></div>
-<div class="card"><h3 style="margin-top:0">Heap objects (<code>new</code>)</h3><p style="font-size:13px">Lifetime is manual — you must <code>delete</code> it, or wrap it in a smart pointer (<code>std::unique_ptr</code>, <code>std::shared_ptr</code>) so RAII deletes it for you.</p></div>
+<div class="card"><h3 style="margin-top:0">Stack objects</h3><p style="font-size:13px">Lifetime is scope-bound; destructor runs automatically when exiting scope. Extremely fast allocation, zero leak risk.</p></div>
+<div class="card"><h3 style="margin-top:0">Heap objects (<code>new</code>)</h3><p style="font-size:13px">Lifetime is manual — you must <code>delete</code> it, or wrap it in a smart pointer (<code>std::unique_ptr</code>, <code>std::shared_ptr</code>) so RAII manages it.</p></div>
 </div>
-<div class="callout tip"><span class="ico">💡</span><div><b>Default access:</b> members of a <code>class</code> are <code>private</code> by default; members of a <code>struct</code> are <code>public</code> by default. That's the <em>only</em> functional difference between them in C++.</div></div>
+<div class="callout interview"><span class="ico">🎯</span><div><b>Why <code>explicit</code> constructors matter:</b> Any single-argument constructor acts as an <em>implicit conversion operator</em> by default. Marking it <code>explicit</code> prevents subtle bugs where numbers or raw strings silently turn into temporary objects when passed to functions.</div></div>
+<div class="callout tip"><span class="ico">💡</span><div><b>Default access:</b> members of a <code>class</code> are <code>private</code> by default; members of a <code>struct</code> are <code>public</code> by default. That is the <em>only</em> functional difference between them in C++.</div></div>
 <div class="quiz" data-qid="q1">
 <div class="q">Quick check: what happens if you forget the <code>delete bmw;</code> line above?</div>
 <button class="opt" data-correct="false">Compiler error</button>
-<button class="opt" data-correct="true">Memory leak — the Car object stays allocated forever</button>
+<button class="opt" data-correct="true">Memory leak — the Car object stays allocated on the heap indefinitely</button>
 <button class="opt" data-correct="false">The program crashes immediately</button>
 <div class="quizfeedback"></div>
 </div>
 `},
 
-{id:'encapsulation', label:'Encapsulation', content: `
-<h2 class="title">Encapsulation <span class="pill">Pillar 1</span></h2>
-<p class="subtitle">Bundle data with the methods that operate on it, and restrict direct access using access specifiers.</p>
+{id:'encapsulation', label:'Encapsulation & Accessors', content: `
+<h2 class="title">Encapsulation &amp; Accessors (Getters / Setters) <span class="pill">Pillar 1</span></h2>
+<p class="subtitle">Bundle data with the methods that operate on it, protect class invariants, and implement robust accessors and mutators.</p>
 <table>
-<tr><th>Specifier</th><th>Accessible from</th></tr>
-<tr><td><code>private</code></td><td>Only inside the same class (and its friends)</td></tr>
-<tr><td><code>protected</code></td><td>Same class + derived classes</td></tr>
-<tr><td><code>public</code></td><td>Anywhere the object is visible</td></tr>
+<tr><th>Specifier</th><th>Accessible from</th><th>Inheritance Visibility</th></tr>
+<tr><td><code>private</code></td><td>Only inside the same class (and its declared <code>friend</code>s)</td><td>Hidden from derived classes</td></tr>
+<tr><td><code>protected</code></td><td>Same class + derived classes</td><td>Accessible to derived classes, hidden from outside</td></tr>
+<tr><td><code>public</code></td><td>Anywhere the object is in scope</td><td>Fully accessible everywhere</td></tr>
 </table>
-<div class="codewrap"><span class="tag">C++</span><pre><code><span class="kw">class</span> <span class="type">BankAccount</span> {
-    <span class="type">double</span> balance;                 <span class="com">// private by default</span>
-<span class="kw">public</span>:
-    <span class="type">BankAccount</span>(<span class="type">double</span> b) : balance(b) {}
 
-    <span class="type">void</span> deposit(<span class="type">double</span> amt) {
-        <span class="kw">if</span> (amt > <span class="num">0</span>) balance += amt;   <span class="com">// validation lives WITH the data</span>
+<div class="codewrap"><span class="tag">C++ Core Encapsulation</span><pre><code><span class="kw">class</span> <span class="type">BankAccount</span> {
+<span class="kw">private</span>:
+    <span class="type">std::string</span> owner;
+    <span class="type">double</span> balance = <span class="num">0.0</span>;             <span class="com">// private: hidden from direct outside mutation</span>
+
+<span class="kw">public</span>:
+    <span class="type">BankAccount</span>(<span class="type">std::string</span> o, <span class="type">double</span> b) : owner(o), balance(b > <span class="num">0</span> ? b : <span class="num">0</span>) {}
+
+    <span class="com">// --- Accessors (Getters): Read-only access ---</span>
+    <span class="kw">const</span> <span class="type">std::string</span>& getOwner() <span class="kw">const</span> { <span class="kw">return</span> owner; }   <span class="com">// Rule: const ref for heavy types</span>
+    <span class="type">double</span> getBalance() <span class="kw">const</span> { <span class="kw">return</span> balance; }          <span class="com">// Rule: return by value for primitives</span>
+
+    <span class="com">// --- Mutators (Setters): Controlled writes with validation ---</span>
+    <span class="type">bool</span> deposit(<span class="type">double</span> amt) {
+        <span class="kw">if</span> (amt &lt;= <span class="num">0</span>) <span class="kw">return</span> <span class="kw">false</span>;                          <span class="com">// Guard invariant</span>
+        balance += amt;
+        <span class="kw">return</span> <span class="kw">true</span>;
     }
+
     <span class="type">bool</span> withdraw(<span class="type">double</span> amt) {
-        <span class="kw">if</span> (amt > balance) <span class="kw">return</span> <span class="kw">false</span>;
-        balance -= amt; <span class="kw">return</span> <span class="kw">true</span>;
+        <span class="kw">if</span> (amt &lt;= <span class="num">0</span> || amt > balance) <span class="kw">return</span> <span class="kw">false</span>;       <span class="com">// Cannot overdraw</span>
+        balance -= amt;
+        <span class="kw">return</span> <span class="kw">true</span>;
     }
-    <span class="type">double</span> getBalance() <span class="kw">const</span> { <span class="kw">return</span> balance; } <span class="com">// controlled read access</span>
 };</code></pre></div>
-<p>No outside code can set <code>balance = -500;</code> directly — every mutation is forced through validated methods. That's encapsulation doing real work, not just "getters and setters."</p>
-<div class="callout interview"><span class="ico">🎯</span><div><b>Common trap question:</b> "Isn't encapsulation just making fields private and adding getters/setters?" — Good answer: no, that alone is just data hiding; encapsulation is about protecting <em>invariants</em> (rules the data must always satisfy) by controlling every path to modify it.</div></div>
+
+<h3>Why Use Getters and Setters? (4 Essential Purposes)</h3>
+<div class="grid2">
+<div class="card">
+<h3 style="margin-top:0">1. Invariant Validation</h3>
+<p style="font-size:13px">Direct public variables let anyone write <code>account.balance = -9999;</code>. A setter or mutator method acts as a security checkpoint that validates inputs and rejects invalid states before corruption occurs.</p>
+</div>
+<div class="card">
+<h3 style="margin-top:0">2. Read-Only / Write-Only Access</h3>
+<p style="font-size:13px">Providing a getter without a setter makes a field effectively <b>immutable</b> from the outside (e.g. an account ID or creation timestamp). Conversely, write-only setters can ingest passwords or credentials for hashing without ever exposing them.</p>
+</div>
+<div class="card">
+<h3 style="margin-top:0">3. Decoupling Representation</h3>
+<p style="font-size:13px">You can alter internal storage without breaking external code. If internal temperature changes from Celsius to Kelvin, <code>getCelsius()</code> can compute <code>kelvin - 273.15</code> on the fly without changing call sites.</p>
+</div>
+<div class="card">
+<h3 style="margin-top:0">4. Observability &amp; Side Effects</h3>
+<p style="font-size:13px">Setters allow triggering audit logging, firing UI update events, dirty-flag tracking, or locking a <code>std::mutex</code> in multi-threaded code whenever data changes.</p>
+</div>
+</div>
+
+<h3>The 4 Golden Rules of C++ Getters &amp; Setters</h3>
+<div class="card">
+<p><b>Rule 1: Always mark getters as <code>const</code> member functions.</b><br>
+<span style="font-size:13px; color:var(--muted)">A trailing <code>const</code> (e.g. <code>double getBalance() const</code>) guarantees this method will not modify any non-mutable member variables. If you forget <code>const</code>, calling the getter on any <code>const</code> object or <code>const&amp;</code> reference causes a <b>compiler error</b>: <em>"passing 'const T' as 'this' argument discards qualifiers."</em></span></p>
+
+<p><b>Rule 2: Return-by-Value for primitives, Return-by-Const-Ref for heavy objects.</b><br>
+<span style="font-size:13px; color:var(--muted)">• <b>Primitives</b> (<code>int</code>, <code>double</code>, <code>bool</code>, pointers): return by value (<code>int getAge() const</code>). Copying 4–8 bytes is fast and fits in CPU registers.<br>
+• <b>Non-trivial types</b> (<code>std::string</code>, <code>std::vector&lt;T&gt;</code>, large structs): return by <code>const&amp;</code> (<code>const std::string&amp; getName() const</code>). This completely eliminates heap allocations and expensive deep copies while ensuring the caller cannot alter your private member.</span></p>
+
+<p><b>Rule 3: NEVER return a non-const reference to private data.</b><br>
+<span style="font-size:13px; color:var(--muted)">Writing <code>std::string&amp; getName() { return name; }</code> creates a catastrophic encapsulation leak. Callers can write <code>obj.getName() = "";</code> directly from outside, bypassing all validation logic and invariants.</span></p>
+
+<p><b>Rule 4: Fluent Setters (Method Chaining).</b><br>
+<span style="font-size:13px; color:var(--muted)">Returning <code>*this</code> by reference from a setter enables fluent chaining syntax:</span></p>
+<div class="codewrap" style="margin:8px 0"><span class="tag">Fluent Chaining</span><pre><code><span class="kw">class</span> <span class="type">User</span> {
+    <span class="type">std::string</span> name; <span class="type">int</span> age;
+<span class="kw">public</span>:
+    <span class="type">User</span>& setName(<span class="kw">const</span> <span class="type">std::string</span>& n) { name = n; <span class="kw">return</span> *<span class="kw">this</span>; }
+    <span class="type">User</span>& setAge(<span class="type">int</span> a) { <span class="kw">if</span> (a >= <span class="num">0</span>) age = a; <span class="kw">return</span> *<span class="kw">this</span>; }
+};
+<span class="com">// Usage: user.setName("Alvis").setAge(21);</span></code></pre></div>
+</div>
+
+<h3>The Architect's Interview Trap: "Tell, Don't Ask"</h3>
+<p>Blindly stamping out <code>getVariable()</code> and <code>setVariable()</code> for every single private field is a known anti-pattern: the <b>Anemic Domain Model</b>. It turns your class into a glorified C <code>struct</code> with ceremonial boilerplate.</p>
+
+<div class="grid2">
+<div class="card" style="border-color:rgba(255,122,122,.35)">
+<b style="color:var(--danger)">Weak OOP (Procedural "Ask, then Tell")</b>
+<div class="codewrap"><pre><code><span class="com">// External code asks for balance, calculates, sets back</span>
+<span class="type">double</span> cur = acc.getBalance();
+<span class="kw">if</span> (cur >= <span class="num">100</span>) {
+    acc.setBalance(cur - <span class="num">100</span>); <span class="com">// Logic leaked outside the class!</span>
+}</code></pre></div>
+<p style="font-size:12.5px; color:var(--muted)">Breaks encapsulation: business logic lives outside the class, duplicated across callers.</p>
+</div>
+
+<div class="card" style="border-color:rgba(110,231,200,.35)">
+<b style="color:var(--accent)">Strong OOP ("Tell, Don't Ask")</b>
+<div class="codewrap"><pre><code><span class="com">// Tell the object what operation to perform</span>
+<span class="kw">bool</span> ok = acc.withdraw(<span class="num">100</span>);
+<span class="com">// The class protects its own invariants and state transitions</span></code></pre></div>
+<p style="font-size:12.5px; color:var(--muted)">True encapsulation: the class owns its rules, validation, and state transitions in one place.</p>
+</div>
+</div>
+
+<div class="callout interview"><span class="ico">🎯</span><div><b>Top interview answer:</b> When asked <em>"Isn't encapsulation just private variables + getters/setters?"</em>, respond: <em>"No, that alone is just data hiding. True encapsulation is bundling data with the behaviors that maintain its business invariants. Blind getters and setters often break encapsulation by exposing internal representations; idiomatic OOP favors the 'Tell, Don't Ask' principle."</em></div></div>
+
+<div class="quiz" data-qid="q-getter-const">
+<div class="q">Why should a getter like <code>std::string getName()</code> almost always be declared as <code>const std::string&amp; getName() const</code>?</div>
+<button class="opt" data-correct="false">To make the method run on multiple CPU threads concurrently</button>
+<button class="opt" data-correct="true">Trailing const allows calls on const objects/references; returning const&amp; avoids expensive string heap copy</button>
+<button class="opt" data-correct="false">Because C++ requires all member functions to be const by default</button>
+<div class="quizfeedback"></div>
+</div>
 `},
 
 {id:'abstraction', label:'Abstraction', content: `
@@ -394,27 +488,69 @@ a->speak();          <span class="com">// prints "Rex barks" — Dog::speak() ru
     <span class="type">Buffer</span>& <span class="kw">operator</span>=(<span class="kw">const</span> <span class="type">Buffer</span>& o) { <span class="com">/* 3. Copy assign */</span> <span class="kw">return</span> *<span class="kw">this</span>; }
 };</code></pre></div>
 <div class="callout warn"><span class="ico">⚠️</span><div><b>Rule of Three:</b> if you write a custom destructor, copy constructor, or copy-assignment operator, you almost certainly need <em>all three</em> — because it means your class manages a raw resource (memory, file handle, socket) that the compiler's default shallow-copy would mishandle. <b>Rule of Five</b> extends this to move constructor + move assignment for performance.</div></div>
+<h3>Member Initializer List (MIL) &amp; Delegating Constructors</h3>
+<div class="codewrap"><span class="tag">MIL &amp; Delegation</span><pre><code><span class="kw">class</span> <span class="type">Widget</span> {
+<span class="kw">private</span>:
+    <span class="kw">const</span> <span class="type">int</span> id;           <span class="com">// const members CANNOT be assigned — must use MIL</span>
+    <span class="type">std::string</span> label;
+    <span class="type">int</span> width, height;
+
+<span class="kw">public</span>:
+    <span class="com">// Delegating Constructor (C++11): chains to primary constructor</span>
+    <span class="type">Widget</span>() : <span class="type">Widget</span>(<span class="num">0</span>, <span class="str">"default"</span>, <span class="num">100</span>, <span class="num">50</span>) {}
+
+    <span class="com">// Primary Constructor using Member Initializer List</span>
+    <span class="type">Widget</span>(<span class="type">int</span> i, <span class="type">std::string</span> l, <span class="type">int</span> w, <span class="type">int</span> h) 
+        : id(i), label(l), width(w), height(h) {} 
+};</code></pre></div>
+<div class="callout warn"><span class="ico">⚠️</span><div><b>MIL Order Gotcha:</b> Members are initialized strictly in the <b>order they are declared in the class definition</b>, regardless of the order you list them in the initializer list. Listing <code>height(h), width(height)</code> when <code>width</code> was declared first means <code>width</code> is initialized with garbage!</div></div>
+
+<div class="callout tip"><span class="ico">💡</span><div><b>Why MIL is faster:</b> Assigning inside <code>{ label = l; }</code> first runs <code>label</code>'s default constructor and then invokes its copy/move assignment operator. Using the initializer list <code>: label(l)</code> directly invokes the copy/move constructor once, saving unnecessary allocations.</div></div>
+
 <h3>Construction &amp; destruction order in inheritance</h3>
 <p><b>Construction:</b> Base → Derived (base must exist first so derived can build on it).<br><b>Destruction:</b> Derived → Base (exact reverse — clean up the specialization before the foundation).</p>
 <div class="callout interview"><span class="ico">🎯</span><div><b>Why base destructors MUST be <code>virtual</code>:</b> without it, <code>delete basePtr;</code> where basePtr actually points to a Derived object only calls <code>~Base()</code> — the derived part never gets cleaned up. Undefined behavior + resource leaks. Always make a base class destructor <code>virtual</code> if the class is meant to be inherited from and used polymorphically.</div></div>
 `},
 
-{id:'staticfriend', label:'Static, Friend & this', content: `
-<h2 class="title">Static Members, Friend, and <code>this</code></h2>
+{id:'staticfriend', label:'Static, Friend, Mutable & this', content: `
+<h2 class="title">Static Members, Friend, Mutable, and <code>this</code></h2>
 <div class="codewrap"><span class="tag">static</span><pre><code><span class="kw">class</span> <span class="type">Counter</span> {
-    <span class="kw">static</span> <span class="type">int</span> count;     <span class="com">// ONE copy shared by ALL objects</span>
+    <span class="kw">static</span> <span class="type">int</span> count;     <span class="com">// ONE copy shared across ALL instances</span>
 <span class="kw">public</span>:
     <span class="type">Counter</span>() { count++; }
-    <span class="kw">static</span> <span class="type">int</span> getCount() { <span class="kw">return</span> count; } <span class="com">// no 'this' — can't touch non-static members</span>
+    <span class="kw">static</span> <span class="type">int</span> getCount() { <span class="kw">return</span> count; } <span class="com">// no 'this' — can only access static members</span>
 };
-<span class="type">int</span> <span class="type">Counter</span>::count = <span class="num">0</span>;  <span class="com">// must define storage outside the class</span></code></pre></div>
+<span class="type">int</span> <span class="type">Counter</span>::count = <span class="num">0</span>;  <span class="com">// definition &amp; storage allocated outside class</span></code></pre></div>
 <p><code>static</code> data members belong to the <em>class</em>, not any one object — useful for counters, shared config, or object pools.</p>
+
 <div class="codewrap"><span class="tag">friend</span><pre><code><span class="kw">class</span> <span class="type">Box</span> {
     <span class="type">int</span> width;
-    <span class="kw">friend</span> <span class="type">void</span> printWidth(<span class="kw">const</span> <span class="type">Box</span>&); <span class="com">// grants external access to privates</span>
+    <span class="kw">friend</span> <span class="type">void</span> printWidth(<span class="kw">const</span> <span class="type">Box</span>&); <span class="com">// grants external non-member access to privates</span>
 };
-<span class="type">void</span> printWidth(<span class="kw">const</span> <span class="type">Box</span>& b) { std::cout << b.width; } <span class="com">// allowed — friend</span></code></pre></div>
-<div class="callout warn"><span class="ico">⚠️</span><div><b>Use <code>friend</code> sparingly</b> — it breaks encapsulation deliberately. Justify it (e.g., operator<< overloads, tightly-coupled helper classes) rather than reaching for it as a shortcut.</div></div>
+<span class="type">void</span> printWidth(<span class="kw">const</span> <span class="type">Box</span>& b) { std::cout << b.width; } <span class="com">// allowed</span></code></pre></div>
+<div class="callout warn"><span class="ico">⚠️</span><div><b>Use <code>friend</code> sparingly</b> — it intentionally punches a hole in encapsulation. Justify it (e.g. <code>operator&lt;&lt;</code> streaming, tightly-coupled helper classes) rather than reaching for it as a shortcut.</div></div>
+
+<div class="codewrap"><span class="tag">mutable Keyword</span><pre><code><span class="kw">class</span> <span class="type">ThreadSafeCache</span> {
+<span class="kw">private</span>:
+    <span class="kw">mutable</span> <span class="type">int</span> accessCount = <span class="num">0</span>;        <span class="com">// 'mutable' can be modified inside const methods</span>
+    <span class="kw">mutable</span> <span class="type">std::mutex</span> mtx;             <span class="com">// thread synchronization in const getters</span>
+    <span class="type">std::string</span> cachedData;
+
+<span class="kw">public</span>:
+    <span class="kw">const</span> <span class="type">std::string</span>& getData() <span class="kw">const</span> {
+        std::lock_guard&lt;std::mutex&gt; lock(mtx); <span class="com">// mtx.lock() mutates mtx — valid via mutable!</span>
+        accessCount++;                         <span class="com">// telemetry/cache bookkeeping</span>
+        <span class="kw">return</span> cachedData;
+    }
+};</code></pre></div>
+<div class="callout interview"><span class="ico">🎯</span><div><b>The <code>mutable</code> interview question:</b> <em>"When is mutable legitimate?"</em> Answer: for <b>logical constness</b> vs <b>bitwise constness</b>. An accessor method doesn't change the observable state of the object, but might need to modify internal mutexes, caching/memoization buffers, or access telemetry.</div></div>
+
+<div class="card">
+<h3 style="margin-top:0">Memory Layout &amp; Empty Class Size</h3>
+<p style="font-size:13px">• <b>Why is <code>sizeof(EmptyClass) == 1</code> in C++?</b> C++ guarantees that every distinct object instance has a unique memory address in RAM. If size were 0, two consecutive objects in an array would share the exact same pointer address (<code>&amp;a[0] == &amp;a[1]</code>), breaking pointer arithmetic.<br>
+• <b>Virtual Function Overhead:</b> As soon as a class introduces a <code>virtual</code> function, the compiler inserts a hidden <code>vptr</code> (8 bytes on 64-bit systems) + memory alignment padding.</p>
+</div>
+
 <div class="codewrap"><span class="tag">this pointer</span><pre><code><span class="type">Box</span>& setWidth(<span class="type">int</span> w) { <span class="kw">this</span>->width = w; <span class="kw">return</span> *<span class="kw">this</span>; } <span class="com">// enables chaining: box.setWidth(5).setHeight(3);</span></code></pre></div>
 `},
 
@@ -483,6 +619,27 @@ T maxOf(T a, T b) { <span class="kw">return</span> (a > b) ? a : b; }   <span cl
 <h2 class="title">Rapid-Fire Interview Q&amp;A <span class="pill">Practice</span></h2>
 <p class="subtitle">Click each question. Try to answer out loud before revealing.</p>
 
+<details class="qa"><summary>Why should getters always be marked const? <span class="difftag easy">Easy</span><span class="arrow">▸</span></summary>
+<div class="qa-body">A trailing <code>const</code> (e.g. <code>int getAge() const;</code>) informs the compiler that this method will not alter the object's observable state. In C++, objects are frequently passed by <code>const&amp;</code> for performance. If a getter is not marked <code>const</code>, calling it on any <code>const</code> reference or object fails to compile with <em>"discards qualifiers"</em>.</div></details>
+
+<details class="qa"><summary>When should a getter return by const reference vs by value? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">Return <b>by value</b> for primitive types (<code>int</code>, <code>double</code>, <code>bool</code>, raw pointers, enums) because copying 4–8 bytes in CPU registers is cheap and avoids indirection. Return <b>by const reference</b> (<code>const std::string&amp;</code>, <code>const std::vector&lt;T&gt;&amp;</code>) for non-trivial or heavy objects to eliminate expensive memory allocations and deep copies while guaranteeing read-only protection.</div></details>
+
+<details class="qa"><summary>What is the "Tell, Don't Ask" principle in OOP? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">Instead of <em>asking</em> an object for its internal data via getters, computing logic outside the class, and calling setters to put it back (procedural "Anemic Domain Model"), you should <em>tell</em> the object what business action to perform (e.g. <code>account.withdraw(50);</code> instead of <code>account.setBalance(account.getBalance() - 50);</code>). This keeps data and validation logic co-located, maintaining true encapsulation.</div></details>
+
+<details class="qa"><summary>What does the explicit keyword do on a constructor? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">It prevents the compiler from using that constructor for <b>implicit type conversions</b>. Without <code>explicit</code>, a constructor taking one argument (e.g. <code>MyArray(int size)</code>) allows statements like <code>MyArray a = 10;</code> or passing <code>10</code> into a function expecting a <code>MyArray</code>, which often leads to surprising logic bugs.</div></details>
+
+<details class="qa"><summary>What is the mutable keyword, and when is it legitimately used? <span class="difftag hard">Hard</span><span class="arrow">▸</span></summary>
+<div class="qa-body"><code>mutable</code> allows a member variable to be modified even inside a <code>const</code> member function. It is used when an object maintains <b>logical constness</b> (the external state appears unchanged to callers), but requires physical mutation for internal mechanisms like locking a <code>std::mutex</code> in a thread-safe getter, caching/memoizing an expensive calculation, or updating access telemetry counters.</div></details>
+
+<details class="qa"><summary>In what order are class members initialized in C++? <span class="difftag hard">Hard</span><span class="arrow">▸</span></summary>
+<div class="qa-body">Members are initialized strictly in the <b>order they are declared in the class definition</b>, completely ignoring the order written in the constructor's Member Initializer List (MIL). Compilers will emit a <code>-Wreorder</code> warning if the MIL order disagrees with declaration order to prevent reading uninitialized memory.</div></details>
+
+<details class="qa"><summary>Why does sizeof an empty class return 1 byte in C++? <span class="difftag med">Medium</span><span class="arrow">▸</span></summary>
+<div class="qa-body">C++ guarantees that every distinct object instance in memory must have a <b>unique memory address</b>. If an empty class had size 0, two consecutive instances (like elements in an array: <code>Empty arr[2];</code>) would share the exact same pointer address (<code>&amp;arr[0] == &amp;arr[1]</code>), breaking pointer identity and address arithmetic.</div></details>
+
 <details class="qa"><summary>Overloading vs Overriding — what's the difference? <span class="difftag easy">Easy</span><span class="arrow">▸</span></summary>
 <div class="qa-body">Overloading: same function name, different parameter list, resolved at <b>compile time</b>, same scope. Overriding: derived class redefines a base class's <code>virtual</code> function with the <b>same signature</b>, resolved at <b>runtime</b> via the vtable.</div></details>
 
@@ -522,16 +679,18 @@ T maxOf(T a, T b) { <span class="kw">return</span> (a > b) ? a : b; }   <span cl
 <h2 class="title">One-Page Cheat Sheet <span class="pill">Review before interview</span></h2>
 <div class="grid2">
 <div class="card"><h3 style="margin-top:0">Say this for each pillar</h3>
-<p style="font-size:13px"><b>Encapsulation:</b> bundle + guard invariants.<br><b>Abstraction:</b> simple interface, hidden complexity.<br><b>Inheritance:</b> reuse via is-a; watch the diamond.<br><b>Polymorphism:</b> one call, many behaviors, via vtable.</p></div>
+<p style="font-size:13px"><b>Encapsulation:</b> bundle + guard invariants; use const getters &amp; "Tell, Don't Ask".<br><b>Abstraction:</b> simple interface, hidden complexity.<br><b>Inheritance:</b> reuse via is-a; watch the diamond.<br><b>Polymorphism:</b> one call, many behaviors, via vtable.</p></div>
 <div class="card"><h3 style="margin-top:0">Always mention</h3>
-<p style="font-size:13px">• Virtual destructor for polymorphic base classes<br>• Rule of Three/Five when resources are involved<br>• Slicing risk with by-value polymorphism<br>• Prefer composition when "is-a" is shaky</p></div>
+<p style="font-size:13px">• Mark getters <code>const</code>; return non-trivial types by <code>const&amp;</code><br>• Use <code>explicit</code> constructors to block implicit conversions<br>• Virtual destructor for polymorphic base classes<br>• Rule of Three/Five when resources are involved<br>• Member initialization order = declaration order<br>• <code>sizeof(EmptyClass) == 1</code> for unique object addressability</p></div>
 </div>
 <div class="badge-row">
-<span class="badge">virtual</span><span class="badge">override</span><span class="badge">final</span><span class="badge">= 0 pure virtual</span>
-<span class="badge">friend</span><span class="badge">static</span><span class="badge">this</span><span class="badge">vtable / vptr</span>
-<span class="badge">Rule of Five</span><span class="badge">SOLID</span><span class="badge">diamond problem</span><span class="badge">object slicing</span>
+<span class="badge">const getters</span><span class="badge">return const&amp;</span><span class="badge">Tell, Don't Ask</span><span class="badge">explicit</span>
+<span class="badge">mutable</span><span class="badge">MIL order</span><span class="badge">virtual</span><span class="badge">override</span>
+<span class="badge">final</span><span class="badge">= 0 pure virtual</span><span class="badge">friend</span><span class="badge">static</span>
+<span class="badge">this</span><span class="badge">vtable / vptr</span><span class="badge">Rule of Five</span><span class="badge">SOLID</span>
+<span class="badge">diamond problem</span><span class="badge">object slicing</span><span class="badge">sizeof(Empty) = 1</span>
 </div>
-<div class="callout tip"><span class="ico">✅</span><div>You've now covered every core OOP topic asked in C++ technical interviews. Revisit the <b>Rapid-Fire Q&amp;A</b> tab the night before your interview — that's the highest-yield section.</div></div>
+<div class="callout tip"><span class="ico">✅</span><div>You've now covered every core and subtle OOP topic asked in C++ technical interviews. Revisit the <b>Rapid-Fire Q&amp;A</b> tab the night before your interview — that's the highest-yield section.</div></div>
 `}
 ];
 
