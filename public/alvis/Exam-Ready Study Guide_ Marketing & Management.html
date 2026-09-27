@@ -36,11 +36,21 @@ header.top{
   border-bottom:1px solid var(--line);
 }
 .title-block{max-width:920px;margin:0 auto;padding:0 20px 14px;}
+.title-row{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;}
+.title-main{flex:1; min-width:220px;}
 .title-block h1{
   font-family:'Trebuchet MS',sans-serif; font-weight:800; letter-spacing:-0.5px;
   font-size:clamp(24px,4vw,34px); margin:0 0 4px;
 }
 .title-block p{margin:0;color:var(--sub);font-size:14px}
+.theme-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--card); color:var(--ink); border:1px solid var(--line);
+  padding:6px 12px; border-radius:20px;
+  font-family:'Trebuchet MS',sans-serif; font-size:12.5px; font-weight:700;
+  cursor:pointer; flex:0 0 auto; transition:.15s; margin-top:2px;
+}
+.theme-btn:hover{border-color:var(--accent); color:var(--accent);}
 .tabs{
   display:flex; gap:6px; overflow-x:auto; max-width:920px; margin:0 auto; padding:10px 20px;
   -ms-overflow-style:none; scrollbar-width:none;
@@ -201,12 +211,29 @@ footer{text-align:center; color:var(--sub); font-size:12px; margin-top:40px; fon
 .bcg-quad{border-radius:12px; padding:14px; color:#fff;}
 
 </style>
+<script>
+(function(){
+  try{
+    const saved = localStorage.getItem('study-theme');
+    if(saved === 'dark' || saved === 'light'){
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <header class="top">
   <div class="title-block">
-    <h1>📘 Exam-Ready Study Guide</h1>
-    <p>Marketing Concepts · Marketing Environment · Nature of Management · Intro to OB</p>
+    <div class="title-row">
+      <div class="title-main">
+        <h1>📘 Exam-Ready Study Guide</h1>
+        <p>Marketing Concepts · Marketing Environment · Nature of Management · Intro to OB</p>
+      </div>
+      <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme" title="Toggle dark/light mode">
+        <span class="theme-icon">🌙</span><span class="theme-text">Dark</span>
+      </button>
+    </div>
   </div>
   <div class="tabs" id="tabs"></div>
 </header>
@@ -1128,6 +1155,33 @@ Q5(b). Elaborate employee burnout with possible situations/responsibilities at w
 <footer>Built for revision — tap a tab, work through each card, then hit the flashcard summaries before your exam. Good luck! 🎯</footer>
 
 <script>
+function getEffectiveTheme(){
+  const saved = localStorage.getItem('study-theme');
+  if(saved === 'dark' || saved === 'light') return saved;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function updateThemeUI(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-toggle');
+  if(btn){
+    const isDark = theme === 'dark';
+    btn.innerHTML = `<span class="theme-icon">${isDark ? '☀️' : '🌙'}</span><span class="theme-text">${isDark ? 'Light' : 'Dark'}</span>`;
+    btn.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+  }
+}
+function initTheme(){
+  const btn = document.getElementById('theme-toggle');
+  if(!btn) return;
+  let current = getEffectiveTheme();
+  updateThemeUI(current);
+  btn.onclick = ()=>{
+    current = (current === 'dark') ? 'light' : 'dark';
+    try{ localStorage.setItem('study-theme', current); }catch(e){}
+    updateThemeUI(current);
+  };
+}
+initTheme();
+
 const tabs = [
   {id:'mkt', label:'📈 Marketing Concepts'},
   {id:'env', label:'🌍 Marketing Environment'},
