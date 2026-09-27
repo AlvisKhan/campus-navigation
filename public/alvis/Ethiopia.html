@@ -19,15 +19,34 @@
   --bg:#141513; --card:#1d1e1a; --ink:#ece9df; --sub:#a6a89c;
   --accent:#4fbfa5; --accent2:#e78a52; --accent3:#e0b84f; --line:#33342d; --tag:#25261f;
 }
+:root[data-theme="light"]{
+  --bg:#f6f5f0; --card:#ffffff; --ink:#20211d; --sub:#5b5d55;
+  --accent:#0f6b5c; --accent2:#c1440e; --accent3:#b8860b; --line:#e3e0d6; --tag:#eef1ea;
+}
 *{box-sizing:border-box}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px); overflow-x:hidden;}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'Iowan Old Style','Georgia',serif;
-  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-font-smoothing:antialiased;}
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;}
 .wrap{max-width:940px;margin:0 auto;padding:0 20px 80px;}
-header.top{position:sticky;top:0;z-index:20;background:var(--bg);padding-top:calc(14px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);}
+@media(max-width:600px){
+  .wrap{padding:0 14px 60px;}
+  .card{padding:14px 14px;}
+}
+header.top{background:var(--bg);padding-top:calc(14px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);}
 .title-block{max-width:940px;margin:0 auto;padding:0 20px 14px;}
+.title-row{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;}
+.title-main{flex:1; min-width:220px;}
 .title-block h1{font-family:'Trebuchet MS',sans-serif;font-weight:800;letter-spacing:-.5px;font-size:clamp(22px,4vw,32px);margin:0 0 4px;}
 .title-block p{margin:0;color:var(--sub);font-size:13.5px}
+.theme-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--card); color:var(--ink); border:1px solid var(--line);
+  padding:6px 12px; border-radius:20px;
+  font-family:'Trebuchet MS',sans-serif; font-size:12.5px; font-weight:700;
+  cursor:pointer; flex:0 0 auto; transition:.15s; margin-top:2px;
+}
+.theme-btn:hover{border-color:var(--accent); color:var(--accent);}
 .tabs{display:flex;gap:6px;overflow-x:auto;max-width:940px;margin:0 auto;padding:10px 20px;-ms-overflow-style:none;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none}
 .tab-btn{flex:0 0 auto;font-family:'Trebuchet MS',sans-serif;font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--sub);cursor:pointer;white-space:nowrap;transition:.15s;}
@@ -56,11 +75,93 @@ h2.sec-title{font-family:'Trebuchet MS',sans-serif;font-size:21px;font-weight:80
 svg{max-width:100%;height:auto;display:block;margin:12px auto;}
 .diagram-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:16px;text-align:center;}
 .diagram-card .cap{font-size:12px;color:var(--sub);font-family:'Trebuchet MS',sans-serif;margin-top:6px;}
+.tbl-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0;}
 table.tbl th{background:var(--accent);color:#fff;font-family:'Trebuchet MS',sans-serif;font-size:12px;text-align:left;padding:7px 9px;}
 table.tbl td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top;}
 table.tbl tr:nth-child(even) td{background:var(--tag);}
 table.tbl td.num-cell{font-variant-numeric:tabular-nums;font-weight:700;}
+@media (max-width: 680px){
+  table.tbl.entry-tbl,
+  table.tbl.entry-tbl thead,
+  table.tbl.entry-tbl tbody,
+  table.tbl.entry-tbl tr,
+  table.tbl.entry-tbl td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  table.tbl.entry-tbl thead {
+    display: none;
+  }
+  table.tbl.entry-tbl tr {
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: var(--card);
+    box-shadow: 0 1px 3px rgba(0,0,0,.03);
+  }
+  table.tbl.entry-tbl tr:nth-child(even) td {
+    background: transparent;
+  }
+  table.tbl.entry-tbl td {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--line);
+    background: transparent !important;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  table.tbl.entry-tbl td:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  table.tbl.entry-tbl td.mode-name {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 15.5px;
+    color: var(--accent);
+    padding-top: 0;
+    padding-bottom: 9px;
+    border-bottom: 2px solid var(--line);
+    margin-bottom: 4px;
+  }
+  table.tbl.entry-tbl td.mode-name b {
+    color: var(--accent);
+  }
+  table.tbl.entry-tbl td.mode-adv::before {
+    content: "Advantages: ";
+    font-family: 'Trebuchet MS', sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 2px;
+  }
+  table.tbl.entry-tbl td.mode-dis::before {
+    content: "Disadvantages: ";
+    font-family: 'Trebuchet MS', sans-serif;
+    font-weight: 700;
+    color: var(--accent2);
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 2px;
+  }
+  table.tbl.entry-tbl td.mode-note::before {
+    content: "Note: ";
+    font-family: 'Trebuchet MS', sans-serif;
+    font-weight: 700;
+    color: var(--accent3);
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 2px;
+  }
+}
 details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 15px;margin-bottom:9px;}
 summary{cursor:pointer;font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:14px;color:var(--accent);list-style:none;}
 summary::-webkit-details-marker{display:none}
@@ -81,12 +182,29 @@ details .inner{margin-top:8px;font-size:13.8px;line-height:1.6;color:var(--ink)}
 footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px;font-family:'Trebuchet MS',sans-serif;}
 .co-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-family:'Trebuchet MS',sans-serif;font-size:11px;font-weight:800;color:#fff;}
 </style>
+<script>
+(function(){
+  try{
+    const saved = localStorage.getItem('ethiopia-theme');
+    if(saved === 'dark' || saved === 'light'){
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <header class="top">
   <div class="title-block">
-    <h1>🌍 Ethiopia: Emerging Market Opportunity — Exam Guide</h1>
-    <p>HBS Case 9-915-501 (Quelch & Yong, 2015) · CareCo · ShoeCo · MedCo · condensed for fast, exam-ready revision</p>
+    <div class="title-row">
+      <div class="title-main">
+        <h1>🌍 Ethiopia: Emerging Market Opportunity — Exam Guide</h1>
+        <p>HBS Case 9-915-501 (Quelch & Yong, 2015) · CareCo · ShoeCo · MedCo · condensed for fast, exam-ready revision</p>
+      </div>
+      <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme" title="Toggle dark/light mode">
+        <span class="theme-icon">🌙</span><span class="theme-text">Dark</span>
+      </button>
+    </div>
   </div>
   <div class="tabs" id="tabs"></div>
 </header>
@@ -104,12 +222,14 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px;font-fa
 
 <div class="card">
 <h3><span class="num">1</span>The Three Companies in One Line Each</h3>
+<div class="tbl-wrap">
 <table class="tbl">
 <tr><th>Company</th><th>Industry</th><th>Why Ethiopia?</th><th>Core Dilemma</th></tr>
 <tr><td><b>CareCo</b></td><td>Personal care (est. 1961)</td><td>Rising consumer purchasing power; strong existing brand awareness</td><td>Import via distributor (fast, cheap, but low margin & share) <b>vs</b> build local manufacturing (expensive, but higher margin/share) — before a competitor locks in the market</td></tr>
 <tr><td><b>ShoeCo</b></td><td>Footwear (est. 1991, China)</td><td>Ultra-low labor costs → cost advantage for regional exports</td><td>Already exports via distributor with modest success — should it commit $35M to build a local/regional export factory?</td></tr>
 <tr><td><b>MedCo</b></td><td>Generic pharma (est. 1983, UAE)</td><td>Rapid healthcare-spend growth (15–20 yrs runway); govt. prioritises pharma</td><td>Always insists on wholly-owned subsidiaries to protect know-how — is an $85M standalone factory justified here?</td></tr>
 </table>
+</div>
 </div>
 
 <div class="card">
@@ -244,13 +364,19 @@ Transparency International ranked Ethiopia <b>111th of 177</b> countries (2013) 
 </svg>
 </div>
 
-<table class="tbl">
+<div class="tbl-wrap">
+<table class="tbl entry-tbl">
+<thead>
 <tr><th>Mode</th><th>Advantages</th><th>Disadvantages</th><th>Note</th></tr>
-<tr><td><b>1. Local Agent / Importer</b></td><td>Low risk, existing relationships, local distribution knowledge</td><td>Less control over sales/marketing, dependent on partner</td><td><b>Mandatory</b> for foreign firms wanting to import — wholesale/retail of imports is barred to foreigners</td></tr>
-<tr><td><b>2. Licensing / Franchising</b></td><td>Local production, more competitive pricing, partner knows customers</td><td>Lower margins, IP-infringement risk</td><td>Relatively uncommon in Ethiopia</td></tr>
-<tr><td><b>3. Joint Venture</b></td><td>More control than licensing; access to partner's knowledge/relationships</td><td>Coordination needs, possible partner disagreement, shared control</td><td>Partner can be private or government</td></tr>
-<tr><td><b>4. Wholly Owned Subsidiary</b></td><td>Maximum control, best IP/know-how protection, no partner coordination issues</td><td>High investment, full exposure to market/operational risk</td><td>MedCo's default mode everywhere</td></tr>
+</thead>
+<tbody>
+<tr><td class="mode-name" data-label="Mode"><b>1. Local Agent / Importer</b></td><td class="mode-adv" data-label="Advantages">Low risk, existing relationships, local distribution knowledge</td><td class="mode-dis" data-label="Disadvantages">Less control over sales/marketing, dependent on partner</td><td class="mode-note" data-label="Note"><b>Mandatory</b> for foreign firms wanting to import — wholesale/retail of imports is barred to foreigners</td></tr>
+<tr><td class="mode-name" data-label="Mode"><b>2. Licensing / Franchising</b></td><td class="mode-adv" data-label="Advantages">Local production, more competitive pricing, partner knows customers</td><td class="mode-dis" data-label="Disadvantages">Lower margins, IP-infringement risk</td><td class="mode-note" data-label="Note">Relatively uncommon in Ethiopia</td></tr>
+<tr><td class="mode-name" data-label="Mode"><b>3. Joint Venture</b></td><td class="mode-adv" data-label="Advantages">More control than licensing; access to partner's knowledge/relationships</td><td class="mode-dis" data-label="Disadvantages">Coordination needs, possible partner disagreement, shared control</td><td class="mode-note" data-label="Note">Partner can be private or government</td></tr>
+<tr><td class="mode-name" data-label="Mode"><b>4. Wholly Owned Subsidiary</b></td><td class="mode-adv" data-label="Advantages">Maximum control, best IP/know-how protection, no partner coordination issues</td><td class="mode-dis" data-label="Disadvantages">High investment, full exposure to market/operational risk</td><td class="mode-note" data-label="Note">MedCo's default mode everywhere</td></tr>
+</tbody>
 </table>
+</div>
 </section>
 
 <!-- TAB 5: THREE COMPANIES DEEP DIVE -->
@@ -260,11 +386,13 @@ Transparency International ranked Ethiopia <b>111th of 177</b> countries (2013) 
 <div class="card">
 <h3><span class="num">1</span>CareCo — Personal Care</h3>
 <p><b>Historical playbook:</b> enter via independent local distributor (low cost/risk) → but revenue growth plateaus due to distributor's inexperience/lack of focus → CareCo has begun shifting to own subsidiaries + local manufacturing + own managers (higher capex & opex).</p>
+<div class="tbl-wrap">
 <table class="tbl">
 <tr><th>Option</th><th>Key Numbers</th></tr>
 <tr><td><b>Via Distributor (import)</b></td><td>Customs duty 30%+; gross margin 35–45%; price disadvantage vs local goods → market share could <b>halve</b>; upfront ~$3M + ~$3M/yr marketing</td></tr>
 <tr><td><b>Local Manufacturing</b></td><td>Lower retail prices, bigger reach/share, gross margin up to <b>70%</b>, better brand/govt control, fights counterfeits</td></tr>
 </table>
+</div>
 <p>Current addressable market: <b>$125M</b> (mainly urban, higher-income) — team believes true market is bigger; expected growth <b>15–20%/yr</b>. <b>Urgency driver:</b> a competitor has already begun local manufacturing.</p>
 </div>
 
@@ -294,6 +422,7 @@ Transparency International ranked Ethiopia <b>111th of 177</b> countries (2013) 
 
 <div class="card">
 <h3><span class="num">4</span>Exhibit 1 — Side-by-Side Financials (memorise this table)</h3>
+<div class="tbl-wrap">
 <table class="tbl">
 <tr><th>Metric</th><th>CareCo</th><th>ShoeCo</th><th>MedCo</th></tr>
 <tr><td>Addressable market</td><td class="num-cell">$125M</td><td class="num-cell">$90M</td><td class="num-cell">$200M</td></tr>
@@ -303,6 +432,7 @@ Transparency International ranked Ethiopia <b>111th of 177</b> countries (2013) 
 <tr><td>Fixed costs Yr 1 → Yr 7</td><td class="num-cell">$12M → $15M</td><td class="num-cell">$10M → $12M</td><td class="num-cell">$10M → $13M</td></tr>
 <tr><td><b>Capital expenditure</b></td><td class="num-cell"><b>$55M</b></td><td class="num-cell"><b>$35M</b></td><td class="num-cell"><b>$85M</b></td></tr>
 </table>
+</div>
 </div>
 
 <div class="diagram-card">
@@ -404,6 +534,33 @@ Ethiopian regulation <b>bars foreign companies from wholesale and retail trade i
 <footer>Condensed from HBS Brief Case 9-915-501 for revision purposes — cross-check with the original case if deeper nuance is required. Good luck! 🎯</footer>
 
 <script>
+function getEffectiveTheme(){
+  const saved = localStorage.getItem('ethiopia-theme');
+  if(saved === 'dark' || saved === 'light') return saved;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+function updateThemeUI(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-toggle');
+  if(btn){
+    const isDark = theme === 'dark';
+    btn.innerHTML = `<span class="theme-icon">${isDark ? '☀️' : '🌙'}</span><span class="theme-text">${isDark ? 'Light' : 'Dark'}</span>`;
+    btn.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+  }
+}
+function initTheme(){
+  const btn = document.getElementById('theme-toggle');
+  if(!btn) return;
+  let current = getEffectiveTheme();
+  updateThemeUI(current);
+  btn.onclick = ()=>{
+    current = (current === 'dark') ? 'light' : 'dark';
+    try{ localStorage.setItem('ethiopia-theme', current); }catch(e){}
+    updateThemeUI(current);
+  };
+}
+initTheme();
+
 const tabs = [
   {id:'snap', label:'⚡ Case at a Glance'},
   {id:'macro', label:'🌍 Ethiopia Context'},
