@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ethiopia Case — Exam-Ready Guide</title>
+<style>
+:root{
+  --bg:#f6f5f0; --card:#ffffff; --ink:#20211d; --sub:#5b5d55;
+  --accent:#0f6b5c; --accent2:#c1440e; --accent3:#b8860b; --line:#e3e0d6; --tag:#eef1ea;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141513; --card:#1d1e1a; --ink:#ece9df; --sub:#a6a89c;
+    --accent:#4fbfa5; --accent2:#e78a52; --accent3:#e0b84f; --line:#33342d; --tag:#25261f;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141513; --card:#1d1e1a; --ink:#ece9df; --sub:#a6a89c;
+  --accent:#4fbfa5; --accent2:#e78a52; --accent3:#e0b84f; --line:#33342d; --tag:#25261f;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Iowan Old Style','Georgia',serif;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-font-smoothing:antialiased;}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px 80px;}
+header.top{position:sticky;top:0;z-index:20;background:var(--bg);padding-top:calc(14px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);}
+.title-block{max-width:940px;margin:0 auto;padding:0 20px 14px;}
+.title-block h1{font-family:'Trebuchet MS',sans-serif;font-weight:800;letter-spacing:-.5px;font-size:clamp(22px,4vw,32px);margin:0 0 4px;}
+.title-block p{margin:0;color:var(--sub);font-size:13.5px}
+.tabs{display:flex;gap:6px;overflow-x:auto;max-width:940px;margin:0 auto;padding:10px 20px;-ms-overflow-style:none;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{flex:0 0 auto;font-family:'Trebuchet MS',sans-serif;font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--sub);cursor:pointer;white-space:nowrap;transition:.15s;}
+.tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+section.panel{display:none;padding-top:20px;animation:fade .25s ease;}
+section.panel.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+h2.sec-title{font-family:'Trebuchet MS',sans-serif;font-size:21px;font-weight:800;margin:0 0 4px;color:var(--accent);border-bottom:3px solid var(--accent);display:inline-block;padding-bottom:4px;}
+.lede{color:var(--sub);font-size:14px;margin:10px 0 20px;line-height:1.5;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px 19px;margin-bottom:15px;box-shadow:0 1px 3px rgba(0,0,0,.03);}
+.card h3{font-family:'Trebuchet MS',sans-serif;font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px;}
+.card h3 .num{background:var(--accent2);color:#fff;width:23px;height:23px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;flex:0 0 auto;}
+.card p,.card li{font-size:14.5px;line-height:1.6;}
+.card ul{margin:6px 0;padding-left:20px;}
+.card ul li{margin-bottom:4px;}
+.def{border-left:4px solid var(--accent3);background:var(--tag);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14px;margin:10px 0;font-style:italic;}
+.def b{font-style:normal;color:var(--accent3)}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.pill{font-family:'Trebuchet MS',sans-serif;font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;background:var(--tag);color:var(--sub);border:1px solid var(--line);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr;}}
+.mini{background:var(--tag);border-radius:10px;padding:12px 14px;}
+.mini h4{margin:0 0 4px;font-size:13.5px;font-family:'Trebuchet MS',sans-serif;color:var(--accent)}
+.mini p{margin:0;font-size:13px;color:var(--sub)}
+svg{max-width:100%;height:auto;display:block;margin:12px auto;}
+.diagram-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:16px;text-align:center;}
+.diagram-card .cap{font-size:12px;color:var(--sub);font-family:'Trebuchet MS',sans-serif;margin-top:6px;}
+table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0;}
+table.tbl th{background:var(--accent);color:#fff;font-family:'Trebuchet MS',sans-serif;font-size:12px;text-align:left;padding:7px 9px;}
+table.tbl td{padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top;}
+table.tbl tr:nth-child(even) td{background:var(--tag);}
+table.tbl td.num-cell{font-variant-numeric:tabular-nums;font-weight:700;}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 15px;margin-bottom:9px;}
+summary{cursor:pointer;font-family:'Trebuchet MS',sans-serif;font-weight:700;font-size:14px;color:var(--accent);list-style:none;}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";color:var(--accent)}
+details[open] summary::before{content:"▾ "}
+details .inner{margin-top:8px;font-size:13.8px;line-height:1.6;color:var(--ink)}
+.flash{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:14px;padding:15px 19px;margin-bottom:15px;}
+.flash h3{margin:0 0 6px;font-family:'Trebuchet MS',sans-serif;font-size:14.5px;}
+.flash p{margin:0;font-size:13.5px;line-height:1.55;opacity:.95;}
+.examtip{border:2px dashed var(--accent3);border-radius:12px;padding:11px 15px;font-size:13px;color:var(--sub);margin:14px 0;background:var(--tag);}
+.examtip b{color:var(--accent3);font-family:'Trebuchet MS',sans-serif;}
+.exq{border:1px solid var(--accent2);border-radius:12px;margin:14px 0 18px;overflow:hidden;background:var(--card);}
+.exq .exq-head{background:var(--accent2);color:#fff;padding:8px 14px;font-family:'Trebuchet MS',sans-serif;font-size:11px;font-weight:800;}
+.exq .exq-q{padding:12px 16px 2px;font-size:14px;line-height:1.55;}
+.exq .exq-q b{color:var(--accent2)}
+.exq details{border:none;background:var(--tag);border-radius:0;margin:10px 14px 14px;padding:10px 14px;}
+.exq summary{color:var(--accent)}
+footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px;font-family:'Trebuchet MS',sans-serif;}
+.co-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-family:'Trebuchet MS',sans-serif;font-size:11px;font-weight:800;color:#fff;}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="title-block">
+    <h1>🌍 Ethiopia: Emerging Market Opportunity — Exam Guide</h1>
+    <p>HBS Case 9-915-501 (Quelch & Yong, 2015) · CareCo · ShoeCo · MedCo · condensed for fast, exam-ready revision</p>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</header>
+<div class="wrap">
+
+<!-- TAB 1: SNAPSHOT -->
+<section class="panel" data-tab="snap">
+<h2 class="sec-title">1 · Case at a Glance (Read This First)</h2>
+<p class="lede">If you read nothing else, read this tab — it's the whole case in 2 minutes.</p>
+
+<div class="flash">
+<h3>⚡ The One-Sentence Case</h3>
+<p>In January 2014, three very different multinationals — CareCo (personal care), ShoeCo (footwear), and MedCo (pharma) — are each deciding <b>whether and how</b> to enter Ethiopia, a fast-growing but infrastructure-poor, bureaucratic, low-competition African market.</p>
+</div>
+
+<div class="card">
+<h3><span class="num">1</span>The Three Companies in One Line Each</h3>
+<table class="tbl">
+<tr><th>Company</th><th>Industry</th><th>Why Ethiopia?</th><th>Core Dilemma</th></tr>
+<tr><td><b>CareCo</b></td><td>Personal care (est. 1961)</td><td>Rising consumer purchasing power; strong existing brand awareness</td><td>Import via distributor (fast, cheap, but low margin & share) <b>vs</b> build local manufacturing (expensive, but higher margin/share) — before a competitor locks in the market</td></tr>
+<tr><td><b>ShoeCo</b></td><td>Footwear (est. 1991, China)</td><td>Ultra-low labor costs → cost advantage for regional exports</td><td>Already exports via distributor with modest success — should it commit $35M to build a local/regional export factory?</td></tr>
+<tr><td><b>MedCo</b></td><td>Generic pharma (est. 1983, UAE)</td><td>Rapid healthcare-spend growth (15–20 yrs runway); govt. prioritises pharma</td><td>Always insists on wholly-owned subsidiaries to protect know-how — is an $85M standalone factory justified here?</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3><span class="num">2</span>Why Ethiopia, In Brief</h3>
+<div class="tagrow">
+<span class="pill">Pop. 94M (+30%, 2003–13)</span><span class="pill">GDP $8.6B → $47.5B</span>
+<span class="pill">#6 of 54 in Sub-Saharan Africa market-opportunity ranking</span>
+<span class="pill">State-led development model</span><span class="pill">Heavy infra investment</span>
+</div>
+</div>
+
+<div class="card">
+<h3><span class="num">3</span>Why It's Hard — 7 Challenges (memorise this list)</h3>
+<p><b>I-H-L-F-C-I-C</b> mnemonic: <b>I</b>nfrastructure, <b>H</b>uman resources, <b>L</b>imited competition (double-edged), <b>F</b>ragmented distribution, <b>C</b>ross-cultural adaptation, <b>I</b>ntellectual property, <b>C</b>orruption/transparency. (Full detail in Tab 3.)</p>
+</div>
+
+<div class="card">
+<h3><span class="num">4</span>Four Entry Modes (memorise this list)</h3>
+<p><b>A-L-J-S</b>: Local <b>A</b>gent/importer → <b>L</b>icensing/franchising → <b>J</b>oint venture → Wholly-owned <b>S</b>ubsidiary. (<i>Increasing control & risk, decreasing reliance on partners, in that order.</i> Full detail in Tab 4.)</p>
+</div>
+
+<div class="examtip"><b>Exam tip:</b> Case exams almost always ask you to (1) evaluate Ethiopia's attractiveness using a framework (PESTEL/SWOT), (2) recommend an entry mode per company with justification, and (3) use Exhibit 1's numbers to support your recommendation. Tab 6 gives full model answers for exactly this.</div>
+</section>
+
+<!-- TAB 2: ETHIOPIA MACRO CONTEXT -->
+<section class="panel" data-tab="macro">
+<h2 class="sec-title">2 · Ethiopia — Historical & Economic Context</h2>
+
+<div class="diagram-card">
+<svg viewBox="0 0 640 130" xmlns="http://www.w3.org/2000/svg">
+  <line x1="30" y1="70" x2="610" y2="70" stroke="var(--sub)" stroke-width="2"/>
+  <g font-family="Trebuchet MS" font-size="10.5" text-anchor="middle" fill="var(--ink)">
+    <circle cx="80" cy="70" r="7" fill="var(--accent2)"/><text x="80" y="95">1974</text><text x="80" y="108">Military junta begins</text>
+    <circle cx="230" cy="70" r="7" fill="var(--accent2)"/><text x="230" y="95">1991</text><text x="230" y="108">EPRDF overthrows regime</text>
+    <circle cx="360" cy="70" r="7" fill="var(--accent)"/><text x="360" y="95">1994–95</text><text x="360" y="108">Constitution & elections</text>
+    <circle cx="480" cy="70" r="7" fill="var(--accent)"/><text x="480" y="95">Mid-1990s+</text><text x="480" y="108">Privatization & liberalization</text>
+    <circle cx="590" cy="70" r="7" fill="var(--accent3)"/><text x="590" y="95">2014</text><text x="590" y="108">3 firms weigh entry</text>
+  </g>
+</svg>
+<div class="cap">Fig: Ethiopia's political-economic timeline leading to the case.</div>
+</div>
+
+<div class="card">
+<h3><span class="num">1</span>Political Background</h3>
+<ul>
+<li><b>1974–1991:</b> Soviet-backed military junta — human-rights abuses, corruption, famine.</li>
+<li><b>1991:</b> EPRDF overthrows the government.</li>
+<li><b>1994:</b> New constitution written. <b>1995:</b> Formal elections — EPRDF wins, government stable & single-party since.</li>
+<li><b>Mid-1990s onward:</b> Private companies invited into previously state-controlled sectors; <b>300+ SOEs privatized</b>; simplified business registration; revised tax code.</li>
+</ul>
+</div>
+
+<div class="card">
+<h3><span class="num">2</span>Economic Snapshot (2003–2013)</h3>
+<div class="grid3">
+<div class="mini"><h4>Population</h4><p>+30% → ~94 million</p></div>
+<div class="mini"><h4>GDP</h4><p>$8.6B → $47.5B</p></div>
+<div class="mini"><h4>Global Ranking</h4><p>#6 of 54 Sub-Saharan African countries for market opportunity</p></div>
+</div>
+<ul style="margin-top:10px">
+<li>Growth stronger in <b>services & agriculture</b> than manufacturing.</li>
+<li><b>State-led development model</b> — public investment ≈ ⅓ of GDP (transport, power, telecom); public debt ≈ 23% of GDP.</li>
+<li>New Djibouti-linked road/rail aimed to offset the <b>landlocked</b> disadvantage.</li>
+</ul>
+</div>
+
+<div class="card">
+<h3><span class="num">3</span>Role of Government — a Double-Edged Sword</h3>
+<div class="grid2">
+<div class="mini"><h4>State Monopoly/Dominance</h4><p>Telecom, Power, Financial services, Air transport, Shipping</p></div>
+<div class="mini"><h4>Reserved for Domestic Firms</h4><p>Media, Retail, Transportation, Financial services</p></div>
+</div>
+<div class="def" style="margin-top:10px"><b>Complaint:</b> state-owned & party-affiliated firms allegedly had an edge in credit access, bureaucracy navigation, government tenders & customs clearance — yet the government simultaneously <b>courted FDI</b> in manufacturing & export sectors.</div>
+</div>
+
+<div class="card">
+<h3><span class="num">4</span>Foreign Investment Incentives</h3>
+<ul>
+<li><b>Income-tax exemption</b> up to 5 years for manufacturing, agro-processing, agricultural production.</li>
+<li>Extra tax deduction for investment in underdeveloped/targeted areas.</li>
+<li><b>Customs exemption</b> on capital goods (plant, machinery, equipment, spares, construction material).</li>
+<li>Legal protection of private property; profits/capital convertible to foreign currency — <i>but</i> Ethiopia faced <b>forex shortages</b> (imports ≫ exports).</li>
+</ul>
+</div>
+</section>
+
+<!-- TAB 3: CHALLENGES -->
+<section class="panel" data-tab="challenges">
+<h2 class="sec-title">3 · The 7 Major Investment Challenges</h2>
+<p class="lede">Mnemonic: <b>I-H-L-F-C-I-C</b></p>
+
+<details open><summary>1. Infrastructure</summary><div class="inner">
+Poor cross-border trade/logistics ranking; landlocked, so surface shipments depend on <b>Port of Djibouti</b>. 1/3+ of population lives 5+ hrs from a city. Frequent power cuts (need backup generators); inconsistent telecom/Internet. Logistics costs expected to stay high short-term.
+</div></details>
+<details><summary>2. Human Resources</summary><div class="inner">
+Cost-competitive with <b>China</b> for light manufacturing; 10,000+ university graduates/year = skilled, affordable labor. But gaps in work culture/management style/communication between expats & locals. Returnee Ethiopians = valuable but scarce & expensive.
+</div></details>
+<details><summary>3. Limited Competition (double-edged)</summary><div class="inner">
+Underdeveloped industries → easy share capture for strong entrants — <i>but</i> also lets local upstarts challenge established multinationals. Low pre-existing brand awareness since Ethiopia was historically closed to foreign influence.
+</div></details>
+<details><summary>4. Fragmented Distribution</summary><div class="inner">
+Centered on <b>Mercato</b> (Addis Ababa wholesale hub) + sub-distributors reaching rural retailers. 75%+ of population is rural. No major international retail chains — small independent kiosks dominate → high cost to serve. Importers <i>must</i> use domestic wholesale partners (foreign wholesaling is restricted); local manufacturers can self-distribute.
+</div></details>
+<details><summary>5. Cross-Cultural Adaptation</summary><div class="inner">
+Risk of offending local norms via inappropriate marketing choices (music, spokespeople). B2B firms struggle to build trust — some used <b>joint ventures</b> with local firms to bridge this gap.
+</div></details>
+<details><summary>6. Intellectual Property</summary><div class="inner">
+Unreliable IP protection & weak enforcement capacity. Unauthorized use of brand names/trademarks; counterfeits/piracy common.
+</div></details>
+<details><summary>7. Corruption & Transparency</summary><div class="inner">
+Transparency International ranked Ethiopia <b>111th of 177</b> countries (2013) on perceived public-sector corruption. Investors cited opaque government tenders & suspected preferential treatment for some firms.
+</div></details>
+
+<div class="examtip"><b>Exam tip:</b> This list maps almost 1:1 onto a <b>PESTEL</b> analysis — Political (corruption, state control), Economic (forex shortage, growth), Social (culture), Technological (infra/telecom), Environmental (n/a here), Legal (IP). Use PESTEL as your structuring device if asked to "assess Ethiopia's business environment."</div>
+</section>
+
+<!-- TAB 4: ENTRY MODES -->
+<section class="panel" data-tab="entry">
+<h2 class="sec-title">4 · Four Market-Entry Options</h2>
+
+<div class="diagram-card">
+<svg viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="70" x2="600" y2="70" stroke="var(--sub)" stroke-width="2" marker-end="url(#ae)"/>
+  <g font-family="Trebuchet MS" font-size="11" font-weight="700" text-anchor="middle" fill="#fff">
+    <rect x="40" y="45" width="120" height="50" rx="8" fill="var(--accent)"/><text x="100" y="66">Local Agent /</text><text x="100" y="80">Importer</text>
+    <rect x="200" y="45" width="120" height="50" rx="8" fill="var(--accent3)"/><text x="260" y="66">Licensing /</text><text x="260" y="80">Franchising</text>
+    <rect x="360" y="45" width="120" height="50" rx="8" fill="var(--accent2)"/><text x="420" y="70">Joint Venture</text>
+    <rect x="520" y="45" width="100" height="50" rx="8" fill="#7a3a7a"/><text x="570" y="66">Wholly-Owned</text><text x="570" y="80">Subsidiary</text>
+  </g>
+  <text x="320" y="120" text-anchor="middle" font-family="Trebuchet MS" font-size="11" fill="var(--sub)">Increasing control, cost & risk · decreasing dependence on local partner →</text>
+  <defs><marker id="ae" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--sub)"/></marker></defs>
+</svg>
+</div>
+
+<table class="tbl">
+<tr><th>Mode</th><th>Advantages</th><th>Disadvantages</th><th>Note</th></tr>
+<tr><td><b>1. Local Agent / Importer</b></td><td>Low risk, existing relationships, local distribution knowledge</td><td>Less control over sales/marketing, dependent on partner</td><td><b>Mandatory</b> for foreign firms wanting to import — wholesale/retail of imports is barred to foreigners</td></tr>
+<tr><td><b>2. Licensing / Franchising</b></td><td>Local production, more competitive pricing, partner knows customers</td><td>Lower margins, IP-infringement risk</td><td>Relatively uncommon in Ethiopia</td></tr>
+<tr><td><b>3. Joint Venture</b></td><td>More control than licensing; access to partner's knowledge/relationships</td><td>Coordination needs, possible partner disagreement, shared control</td><td>Partner can be private or government</td></tr>
+<tr><td><b>4. Wholly Owned Subsidiary</b></td><td>Maximum control, best IP/know-how protection, no partner coordination issues</td><td>High investment, full exposure to market/operational risk</td><td>MedCo's default mode everywhere</td></tr>
+</table>
+</section>
+
+<!-- TAB 5: THREE COMPANIES DEEP DIVE -->
+<section class="panel" data-tab="companies">
+<h2 class="sec-title">5 · CareCo vs ShoeCo vs MedCo — Deep Dive</h2>
+
+<div class="card">
+<h3><span class="num">1</span>CareCo — Personal Care</h3>
+<p><b>Historical playbook:</b> enter via independent local distributor (low cost/risk) → but revenue growth plateaus due to distributor's inexperience/lack of focus → CareCo has begun shifting to own subsidiaries + local manufacturing + own managers (higher capex & opex).</p>
+<table class="tbl">
+<tr><th>Option</th><th>Key Numbers</th></tr>
+<tr><td><b>Via Distributor (import)</b></td><td>Customs duty 30%+; gross margin 35–45%; price disadvantage vs local goods → market share could <b>halve</b>; upfront ~$3M + ~$3M/yr marketing</td></tr>
+<tr><td><b>Local Manufacturing</b></td><td>Lower retail prices, bigger reach/share, gross margin up to <b>70%</b>, better brand/govt control, fights counterfeits</td></tr>
+</table>
+<p>Current addressable market: <b>$125M</b> (mainly urban, higher-income) — team believes true market is bigger; expected growth <b>15–20%/yr</b>. <b>Urgency driver:</b> a competitor has already begun local manufacturing.</p>
+</div>
+
+<div class="card">
+<h3><span class="num">2</span>ShoeCo — Footwear</h3>
+<p>China-based (1991); grew via contract/private-label manufacturing, then own emerging-market brands (2003+). Expansion playbook: <b>3rd-party importer</b> when an existing offshore factory can serve the market efficiently; <b>local manufacturing</b> (wholly-owned <i>or</i> JV) when conditions are attractive — especially if the factory can also <b>export regionally</b>.</p>
+<ul>
+<li>Already exports to Ethiopia via distributor — modest success.</li>
+<li>Proposed factory: <b>$40M in exports</b> forecast; regional markets growing ~<b>10%/yr</b>.</li>
+<li>Location: Special Economic Zone outside Addis Ababa. Capex <b>$35M</b>. ≥5-yr tax exemption; duty-free capital equipment.</li>
+<li>~<b>2,000 workers</b>, ~<b>$50/month</b> wage (above local average, below ShoeCo's other factories' costs).</li>
+<li><b>Key managerial risk:</b> finding managers who embody ShoeCo's culture <i>and</i> can adapt to/develop local staff.</li>
+</ul>
+</div>
+
+<div class="card">
+<h3><span class="num">3</span>MedCo — Generic Pharmaceuticals</h3>
+<p>UAE-based (1983); no proprietary drugs — sells generic/private-label/localized-packaging products via <b>lean, small-batch, agile manufacturing</b>. Always enters new markets via <b>wholly owned</b> facilities to protect operational know-how. 85% of non-UAE revenue from MENA, where growth has slowed (maturity + Syria/Egypt turmoil) → pushes MedCo to look elsewhere.</p>
+<ul>
+<li>Facility investment: <b>$85M</b>; operational ~12 months after ground-breaking (govt. has prioritized pharma).</li>
+<li>Addressable market: <b>$200M</b>; expected strong long-term (15–20%) growth; healthcare spend/capita &lt;$11 (room to grow).</li>
+<li>Customers: Ministry of Health, public health system, clinics, private pharmacies.</li>
+<li>Distribution: fragmented — 3,500+ mostly single-store pharmacies; ~250 wholesalers/importers (many tied to Chinese/Indian generics makers).</li>
+<li>Benefits: available industrial property near Addis Ababa, duty-free capital equipment, up to 5-yr tax exemption.</li>
+</ul>
+</div>
+
+<div class="card">
+<h3><span class="num">4</span>Exhibit 1 — Side-by-Side Financials (memorise this table)</h3>
+<table class="tbl">
+<tr><th>Metric</th><th>CareCo</th><th>ShoeCo</th><th>MedCo</th></tr>
+<tr><td>Addressable market</td><td class="num-cell">$125M</td><td class="num-cell">$90M</td><td class="num-cell">$200M</td></tr>
+<tr><td>10-yr avg. market growth</td><td class="num-cell">15–20%</td><td class="num-cell">8–12%</td><td class="num-cell">15%</td></tr>
+<tr><td>Market share Yr 1 → Yr 7</td><td class="num-cell">5% → 25%</td><td class="num-cell">3% → 10%</td><td class="num-cell">5% → 25%</td></tr>
+<tr><td>Gross margin Yr 1 → Yr 7</td><td class="num-cell">60% → 70%</td><td class="num-cell">60% → 65%</td><td class="num-cell">70% → 75%</td></tr>
+<tr><td>Fixed costs Yr 1 → Yr 7</td><td class="num-cell">$12M → $15M</td><td class="num-cell">$10M → $12M</td><td class="num-cell">$10M → $13M</td></tr>
+<tr><td><b>Capital expenditure</b></td><td class="num-cell"><b>$55M</b></td><td class="num-cell"><b>$35M</b></td><td class="num-cell"><b>$85M</b></td></tr>
+</table>
+</div>
+
+<div class="diagram-card">
+<svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+  <g font-family="Trebuchet MS" font-size="11" fill="var(--ink)">
+    <text x="10" y="20" font-weight="700">Addressable Market ($M)</text>
+    <rect x="10" y="35" width="125" height="18" fill="var(--accent)"/><text x="140" y="49">CareCo $125M</text>
+    <rect x="10" y="58" width="90" height="18" fill="var(--accent2)"/><text x="105" y="72">ShoeCo $90M</text>
+    <rect x="10" y="81" width="200" height="18" fill="var(--accent3)"/><text x="215" y="95">MedCo $200M</text>
+  </g>
+  <g font-family="Trebuchet MS" font-size="11" fill="var(--ink)">
+    <text x="10" y="130" font-weight="700">Capital Expenditure ($M)</text>
+    <rect x="10" y="145" width="55" height="18" fill="var(--accent)"/><text x="70" y="159">CareCo $55M</text>
+    <rect x="10" y="168" width="35" height="18" fill="var(--accent2)"/><text x="50" y="182">ShoeCo $35M</text>
+    <rect x="10" y="191" width="85" height="18" fill="var(--accent3)"/><text x="100" y="205">MedCo $85M</text>
+  </g>
+</svg>
+<div class="cap">Fig: MedCo has both the biggest market AND biggest capex — highest risk/reward. ShoeCo is the smallest, cheapest bet.</div>
+</div>
+
+<div class="card">
+<h3><span class="num">5</span>Quick Comparison Cheat-Sheet</h3>
+<ul>
+<li><b>Market size:</b> ShoeCo $90M &lt; CareCo $125M &lt; MedCo $200M</li>
+<li><b>Capex:</b> ShoeCo $35M &lt; CareCo $55M &lt; MedCo $85M</li>
+<li><b>CareCo's issue:</b> distributor vs local manufacturing — and first-mover risk vs a competitor already localizing.</li>
+<li><b>ShoeCo's opportunity:</b> low-cost manufacturing hub serving Ethiopia <i>+</i> regional exports.</li>
+<li><b>MedCo's opportunity:</b> fast-growing healthcare spend + MedCo's efficient manufacturing edge; insists on full ownership to protect know-how.</li>
+</ul>
+</div>
+</section>
+
+<!-- TAB 6: EXAM Q&A -->
+<section class="panel" data-tab="exam">
+<h2 class="sec-title">6 · Exam-Style Questions & Model Answers</h2>
+<p class="lede">The classic case-study question types for this HBS brief case, with structured model answers.</p>
+
+<div class="exq">
+<div class="exq-head">Q1 · Case-Analysis Essay</div>
+<div class="exq-q">Using an appropriate framework, assess Ethiopia's attractiveness as an FDI destination in 2014.</div>
+<details><summary>Model Answer (PESTEL structure)</summary><div class="inner">
+<b>Political:</b> Stable single-party government since 1995 (positive for predictability) but state dominance in key sectors (telecom, power, finance) and perceived favouritism toward party-affiliated firms; corruption ranked 111/177 (negative).<br>
+<b>Economic:</b> Strong fundamentals — GDP nearly quintupled 2003–13, population +30% to 94M, ranked #6/54 in Sub-Saharan Africa opportunity — but forex shortages from a persistent trade deficit are a real operational risk (repatriating profits could be constrained).<br>
+<b>Social:</b> 75%+ rural population and historically closed to foreign influence mean low existing brand awareness (opportunity for early movers, risk of missteps) — cross-cultural marketing sensitivity required.<br>
+<b>Technological:</b> Improving but still weak — unreliable power & telecom raise operating costs (generators, redundancy needed).<br>
+<b>Environmental:</b> Landlocked geography is a structural cost driver — port dependency on Djibouti.<br>
+<b>Legal:</b> Weak IP enforcement, counterfeiting risk, restrictions on foreign wholesale/retail participation.<br>
+<b>Conclusion:</b> Ethiopia is attractive on growth & incentive dimensions but risky on infrastructure/institutional dimensions — attractiveness is <i>conditional</i> on a firm's ability to tolerate operational friction and invest for the long term (10+ year payback thinking, matching the case's Year-1-to-Year-7 projections).
+</div></details>
+</div>
+
+<div class="exq">
+<div class="exq-head">Q2 · Entry-Mode Recommendation</div>
+<div class="exq-q">Which market-entry mode should each of CareCo, ShoeCo, and MedCo choose, and why?</div>
+<details><summary>Model Answer</summary><div class="inner">
+<b>CareCo → Local manufacturing subsidiary (not distributor).</b> Its historical distributor-led approach has repeatedly plateaued (per its own experience in other markets); a competitor is already manufacturing locally, so speed & control matter. The 70% vs 35–45% gross-margin gap, lower retail pricing, and better counterfeit protection justify the higher capex — recommend wholly-owned/majority-controlled local manufacturing to defend the brand's premium positioning before rivals entrench.<br><br>
+<b>ShoeCo → Wholly-owned (or JV) local manufacturing factory, not just import.</b> The regional-export angle ($40M forecast exports, ~10% regional growth) is the deciding factor — ShoeCo's model favors local manufacturing precisely when a factory can also serve neighboring markets. Tax incentives (5-yr exemption, duty-free capital equipment) and low labor costs ($50/month, still below its other factories) support a positive ROI case. Risk is primarily managerial (culture transfer), not financial.<br><br>
+<b>MedCo → Wholly-owned subsidiary</b> — consistent with its universal policy of never using local partners, in order to protect proprietary lean-manufacturing know-how. Given government prioritization of pharma (fast 12-month setup), a large ($200M) and fast-growing addressable market, and MedCo's core competency being <i>operational efficiency itself</i> (which a partner could dilute or leak), full ownership is the only mode consistent with its stated competitive advantage.
+</div></details>
+</div>
+
+<div class="exq">
+<div class="exq-head">Q3 · Comparative Finance Question</div>
+<div class="exq-q">Based on Exhibit 1, which company represents the most attractive investment opportunity, and which is the highest risk?</div>
+<details><summary>Model Answer</summary><div class="inner">
+<b>Most attractive (risk-adjusted):</b> Arguably <b>MedCo</b> — largest addressable market ($200M), highest gross margins (70→75%), and a Year-7 market share target (25%) matching CareCo but on a bigger base — <i>if</i> the $85M capex can be justified by the market's depth and MedCo's differentiated cost/quality position. <b>ShoeCo</b> is the "safe" pick — lowest capex ($35M), fastest time-to-cash-flow via existing distributor relationships, and a regional-export hedge that diversifies demand beyond Ethiopia alone — but it has the smallest market and slowest growth (8–12%).<br><br>
+<b>Highest risk:</b> <b>MedCo</b>, by absolute dollar exposure — $85M is the largest capital commitment, in a country with weak IP enforcement (a direct threat to a generics manufacturer's pricing model if counterfeits enter) and forex shortages (risk to repatriating pharma profits). <b>CareCo</b> carries strategic/competitive risk — if it delays, a rival already manufacturing locally could lock up distribution & brand awareness first-mover advantage, but CareCo's capex ($55M) and market ($125M) sit in the middle of the pack, making its risk more "timing risk" than "capital risk."
+</div></details>
+</div>
+
+<div class="exq">
+<div class="exq-head">Q4 · Short-Answer / Definition Style</div>
+<div class="exq-q">Explain why foreign companies importing to Ethiopia are required to work through a local partner, while local manufacturers are not.</div>
+<details><summary>Model Answer</summary><div class="inner">
+Ethiopian regulation <b>bars foreign companies from wholesale and retail trade in imported goods</b> — this protects domestic distribution businesses from foreign competition (import substitution / protectionism). A firm that manufactures <i>locally</i>, however, is legally free to manage its own wholesaling and distribution of its own locally-made output, since the restriction targets <i>imported</i> goods specifically, not domestic production. This is precisely why CareCo's shift toward local manufacturing also grants it "control of distribution, branding, and positioning" that a distributor arrangement cannot.
+</div></details>
+</div>
+
+<div class="exq">
+<div class="exq-head">Q5 · SWOT (quick reference)</div>
+<div class="exq-q">Summarize Ethiopia as an investment destination using SWOT.</div>
+<details><summary>Model Answer</summary><div class="inner">
+<div class="grid2">
+<div class="mini"><h4>Strengths</h4><p>Large & growing population/GDP; government-backed infra investment; generous tax/customs incentives; low-cost skilled labor</p></div>
+<div class="mini"><h4>Weaknesses</h4><p>Landlocked/logistics-dependent on Djibouti; unreliable power/telecom; fragmented distribution; forex shortages</p></div>
+<div class="mini"><h4>Opportunities</h4><p>Low competition & brand-awareness "white space"; underpenetrated healthcare/consumer spend; regional export potential (esp. for manufacturing)</p></div>
+<div class="mini"><h4>Threats</h4><p>Weak IP enforcement/counterfeiting; corruption & tender opacity; state favoritism toward party-linked firms; first-mover competitors</p></div>
+</div>
+</div></details>
+</div>
+
+<div class="flash">
+<h3>⚡ Final Recall Card</h3>
+<p><b>Ethiopia</b> = high-growth, low-competition, high-friction market. <b>4 entry modes</b> trade off control vs risk (Agent → License → JV → Subsidiary). <b>CareCo</b> = distributor vs local-mfg margin/speed tradeoff. <b>ShoeCo</b> = cheapest bet, driven by regional-export cost advantage. <b>MedCo</b> = biggest market & capex, always wholly-owned to protect its manufacturing "secret sauce." Exhibit-1 numbers (market size, growth %, margins, capex) are your evidence bank for any recommendation question.</p>
+</div>
+</section>
+
+</div>
+<footer>Condensed from HBS Brief Case 9-915-501 for revision purposes — cross-check with the original case if deeper nuance is required. Good luck! 🎯</footer>
+
+<script>
+const tabs = [
+  {id:'snap', label:'⚡ Case at a Glance'},
+  {id:'macro', label:'🌍 Ethiopia Context'},
+  {id:'challenges', label:'⚠️ 7 Challenges'},
+  {id:'entry', label:'🚪 Entry Modes'},
+  {id:'companies', label:'🏢 3 Companies'},
+  {id:'exam', label:'📝 Exam Q&A'}
+];
+const tabBar = document.getElementById('tabs');
+tabs.forEach((t,i)=>{
+  const b = document.createElement('button');
+  b.className = 'tab-btn' + (i===0?' active':'');
+  b.textContent = t.label;
+  b.onclick = ()=>selectTab(t.id);
+  b.dataset.tab = t.id;
+  tabBar.appendChild(b);
+});
+function selectTab(id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.dataset.tab===id));
+  try{ localStorage.setItem('ethiopia-tab', id); }catch(e){}
+  window.scrollTo({top:0, behavior:'instant'});
+}
+let start = 'snap';
+try{ const saved = localStorage.getItem('ethiopia-tab'); if(saved) start = saved; }catch(e){}
+selectTab(start);
+</script>
+</body>
+</html>
