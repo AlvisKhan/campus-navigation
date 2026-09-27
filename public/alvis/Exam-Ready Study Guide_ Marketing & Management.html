@@ -21,16 +21,17 @@
   --accent:#e2764f; --accent2:#5fae9a; --accent3:#e0ab4b; --line:#33332e; --tag:#26261f;
 }
 *{box-sizing:border-box}
-html{scroll-padding-top: env(safe-area-inset-top,0px);}
+html{scroll-padding-top: env(safe-area-inset-top,0px); overflow-x:hidden;}
 body{
   margin:0; background:var(--bg); color:var(--ink);
   font-family: 'Iowan Old Style','Georgia',serif;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
 }
 .wrap{max-width:920px;margin:0 auto;padding:0 20px 80px;}
 header.top{
-  position:sticky; top:0; z-index:20; background:var(--bg);
+  background:var(--bg);
   padding-top:calc(14px + env(safe-area-inset-top,0px));
   border-bottom:1px solid var(--line);
 }
@@ -62,6 +63,7 @@ h2.sec-title{
 .card{
   background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px;
   margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,.03);
+  overflow-x:auto;
 }
 .card h3{
   font-family:'Trebuchet MS',sans-serif; font-size:16.5px; margin:0 0 8px; color:var(--ink);
@@ -85,7 +87,64 @@ h2.sec-title{
   border-radius:20px; background:var(--tag); color:var(--sub); border:1px solid var(--line);
 }
 .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-@media(max-width:600px){.grid2{grid-template-columns:1fr;}}
+@media(max-width:600px){
+  .wrap{padding:0 14px 60px;}
+  .card{padding:14px 14px;}
+  .grid2{grid-template-columns:1fr;}
+}
+@media (max-width: 680px){
+  table.tbl.mcq-tbl,
+  table.tbl.mcq-tbl tbody,
+  table.tbl.mcq-tbl tr,
+  table.tbl.mcq-tbl td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  table.tbl.mcq-tbl tr:first-child {
+    display: none;
+  }
+  table.tbl.mcq-tbl tr {
+    margin-bottom: 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: var(--tag);
+  }
+  table.tbl.mcq-tbl td {
+    padding: 4px 0;
+    border-bottom: none;
+    background: transparent !important;
+  }
+  table.tbl.mcq-tbl td.mcq-q {
+    font-weight: 700;
+    font-size: 14.5px;
+    color: var(--ink);
+    margin-bottom: 6px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  table.tbl.mcq-tbl td.mcq-ans {
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: var(--accent2);
+  }
+  table.tbl.mcq-tbl td.mcq-ans::before {
+    content: "Correct Answer: ";
+    font-weight: 700;
+    color: var(--accent2);
+  }
+  table.tbl.mcq-tbl td.mcq-why {
+    font-size: 13.5px;
+    color: var(--sub);
+    line-height: 1.5;
+  }
+  table.tbl.mcq-tbl td.mcq-why::before {
+    content: "Why: ";
+    font-weight: 700;
+    color: var(--accent);
+  }
+}
 .mini{background:var(--tag); border-radius:10px; padding:12px 14px;}
 .mini h4{margin:0 0 4px;font-size:14px;font-family:'Trebuchet MS',sans-serif;color:var(--accent2)}
 .mini p{margin:0;font-size:13.5px;color:var(--sub)}
@@ -615,12 +674,12 @@ The <b>Classical school</b> (Taylor, Fayol, Weber) treats the worker as an "econ
 <div class="card">
 <h3><span class="num">★</span>PYQ Case Study — Bharat Handicrafts (MCQ style)</h3>
 <div class="def">Sana is the branch manager of Bharat Handicrafts Pvt. Ltd. — sells fabrics, furnishings, ready-mades & household items made of Indian handloom & handicraft products. She appoints a team of designers who develop silk bed-cover prints for festive occasions, and cotton bed covers for regular use "to keep costs under control."</div>
-<table class="tbl">
+<table class="tbl mcq-tbl">
 <tr><th>MCQ</th><th>Correct Answer</th><th>Why</th></tr>
-<tr><td>I. Which function of management is highlighted when Sana appoints a team of designers & crafts people?</td><td><b>(B) Staffing</b></td><td>Appointing/assembling the right people for the job = Staffing function.</td></tr>
-<tr><td>II. "Company's objective is to promote sales" reflects which feature of management?</td><td><b>(B) Management is a goal-oriented process</b></td><td>Every managerial action is directed at achieving specific, pre-defined objectives.</td></tr>
-<tr><td>III. At which level of management is Sana working?</td><td><b>(C) Middle level</b></td><td>As a <i>branch manager</i>, she implements top-level policy at a regional/branch unit — the classic middle-management position.</td></tr>
-<tr><td>IV. Keeping silk covers for festive occasions & cotton for regular use "to keep costs under control" highlights which function?</td><td><b>(A) Controlling</b></td><td>Deliberately managing product-mix decisions to keep costs within limits = the Controlling function (checking & regulating against a standard/budget).</td></tr>
+<tr><td class="mcq-q">I. Which function of management is highlighted when Sana appoints a team of designers & crafts people?</td><td class="mcq-ans"><b>(B) Staffing</b></td><td class="mcq-why">Appointing/assembling the right people for the job = Staffing function.</td></tr>
+<tr><td class="mcq-q">II. "Company's objective is to promote sales" reflects which feature of management?</td><td class="mcq-ans"><b>(B) Management is a goal-oriented process</b></td><td class="mcq-why">Every managerial action is directed at achieving specific, pre-defined objectives.</td></tr>
+<tr><td class="mcq-q">III. At which level of management is Sana working?</td><td class="mcq-ans"><b>(C) Middle level</b></td><td class="mcq-why">As a <i>branch manager</i>, she implements top-level policy at a regional/branch unit — the classic middle-management position.</td></tr>
+<tr><td class="mcq-q">IV. Keeping silk covers for festive occasions & cotton for regular use "to keep costs under control" highlights which function?</td><td class="mcq-ans"><b>(A) Controlling</b></td><td class="mcq-why">Deliberately managing product-mix decisions to keep costs within limits = the Controlling function (checking & regulating against a standard/budget).</td></tr>
 </table>
 <p class="lede" style="margin:8px 0 0">Reference: NIT Silchar, MS-401 Business Management, Semester exam (CSE/ECE/EE), 2-hour paper, 30 marks — Q1, CO3, BL-II.</p>
 </div>
