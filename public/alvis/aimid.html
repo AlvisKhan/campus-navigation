@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CS 401 AI — Mid-Sem Exam Guide</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1c2233;--mut:#5b6478;--acc:#2f5bea;--acc2:#0f9d76;--warn:#d9480f;--line:#dfe3ee;--soft:#eaf0ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10131c;--card:#181c28;--ink:#e8ebf5;--mut:#98a1b8;--acc:#7c9bff;--acc2:#3ddc9f;--warn:#ff9a62;--line:#2a3042;--soft:#1e2540}}
+:root[data-theme="dark"]{--bg:#10131c;--card:#181c28;--ink:#e8ebf5;--mut:#98a1b8;--acc:#7c9bff;--acc2:#3ddc9f;--warn:#ff9a62;--line:#2a3042;--soft:#1e2540}
+html{scroll-padding-top:calc(60px + env(safe-area-inset-top,0px));scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Georgia,"Iowan Old Style",serif}
+h1,h2,h3,nav,summary,.tag,th{font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif}
+header{padding:56px 20px 36px;max-width:900px;margin:auto}
+h1{font-size:clamp(30px,6vw,52px);line-height:1.1;margin:0 0 12px;letter-spacing:-.02em}
+header p{color:var(--mut);max-width:60ch;margin:0}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.stats span{background:var(--soft);border-radius:999px;padding:6px 14px;font:600 14px system-ui,sans-serif;color:var(--acc)}
+nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px;display:flex;gap:6px;overflow-x:auto;white-space:nowrap}
+nav a{color:var(--ink);text-decoration:none;padding:6px 12px;border-radius:8px;font-size:14px;font-weight:600}
+nav a:hover,nav a:focus-visible{background:var(--soft);color:var(--acc);outline:none}
+main{max-width:900px;margin:auto;padding:0 16px 80px}
+section{margin-top:44px}
+h2{font-size:28px;margin:0 0 4px;border-left:6px solid var(--acc);padding-left:12px}
+.asked{color:var(--mut);font:14px system-ui,sans-serif;margin:0 0 16px 18px}
+h3{font-size:18px;margin:22px 0 6px;color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:14px 0}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:6px;background:var(--soft);color:var(--acc);margin-right:6px}
+.tag.y{background:#fff0e5;color:var(--warn)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.y{background:#3a2517}}
+:root[data-theme="dark"] .tag.y{background:#3a2517}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:10px 0;overflow:hidden}
+summary{cursor:pointer;padding:12px 16px;font-weight:700;list-style:none}
+summary::before{content:"+";display:inline-block;width:22px;color:var(--acc);font-weight:800}
+details[open] summary::before{content:"–"}
+details[open] summary{background:var(--soft)}
+details>div{padding:4px 18px 14px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+.w{overflow-x:auto}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--soft)}
+.tip{border-left:4px solid var(--acc2);background:color-mix(in srgb,var(--acc2) 10%,transparent);padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0;font-size:15px}
+.trap{border-left-color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent)}
+code,.m{font-family:Consolas,monospace;background:var(--soft);padding:1px 6px;border-radius:5px;font-size:14px}
+svg{max-width:100%;height:auto;display:block;margin:auto}
+svg text{fill:var(--ink);font:12px system-ui,sans-serif}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+ul{padding-left:20px;margin:6px 0}
+pre{background:var(--soft);padding:12px 14px;border-radius:10px;overflow-x:auto;font:13.5px/1.5 Consolas,monospace;margin:10px 0}
+.proof{border-left:3px solid var(--acc);padding:4px 0 4px 16px;margin:14px 0}.proof p{margin:12px 0}.ln{background:var(--soft);padding:8px 14px;border-radius:8px;font-family:Consolas,monospace;font-size:15px;line-height:1.9}
+#tt{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:9;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:22px;line-height:1;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.18)}#tt:hover{border-color:var(--acc)}#tt:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+footer{text-align:center;color:var(--mut);padding:20px;font:14px system-ui,sans-serif}
+</style></head><body>
+<header>
+<h1>CS 401 · Artificial Intelligence<br>Mid-Sem, exam-ready</h1>
+<p>Every question from your 2023, 2024 and 2025 NIT Silchar papers, answered in exam-length form. Tap a question to reveal the model answer.</p>
+<div class="stats"><span>Search: asked every year</span><span>Logic: 2 of 3 years</span><span>Agents &amp; environments: every year</span></div>
+</header>
+<nav><a href="#plan">Plan</a><a href="#intro">Intro AI</a><a href="#agents">Agents</a><a href="#search">Search</a><a href="#astar">A* / UCS solved</a><a href="#local">Local &amp; AO*</a><a href="#logic">Logic</a><a href="#nlp">NLP</a><a href="#practice">Practice</a></nav>
+<main>
+
+<section id="plan"><h2>What to revise first</h2><p class="asked">Ranked by how often the papers repeat it</p>
+<div class="card w"><table><tr><th>Topic</th><th>Seen in</th><th>Priority</th></tr>
+<tr><td>A* on Timisoara → Bucharest</td><td>2024, 2025</td><td>Must solve by hand</td></tr>
+<tr><td>UCS order of expansion (same map)</td><td>2024, 2025</td><td>Must solve by hand</td></tr>
+<tr><td>AO* “doesn’t explore all paths”</td><td>2023, 2024</td><td>Must write with an example</td></tr>
+<tr><td>Weak vs Strong AI</td><td>2023, 2024</td><td>Easy marks</td></tr>
+<tr><td>Task environments, agent architectures</td><td>2024, 2025</td><td>Easy marks</td></tr>
+<tr><td>Hill climbing / local maxima</td><td>2023, 2024</td><td>Easy marks</td></tr>
+<tr><td>Tautology proofs, modus ponens/tollens</td><td>2024, 2025</td><td>Learn the contradiction method</td></tr>
+</table></div></section>
+
+<section id="intro"><h2>1 · Foundations of AI</h2><p class="asked">Weak vs Strong · Turing test · importance of AI · “computers can’t be intelligent”</p>
+<details open><summary>Weak AI vs Strong AI (3 marks)</summary><div class="w"><table>
+<tr><th></th><th>Weak (Narrow) AI</th><th>Strong (General) AI</th></tr>
+<tr><td>Scope</td><td>One specific task</td><td>Any intellectual task a human can do</td></tr>
+<tr><td>Understanding</td><td>Simulates intelligence, no real understanding</td><td>Would genuinely understand and reason</td></tr>
+<tr><td>Consciousness</td><td>None</td><td>Claimed to have a mind</td></tr>
+<tr><td>Status</td><td>Exists today</td><td>Hypothetical</td></tr>
+<tr><td>Examples</td><td>Siri, chess engines, spam filters, recommender systems, self-driving stack</td><td>Sci-fi systems such as HAL 9000 or Data; no real example yet</td></tr></table></div></details>
+<details><summary>Turing Test and its relevance (3 marks)</summary><div>
+<p>Proposed by Alan Turing (1950). A human judge chats by text with a hidden human and a hidden machine. If the judge cannot reliably tell which is the machine, the machine passes.</p>
+<svg viewBox="0 0 520 120" role="img" aria-label="Turing test diagram"><rect x="10" y="40" width="90" height="40" rx="8" fill="none" stroke="currentColor"/><text x="30" y="65">Judge</text><rect x="380" y="8" width="120" height="40" rx="8" fill="none" stroke="currentColor"/><text x="405" y="33">Human</text><rect x="380" y="72" width="120" height="40" rx="8" fill="none" stroke="currentColor"/><text x="405" y="97">Machine</text><path d="M100 52L378 28M100 68L378 92" stroke="currentColor"/><text x="180" y="20">text questions and answers only</text></svg>
+<p><b>Relevance:</b> gives an operational definition of intelligence (behaviour, not inner mind); drives NLP, knowledge representation, reasoning and learning. <b>Criticism:</b> Searle’s Chinese Room says passing shows imitation, not understanding.</p></div></details>
+<details><summary>“Computers only do what programmers tell them, so they can’t be intelligent” (2024, 2 marks)</summary><div>
+<p><b>Is the latter statement true?</b> Only partly. A computer does execute instructions, but in machine learning the programmer specifies a <i>learning procedure</i>, not the behaviour. The result (e.g. a game-playing program that beats its creators) is not something the programmer wrote down.</p>
+<p><b>Does it imply the former?</b> No. Intelligence is judged by behaviour (rational, adaptive, goal-achieving), not by whether the mechanism was programmed. Humans are also “programmed” by genes and experience. This is Lady Lovelace’s objection, answered by Turing.</p></div></details>
+<details><summary>Importance of AI in real-world problems (2025, 2 marks)</summary><div><ul><li>Healthcare: image-based diagnosis, drug discovery</li><li>Transport: route planning and autonomous vehicles</li><li>Finance: fraud detection</li><li>Agriculture: crop disease detection</li><li>Language: translation and assistants</li></ul>AI handles scale, speed and complexity that manual methods cannot.</div></details></section>
+
+<section id="agents"><h2>2 · Agents &amp; Environments</h2><p class="asked">Task environments · episodic vs sequential · architectures · hybrid</p>
+<div class="card"><svg viewBox="0 0 560 170" role="img" aria-label="Agent environment loop"><rect x="20" y="20" width="200" height="130" rx="12" fill="none" stroke="currentColor"/><text x="90" y="42">AGENT</text><rect x="40" y="60" width="70" height="30" rx="6" fill="none" stroke="currentColor"/><text x="52" y="80">Sensors</text><rect x="130" y="60" width="80" height="30" rx="6" fill="none" stroke="currentColor"/><text x="140" y="80">Agent fn</text><rect x="120" y="105" width="80" height="30" rx="6" fill="none" stroke="currentColor"/><text x="130" y="125">Actuators</text><rect x="340" y="30" width="200" height="110" rx="12" fill="none" stroke="currentColor" stroke-dasharray="6"/><text x="410" y="90">ENVIRONMENT</text><path d="M340 70H112M210 120H340" stroke="currentColor" marker-end="url(#a)"/><text x="230" y="64">percepts</text><text x="240" y="114">actions</text></svg></div>
+<details open><summary>Task environment and how it shapes agent design (3b 2024, 4 marks)</summary><div>
+<p>A <b>task environment</b> is the problem the agent solves, specified by <b>PEAS</b>: Performance measure, Environment, Actuators, Sensors. Example, automated taxi: safe/fast/legal trip; roads and traffic; steering, brake; cameras, GPS.</p>
+<div class="w"><table><tr><th>Dimension</th><th>Easy end</th><th>Hard end</th><th>Design impact</th></tr>
+<tr><td>Observability</td><td>Fully (chess)</td><td>Partially (poker, taxi)</td><td>Partial needs internal state / memory</td></tr>
+<tr><td>Agents</td><td>Single</td><td>Multi</td><td>Multi needs game-theoretic reasoning</td></tr>
+<tr><td>Determinism</td><td>Deterministic</td><td>Stochastic</td><td>Stochastic needs probabilities, plans that handle chance</td></tr>
+<tr><td>Episodes</td><td>Episodic</td><td>Sequential</td><td>Sequential needs lookahead</td></tr>
+<tr><td>Change</td><td>Static</td><td>Dynamic</td><td>Dynamic needs fast, continuous sensing</td></tr>
+<tr><td>State space</td><td>Discrete</td><td>Continuous</td><td>Continuous needs numeric control methods</td></tr>
+<tr><td>Rules</td><td>Known</td><td>Unknown</td><td>Unknown means the agent must learn</td></tr></table></div></div></details>
+<details><summary>Episodic vs Sequential (2023, 3 marks)</summary><div>
+<p><b>Episodic:</b> each percept-action pair is independent; the current choice does not affect future ones. Example: image classification on a conveyor belt, a spam filter.</p>
+<p><b>Sequential:</b> current action affects future states and rewards, so the agent must think ahead. Examples: chess, driving, maze navigation.</p></div></details>
+<details><summary>Agent architectures and hybrid agents (4 marks)</summary><div>
+<div class="g2">
+<div class="card"><span class="tag">1</span><b>Simple reflex</b><br>Condition→action rules on the current percept. Fails if the environment is partially observable.</div>
+<div class="card"><span class="tag">2</span><b>Model-based reflex</b><br>Keeps internal state to track unseen parts of the world.</div>
+<div class="card"><span class="tag">3</span><b>Goal-based</b><br>Searches or plans for actions that reach a goal.</div>
+<div class="card"><span class="tag">4</span><b>Utility-based</b><br>Picks the action with best expected utility, useful with trade-offs and uncertainty.</div>
+<div class="card"><span class="tag">5</span><b>Learning agent</b><br>Critic, learning element, performance element and problem generator improve it over time.</div>
+<div class="card"><span class="tag y">Hybrid</span><b>Layered</b><br>A fast <i>reactive</i> layer (avoid obstacle now) sits under a slow <i>deliberative</i> layer (plan the route). Handles complex, dynamic worlds where pure reflex is too naive and pure planning too slow. Example: a self-driving car or warehouse robot.</div></div>
+<p><b>Rationality link:</b> a rational agent picks the action maximising expected performance given its percepts. The architecture is the machinery; the task environment decides which machinery is needed. Applications: medical diagnosis assistants, autonomous driving.</p></div></details></section>
+
+<section id="search"><h2>3 · Search foundations</h2><p class="asked">Formulation · maze · UCS · termination criteria</p>
+<details open><summary>Formulate the delivery-robot problem (2023, 4 marks)</summary><div>
+<ul><li><b>State:</b> robot’s (row, col) plus the set of packages still held or delivered, e.g. (r, c, {A,B,C held})</li>
+<li><b>Initial state:</b> start square, all three packages held</li>
+<li><b>Actions:</b> move N/S/E/W into a free square; Drop(pkg) if at that package’s location</li>
+<li><b>Transition:</b> move changes position; drop removes that package from the held set</li>
+<li><b>Goal test:</b> A, B and C all delivered to their own squares</li>
+<li><b>Cost:</b> 1 per action (moves and drops), minimise total</li></ul></div></details>
+<details><summary>Best uninformed search for a maze with unknown structure (2025, 2 marks)</summary><div>
+<p><b>Breadth-First Search.</b> With equal step costs it explores level by level, so the first time it reaches the exit it has used the fewest steps: complete and optimal. Cost: memory grows like b<sup>d</sup>. If memory is tight, use Iterative Deepening (BFS optimality, DFS memory).</p></div></details>
+<details><summary>UCS and the priority queue (2024, 6 marks)</summary><div>
+<p>UCS expands the frontier node with the <b>lowest path cost g(n)</b> so far. The frontier is a <b>priority queue keyed on g(n)</b>: pop gives the cheapest node in O(log n), and if a cheaper route to a queued node appears, its key is updated.</p>
+<p>Example: S→A(1), S→B(5), A→G(10), B→G(2). Queue: A(1), B(5). Expand A, push G(11). Queue: B(5), G(11). Expand B, push G(7) which replaces G(11). Pop G(7): path S-B-G costs 7, the optimal. The queue guarantees the next expanded node is always the cheapest, so the first goal popped is optimal (with non-negative costs).</p></div></details>
+<details><summary>Termination criteria: global vs local search (2023, 3 marks)</summary><div><div class="w"><table>
+<tr><th>Global (systematic)</th><th>Local search</th></tr>
+<tr><td>Goal node is found (path returned)</td><td>No neighbour is better: a peak is reached</td></tr>
+<tr><td>Frontier empty: failure</td><td>Iteration or time limit hit</td></tr>
+<tr><td>Depth or resource limit hit</td><td>Solution “good enough” or objective stops improving</td></tr></table></div></div></details></section>
+
+<section id="astar"><h2>4 · Timisoara → Bucharest, solved</h2><p class="asked">Asked in 2024 and 2025 · use h(n) = the straight-line-distance table on your paper</p>
+<div class="card"><svg viewBox="0 0 620 300" role="img" aria-label="Romania map with A* path highlighted"><g stroke="currentColor" stroke-width="1" opacity=".55">
+<path d="M40 110L100 40L120 20M100 40L200 100M200 100L40 110M200 100L300 60M200 100L250 170M40 110L60 190M60 190L70 250M70 250L140 280M140 280L250 170M250 170L320 200M300 60L440 190M320 200L440 190M440 190L500 150M500 150L540 250M440 190L470 270M440 190L500 60M500 60L560 20M300 60L320 200"/></g>
+<path d="M60 190L40 110L200 100L250 170L320 200L440 190" stroke="#e8590c" stroke-width="4" fill="none"/>
+<g><circle cx="60" cy="190" r="6" fill="#0f9d76"/><circle cx="440" cy="190" r="6" fill="#e8590c"/></g>
+<text x="20" y="215">Timisoara</text><text x="8" y="100">Arad</text><text x="185" y="90">Sibiu</text><text x="180" y="165">Rimnicu V.</text><text x="255" y="215">Pitesti</text><text x="420" y="215">Bucharest</text><text x="290" y="50">Fagaras</text><text x="20" y="245">Lugoj</text><text x="80" y="275">Mehadia</text><text x="140" y="298">Dobreta / Craiova</text>
+<text x="46" y="150">118</text><text x="110" y="95">140</text><text x="215" y="140">80</text><text x="275" y="180">97</text><text x="370" y="198">101</text>
+<text x="330" y="20" style="font-weight:700">Schematic, orange = optimal A* path (536)</text></svg></div>
+<details open><summary>A* trace: f = g + h, expand lowest f (7 marks in 2024)</summary><div class="w"><table>
+<tr><th>Step</th><th>Expand</th><th>Add to frontier (g, f)</th></tr>
+<tr><td>1</td><td>Timisoara (f=329)</td><td>Arad 118, 484 · Lugoj 111, 355</td></tr>
+<tr><td>2</td><td>Lugoj (355)</td><td>Mehadia 181, 422</td></tr>
+<tr><td>3</td><td>Mehadia (422)</td><td>Dobreta 256, 498</td></tr>
+<tr><td>4</td><td>Arad (484)</td><td>Sibiu 258, 511 · Zerind 193, 567</td></tr>
+<tr><td>5</td><td>Dobreta (498)</td><td>Craiova 376, 536</td></tr>
+<tr><td>6</td><td>Sibiu (511)</td><td>Rimnicu 338, 531 · Fagaras 357, 535 · Oradea 409, 789</td></tr>
+<tr><td>7</td><td>Rimnicu (531)</td><td>Pitesti 435, 533</td></tr>
+<tr><td>8</td><td>Pitesti (533)</td><td>Bucharest 536, 536</td></tr>
+<tr><td>9</td><td>Fagaras (535)</td><td>Bucharest via Fagaras 568 (worse, discard)</td></tr>
+<tr><td>10</td><td>Bucharest (536): goal</td><td></td></tr></table></div>
+<div class="tip"><b>Answer:</b> Timisoara → Arad → Sibiu → Rimnicu Vilcea → Pitesti → Bucharest, cost 118+140+80+97+101 = <b>536</b>.</div></details>
+<details><summary>UCS order of expansion (2025, 4 marks)</summary><div>
+<p>Expand by lowest g:</p>
+<p><span class="m">Timisoara 0 → Lugoj 111 → Arad 118 → Mehadia 181 → Zerind 193 → Dobreta 256 → Sibiu 258 → Oradea 264 → Rimnicu Vilcea 338 → Fagaras 357 → Craiova 376 → Pitesti 435 → Bucharest 536</span></p>
+<p>Same optimal path as A*, cost 536.</p>
+<div class="tip trap">A* expanded 10 nodes and UCS 13: the heuristic saves work. If your 2024 map has different edge weights, the method is identical: recompute g and f the same way.</div></div></details>
+<details><summary>A* explained with pseudocode and key components (2023, 5 marks)</summary><div>
+<p>A* finds the cheapest path by always expanding the open node with the lowest <b>f(n) = g(n) + h(n)</b>. g is the cost paid so far, h is the estimated cost still to go (straight-line distance to Bucharest).</p>
+<pre>A_STAR(start, goal):
+  OPEN  = priority queue ordered by f; insert start (g=0, f=h(start))
+  CLOSED = empty set
+  while OPEN not empty:
+    n = OPEN.pop_lowest_f()
+    if n == goal: return path(n)          # optimal if h admissible
+    add n to CLOSED
+    for each neighbour m of n:
+      g_new = g(n) + cost(n, m)
+      if m in CLOSED and g_new >= g(m): continue
+      if m not in OPEN or g_new &lt; g(m):
+        g(m) = g_new; f(m) = g_new + h(m); parent(m) = n
+        insert or update m in OPEN
+  return FAILURE</pre>
+<div class="g2"><div class="card"><b>OPEN / CLOSED lists</b><br>Frontier to expand, and nodes already expanded.</div>
+<div class="card"><b>g(n)</b><br>Exact cost from start to n.</div>
+<div class="card"><b>h(n)</b><br>Heuristic estimate to goal. <i>Admissible</i> = never overestimates. <i>Consistent</i> = h(n) ≤ cost(n,m) + h(m).</div>
+<div class="card"><b>Parent pointers</b><br>Rebuild the path once the goal is popped.</div></div>
+<p><b>Properties:</b> complete and optimal when h is admissible (consistent for graph search). With h=0 it becomes UCS; with g=0 it becomes greedy best-first.</p></div></details>
+<details><summary>A* vs AO* (2025, 2 marks)</summary><div class="w"><table>
+<tr><th></th><th>A*</th><th>AO*</th></tr>
+<tr><td>Graph</td><td>OR graph (plain path)</td><td>AND-OR graph (problem decomposition)</td></tr>
+<tr><td>Objective</td><td>Cheapest path to goal</td><td>Cheapest solution <i>subgraph</i></td></tr>
+<tr><td>Working</td><td>f = g + h, expand best open node</td><td>Expand best partial solution, back-propagate revised costs, mark solved</td></tr>
+<tr><td>Use</td><td>Route finding, puzzles</td><td>Theorem proving, diagnosis, game plans</td></tr></table></div></details></section>
+
+<section id="local"><h2>5 · Local search &amp; AO*</h2><p class="asked">Hill climbing · local maxima · AO*</p>
+<div class="card"><svg viewBox="0 0 560 160" role="img" aria-label="Hill climbing landscape"><path d="M10 140C60 140 80 60 130 60S190 120 240 110S300 20 350 20S420 130 550 130" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="130" cy="60" r="6" fill="#e8590c"/><text x="70" y="45">local maximum</text><circle cx="350" cy="20" r="6" fill="#0f9d76"/><text x="360" y="18">global maximum</text><path d="M240 110h30" stroke="#888" stroke-width="3"/><text x="215" y="132">plateau</text></svg></div>
+<details open><summary>Hill climbing is local search + local maxima problem (2023 4 marks, 2024 2 marks)</summary><div>
+<p>Hill climbing keeps only the <b>current state</b> and moves to the best neighbour by the objective function, stopping when none is better. It uses no frontier and no path memory: constant memory, which is why it is a <b>local search</b> algorithm. Example: 8-queens, moving one queen to reduce conflicts.</p>
+<p><b>Local maxima problem:</b> the algorithm stops on a peak higher than its neighbours but lower than the global best. Related traps: <b>plateau</b> (flat, no direction) and <b>ridge</b> (needs a diagonal move). <b>Fixes:</b> random restarts, simulated annealing, sideways moves, stochastic hill climbing.</p></div></details>
+<details><summary>“AO* does not explore all solution paths once it finds a solution” (2023, 2024)</summary><div>
+<p>AO* works on an AND-OR graph. AND arcs need <i>all</i> children solved; OR arcs need <i>one</i>. It repeatedly: (1) follows the currently best marked path to an unexpanded node, (2) expands it, (3) back-propagates updated costs upward, choosing the cheapest option at each OR node, (4) marks nodes SOLVED when their required children are solved. It stops when the root is SOLVED.</p>
+<p><b>Example:</b> A has OR-branch B (cost 5) and AND-branch C+D (cost 3+4=7 as estimated). AO* explores the cheapest, B; it expands B and finds it solved for a real cost of 6. C+D is still estimated at 7 ≥ 6, so it is never expanded. Root A is SOLVED via B: the costlier alternative was never explored, saving time. (This holds when heuristics are admissible.)</p>
+<div class="tip">Key phrase for full marks: “only the current best partial solution graph is expanded; other branches are pruned by their higher estimates.”</div></div></details>
+<details><summary>Second AO* example with numbers: cost revision and switching branches</summary><div>
+<p>Each arc costs 1. Estimated h values: B=5, C=3, D=4, E=2, F=2. Root A has an <b>OR</b> choice: go through B, or through the <b>AND</b> pair (C and D).</p>
+<svg viewBox="0 0 520 190" role="img" aria-label="AND-OR graph"><g stroke="currentColor" fill="none"><path d="M240 30L120 80M240 30L360 80M120 80L80 140M120 80L160 140M360 80L330 140M360 80L400 140"/><path d="M330 65Q360 55 395 65" stroke-dasharray="3"/></g><g><circle cx="240" cy="25" r="14" fill="var(--soft)"/><circle cx="120" cy="80" r="14" fill="var(--soft)"/><circle cx="360" cy="80" r="14" fill="var(--soft)"/></g><text x="236" y="29">A</text><text x="116" y="84">B</text><text x="345" y="84">AND</text><text x="60" y="158">E (h=2)</text><text x="150" y="158">F (h=2)</text><text x="315" y="158">C (h=3)</text><text x="385" y="158">D (h=4)</text><text x="130" y="45">OR: via B</text><text x="300" y="45">OR: via C+D</text></svg>
+<ul><li><b>Step 1.</b> Via B: 1 + 5 = 6. Via C+D: (1+3) + (1+4) = 9. Choose <b>B</b> (6 &lt; 9).</li>
+<li><b>Step 2.</b> Expand B. Suppose B is an AND of E and F: (1+2) + (1+2) = 6, so B = 6 and A via B = 7. Still below 9, keep B.</li>
+<li><b>Step 3.</b> Expanding E reveals its real cost is 5, not 2. Back-propagate: B = (1+5) + (1+2) = 9, so A via B = 10.</li>
+<li><b>Step 4.</b> Now 10 &gt; 9, so the best partial solution <b>switches</b> to C+D. Expand C and D, mark them and A SOLVED, cost 9.</li></ul>
+<p>Points to state in the exam: only the current best branch is expanded, costs are revised bottom-up, and the best branch can change. The AND pair is never partly counted, and the graph stays unexplored where estimates are worse.</p></div></details></section>
+
+<section id="logic"><h2>6 · Propositional logic</h2><p class="asked">Tautology proofs · satisfiability · modus ponens vs tollens</p>
+<details open><summary>2025 · Is ((p→r) ∧ (q→r)) → ((p∨q) → r) a tautology? (2 marks)</summary><div>
+<p><b>Answer: Yes, it is a tautology.</b></p>
+<p><b>Method:</b> proof by contradiction (no truth table). We assume the formula can be <b>false</b> and show that this is impossible.</p>
+<div class="proof">
+<p><b>Step 1.</b> An implication A → B is false only when A is true and B is false. So if the whole formula is false:</p>
+<p class="ln">(p→r) ∧ (q→r) = <b>T</b> &nbsp;&nbsp;and&nbsp;&nbsp; (p∨q) → r = <b>F</b></p>
+<p><b>Step 2.</b> Apply the same rule to (p∨q) → r being false:</p>
+<p class="ln">p∨q = <b>T</b> &nbsp;&nbsp;and&nbsp;&nbsp; r = <b>F</b></p>
+<p><b>Step 3.</b> A conjunction is true only when both parts are true, so:</p>
+<p class="ln">p→r = T &nbsp;&nbsp;and&nbsp;&nbsp; q→r = T</p>
+<p><b>Step 4.</b> Use r = F from Step 2.</p>
+<p class="ln">p→r = T with r = F &nbsp;⇒&nbsp; p must be <b>F</b> &nbsp;(T→F would be false)<br>q→r = T with r = F &nbsp;⇒&nbsp; q must be <b>F</b></p>
+<p><b>Step 5.</b> Then p∨q = F∨F = <b>F</b>. But Step 2 said p∨q = T.</p>
+<p class="ln">p∨q = T and p∨q = F &nbsp;⇒&nbsp; <b>contradiction</b></p>
+</div>
+<p><b>Conclusion:</b> our assumption was wrong. The formula can never be false, so it is a <b>tautology</b>. (This is the rule of <i>proof by cases</i>: if p gives r and q gives r, then p-or-q gives r.)</p></div></details>
+
+<details open><summary>2024 · Prove ((p→q) ∧ (r→q)) → (r→p) is a tautology (4 marks)</summary><div>
+<div class="tip trap"><b>Read carefully:</b> this formula is <b>not</b> a tautology, so it cannot be proved. In the exam, say so and prove <i>why</i> using a counterexample. That earns the marks. Two methods are shown below; Method 1 is enough.</div>
+
+<h3>Method 1 · Find a counterexample</h3>
+<p>A formula is a tautology only if it is true for <b>every</b> assignment. One assignment that makes it false is enough to disprove it.</p>
+<div class="proof">
+<p><b>Step 1.</b> To make the whole formula false, we need the antecedent true and the consequent false:</p>
+<p class="ln">(p→q) ∧ (r→q) = <b>T</b> &nbsp;&nbsp;and&nbsp;&nbsp; r→p = <b>F</b></p>
+<p><b>Step 2.</b> r→p is false only when r is true and p is false:</p>
+<p class="ln">r = <b>T</b>, &nbsp;p = <b>F</b></p>
+<p><b>Step 3.</b> Now check the antecedent with p = F, r = T.</p>
+<p class="ln">p→q = F→q = <b>T</b> &nbsp;for any q (a false premise makes the implication true)<br>r→q = T→q = <b>q</b> &nbsp;so for this to be true we need q = <b>T</b></p>
+<p><b>Step 4.</b> So the counterexample is <b>p = F, q = T, r = T</b>. Substitute it in:</p>
+</div>
+<div class="w"><table>
+<tr><th>Part</th><th>Working</th><th>Value</th></tr>
+<tr><td>p → q</td><td>F → T</td><td>T</td></tr>
+<tr><td>r → q</td><td>T → T</td><td>T</td></tr>
+<tr><td>(p→q) ∧ (r→q)</td><td>T ∧ T</td><td>T</td></tr>
+<tr><td>r → p</td><td>T → F</td><td>F</td></tr>
+<tr><td><b>Whole formula</b></td><td>T → F</td><td><b>F</b></td></tr></table></div>
+<p><b>Conclusion:</b> the formula is false for p=F, q=T, r=T, so it is <b>not a tautology</b>. It is only <i>satisfiable</i>: for example p=T, q=T, r=T makes it true.</p>
+
+<h3>Method 2 · Simplify with equivalences (no truth table)</h3>
+<div class="proof">
+<p><b>1.</b> &nbsp;(p→q) ∧ (r→q) &nbsp;≡&nbsp; (¬p∨q) ∧ (¬r∨q) &nbsp;&nbsp;<i>(implication elimination)</i></p>
+<p><b>2.</b> &nbsp;≡&nbsp; (¬p∧¬r) ∨ q &nbsp;&nbsp;<i>(distributive law)</i></p>
+<p><b>3.</b> &nbsp;Whole formula: &nbsp;¬[(¬p∧¬r) ∨ q] ∨ (¬r∨p) &nbsp;&nbsp;<i>(A→B ≡ ¬A∨B)</i></p>
+<p><b>4.</b> &nbsp;≡&nbsp; [(p∨r) ∧ ¬q] ∨ ¬r ∨ p &nbsp;&nbsp;<i>(De Morgan)</i></p>
+<p><b>5.</b> &nbsp;Check when this is false. We need p = F and ¬r = F, so r = T. Then the bracket reduces to (T) ∧ ¬q = ¬q, which is false when q = T.</p>
+<p><b>6.</b> &nbsp;The formula is therefore false exactly for <b>p=F, q=T, r=T</b>, so it is not a tautology.</p>
+</div>
+
+<h3>Likely intended question</h3>
+<p>The printed question probably meant the hypothetical syllogism ((p→q) ∧ (q→r)) → (p→r), which <b>is</b> a tautology. If your teacher confirms this version, write this:</p>
+<div class="proof">
+<p><b>Step 1.</b> Assume it is false. Then (p→q) ∧ (q→r) = T and p→r = F.</p>
+<p><b>Step 2.</b> p→r = F gives &nbsp;p = <b>T</b>, r = <b>F</b>.</p>
+<p><b>Step 3.</b> p→q = T with p = T gives &nbsp;q = <b>T</b>.</p>
+<p><b>Step 4.</b> q→r = T with q = T gives &nbsp;r = <b>T</b>. But Step 2 said r = F.</p>
+<p class="ln">r = T and r = F &nbsp;⇒&nbsp; <b>contradiction</b></p>
+<p><b>Conclusion:</b> the formula can never be false, so it is a tautology.</p>
+</div></div></details>
+
+<details><summary>Satisfiability (2 marks)</summary><div>
+<p>A formula is <b>satisfiable</b> if at least one truth assignment makes it true. If every assignment makes it true it is <b>valid</b> (tautology); if none does, it is <b>unsatisfiable</b> (contradiction). Example: p∧q is satisfiable (p=q=T); p∧¬p is not. SAT was the first NP-complete problem.</p></div></details>
+<details><summary>Modus ponens vs modus tollens (2 marks)</summary><div class="w"><table>
+<tr><th></th><th>Modus ponens</th><th>Modus tollens</th></tr>
+<tr><td>Rule</td><td>p→q, p ⊢ q</td><td>p→q, ¬q ⊢ ¬p</td></tr>
+<tr><td>Direction</td><td>Affirm the antecedent</td><td>Deny the consequent</td></tr>
+<tr><td>Example</td><td>If it rains, the ground is wet. It rains, so the ground is wet.</td><td>If it rains, the ground is wet. The ground is dry, so it did not rain.</td></tr>
+<tr><td>Fallacy to avoid</td><td>Affirming the consequent (q, so p)</td><td>Denying the antecedent (¬p, so ¬q)</td></tr></table></div></details></section>
+
+<section id="nlp"><h2>7 · NLP</h2><p class="asked">Bigram model (2025) · challenges in NLP (2025)</p>
+<details open><summary>Bigram table and sentence probability (2+2 marks)</summary><div>
+<p>Corpus with sentence markers: <span class="m">&lt;s&gt; I love natural language processing &lt;/s&gt; · &lt;s&gt; I love deep learning &lt;/s&gt; · &lt;s&gt; I enjoy natural language tasks &lt;/s&gt;</span>. Formula: P(w<sub>n</sub>|w<sub>n-1</sub>) = count(w<sub>n-1</sub> w<sub>n</sub>) / count(w<sub>n-1</sub>).</p>
+<div class="w"><table><tr><th>Previous word</th><th>Next word : probability</th></tr>
+<tr><td>&lt;s&gt;</td><td>I: 3/3 = 1</td></tr><tr><td>I (3)</td><td>love: 2/3 · enjoy: 1/3</td></tr>
+<tr><td>love (2)</td><td>natural: 1/2 · deep: 1/2</td></tr><tr><td>enjoy (1)</td><td>natural: 1</td></tr>
+<tr><td>natural (2)</td><td>language: 1</td></tr><tr><td>language (2)</td><td>processing: 1/2 · tasks: 1/2</td></tr>
+<tr><td>deep</td><td>learning: 1</td></tr><tr><td>processing, learning, tasks</td><td>&lt;/s&gt;: 1 each</td></tr></table></div>
+<div class="tip"><b>P(“I love natural language tasks”)</b> = P(I|&lt;s&gt;) × P(love|I) × P(natural|love) × P(language|natural) × P(tasks|language) × P(&lt;/s&gt;|tasks) = 1 × 2/3 × 1/2 × 1 × 1/2 × 1 = <b>1/6 ≈ 0.167</b>. (Without markers the answer is also 1/6.)</div></div></details>
+<details><summary>Major challenges in NLP (2 marks)</summary><div><ul>
+<li><b>Ambiguity:</b> lexical (“bank”), syntactic (“I saw the man with a telescope”), semantic and referential (“he” = who?)</li>
+<li><b>Context sensitivity:</b> meaning depends on surroundings, tone and world knowledge (“It’s cold” can be a weather report or a request to close the window); sarcasm, idioms</li>
+<li><b>Morphological variation:</b> run/runs/running/ran; rich inflection in languages like Assamese, Bengali, Hindi; needs stemming and lemmatisation</li></ul></div></details></section>
+
+<section id="practice"><h2>Practice: try before you peek</h2><p class="asked">Likely variations on past questions</p>
+<details><summary>Q1. Run A* from Timisoara to Bucharest if h(Mehadia) were 300 instead of 241. What changes?</summary><div>Mehadia's f becomes 181 + 300 = 481. It is still below Arad's 484, so it is expanded at the same point and the trace is unchanged: the answer stays 536. The new value is also still admissible, because the true remaining cost from Mehadia (75+120+138+101 = 434) is at least 300.</div></details>
+<details><summary>Q2. Greedy best-first from Timisoara: which path, and is it optimal?</summary><div>Greedy uses only h. From Timisoara: Arad 366 vs Lugoj 244 → Lugoj; then Mehadia 241 → Dobreta 242 → Craiova 160 → Pitesti 98 → Bucharest. Cost 111+70+75+120+138+101 = 615. Not optimal (A* gives 536).</div></details>
+<details><summary>Q3. Show that BFS is not optimal on weighted graphs.</summary><div>BFS minimises number of edges. S→G directly with cost 10 has 1 edge; S→A→G with costs 1+1 has 2 edges. BFS returns the cost-10 path; UCS returns the cost-2 path.</div></details>
+<details><summary>Q4. Is p → (q → p) a tautology?</summary><div>Yes. Suppose it is false: p=T and q→p false, which needs p=F. Contradiction, so it is always true.</div></details>
+<details><summary>Q5. Classify: (a) crossword solving, (b) poker, (c) taxi driving.</summary><div>(a) fully observable, deterministic, sequential, static, single agent. (b) partially observable, stochastic, sequential, multi-agent. (c) partially observable, stochastic, sequential, dynamic, continuous, multi-agent.</div></details>
+<details><summary>Q6. Bigram: with the same corpus, P(“I enjoy natural language processing”)?</summary><div>1 × 1/3 × 1 × 1 × 1/2 × 1 = <b>1/6</b> (I enjoy = 1/3, enjoy natural = 1, natural language = 1, language processing = 1/2, then &lt;/s&gt; = 1).</div></details></section>
+
+<section><h2>Last-hour checklist</h2>
+<div class="card"><ul>
+<li>Redraw the Romania map from memory, then redo A* (answer 536) and UCS order</li>
+<li>For AO*, always give the AND-OR example with a pruned branch</li>
+<li>Logic: use “assume false → derive contradiction”; always check for a counterexample first</li>
+<li>Write definitions, then a one-line example: that is how the 2-mark questions are scored</li></ul></div></section>
+</main>
+<footer>Built from your past papers. Notes were written from standard AI-course knowledge, so cross-check details with your class slides.</footer>
+<button id="tt" type="button" aria-label="Switch between light and dark theme" title="Toggle theme">🌙</button>
+<script>
+(function(){var r=document.documentElement,b=document.getElementById("tt");
+function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}
+function show(){b.textContent=cur()==="dark"?"☀️":"🌙"}
+try{var sv=localStorage.getItem("theme");if(sv==="dark"||sv==="light")r.setAttribute("data-theme",sv)}catch(e){}
+b.addEventListener("click",function(){var n=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("theme",n)}catch(e){}show()});
+show()})();
+</script>
+</body></html>
