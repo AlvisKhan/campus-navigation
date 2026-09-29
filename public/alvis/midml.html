@@ -25,6 +25,8 @@
   --warn-border: #fed7aa;
   --line: #cbd5e1;
   --border: #e2e8f0;
+  --board-bg: #f8fafd;
+  --board-border: #d0d7e6;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
@@ -49,6 +51,8 @@
     --warn-border: rgba(234, 88, 12, 0.3);
     --line: #2a364f;
     --border: #222f49;
+    --board-bg: #151d30;
+    --board-border: #2c3a57;
     --shadow-sm: 0 1px 4px rgba(0,0,0,0.4);
   }
 }
@@ -70,6 +74,8 @@
   --warn-border: rgba(234, 88, 12, 0.3);
   --line: #2a364f;
   --border: #222f49;
+  --board-bg: #151d30;
+  --board-border: #2c3a57;
 }
 
 * { box-sizing: border-box; }
@@ -221,6 +227,48 @@ h3 {
   color: var(--fg);
 }
 
+/* Blackboard / Step-by-Step Teacher Style */
+.board {
+  background: var(--board-bg);
+  border: 1.5px solid var(--board-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 14px 0;
+  box-shadow: var(--shadow-sm);
+}
+.board-header {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.board-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--fg);
+  padding: 2px 0;
+}
+.board-text {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--fg);
+  padding: 2px 0;
+}
+.board-result {
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: var(--soft);
+  border-left: 4px solid var(--ink);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+}
+
 /* Definition Cards - clean separate lines */
 .def-list {
   display: flex;
@@ -245,14 +293,6 @@ h3 {
   margin: 0;
   font-size: 15px;
   color: var(--fg);
-}
-.def-sublist {
-  margin: 8px 0 0;
-  padding-left: 20px;
-  font-size: 14.5px;
-}
-.def-sublist li {
-  margin: 3px 0;
 }
 
 /* Example Rows / Separate spaces */
@@ -751,27 +791,83 @@ svg text {
   </div>
 
   <h3>3.1 Box plot analysis</h3>
-  <div class="f">IQR = Q3 − Q1
-Upper whisker = Q3 + 1.5 × IQR
-Lower whisker = Q1 − 1.5 × IQR       Outside the whiskers = potential outlier</div>
+  
+  <!-- Teacher Blackboard: Box plot formulas -->
+  <div class="board">
+    <div class="board-header">📐 Box Plot Formulas:</div>
+    <div class="board-line">IQR = Q3 − Q1</div>
+    <div class="board-line">Upper whisker = Q3 + 1.5 × IQR</div>
+    <div class="board-line">Lower whisker = Q1 − 1.5 × IQR</div>
+    <div class="board-result">Outside the whiskers = potential outlier</div>
+  </div>
 
   <p>Box plot shows min, Q1, median (Q2), Q3, max; the box spans the middle 50% (IQR).</p>
-  <p><b>Slide example</b> (4.3, 4.5, 4.5, 4.5, 4.7, 4.7, 4.7, 8.5, 13.2): Q1 = 4.5, Q3 = 6.6, IQR = 2.1, UW = 9.75, LW = 1.35, so <b>13.2 is an outlier</b>.</p>
 
-  <div class="card">
-    <b>Why 1.5 × IQR?</b>
-    <p style="margin: 6px 0 0;">For X ~ N(μ, σ²): z<sub>0.25</sub> = −0.6745, z<sub>0.75</sub> = +0.6745, so Q1 ≈ μ − 0.6745σ, Q3 ≈ μ + 0.6745σ, IQR ≈ 1.349σ.</p>
-    <p style="margin: 4px 0 0;">Then 1.5·IQR ≈ 2.02σ and UW ≈ 0.6745σ + 2.02σ = <b>2.68σ</b>. Points beyond ±2.68σ are outliers.</p>
+  <!-- Teacher Blackboard: Slide example step by step -->
+  <div class="board">
+    <div class="board-header">👨‍🏫 Slide Example (Box Plot Step-by-Step):</div>
+    <div class="board-text"><b>Data:</b> 4.3, 4.5, 4.5, 4.5, 4.7, 4.7, 4.7, 8.5, 13.2</div>
+    <div class="board-line">• Q1 = 4.5</div>
+    <div class="board-line">• Q3 = 6.6</div>
+    <div class="board-line">• IQR = Q3 − Q1 = 6.6 − 4.5 = 2.1</div>
+    <div class="board-line">• UW = Q3 + 1.5 × IQR = 6.6 + 1.5(2.1) = 9.75</div>
+    <div class="board-line">• LW = Q1 − 1.5 × IQR = 4.5 − 1.5(2.1) = 1.35</div>
+    <div class="board-result">➔ <b>13.2 is an outlier</b> (since 13.2 &gt; 9.75)</div>
+  </div>
+
+  <!-- Teacher Blackboard: Why 1.5 x IQR derivation -->
+  <div class="board">
+    <div class="board-header">👨‍🏫 Derivation: Why 1.5 × IQR?</div>
+    <div class="board-text">For X ~ N(μ, σ²):</div>
+    <div class="board-line">• z<sub>0.25</sub> = −0.6745</div>
+    <div class="board-line">• z<sub>0.75</sub> = +0.6745</div>
+    <div class="board-text" style="margin-top: 6px;">So:</div>
+    <div class="board-line">• Q1 ≈ μ − 0.6745σ</div>
+    <div class="board-line">• Q3 ≈ μ + 0.6745σ</div>
+    <div class="board-line">• IQR = Q3 − Q1 ≈ 1.349σ</div>
+    <div class="board-text" style="margin-top: 6px;">Then:</div>
+    <div class="board-line">• 1.5 · IQR ≈ 1.5(1.349σ) ≈ 2.02σ</div>
+    <div class="board-line">• UW ≈ (μ + 0.6745σ) + 2.02σ = <b>μ + 2.68σ</b></div>
+    <div class="board-line">• LW ≈ (μ − 0.6745σ) − 2.02σ = <b>μ − 2.68σ</b></div>
+    <div class="board-result">➔ Points beyond <b>±2.68σ</b> are outliers.</div>
   </div>
 
   <h3>3.2 Z-score analysis</h3>
-  <div class="f">Z_i = (x_i − μ)/σ         σ = √( Σ(x_i − μ)² / (n − 1) )</div>
-  <p>Pick a threshold (±1, ±2 or ±3). <b>Slide example:</b> μ = 5.956, σ = 3.016; for 13.2, Z = (13.2 − 5.956)/3.016 = <b>2.40</b>. Outlier at ±2σ, but no outliers at ±3σ.</p>
+  
+  <!-- Teacher Blackboard: Z-score formula & step by step -->
+  <div class="board">
+    <div class="board-header">📐 Z-score Formula:</div>
+    <div class="board-line">Z_i = (x_i − μ) / σ</div>
+    <div class="board-line">σ = √( Σ(x_i − μ)² / (n − 1) )</div>
+    <div class="board-text" style="margin-top: 6px;">Pick a threshold: ±1, ±2 or ±3</div>
+  </div>
+
+  <div class="board">
+    <div class="board-header">👨‍🏫 Slide Example (Z-score Step-by-Step):</div>
+    <div class="board-line">• μ = 5.956</div>
+    <div class="board-line">• σ = 3.016</div>
+    <div class="board-line">• x = 13.2</div>
+    <div class="board-line">Z = (13.2 − 5.956) / 3.016 = <b>2.40</b></div>
+    <div class="board-result">
+      <div>• At ±2σ: |2.40| &gt; 2 ➔ <b>Outlier</b></div>
+      <div>• At ±3σ: |2.40| &lt; 3 ➔ <b>No outlier</b></div>
+    </div>
+  </div>
 
   <details>
     <summary>Draw the box plot for Blood Pressure and Skin Thickness (Pima table). Identify outliers, remove them, compare mean and σ before and after. <span class="tag">3 marks</span></summary>
     <div>
-      <p><b>Blood Pressure</b> sorted: 32, 40, 50, 64, 66, 66, 70, 72, 74, 296. Q1 = 50, Q2 = 66, Q3 = 72, IQR = 22, LW = 50 − 33 = 17, UW = 72 + 33 = 105. So <b>296 is an outlier</b> (also physically impossible).</p>
+      <div class="board">
+        <div class="board-header">Blood Pressure Step-by-Step:</div>
+        <div class="board-text"><b>Sorted data:</b> 32, 40, 50, 64, 66, 66, 70, 72, 74, 296</div>
+        <div class="board-line">• Q1 = 50</div>
+        <div class="board-line">• Q2 = 66</div>
+        <div class="board-line">• Q3 = 72</div>
+        <div class="board-line">• IQR = 72 − 50 = 22</div>
+        <div class="board-line">• LW = 50 − 1.5(22) = 50 − 33 = 17</div>
+        <div class="board-line">• UW = 72 + 1.5(22) = 72 + 33 = 105</div>
+        <div class="board-result">➔ <b>296 is an outlier</b> (since 296 &gt; 105; also physically impossible).</div>
+      </div>
 
       <svg viewBox="0 0 700 100" role="img" aria-label="Blood pressure box plot">
         <line x1="40" y1="55" x2="660" y2="55" stroke="var(--line)"/>
@@ -804,7 +900,16 @@ Lower whisker = Q1 − 1.5 × IQR       Outside the whiskers = potential outlier
         </table>
       </div>
 
-      <p><b>Skin Thickness</b> sorted: 22, 23, 24, 29, 30, 32, 33, 35, 35, 45. Q1 = 24, Q3 = 35, IQR = 11, LW = 7.5, UW = 51.5. <b>No outliers.</b></p>
+      <div class="board" style="margin-top: 14px;">
+        <div class="board-header">Skin Thickness Step-by-Step:</div>
+        <div class="board-text"><b>Sorted data:</b> 22, 23, 24, 29, 30, 32, 33, 35, 35, 45</div>
+        <div class="board-line">• Q1 = 24</div>
+        <div class="board-line">• Q3 = 35</div>
+        <div class="board-line">• IQR = 11</div>
+        <div class="board-line">• LW = 24 − 1.5(11) = 7.5</div>
+        <div class="board-line">• UW = 35 + 1.5(11) = 51.5</div>
+        <div class="board-result">➔ <b>No outliers.</b></div>
+      </div>
       <p>The outlier pulled the mean up by about 24 and inflated σ five-fold.</p>
     </div>
   </details>
@@ -812,10 +917,20 @@ Lower whisker = Q1 − 1.5 × IQR       Outside the whiskers = potential outlier
   <details>
     <summary>Derive the upper and lower whiskers if the z-values of Q1 and Q3 are −0.5543 and +0.5543, so that anomalies lie beyond μ ± 2.9σ. <span class="tag">2 marks</span></summary>
     <div>
-      <p>Q1 = μ − 0.5543σ, Q3 = μ + 0.5543σ, so IQR = 1.1086σ. Let UW = Q3 + k·IQR and set UW = μ + 2.9σ:</p>
-      <div class="f">μ + 0.5543σ + k(1.1086σ) = μ + 2.9σ
-k = (2.9 − 0.5543)/1.1086 ≈ 2.116
-UW = Q3 + 2.116·IQR       LW = Q1 − 2.116·IQR</div>
+      <div class="board">
+        <div class="board-header">👨‍🏫 Step-by-Step Board Derivation:</div>
+        <div class="board-line">• Q1 = μ − 0.5543σ</div>
+        <div class="board-line">• Q3 = μ + 0.5543σ</div>
+        <div class="board-line">• IQR = Q3 − Q1 = (μ + 0.5543σ) − (μ − 0.5543σ) = 1.1086σ</div>
+        <div class="board-text" style="margin-top: 6px;">Let UW = Q3 + k·IQR and set UW = μ + 2.9σ:</div>
+        <div class="board-line">(μ + 0.5543σ) + k(1.1086σ) = μ + 2.9σ</div>
+        <div class="board-line">k(1.1086σ) = (2.9 − 0.5543)σ</div>
+        <div class="board-line">k = 2.3457 / 1.1086 ≈ <b>2.116</b></div>
+        <div class="board-result">
+          <div>UW = Q3 + 2.116 · IQR</div>
+          <div>LW = Q1 − 2.116 · IQR</div>
+        </div>
+      </div>
       <p>(Same logic as the slides' 1.5 IQR ≈ 2.68σ.)</p>
     </div>
   </details>
@@ -823,7 +938,13 @@ UW = Q3 + 2.116·IQR       LW = Q1 − 2.116·IQR</div>
   <details>
     <summary>Is Insulin (0, 0, 0, 94, 168, 0, 88, 0, 543, 0) normally distributed? <span class="tag">2 marks</span></summary>
     <div>
-      <p>No. Six of ten values are 0 (invalid, treat as missing), the median is 0 but the mean is about 89, and 543 creates a long right tail: the distribution is <b>right-skewed</b>, not bell-shaped.</p>
+      <div class="board">
+        <div class="board-header">Analysis:</div>
+        <div class="board-text">• Six of ten values are 0 (invalid, treat as missing)</div>
+        <div class="board-text">• The median is 0, but the mean is about 89</div>
+        <div class="board-text">• 543 creates a long right tail</div>
+        <div class="board-result">➔ Distribution is <b>right-skewed</b>, not bell-shaped.</div>
+      </div>
       <p>Handle by imputing the zeros and then re-plotting the histogram.</p>
     </div>
   </details>
@@ -883,11 +1004,29 @@ UW = Q3 + 2.116·IQR       LW = Q1 − 2.116·IQR</div>
   <details>
     <summary>k-NN imputation (k = 1, 2) for missing Age. Data (Height, Weight, Age): ID1 (170, 70, 25), ID2 (165, 65, ?), ID3 (180, 80, 30), ID4 (175, 75, ?), ID5 (160, 60, 22) <span class="tag">3 marks</span></summary>
     <div>
-      <p><b>ID2:</b> Euclidean distance on (Height, Weight): to ID1 = √(25+25) = 7.07, ID5 = 7.07, ID4 = 14.14, ID3 = 21.2.<br>
-      <b>k = 1:</b> tie ID1 / ID5 → Age = 25 or 22.<br>
-      <b>k = 2:</b> mean of 25 and 22 = <b>23.5</b>.</p>
-      <p><b>ID4:</b> distance to ID3 = 7.07, ID1 = 7.07, ID2 = 14.14.<br>
-      <b>k = 2:</b> mean of 30 and 25 = <b>27.5</b>.</p>
+      <div class="board">
+        <div class="board-header">👨‍🏫 Step-by-Step for ID2 (165, 65, ?):</div>
+        <div class="board-text">Euclidean distance on (Height, Weight):</div>
+        <div class="board-line">• to ID1: √( (170−165)² + (70−65)² ) = √(25+25) = <b>7.07</b></div>
+        <div class="board-line">• to ID5: √( (160−165)² + (60−65)² ) = √(25+25) = <b>7.07</b></div>
+        <div class="board-line">• to ID4: √( (175−165)² + (75−65)² ) = √(100+100) = 14.14</div>
+        <div class="board-line">• to ID3: √( (180−165)² + (80−65)² ) = √(225+225) = 21.2</div>
+        <div class="board-result">
+          <div>• <b>k = 1:</b> tie ID1 / ID5 ➔ Age = <b>25 or 22</b></div>
+          <div>• <b>k = 2:</b> mean of 25 and 22 = (25 + 22)/2 = <b>23.5</b></div>
+        </div>
+      </div>
+
+      <div class="board">
+        <div class="board-header">👨‍🏫 Step-by-Step for ID4 (175, 75, ?):</div>
+        <div class="board-text">Euclidean distance:</div>
+        <div class="board-line">• to ID3: √( (180−175)² + (80−75)² ) = √(25+25) = <b>7.07</b></div>
+        <div class="board-line">• to ID1: √( (170−175)² + (70−75)² ) = √(25+25) = <b>7.07</b></div>
+        <div class="board-line">• to ID2: 14.14</div>
+        <div class="board-result">
+          <div>• <b>k = 2:</b> mean of 30 and 25 = (30 + 25)/2 = <b>27.5</b></div>
+        </div>
+      </div>
     </div>
   </details>
 </section>
@@ -904,10 +1043,14 @@ UW = Q3 + 2.116·IQR       LW = Q1 − 2.116·IQR</div>
     <div>• <b>clustering</b> (detect outliers)</div>
   </div>
 
-  <div class="f">Sorted price: 4, 8, 15, 21, 21, 24, 25, 28, 34   (3 equal-frequency bins)
-Bin means:      (9,9,9)    (22,22,22)  (29,29,29)
-Bin medians:    (8,8,8)    (21,21,21)  (28,28,28)
-Bin boundaries: (4,4,15)   (21,21,24)  (25,25,34)</div>
+  <div class="board">
+    <div class="board-header">👨‍🏫 Binning Example:</div>
+    <div class="board-text"><b>Sorted price:</b> 4, 8, 15, 21, 21, 24, 25, 28, 34 (3 equal-frequency bins)</div>
+    <div class="board-line" style="margin-top: 6px;">• Partition: [4, 8, 15],  [21, 21, 24],  [25, 28, 34]</div>
+    <div class="board-line">• <b>Bin means:</b>      (9, 9, 9)    (22, 22, 22)  (29, 29, 29)</div>
+    <div class="board-line">• <b>Bin medians:</b>    (8, 8, 8)    (21, 21, 21)  (28, 28, 28)</div>
+    <div class="board-line">• <b>Bin boundaries:</b> (4, 4, 15)   (21, 21, 24)  (25, 25, 34)</div>
+  </div>
 
   <h3>Discretization</h3>
   <p>Convert a numeric attribute to categorical by intervals.</p>
@@ -930,8 +1073,20 @@ Bin boundaries: (4,4,15)   (21,21,24)  (25,25,34)</div>
       </thead>
       <tbody>
         <tr>
-          <td>width = (215 − 5)/3 = 70<br>bin1: 5…72 (9 values)<br>bin2: 89<br>bin3: 204, 215<br>labels: 1 1 1 1 1 1 1 1 1 2 3 3</td>
-          <td>4 values per bin<br>bin1: 5, 10, 11, 13<br>bin2: 15, 35, 50, 55<br>bin3: 72, 89, 204, 215<br>labels: 1 1 1 1 2 2 2 2 3 3 3 3</td>
+          <td>
+            width = (215 − 5)/3 = 70<br>
+            bin1: 5…72 (9 values)<br>
+            bin2: 89<br>
+            bin3: 204, 215<br>
+            labels: 1 1 1 1 1 1 1 1 1 2 3 3
+          </td>
+          <td>
+            4 values per bin<br>
+            bin1: 5, 10, 11, 13<br>
+            bin2: 15, 35, 50, 55<br>
+            bin3: 72, 89, 204, 215<br>
+            labels: 1 1 1 1 2 2 2 2 3 3 3 3
+          </td>
         </tr>
       </tbody>
     </table>
@@ -943,7 +1098,13 @@ Bin boundaries: (4,4,15)   (21,21,24)  (25,25,34)</div>
     <summary>Encode the 25 ages (18 ×6, 19 ×6, 20 ×6, 21, 22 ×2, 23, NA ×3) into 3 labels, and smooth by binning. <span class="tag">2+2 marks</span></summary>
     <div>
       <p>First <b>impute NA</b> with mean/median (median = 19).</p>
-      <p>Then <b>equal-frequency discretization</b> (about 8 values per bin): label 1 = 18 (six values) + first 19s, label 2 = remaining 19s + 20s, label 3 = 20s/21/22/23; or an interval scheme 18 → 1, 19–20 → 2, 21–23 → 3.</p>
+      <p>Then <b>equal-frequency discretization</b> (about 8 values per bin):</p>
+      <div class="board">
+        <div class="board-line">• Label 1 = 18 (six values) + first 19s</div>
+        <div class="board-line">• Label 2 = remaining 19s + 20s</div>
+        <div class="board-line">• Label 3 = 20s/21/22/23</div>
+        <div class="board-text" style="margin-top: 6px;">Or an interval scheme: 18 → 1, 19–20 → 2, 21–23 → 3.</div>
+      </div>
       <p>For smoothing: sort, make equal-frequency bins, replace each value by the bin mean/median/boundary as in the price example above.</p>
     </div>
   </details>
@@ -955,23 +1116,58 @@ Bin boundaries: (4,4,15)   (21,21,24)  (25,25,34)</div>
 
   <p>Scales an attribute into a small range so that no attribute dominates because of a larger range. Essential for distance-based methods (nearest neighbour, clustering) and neural networks.</p>
 
-  <div class="f">Min-max:  v' = (v − min_A)/(max_A − min_A) × (new_max − new_min) + new_min
-Z-score:  v' = (v − μ_A)/σ_A            (useful when min and max are unknown)
-Decimal:  v' = v / 10^j                  j = smallest integer with max|v'| &lt; 1</div>
+  <div class="board">
+    <div class="board-header">📐 Formulas:</div>
+    <div class="board-line"><b>Min-max:</b>  v' = (v − min_A)/(max_A − min_A) × (new_max − new_min) + new_min</div>
+    <div class="board-line"><b>Z-score:</b>  v' = (v − μ_A)/σ_A            (useful when min and max are unknown)</div>
+    <div class="board-line"><b>Decimal:</b>  v' = v / 10^j                  j = smallest integer with max|v'| &lt; 1</div>
+  </div>
 
-  <div class="card">
-    <b>Slide examples:</b>
-    <div style="margin-top: 6px;">• F1 = 5…32 to [0,1]: 16 → (16−5)/(32−5) = 0.407</div>
-    <div>• To [−5,5]: 16 → 0.407 × 10 − 5 = −0.925</div>
-    <div>• Decimal scaling of 4.3…13.2: max = 13.2, j = 2, so 4.3 → 0.043 and 13.2 → 0.132</div>
-    <div>• A range 917 to 986 → divide by 1000</div>
+  <!-- Teacher Blackboard: Slide examples on separate lines -->
+  <div class="board">
+    <div class="board-header">👨‍🏫 Slide Examples (Step-by-Step):</div>
+    
+    <div class="board-text" style="font-weight: 700; margin-top: 6px;">1. F1 = 5…32 to [0, 1]:</div>
+    <div class="board-line">For v = 16:</div>
+    <div class="board-line">v' = (16 − 5) / (32 − 5) = 11 / 27 = <b>0.407</b></div>
+
+    <div class="board-text" style="font-weight: 700; margin-top: 10px;">2. To [−5, 5]:</div>
+    <div class="board-line">v' = 0.407 × (5 − (−5)) + (−5)</div>
+    <div class="board-line">v' = 0.407 × 10 − 5 = <b>−0.925</b></div>
+
+    <div class="board-text" style="font-weight: 700; margin-top: 10px;">3. Decimal scaling of 4.3…13.2:</div>
+    <div class="board-line">• max = 13.2</div>
+    <div class="board-line">• j = 2 (since 10² = 100 &gt; 13.2)</div>
+    <div class="board-line">• 4.3  → 4.3 / 100 = <b>0.043</b></div>
+    <div class="board-line">• 13.2 → 13.2 / 100 = <b>0.132</b></div>
+
+    <div class="board-text" style="font-weight: 700; margin-top: 10px;">4. Range 917 to 986:</div>
+    <div class="board-line">• max = 986 ➔ j = 3 ➔ divide by 1000</div>
+    <div class="board-line">• 917 → 0.917,  986 → 0.986</div>
   </div>
 
   <details>
     <summary>Normalize Blood Pressure to [−0.5, +0.5]. Compare with z-score. <span class="tag">2 marks</span></summary>
     <div>
-      <p>min = 32, max = 296. v' = (v − 32)/264 × (0.5 − (−0.5)) + (−0.5). So 32 → −0.5, 296 → +0.5, 72 → −0.348, 66 → −0.386, 40 → −0.470. The outlier 296 squeezes normal values into about [−0.5, −0.3].</p>
-      <p>Z-score (μ = 83, σ = 76.2): 72 → −0.14, 296 → 2.80. It has no fixed range, centres data at 0, and does not need min/max.</p>
+      <div class="board">
+        <div class="board-header">👨‍🏫 Min-Max Step-by-Step:</div>
+        <div class="board-line">• min = 32, max = 296</div>
+        <div class="board-line">• v' = (v − 32)/264 × (0.5 − (−0.5)) + (−0.5)</div>
+        <div class="board-line">• 32  → <b>−0.5</b></div>
+        <div class="board-line">• 40  → <b>−0.470</b></div>
+        <div class="board-line">• 66  → <b>−0.386</b></div>
+        <div class="board-line">• 72  → <b>−0.348</b></div>
+        <div class="board-line">• 296 → <b>+0.5</b></div>
+        <div class="board-result">The outlier 296 squeezes normal values into about [−0.5, −0.3].</div>
+      </div>
+
+      <div class="board">
+        <div class="board-header">👨‍🏫 Z-score Step-by-Step:</div>
+        <div class="board-line">• μ = 83, σ = 76.2</div>
+        <div class="board-line">• 72  → (72 − 83)/76.2 = <b>−0.14</b></div>
+        <div class="board-line">• 296 → (296 − 83)/76.2 = <b>2.80</b></div>
+        <div class="board-result">It has no fixed range, centres data at 0, and does not need min/max.</div>
+      </div>
     </div>
   </details>
 </section>
@@ -992,23 +1188,52 @@ Decimal:  v' = v / 10^j                  j = smallest integer with max|v'| &lt; 
   </div>
 
   <p>Best splits come from impurity measures:</p>
-  <div class="f">Gini = 1 − Σ p_i²      Entropy = − Σ p_i log₂ p_i      Error = 1 − max(p_i)</div>
+  <div class="board">
+    <div class="board-line">• <b>Gini</b> = 1 − Σ p_i²</div>
+    <div class="board-line">• <b>Entropy</b> = − Σ p_i log₂ p_i</div>
+    <div class="board-line">• <b>Error</b> = 1 − max(p_i)</div>
+  </div>
 
-  <p><b>Entropy</b> measures impurity. Pure node = 0. 50/50 split = 1 (maximum). The minus sign keeps entropy ≥ 0 because log₂ p &lt; 0. Slide: 16 green + 14 pink of 30 → Info(D) = 0.99.</p>
+  <div class="board">
+    <div class="board-header">Entropy:</div>
+    <div class="board-text">Measures impurity.</div>
+    <div class="board-line">• Pure node = 0</div>
+    <div class="board-line">• 50/50 split = 1 (maximum)</div>
+    <div class="board-text" style="margin-top: 6px;">The minus sign keeps entropy ≥ 0 because log₂ p &lt; 0.</div>
+    <div class="board-line" style="margin-top: 6px;">Slide: 16 green + 14 pink of 30 ➔ <b>Info(D) = 0.99</b></div>
+  </div>
 
   <h3>7.1 ID3: Information Gain</h3>
-  <div class="f">Info(D) = − Σ p_i log₂ p_i,   p_i = |C_i,D| / |D|
-Info_A(D) = Σ_j (|D_j|/|D|) · Info(D_j)
-Gain(A) = Info(D) − Info_A(D)         → choose the highest Gain(A)</div>
+  <div class="board">
+    <div class="board-header">📐 ID3 Formulas:</div>
+    <div class="board-line">Info(D) = − Σ p_i log₂ p_i,   p_i = |C_i,D| / |D|</div>
+    <div class="board-line">Info_A(D) = Σ_j (|D_j|/|D|) · Info(D_j)</div>
+    <div class="board-line">Gain(A) = Info(D) − Info_A(D)</div>
+    <div class="board-result">➔ Choose the highest Gain(A)</div>
+  </div>
 
-  <div class="key">
-    <b>Slide example (Where = Home 3 / Work 3):</b> Info(D) = 1. Info<sub>Action</sub> = 1.000, Info<sub>Author</sub> = (4/6)(0.811) + (2/6)(0) = 0.540, Info<sub>Thread</sub> = 0.918, Info<sub>Length</sub> = 1.000. Gains: 0, <b>0.460</b>, 0.082, 0. <b>Author is the root.</b>
+  <!-- Teacher Blackboard: ID3 slide example -->
+  <div class="board">
+    <div class="board-header">👨‍🏫 Slide Example (Where = Home 3 / Work 3):</div>
+    <div class="board-line">• Info(D) = 1</div>
+    <div class="board-line">• Info<sub>Action</sub> = 1.000</div>
+    <div class="board-line">• Info<sub>Author</sub> = (4/6)(0.811) + (2/6)(0) = 0.540</div>
+    <div class="board-line">• Info<sub>Thread</sub> = 0.918</div>
+    <div class="board-line">• Info<sub>Length</sub> = 1.000</div>
+    <div class="board-text" style="margin-top: 8px; font-weight: 700;">Gains:</div>
+    <div class="board-line">• Gain(Action) = 1 − 1.000 = 0</div>
+    <div class="board-line">• Gain(Author) = 1 − 0.540 = <b>0.460</b></div>
+    <div class="board-line">• Gain(Thread) = 1 − 0.918 = 0.082</div>
+    <div class="board-line">• Gain(Length) = 1 − 1.000 = 0</div>
+    <div class="board-result">➔ <b>Author is the root.</b></div>
   </div>
 
   <details>
     <summary>Calculate the entropy of the Weather table (Play: 4 Yes, 4 No) and use ID3 to find the root. <span class="tag">1+3 marks</span></summary>
     <div>
-      <p>Info(D) = −(4/8)log₂(4/8) − (4/8)log₂(4/8) = <b>1</b>.</p>
+      <div class="board">
+        <div class="board-line">Info(D) = −(4/8)log₂(4/8) − (4/8)log₂(4/8) = <b>1</b></div>
+      </div>
       <div class="table-wrap">
         <table>
           <thead><tr><th>A</th><th>Partitions (Yes, No)</th><th>Info<sub>A</sub>(D)</th><th>Gain(A)</th></tr></thead>
@@ -1047,48 +1272,94 @@ Gain(A) = Info(D) − Info_A(D)         → choose the highest Gain(A)</div>
   <details>
     <summary>Entropy of the Pima table with Outcome as class. <span class="tag">1 mark</span></summary>
     <div>
-      <p>It cannot be calculated directly because one row has <b>Outcome = NA</b> (missing class label). Ignore that tuple: 9 rows remain, 5 with Outcome = 1 and 4 with 0. Info(D) = −(5/9)log₂(5/9) − (4/9)log₂(4/9) ≈ <b>0.991</b>.</p>
+      <p>It cannot be calculated directly because one row has <b>Outcome = NA</b> (missing class label). Ignore that tuple: 9 rows remain, 5 with Outcome = 1 and 4 with 0.</p>
+      <div class="f">Info(D) = −(5/9)log₂(5/9) − (4/9)log₂(4/9) ≈ <b>0.991</b></div>
     </div>
   </details>
 
   <h3>7.2 Limitation of information gain and Gain Ratio (C4.5)</h3>
-  <p>Gain is <b>biased towards attributes with many distinct values</b>. Slide: splitting on Roll No. (unique for every student) gives every subset entropy 0, so Gain = 1.0, equal to Study Hours, but it is useless on new data (pure overfitting). Fix:</p>
-  <div class="f">SplitInfo(A) = − Σ_j (|D_j|/|D|) log₂(|D_j|/|D|)
-GainRatio(A) = Gain(A) / SplitInfo(A)      → choose the highest</div>
+  <p>Gain is <b>biased towards attributes with many distinct values</b>.</p>
+  <p>Slide: splitting on Roll No. (unique for every student) gives every subset entropy 0, so Gain = 1.0, equal to Study Hours, but it is useless on new data (pure overfitting). Fix:</p>
+  
+  <div class="board">
+    <div class="board-header">📐 C4.5 Formulas:</div>
+    <div class="board-line">SplitInfo(A) = − Σ_j (|D_j|/|D|) log₂(|D_j|/|D|)</div>
+    <div class="board-line">GainRatio(A) = Gain(A) / SplitInfo(A)</div>
+    <div class="board-result">➔ Choose the highest GainRatio</div>
+  </div>
 
   <p>Many unique values give a high SplitInfo, which penalises the attribute; balanced partitions are favoured.</p>
-  <p><b>Slide result:</b> Gain(Author) = 0.459, SplitInfo = 0.918, GainRatio = <b>0.500</b>; Thread 0.0817/1 = 0.0817; Action and Length = 0. Root = Author.</p>
+  
+  <!-- Teacher Blackboard: C4.5 slide result -->
+  <div class="board">
+    <div class="board-header">👨‍🏫 Slide Result:</div>
+    <div class="board-line">• Gain(Author) = 0.459</div>
+    <div class="board-line">• SplitInfo = 0.918</div>
+    <div class="board-line">• GainRatio = 0.459 / 0.918 = <b>0.500</b></div>
+    <div class="board-line">• Thread = 0.0817 / 1 = 0.0817</div>
+    <div class="board-line">• Action = 0</div>
+    <div class="board-line">• Length = 0</div>
+    <div class="board-result">➔ Root = Author.</div>
+  </div>
 
   <details>
     <summary>Analyse Gain(A) = Info(D) − Info_A(D), show the necessity of split information with an example, and derive the ratio of information gain. <span class="tag">10 marks</span></summary>
     <div>
       <p><b>Gain</b> is the reduction in uncertainty after splitting on A: Info(D) is the uncertainty before, Info<sub>A</sub>(D) the weighted uncertainty after.</p>
       <p><b>Problem:</b> an ID-like attribute splits D into |D| singleton subsets, each pure, so Info<sub>A</sub>(D) = 0 and Gain is maximal (6 students: Gain(Roll) = 1.0 = Gain(Study Hours)), yet it cannot generalise.</p>
-      <p><b>Split information</b> measures how broadly and evenly A partitions the data: SplitInfo(Roll) = −6·(1/6)log₂(1/6) = 2.585, while SplitInfo(Study) = −2·(1/2)log₂(1/2) = 1. So GainRatio(Roll) = 1/2.585 = 0.387 &lt; GainRatio(Study) = 1/1 = 1.0, and Study Hours is correctly chosen.</p>
+      <div class="board">
+        <div class="board-header">Split information comparison:</div>
+        <div class="board-line">• SplitInfo(Roll) = −6 · (1/6) log₂(1/6) = <b>2.585</b></div>
+        <div class="board-line">• SplitInfo(Study) = −2 · (1/2) log₂(1/2) = <b>1.000</b></div>
+        <div class="board-text" style="margin-top: 6px;">So:</div>
+        <div class="board-line">• GainRatio(Roll) = 1 / 2.585 = <b>0.387</b></div>
+        <div class="board-line">• GainRatio(Study) = 1 / 1 = <b>1.000</b></div>
+        <div class="board-result">➔ Study Hours is correctly chosen.</div>
+      </div>
       <p><b>Derivation:</b> normalise Gain by SplitInfo(A) = −Σ(|D_j|/|D|)log₂(|D_j|/|D|), giving GainRatio(A) = Gain(A)/SplitInfo(A).</p>
     </div>
   </details>
 
   <h3>7.3 CART</h3>
   <p><b>C</b>lassification <b>A</b>nd <b>R</b>egression <b>T</b>rees: recursive <b>binary</b> partitioning, so every internal node has exactly two branches. Classification uses <b>Gini impurity</b> (leaf = majority class); regression uses MSE/SSE (leaf = mean).</p>
-  <div class="f">Gini(D) = 1 − Σ p_k²          p_k = n_k / N
-Gini_split = (|D_L|/|D|)·Gini(D_L) + (|D_R|/|D|)·Gini(D_R)
-ΔGini = Gini(D) − Gini_split      Best split = argmin Gini_split = argmax ΔGini
-Continuous X_j: D_L = {X_j ≤ t}, D_R = {X_j &gt; t}; t = midpoints of sorted values</div>
+  
+  <div class="board">
+    <div class="board-header">📐 CART Formulas:</div>
+    <div class="board-line">Gini(D) = 1 − Σ p_k²          p_k = n_k / N</div>
+    <div class="board-line">Gini_split = (|D_L|/|D|)·Gini(D_L) + (|D_R|/|D|)·Gini(D_R)</div>
+    <div class="board-line">ΔGini = Gini(D) − Gini_split</div>
+    <div class="board-result">Best split = argmin Gini_split = argmax ΔGini</div>
+    <div class="board-text" style="margin-top: 6px;">Continuous X_j: D_L = {X_j ≤ t}, D_R = {X_j &gt; t}; t = midpoints of sorted values</div>
+  </div>
 
-  <div class="key">
-    <b>Slide example</b> (Age 22, 25, 28, 35, 40, 45; Buy: N, N, Y, Y, Y, Y): Gini(D) = 1 − (4/6)² − (2/6)² = 0.4444. Thresholds 23.5, 26.5, 31.5, 37.5, 42.5 give Gini<sub>split</sub> = 0.400, 0.347, 0.222, <b>0.1667</b>, 0.200. Best = Age ≤ 37.5, ΔGini = 0.2777. Income ≤ 47.5 ties. <b>Stopping:</b> max depth, min samples, min impurity decrease. <b>Pruning:</b> cost-complexity R_α(T) = R(T) + α|T|.
+  <!-- Teacher Blackboard: CART slide example -->
+  <div class="board">
+    <div class="board-header">👨‍🏫 Slide Example (Age &amp; Buy Step-by-Step):</div>
+    <div class="board-text"><b>Data:</b> Age: 22, 25, 28, 35, 40, 45  |  Buy: N, N, Y, Y, Y, Y</div>
+    <div class="board-line">• Gini(D) = 1 − (4/6)² − (2/6)² = <b>0.4444</b></div>
+    <div class="board-text" style="margin-top: 6px;">Candidate midpoints and Gini<sub>split</sub>:</div>
+    <div class="board-line">• Threshold 23.5: Gini<sub>split</sub> = 0.400</div>
+    <div class="board-line">• Threshold 26.5: Gini<sub>split</sub> = 0.347</div>
+    <div class="board-line">• Threshold 31.5: Gini<sub>split</sub> = 0.222</div>
+    <div class="board-line">• Threshold 37.5: Gini<sub>split</sub> = <b>0.1667</b>  (minimum)</div>
+    <div class="board-line">• Threshold 42.5: Gini<sub>split</sub> = 0.200</div>
+    <div class="board-result">➔ Best split = <b>Age ≤ 37.5</b> (ΔGini = 0.2777). Income ≤ 47.5 ties.</div>
+    <div class="board-text" style="margin-top: 6px;"><b>Stopping:</b> max depth, min samples, min impurity decrease.</div>
+    <div class="board-text"><b>Pruning:</b> cost-complexity R_α(T) = R(T) + α|T|.</div>
   </div>
 
   <details>
     <summary>Use CART to find the root for the Weather table and compare with ID3. <span class="tag">3+2 marks</span></summary>
     <div>
-      <p>Gini(D) = 1 − (½)² − (½)² = 0.5. Binary splits (Gini<sub>split</sub>):</p>
-      <div class="f">Weather = Sunny | rest : (3/8)(0) + (5/8)(0.32) = 0.200   ← minimum
-Weather = Overcast | rest: (2/8)(0) + (6/8)(0.444) = 0.333
-Weather = Rain | rest    : 0.467
-Temperature (Hot/Cool | rest), Humidity, Wind : 0.467 each; Mild | rest: 0.500</div>
-      <p>ΔGini = 0.5 − 0.2 = 0.3. <b>Root = Weather</b> (Sunny vs {Overcast, Rain}).</p>
+      <div class="board">
+        <div class="board-line">Gini(D) = 1 − (½)² − (½)² = 0.5</div>
+        <div class="board-text" style="margin-top: 6px;">Binary splits (Gini<sub>split</sub>):</div>
+        <div class="board-line">• Weather = Sunny | rest : (3/8)(0) + (5/8)(0.32) = <b>0.200</b> (minimum)</div>
+        <div class="board-line">• Weather = Overcast | rest: (2/8)(0) + (6/8)(0.444) = 0.333</div>
+        <div class="board-line">• Weather = Rain | rest    : 0.467</div>
+        <div class="board-line">• Temperature (Hot/Cool | rest), Humidity, Wind : 0.467 each; Mild | rest: 0.500</div>
+        <div class="board-result">ΔGini = 0.5 − 0.2 = 0.3 ➔ <b>Root = Weather (Sunny vs {Overcast, Rain})</b></div>
+      </div>
       <p><b>Same attribute as ID3</b>, but ID3 uses a <b>multiway</b> split (3 branches, Info Gain) and CART a <b>binary</b> split (Gini). If they differed, the reason is the different criterion (entropy vs Gini) and that ID3 favours many-valued attributes.</p>
     </div>
   </details>
@@ -1151,42 +1422,88 @@ Temperature (Hot/Cool | rest), Humidity, Wind : 0.467 each; Mild | rest: 0.500</
     <text x="300" y="190">−1</text>
   </svg>
 
-  <div class="f">Hyperplane: wᵀx + b = 0        margins: wᵀx + b ≥ +1 and wᵀx + b ≤ −1
-Margin m = 2/√(w·w) = 2/‖w‖
-Labels y_i ∈ {+1, −1}      constraint: y_i(wᵀx_i + b) ≥ 1  ∀i</div>
+  <div class="board">
+    <div class="board-header">📐 Hyperplane &amp; Margin:</div>
+    <div class="board-line">Hyperplane: wᵀx + b = 0</div>
+    <div class="board-line">Margins: wᵀx + b ≥ +1  and  wᵀx + b ≤ −1</div>
+    <div class="board-line">Margin m = 2/√(w·w) = 2/‖w‖</div>
+    <div class="board-line">Labels y_i ∈ {+1, −1}</div>
+    <div class="board-line">Constraint: y_i(wᵀx_i + b) ≥ 1  ∀i</div>
+  </div>
 
   <p><b>Primal (hard margin):</b> maximising 2/‖w‖ is the same as</p>
-  <div class="f">Minimise  ½‖w‖² = ½ wᵀw     subject to   y_i(wᵀx_i + b) ≥ 1</div>
+  <div class="board">
+    <div class="board-line">Minimise  ½‖w‖² = ½ wᵀw</div>
+    <div class="board-line">subject to  y_i(wᵀx_i + b) ≥ 1</div>
+  </div>
 
   <details>
     <summary>Derive the dual optimization of the hard-margin SVM. <span class="tag">5 marks</span></summary>
     <div>
-      <p><b>Step 1: Lagrangian</b> with multipliers α_i ≥ 0 for constraints 1 − y_i(wᵀx_i + b) ≤ 0:</p>
-      <div class="f">L = ½ wᵀw + Σ α_i (1 − y_i(wᵀx_i + b))</div>
+      <div class="board">
+        <div class="board-header">👨‍🏫 Step-by-Step Board Derivation:</div>
+        <div class="board-text"><b>Step 1: Lagrangian</b> with multipliers α_i ≥ 0 for constraints 1 − y_i(wᵀx_i + b) ≤ 0:</div>
+        <div class="board-line">L = ½ wᵀw + Σ α_i (1 − y_i(wᵀx_i + b))</div>
 
-      <p><b>Step 2: set gradients to zero.</b></p>
-      <div class="f">∂L/∂w = w − Σ α_i y_i x_i = 0  ⇒  w = Σ α_i y_i x_i
-∂L/∂b = −Σ α_i y_i = 0        ⇒  Σ α_i y_i = 0,   α_i ≥ 0</div>
+        <div class="board-text" style="margin-top: 10px;"><b>Step 2: Set gradients to zero:</b></div>
+        <div class="board-line">∂L/∂w = w − Σ α_i y_i x_i = 0  ⇒  <b>w = Σ α_i y_i x_i</b></div>
+        <div class="board-line">∂L/∂b = −Σ α_i y_i = 0        ⇒  <b>Σ α_i y_i = 0,   α_i ≥ 0</b></div>
 
-      <p><b>Step 3: substitute</b> w back into L. The b-term vanishes because Σα_i y_i = 0, and wᵀw = Σ_i Σ_j α_i α_j y_i y_j (x_iᵀx_j):</p>
-      <div class="f">max_α W(α) = Σ α_i − ½ Σ_i Σ_j α_i α_j y_i y_j (x_iᵀ x_j)
-subject to  Σ α_i y_i = 0,   α_i ≥ 0</div>
-      <p>This is the <b>dual problem</b>. It depends only on the dot products x_iᵀx_j, which enables kernels. Points with α_i &gt; 0 are the support vectors. Then w = Σ α_i y_i x_i and b = −½( min_{y_i=+1} w·x_i + max_{y_i=−1} w·x_i ).</p>
+        <div class="board-text" style="margin-top: 10px;"><b>Step 3: Substitute w back into L:</b></div>
+        <div class="board-text">The b-term vanishes because Σα_i y_i = 0, and wᵀw = Σ_i Σ_j α_i α_j y_i y_j (x_iᵀx_j):</div>
+        <div class="board-line">max_α W(α) = Σ α_i − ½ Σ_i Σ_j α_i α_j y_i y_j (x_iᵀ x_j)</div>
+        <div class="board-line">subject to  Σ α_i y_i = 0,   α_i ≥ 0</div>
+        <div class="board-result">
+          This is the <b>dual problem</b>. It depends only on the dot products x_iᵀx_j, which enables kernels.<br>
+          Points with α_i &gt; 0 are the support vectors.<br>
+          Then w = Σ α_i y_i x_i  and  b = −½( min_{y_i=+1} w·x_i + max_{y_i=−1} w·x_i ).
+        </div>
+      </div>
     </div>
   </details>
 
   <details open>
     <summary>Worked example: find the maximum-margin hyperplane for (2,2) → −1, (4,5) → +1, (7,4) → +1. <span class="tag">slide example</span></summary>
     <div>
-      <p>Dot products: x₁·x₁ = 8, x₁·x₂ = 18, x₁·x₃ = 22, x₂·x₂ = 41, x₂·x₃ = 48, x₃·x₃ = 65. Constraint: −α₁ + α₂ + α₃ = 0, so α₁ = α₂ + α₃.</p>
-      <div class="f">W = (α₁+α₂+α₃) − ½(8α₁² + 41α₂² + 65α₃² − 36α₁α₂ − 44α₁α₃ + 96α₂α₃)
-Substitute α₁:  W = 2(α₂+α₃) − ½(13α₂² + 32α₂α₃ + 29α₃²)
-∂W/∂α₂ = 2 − 13α₂ − 16α₃ = 0      ∂W/∂α₃ = 2 − 16α₂ − 29α₃ = 0
-α₂ = 26/121,  α₃ = −6/121,  α₁ = 20/121
-w = Σ α_i y_i x_i = (2/11, 6/11)
-b = −½( min(w·x₂, w·x₃) + max(w·x₁) ) = −½(38/11 + 16/11) = −27/11
-f(x) = (2/11)x₁ + (6/11)x₂ − 27/11 = 0   ⇔   x₁ + 3x₂ − 13.5 = 0</div>
-      <p><b>Check:</b> w·x₂ + b = 38/11 − 27/11 = 1 ✓ and w·x₁ + b = 16/11 − 27/11 = −1 ✓.</p>
+      <div class="board">
+        <div class="board-header">👨‍🏫 Step-by-Step Teacher Working on the Board:</div>
+        <div class="board-text"><b>Dot products:</b></div>
+        <div class="board-line">• x₁·x₁ = 2² + 2² = 8</div>
+        <div class="board-line">• x₁·x₂ = 2(4) + 2(5) = 18</div>
+        <div class="board-line">• x₁·x₃ = 2(7) + 2(4) = 22</div>
+        <div class="board-line">• x₂·x₂ = 4² + 5² = 41</div>
+        <div class="board-line">• x₂·x₃ = 4(7) + 5(4) = 48</div>
+        <div class="board-line">• x₃·x₃ = 7² + 4² = 65</div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Constraint:</b></div>
+        <div class="board-line">−α₁ + α₂ + α₃ = 0  ⇒  <b>α₁ = α₂ + α₃</b></div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Dual objective W:</b></div>
+        <div class="board-line">W = (α₁+α₂+α₃) − ½(8α₁² + 41α₂² + 65α₃² − 36α₁α₂ − 44α₁α₃ + 96α₂α₃)</div>
+        <div class="board-line">Substitute α₁:  W = 2(α₂+α₃) − ½(13α₂² + 32α₂α₃ + 29α₃²)</div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Partial derivatives:</b></div>
+        <div class="board-line">• ∂W/∂α₂ = 2 − 13α₂ − 16α₃ = 0</div>
+        <div class="board-line">• ∂W/∂α₃ = 2 − 16α₂ − 29α₃ = 0</div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Solving the system gives:</b></div>
+        <div class="board-line">• α₂ = 26/121</div>
+        <div class="board-line">• α₃ = −6/121</div>
+        <div class="board-line">• α₁ = 20/121</div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Calculate w and b:</b></div>
+        <div class="board-line">w = Σ α_i y_i x_i = (2/11, 6/11)</div>
+        <div class="board-line">b = −½( min(w·x₂, w·x₃) + max(w·x₁) ) = −½(38/11 + 16/11) = −27/11</div>
+
+        <div class="board-result">
+          Hyperplane: (2/11)x₁ + (6/11)x₂ − 27/11 = 0<br>
+          ⇔  <b>x₁ + 3x₂ − 13.5 = 0</b>
+        </div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Check:</b></div>
+        <div class="board-line">• w·x₂ + b = 38/11 − 27/11 = 1 ✓</div>
+        <div class="board-line">• w·x₁ + b = 16/11 − 27/11 = −1 ✓</div>
+      </div>
       <div class="trap">Strictly, α₃ = −6/121 breaks α ≥ 0, so the true optimum has α₃ = 0 (x₃ is not a support vector). In the exam, follow your professor's steps above and mention this only if asked.</div>
     </div>
   </details>
@@ -1194,14 +1511,25 @@ f(x) = (2/11)x₁ + (6/11)x₂ − 27/11 = 0   ⇔   x₁ + 3x₂ − 13.5 = 0</
   <details>
     <summary>Predict with a given w and b: w = [2, 1], b = −3, support vectors +ve (1,2), (2,0), −ve (0,2), (1,0). <span class="tag">slide example</span></summary>
     <div>
-      <p>Centroids: x₊ = (1.5, 1), x₋ = (0.5, 1); their average (1, 1) lies on 2x₁ + x₂ − 3 = 0 (2 + 1 − 3 = 0 ✓). Classify a new point by the sign of f(x) = wᵀx + b.</p>
+      <div class="board">
+        <div class="board-line">• Centroid x₊ = (1.5, 1)</div>
+        <div class="board-line">• Centroid x₋ = (0.5, 1)</div>
+        <div class="board-line">• Midpoint average: (1, 1)</div>
+        <div class="board-line">Check: 2(1) + (1) − 3 = 0 ✓</div>
+        <div class="board-result">Classify a new point by the sign of f(x) = wᵀx + b.</div>
+      </div>
     </div>
   </details>
 
   <h3>Linearly inseparable data: soft margin (slack variables)</h3>
-  <div class="f">y_i(wᵀx_i + b) ≥ 1 − ξ_i,   ξ_i ≥ 0
-Minimise  ½‖w‖² + C Σ ξ_i
-ξ_i = 0: correct, on/outside margin    0 &lt; ξ_i ≤ 1: inside margin, still correct    ξ_i &gt; 1: misclassified</div>
+  <div class="board">
+    <div class="board-line">y_i(wᵀx_i + b) ≥ 1 − ξ_i,   ξ_i ≥ 0</div>
+    <div class="board-line">Minimise  ½‖w‖² + C Σ ξ_i</div>
+    <div class="board-text" style="margin-top: 6px;"><b>Meaning of slack ξ_i:</b></div>
+    <div class="board-line">• ξ_i = 0: correct, on/outside margin</div>
+    <div class="board-line">• 0 &lt; ξ_i ≤ 1: inside margin, still correct</div>
+    <div class="board-line">• ξ_i &gt; 1: misclassified</div>
+  </div>
 
   <div class="table-wrap">
     <table>
@@ -1219,14 +1547,29 @@ Minimise  ½‖w‖² + C Σ ξ_i
   <h3>Non-linear SVM and the kernel trick</h3>
   <p>Map inputs with Φ: Rⁿ → H (higher-dimensional space) where the data becomes linearly separable; a linear boundary in H is non-linear in input space. The dual only needs dot products, so use a <b>kernel</b> K(x_i, x_j) = Φ(x_i)·Φ(x_j) without computing Φ explicitly.</p>
 
-  <div class="f">Polynomial: K(x_i,x_j) = (x_i·x_j + c)^d
-Gaussian RBF: K(x_i,x_j) = exp(−γ‖x_i − x_j‖²)
-Sigmoid:   K(x_i,x_j) = tanh(κ(x_i·x_j) + θ)
-Decision function: f(x) = Σ_{i=1..Ns} α_i y_i K(x_i, x) + b
-Bias from a support vector x_k on the margin: b = y_k − Σ α_i y_i K(x_i, x_k)</div>
+  <div class="board">
+    <div class="board-header">📐 Kernel Formulas:</div>
+    <div class="board-line">• <b>Polynomial:</b>   K(x_i, x_j) = (x_i·x_j + c)^d</div>
+    <div class="board-line">• <b>Gaussian RBF:</b> K(x_i, x_j) = exp(−γ‖x_i − x_j‖²)</div>
+    <div class="board-line">• <b>Sigmoid:</b>      K(x_i, x_j) = tanh(κ(x_i·x_j) + θ)</div>
+    <div class="board-line" style="margin-top: 6px;"><b>Decision function:</b> f(x) = Σ_{i=1..Ns} α_i y_i K(x_i, x) + b</div>
+    <div class="board-line"><b>Bias from SV x_k:</b> b = y_k − Σ α_i y_i K(x_i, x_k)</div>
+  </div>
 
-  <div class="key">
-    <b>Slide example</b> (1-D: x = 1, 2, 6 → +1; 4, 5 → −1; kernel K(a,x) = (ax + 1)²): α = (0, 2.5, 0, 7.333, 4.833), support vectors x = 2, 4, 5. b = 1 − [2.5(25) − 7.333(121) + 4.833(169)] = 8. f(x) = 0.6667x² − 5.333x + 8. Predict: f &gt; 0 → class +1, f &lt; 0 → class −1, f = 0 → on the boundary.
+  <!-- Teacher Blackboard: 1-D kernel slide example -->
+  <div class="board">
+    <div class="board-header">👨‍🏫 Slide Example (1-D Kernel Step-by-Step):</div>
+    <div class="board-text"><b>Data:</b> x = 1, 2, 6 → +1;  x = 4, 5 → −1</div>
+    <div class="board-line">• Kernel: K(a, x) = (ax + 1)²</div>
+    <div class="board-line">• α = (0, 2.5, 0, 7.333, 4.833)</div>
+    <div class="board-line">• Support vectors: x = 2, 4, 5</div>
+    <div class="board-line">• b = 1 − [2.5(25) − 7.333(121) + 4.833(169)] = 8</div>
+    <div class="board-line">• <b>f(x) = 0.6667x² − 5.333x + 8</b></div>
+    <div class="board-result">
+      <div>• f &gt; 0 ➔ class +1</div>
+      <div>• f &lt; 0 ➔ class −1</div>
+      <div>• f = 0 ➔ on the boundary</div>
+    </div>
   </div>
 
   <details>
@@ -1257,9 +1600,12 @@ Bias from a support vector x_k on the margin: b = y_k − Σ α_i y_i K(x_i, x_k
     <div>(5) majority vote gives y<sub>test</sub></div>
   </div>
 
-  <div class="f">Euclidean (L2):  d(x,y) = √( Σ (x_i − y_i)² )
-Manhattan (L1):  d(x,y) = Σ |x_i − y_i|
-Minkowski:       d(x,y) = ( Σ |x_i − y_i|^p )^(1/p)     p = 1 Manhattan, p = 2 Euclidean</div>
+  <div class="board">
+    <div class="board-header">📐 Distance Metrics:</div>
+    <div class="board-line"><b>Euclidean (L2):</b> d(x,y) = √( Σ (x_i − y_i)² )</div>
+    <div class="board-line"><b>Manhattan (L1):</b> d(x,y) = Σ |x_i − y_i|</div>
+    <div class="board-line"><b>Minkowski:</b>      d(x,y) = ( Σ |x_i − y_i|^p )^(1/p)     p = 1 Manhattan, p = 2 Euclidean</div>
+  </div>
 
   <div class="grid-3">
     <div class="def-item"><div class="def-term">Training:</div><p class="def-text">just store data (very fast).</p></div>
@@ -1292,16 +1638,36 @@ Minkowski:       d(x,y) = ( Σ |x_i − y_i|^p )^(1/p)     p = 1 Manhattan, p = 
   <details open>
     <summary>Slide example: predict the loan for income = 39.5 using 1-NN and 3-NN. Data (income → loan): 30 N, 32 N, 35 Y, 35 N, 40 Y, 42 N, 43 Y, 44 Y, 50 Y <span class="tag">slide example</span></summary>
     <div>
-      <p><b>1-NN:</b> closest point is 40 (distance 0.5), loan = Yes → predict <b>Yes</b>.</p>
-      <p><b>3-NN:</b> nearest are 40 (Y), 42 (N), 43 (Y) → 2 Yes vs 1 No → predict <b>Yes</b>.</p>
+      <div class="board">
+        <div class="board-header">👨‍🏫 Step-by-Step Distance Calculation to 39.5:</div>
+        <div class="board-line">• |40 − 39.5| = 0.5 ➔ loan = Y</div>
+        <div class="board-line">• |42 − 39.5| = 2.5 ➔ loan = N</div>
+        <div class="board-line">• |43 − 39.5| = 3.5 ➔ loan = Y</div>
+        <div class="board-line">• |35 − 39.5| = 4.5 ➔ loan = Y, N</div>
+        <div class="board-result">
+          <div>• <b>1-NN:</b> closest point is 40 (distance 0.5), loan = Yes ➔ predict <b>Yes</b>.</div>
+          <div>• <b>3-NN:</b> nearest are 40 (Y), 42 (N), 43 (Y) ➔ 2 Yes vs 1 No ➔ predict <b>Yes</b>.</div>
+        </div>
+      </div>
     </div>
   </details>
 
   <details>
     <summary>k-NN for the Weather table (Sunny, Hot, Normal, Weak) with k = 1. Justify k. <span class="tag">2.5 marks</span></summary>
     <div>
-      <p>For categorical attributes use the <b>overlap (Hamming) distance</b> = number of mismatching attributes. Distances to the 8 rows: 1 (Sunny,Hot,High,Weak: No) → 1; 2 (No) → 2; 3 (Yes) → 2; 4 (Yes) → 3; 5 (Yes) → 2; 6 (No) → 3; 7 (Yes) → 3; 8 (No) → 2.</p>
-      <p><b>k = 1</b> picks row 1 → <b>Play = No</b>.</p>
+      <p>For categorical attributes use the <b>overlap (Hamming) distance</b> = number of mismatching attributes.</p>
+      <div class="board">
+        <div class="board-header">Distances to the 8 rows:</div>
+        <div class="board-line">• Row 1 (Sunny, Hot, High, Weak: No) ➔ Distance = <b>1</b> (only Humidity mismatches)</div>
+        <div class="board-line">• Row 2 (No) ➔ Distance = 2</div>
+        <div class="board-line">• Row 3 (Yes) ➔ Distance = 2</div>
+        <div class="board-line">• Row 4 (Yes) ➔ Distance = 3</div>
+        <div class="board-line">• Row 5 (Yes) ➔ Distance = 2</div>
+        <div class="board-line">• Row 6 (No) ➔ Distance = 3</div>
+        <div class="board-line">• Row 7 (Yes) ➔ Distance = 3</div>
+        <div class="board-line">• Row 8 (No) ➔ Distance = 2</div>
+        <div class="board-result">➔ <b>k = 1</b> picks row 1 ➔ <b>Play = No</b>.</div>
+      </div>
       <p>With k = 3 four rows tie at distance 2 (No, Yes, Yes, No), so the vote is ambiguous. Justify k by the rule √8 ≈ 3 or by cross-validation, choosing an odd k that avoids ties.</p>
     </div>
   </details>
@@ -1320,37 +1686,74 @@ Minkowski:       d(x,y) = ( Σ |x_i − y_i|^p )^(1/p)     p = 1 Manhattan, p = 
 
   <p>A <b>probabilistic</b> classifier based on Bayes' theorem. It assumes features are <b>conditionally independent</b> given the class. It is an <b>eager learner</b>: it builds a model of priors and conditional probabilities.</p>
 
-  <div class="f">P(C|X) = P(X|C) P(C) / P(X)
-   posterior = likelihood × prior / evidence
-X = (x₁,…,x_n):  P(X|C) = P(x₁|C)·P(x₂|C)·…·P(x_n|C)
-Ĉ = argmax_C  P(C) Π_{i=1..n} P(x_i|C)          (P(X) is constant, so ignored)</div>
+  <div class="board">
+    <div class="board-header">📐 Bayes Theorem:</div>
+    <div class="board-line">P(C|X) = P(X|C) P(C) / P(X)</div>
+    <div class="board-line">posterior = likelihood × prior / evidence</div>
+    <div class="board-text" style="margin-top: 6px;">For X = (x₁,…,x_n):</div>
+    <div class="board-line">P(X|C) = P(x₁|C)·P(x₂|C)·…·P(x_n|C)</div>
+    <div class="board-result">Ĉ = argmax_C  P(C) Π_{i=1..n} P(x_i|C)          (P(X) is constant, so ignored)</div>
+  </div>
 
   <details open>
     <summary>Predict Stolen for X = (Red, SUV, Domestic) from the 10-row vehicle table (5 Yes, 5 No). <span class="tag">slide example</span></summary>
     <div>
-      <p>Step 1, priors: P(Yes) = 5/10 = 0.5, P(No) = 0.5.<br>
-      Step 2, conditionals: Yes: P(Red|Yes) = 3/5 = 0.6, P(SUV|Yes) = 1/5 = 0.2, P(Domestic|Yes) = 2/5 = 0.4. No: P(Red|No) = 2/5 = 0.4, P(SUV|No) = 2/5 = 0.4, P(Domestic|No) = 3/5 = 0.6.</p>
-      <div class="f">P(Yes|X) ∝ 0.5 × 0.6 × 0.2 × 0.4 = 0.024
-P(No|X)  ∝ 0.5 × 0.4 × 0.4 × 0.6 = 0.048   → predicted class: Not stolen</div>
+      <div class="board">
+        <div class="board-header">👨‍🏫 Step-by-Step Teacher Working on the Board:</div>
+        <div class="board-text"><b>Step 1, Priors:</b></div>
+        <div class="board-line">• P(Yes) = 5/10 = 0.5</div>
+        <div class="board-line">• P(No) = 5/10 = 0.5</div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Step 2, Conditionals for Yes:</b></div>
+        <div class="board-line">• P(Red|Yes) = 3/5 = 0.6</div>
+        <div class="board-line">• P(SUV|Yes) = 1/5 = 0.2</div>
+        <div class="board-line">• P(Domestic|Yes) = 2/5 = 0.4</div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Step 2, Conditionals for No:</b></div>
+        <div class="board-line">• P(Red|No) = 2/5 = 0.4</div>
+        <div class="board-line">• P(SUV|No) = 2/5 = 0.4</div>
+        <div class="board-line">• P(Domestic|No) = 3/5 = 0.6</div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Step 3, Compare Posteriors:</b></div>
+        <div class="board-line">P(Yes|X) ∝ 0.5 × 0.6 × 0.2 × 0.4 = <b>0.024</b></div>
+        <div class="board-line">P(No|X)  ∝ 0.5 × 0.4 × 0.4 × 0.6 = <b>0.048</b></div>
+        <div class="board-result">➔ Predicted class: <b>Not stolen</b> (since 0.048 &gt; 0.024)</div>
+      </div>
     </div>
   </details>
 
   <h3>Zero-probability problem and Laplace smoothing</h3>
-  <p>If a value never occurs with a class, e.g. P(Red|No) = 0, then P(X|No) = 0 wipes out the whole product. It only means the combination was <b>not observed</b>, not that it is impossible. <b>Laplace smoothing:</b> add 1 to each count.</p>
+  <p>If a value never occurs with a class, e.g. P(Red|No) = 0, then P(X|No) = 0 wipes out the whole product. It only means the combination was <b>not observed</b>, not that it is impossible.</p>
+  <p><b>Laplace smoothing:</b> add 1 to each count.</p>
 
-  <div class="f">P(x_i|C) = (n_{x_i,C} + 1) / (N_C + k)       k = number of distinct values of that attribute</div>
+  <div class="board">
+    <div class="board-line">P(x_i|C) = (n_{x_i,C} + 1) / (N_C + k)</div>
+    <div class="board-text" style="margin-top: 4px;">k = number of distinct values of that attribute</div>
+  </div>
 
   <details>
     <summary>Problem 2 (7 rows): X = (Red, Sports, Imported). Solve, show the zero-frequency problem and fix it with Laplace smoothing. <span class="tag">2.5+2.5 marks</span></summary>
     <div>
-      <p>Data: Yes rows = (Red,Sports,Dom), (Red,Sports,Dom), (Red,SUV,Dom), (Yellow,Sports,Imp); No rows = (Yellow,Sports,Dom), (Yellow,SUV,Imp), (Yellow,SUV,Imp). P(Yes) = 4/7, P(No) = 3/7.</p>
-      <div class="f">Yes: 4/7 × (3/4)(3/4)(1/4) = 4/7 × 0.1406 = 0.0804
-No : 3/7 × (0/3)(1/3)(2/3) = 0        ← P(Red|No) = 0</div>
-      <p>Here the answer is still Yes, but the zero kills the No class completely, so any other evidence is ignored.</p>
-      <p><b>Laplace (each attribute has k = 2 distinct values here):</b><br>
-      P(Red|No) = (0+1)/(3+2) = 1/5, P(Sports|No) = (1+1)/5 = 2/5, P(Imported|No) = (2+1)/5 = 3/5, giving No: 3/7 × 1/5 × 2/5 × 3/5 = 0.0206.<br>
-      Yes (smoothed): 4/7 × (4/6)(4/6)(2/6) = 0.0847.<br>
-      Yes &gt; No, so <b>predict Yes</b>, and the No class is no longer zero.</p>
+      <div class="board">
+        <div class="board-header">👨‍🏫 Step-by-Step Teacher Working on the Board:</div>
+        <div class="board-text"><b>Data:</b></div>
+        <div class="board-line">• Yes rows: (Red,Sports,Dom), (Red,Sports,Dom), (Red,SUV,Dom), (Yellow,Sports,Imp)</div>
+        <div class="board-line">• No rows: (Yellow,Sports,Dom), (Yellow,SUV,Imp), (Yellow,SUV,Imp)</div>
+        <div class="board-line">• P(Yes) = 4/7,  P(No) = 3/7</div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>Without Laplace:</b></div>
+        <div class="board-line">Yes: 4/7 × (3/4)(3/4)(1/4) = 4/7 × 0.1406 = <b>0.0804</b></div>
+        <div class="board-line">No : 3/7 × (0/3)(1/3)(2/3) = <b>0</b>        ← P(Red|No) = 0</div>
+        <div class="board-text" style="color: var(--warn); margin-top: 4px;">Here the answer is still Yes, but the zero kills the No class completely, so any other evidence is ignored.</div>
+
+        <div class="board-text" style="margin-top: 10px;"><b>With Laplace (k = 2 distinct values per attribute):</b></div>
+        <div class="board-line">• P(Red|No) = (0+1)/(3+2) = 1/5</div>
+        <div class="board-line">• P(Sports|No) = (1+1)/(3+2) = 2/5</div>
+        <div class="board-line">• P(Imported|No) = (2+1)/(3+2) = 3/5</div>
+        <div class="board-line" style="margin-top: 6px;">No (smoothed)  = 3/7 × 1/5 × 2/5 × 3/5 = <b>0.0206</b></div>
+        <div class="board-line">Yes (smoothed) = 4/7 × (4/6)(4/6)(2/6) = <b>0.0847</b></div>
+        <div class="board-result">➔ Yes &gt; No, so <b>predict Yes</b>, and the No class is no longer zero.</div>
+      </div>
     </div>
   </details>
 
