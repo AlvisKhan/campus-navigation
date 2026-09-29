@@ -1,255 +1,2223 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>CS431 Machine Learning: Midsem Study Guide</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Serif+4:wght@400;600&display=swap">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CS431 Machine Learning: Midsem Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f6fb;--fg:#1a1d2e;--card:#fff;--ink:#3a3fd6;--soft:#e6e8fb;--ok:#0f8a5f;--warn:#c2410c;--line:#d5d9ea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#12141f;--fg:#e8eaf6;--card:#1b1e2e;--ink:#8f94ff;--soft:#262a45;--ok:#4fd1a1;--warn:#fb923c;--line:#33375a}}
-:root[data-theme=dark]{--bg:#12141f;--fg:#e8eaf6;--card:#1b1e2e;--ink:#8f94ff;--soft:#262a45;--ok:#4fd1a1;--warn:#fb923c;--line:#33375a}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
-body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 'Source Serif 4',Georgia,serif}
-h1,h2,h3{font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.15}
-header{padding:56px 20px 36px;max-width:820px;margin:auto}
-h1{font-size:clamp(34px,7vw,60px);font-weight:800;margin:0 0 12px;letter-spacing:-.02em}
-header p{max-width:60ch;margin:0}
-nav{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);border-bottom:1px solid var(--line);z-index:5;display:flex;gap:8px;overflow-x:auto;padding:10px 16px}
-nav a{white-space:nowrap;text-decoration:none;color:var(--fg);background:var(--soft);padding:6px 14px;border-radius:99px;font:600 14px 'Bricolage Grotesque',sans-serif}
-main{max-width:820px;margin:auto;padding:0 20px 80px}
-section{margin-top:56px}h2{font-size:32px;margin:0 0 6px}h3{font-size:20px;margin:26px 0 8px;color:var(--ink)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:14px 0;overflow-x:auto}
-.key{border-left:5px solid var(--ink);background:var(--soft);padding:12px 18px;border-radius:0 10px 10px 0;margin:14px 0}
-.trap{border-left:5px solid var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--card));padding:12px 18px;border-radius:0 10px 10px 0;margin:14px 0}
-.f{font:15px/1.7 ui-monospace,Menlo,monospace;background:var(--soft);padding:10px 14px;border-radius:8px;margin:10px 0;overflow-x:auto;white-space:pre}
-table{border-collapse:collapse;width:100%;font-size:15px}th,td{border:1px solid var(--line);padding:6px 10px;text-align:left}th{background:var(--soft)}
-details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:12px 0;padding:0 18px}
-summary{cursor:pointer;padding:12px 0;font-weight:600;list-style:none}summary::before{content:"Q ";color:var(--ink);font-family:'Bricolage Grotesque',sans-serif;font-weight:800}
-details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}details>div{padding-bottom:12px}
-.tag{font:600 12px 'Bricolage Grotesque',sans-serif;background:var(--ink);color:var(--bg);border-radius:6px;padding:2px 8px;margin-left:6px}
-svg{max-width:100%;height:auto}svg text{fill:var(--fg);font:13px sans-serif}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-#tt{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:9;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--fg);font-size:17px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-</style></head><body>
-<header><h1>CS431 Machine Learning<br>Midsem, from your slides</h1><p>Rebuilt from your professor's slides, using his notation: Info(D), Info<sub>A</sub>(D), Gain(A), SplitInfo, Gini<sub>split</sub>, Ĉ = argmax. It runs from Data through Preprocessing, Decision Trees, SVM, k-NN and Naive Bayes. Each "Q" opens an exam-style answer from past papers.</p></header>
-<nav><a href="#s1">Intro</a><a href="#s2">Data</a><a href="#s3">Outliers</a><a href="#s4">Missing data</a><a href="#s5">Noise &amp; binning</a><a href="#s6">Normalization</a><a href="#s7">Decision trees</a><a href="#s8">SVM</a><a href="#s9">k-NN</a><a href="#s10">Naive Bayes</a><a href="#s11">Cheat sheet</a></nav>
-<main>
-<section id="s1"><h2>1. Introduction</h2>
-<div class="key"><b>Tom Mitchell:</b> a program learns from experience <b>E</b> with respect to tasks <b>T</b> and performance measure <b>P</b> if its performance at T, measured by P, improves with E. Finding that logic is "machine learning".</div>
-<p><b>Why ML?</b> Use it when no algorithm is readily available (spam detection), no human experts exist, experts cannot explain their expertise (speech recognition), the environment changes (share market), or personalisation is needed. Sorting numbers needs no ML.</p>
-<p><b>Conventional programming:</b> Data + Program → Output. <b>ML:</b> Data + Output → Program.</p>
-<div class="card"><table><tr><th>Family</th><th>Types</th></tr><tr><td>Supervised</td><td>Classification (categorical label), Regression (continuous value)</td></tr><tr><td>Unsupervised</td><td>Clustering, Association</td></tr><tr><td>Reinforcement</td><td>Q-Learning</td></tr></table></div>
-<p><b>Classification is a two-step process:</b> (1) <b>model construction</b> on a training set with known class labels, (2) <b>model usage</b>: estimate accuracy on an independent test set, then classify new data. The test set must be independent of training, otherwise you get overfitting.</p>
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --card-sub: #f1f5f9;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --accent: #4f46e5;
+  --accent-soft: #eef2ff;
+  --accent-border: #c7d2fe;
+  --ok: #059669;
+  --ok-soft: #ecfdf5;
+  --ok-border: #a7f3d0;
+  --warn: #d97706;
+  --warn-soft: #fffbeb;
+  --warn-border: #fde68a;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+  --danger-border: #fecaca;
+  --border: #e2e8f0;
+  --line: #cbd5e1;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0f19;
+    --card: #131b2e;
+    --card-sub: #1a243b;
+    --fg: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #818cf8;
+    --accent-soft: rgba(99, 102, 241, 0.15);
+    --accent-border: rgba(99, 102, 241, 0.35);
+    --ok: #34d399;
+    --ok-soft: rgba(16, 185, 129, 0.15);
+    --ok-border: rgba(16, 185, 129, 0.35);
+    --warn: #fbbf24;
+    --warn-soft: rgba(245, 158, 11, 0.15);
+    --warn-border: rgba(245, 158, 11, 0.35);
+    --danger: #f87171;
+    --danger-soft: rgba(239, 68, 68, 0.15);
+    --danger-border: rgba(239, 68, 68, 0.35);
+    --border: #222f49;
+    --line: #334155;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.5);
+    --shadow-lg: 0 10px 20px rgba(0,0,0,0.6);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0b0f19;
+  --card: #131b2e;
+  --card-sub: #1a243b;
+  --fg: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #818cf8;
+  --accent-soft: rgba(99, 102, 241, 0.15);
+  --accent-border: rgba(99, 102, 241, 0.35);
+  --ok: #34d399;
+  --ok-soft: rgba(16, 185, 129, 0.15);
+  --ok-border: rgba(16, 185, 129, 0.35);
+  --warn: #fbbf24;
+  --warn-soft: rgba(245, 158, 11, 0.15);
+  --warn-border: rgba(245, 158, 11, 0.35);
+  --danger: #f87171;
+  --danger-soft: rgba(239, 68, 68, 0.15);
+  --danger-border: rgba(239, 68, 68, 0.35);
+  --border: #222f49;
+  --line: #334155;
+}
+
+* { box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 68px);
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  padding: 48px 24px 24px;
+  max-width: 920px;
+  margin: auto;
+}
+.badge-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
+}
+h1 {
+  font-size: clamp(30px, 5vw, 46px);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 12px;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, var(--fg) 40%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+header p {
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 68ch;
+  margin: 0 0 16px;
+}
+.header-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.header-chips span {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  background: rgba(var(--card), 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  z-index: 20;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 10px 18px;
+  scrollbar-width: thin;
+}
+nav a {
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--muted);
+  background: var(--card-sub);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+nav a:hover, nav a:focus-visible {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent-border);
+  outline: none;
+}
+
+main {
+  max-width: 920px;
+  margin: auto;
+  padding: 0 20px 90px;
+}
+
+section {
+  margin-top: 52px;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.sec-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+h2 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+}
+h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 28px 0 12px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+h3::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* Card & Containers */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin: 16px 0;
+  box-shadow: var(--shadow-sm);
+}
+.key-box {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-left: 5px solid var(--accent);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 16px 0;
+}
+.key-box strong { color: var(--accent); }
+.tip-box {
+  background: var(--ok-soft);
+  border: 1px solid var(--ok-border);
+  border-left: 5px solid var(--ok);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 16px 0;
+}
+.tip-box strong { color: var(--ok); }
+.trap {
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  border-left: 5px solid var(--danger);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 16px 0;
+}
+.trap strong { color: var(--danger); }
+.warn-box {
+  background: var(--warn-soft);
+  border: 1px solid var(--warn-border);
+  border-left: 5px solid var(--warn);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 16px 0;
+}
+.warn-box strong { color: var(--warn); }
+
+/* Definition Cards & Lists */
+.def-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+}
+.def-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.def-card:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-1px);
+}
+.def-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.def-term {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.def-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--card-sub);
+  color: var(--muted);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.def-body {
+  color: var(--fg);
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0;
+}
+.def-examples {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.def-examples-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-right: 4px;
+}
+
+/* Pills & Tags */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--card-sub);
+  color: var(--fg);
+  border: 1px solid var(--border);
+}
+.pill-accent { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border); }
+.pill-ok { background: var(--ok-soft); color: var(--ok); border-color: var(--ok-border); }
+.pill-warn { background: var(--warn-soft); color: var(--warn); border-color: var(--warn-border); }
+.pill-danger { background: var(--danger-soft); color: var(--danger); border-color: var(--danger-border); }
+
+/* Grid Layouts */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+/* Dimension Cards */
+.dim-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dim-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  padding: 2px 8px;
+  border-radius: 6px;
+  align-self: flex-start;
+}
+.dim-title {
+  font-weight: 700;
+  font-size: 15px;
+  margin: 0;
+}
+.dim-desc {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Step Flow Box */
+.step-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: var(--shadow-sm);
+}
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.step-content { flex: 1; }
+.step-title { font-weight: 700; font-size: 15px; margin: 0 0 4px; }
+.step-text { font-size: 14.5px; color: var(--fg); margin: 0; }
+
+/* Code & Formulas */
+.f {
+  font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  font-size: 13.5px;
+  line-height: 1.7;
+  background: var(--card-sub);
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin: 14px 0;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--fg);
+}
+
+/* Tables */
+.table-wrapper {
+  overflow-x: auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin: 16px 0;
+  box-shadow: var(--shadow-sm);
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14.5px;
+  text-align: left;
+}
+th, td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+th {
+  background: var(--card-sub);
+  color: var(--fg);
+  font-weight: 700;
+  border-bottom: 2px solid var(--border);
+  font-size: 13.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(var(--card-sub), 0.5); }
+
+/* Accordions / Q&A Details */
+details {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin: 12px 0;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+details:hover { border-color: var(--accent-border); }
+details[open] { border-color: var(--accent-border); }
+summary {
+  cursor: pointer;
+  padding: 14px 18px;
+  font-weight: 700;
+  font-size: 15.5px;
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  user-select: none;
+}
+summary::-webkit-details-marker { display: none; }
+.q-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex: 1;
+}
+.q-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+details[open] summary {
+  background: var(--card-sub);
+  border-bottom: 1px solid var(--border);
+}
+details[open] .q-indicator {
+  background: var(--accent);
+  color: #fff;
+}
+.q-tag {
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+details > .q-body {
+  padding: 16px 18px;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* SVG Diagrams */
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 16px auto;
+}
+svg text {
+  fill: var(--fg);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 13px;
+}
+
+/* Floating Actions */
+#tt {
+  position: fixed;
+  right: 18px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+  z-index: 99;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--fg);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+#tt:hover {
+  transform: scale(1.08);
+  border-color: var(--accent);
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Search bar */
+.search-container {
+  margin: 16px 0 20px;
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  padding: 12px 18px 12px 42px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--fg);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  outline: none;
+}
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  font-size: 16px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge-top">NIT Silchar · CS431 Machine Learning</div>
+  <h1>Midsem Study Guide</h1>
+  <p>Engineered directly from lecture slides and exam papers. Notation: Info(D), Gain(A), SplitInfo, Gini, Ĉ = argmax. All definitions, examples, derivations, and questions structured in clean scannable components.</p>
+  <div class="header-chips">
+    <span>📐 Mitchell's E-T-P</span>
+    <span>📊 Preprocessing & Outliers</span>
+    <span>🌲 ID3, C4.5 & CART</span>
+    <span>⚡ SVM Primal & Dual</span>
+    <span>🎯 k-NN & Naive Bayes</span>
+  </div>
+  
+  <div class="search-container">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="guide-search" class="search-input" placeholder="Search topics, formulas, or questions (e.g. Gini, SVM, Laplace, Outliers, Pima)...">
+  </div>
+</header>
+
+<nav>
+  <a href="#s1">1. Intro</a>
+  <a href="#s2">2. Data Types</a>
+  <a href="#s3">3. Outliers</a>
+  <a href="#s4">4. Missing Data</a>
+  <a href="#s5">5. Smoothing</a>
+  <a href="#s6">6. Normalization</a>
+  <a href="#s7">7. Decision Trees</a>
+  <a href="#s8">8. SVM</a>
+  <a href="#s9">9. k-NN</a>
+  <a href="#s10">10. Naive Bayes</a>
+  <a href="#s11">11. Cheat Sheet</a>
+</nav>
+
+<main id="main-content">
+
+<!-- ==================== SECTION 1 ==================== -->
+<section id="s1">
+  <div class="section-title">
+    <span class="sec-num">1</span>
+    <h2>Introduction to Machine Learning</h2>
+  </div>
+
+  <div class="key-box">
+    <strong>Tom Mitchell's Formal Definition of Learning:</strong>
+    <p style="margin: 6px 0 10px;">A computer program is said to learn from experience <b>E</b> with respect to some class of tasks <b>T</b> and performance measure <b>P</b>, if its performance at tasks in <b>T</b>, as measured by <b>P</b>, improves with experience <b>E</b>.</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <span class="pill pill-accent"><b>E</b> = Experience (historical data, past games)</span>
+      <span class="pill pill-accent"><b>T</b> = Task (playing checkers, spam detection)</span>
+      <span class="pill pill-accent"><b>P</b> = Performance (% games won, classification accuracy)</span>
+    </div>
+  </div>
+
+  <h3>Why Machine Learning?</h3>
+  <div class="grid-2">
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">1. No Readily Available Algorithm</span>
+        <span class="def-badge">Infeasible Logic</span>
+      </div>
+      <p class="def-body">Problems where rules cannot be specified easily in code.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">Spam detection</span>
+        <span class="pill">Face recognition</span>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">2. Inexplicable Human Expertise</span>
+        <span class="def-badge">Tacit Knowledge</span>
+      </div>
+      <p class="def-body">Humans excel at the task but cannot formulate the internal logic.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">Speech recognition</span>
+        <span class="pill">Medical diagnosis</span>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">3. Dynamic Environments</span>
+        <span class="def-badge">Non-Stationary</span>
+      </div>
+      <p class="def-body">The underlying environment or trends continuously evolve over time.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">Stock market forecasting</span>
+        <span class="pill">Fraud detection</span>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">4. Hyper-Personalization</span>
+        <span class="def-badge">User Adaptation</span>
+      </div>
+      <p class="def-body">Systems that require custom-tailored behavior for individual users.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">Content recommenders</span>
+        <span class="pill">Personalized feeds</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    <strong>When NOT to use ML:</strong> Standard deterministic problems with well-defined algorithmic logic (e.g., sorting numbers, searching binary trees) do not need machine learning.
+  </div>
+
+  <h3>Conventional Programming vs Machine Learning</h3>
+  <div class="grid-2">
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Conventional Programming</span></div>
+      <div class="f" style="margin: 6px 0;">[Data] + [Program]  ➔  [Output]</div>
+      <p class="def-body">Human software engineer writes deterministic rules (program) to transform input data into results.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Machine Learning</span></div>
+      <div class="f" style="margin: 6px 0;">[Data] + [Output]   ➔  [Program]</div>
+      <p class="def-body">Machine learning algorithm extracts patterns and discovers the program from observed data and answers.</p>
+    </div>
+  </div>
+
+  <h3>The Three Learning Paradigms</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Family</th>
+          <th>Sub-Types</th>
+          <th>Typical Tasks / Algorithms</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill pill-accent">Supervised</span></td>
+          <td><b>Classification</b> (categorical label)<br><b>Regression</b> (continuous quantity)</td>
+          <td>Decision Trees, SVM, k-NN, Naive Bayes, Linear/Logistic Regression</td>
+        </tr>
+        <tr>
+          <td><span class="pill pill-ok">Unsupervised</span></td>
+          <td><b>Clustering</b> (grouping similar points)<br><b>Association</b> (market basket analysis)</td>
+          <td>k-Means, Hierarchical Clustering, Apriori, PCA</td>
+        </tr>
+        <tr>
+          <td><span class="pill pill-warn">Reinforcement</span></td>
+          <td><b>Reward-based Learning</b> (agent &amp; environment)</td>
+          <td>Q-Learning, Policy Gradients, Deep Q-Networks</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Classification: A Two-Step Process</h3>
+  <div class="step-flow">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Model Construction (Training Phase)</div>
+        <p class="step-text">Build the classifier using a training set where class labels are known. The learning algorithm extracts patterns mapping attributes to target classes.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Model Usage (Testing &amp; Inference Phase)</div>
+        <p class="step-text">Estimate the model's accuracy on an <b>independent test set</b> where labels are held out. If accuracy is acceptable, deploy the model to classify previously unseen real-world instances.</p>
+      </div>
+    </div>
+  </div>
+  <div class="trap">
+    <strong>Overfitting Warning:</strong> The test set must remain completely independent of the training set. Evaluating accuracy on the training data provides a dangerously over-optimistic estimate.
+  </div>
 </section>
 
-<section id="s2"><h2>2. Data and attribute types</h2>
-<p><b>Dataset</b> = collection of data with a defined structure. <b>Datapoint</b> = one instance. <b>Attribute</b> = property. <b>Label (class)</b> = the special attribute to predict. <b>Meta-data</b> = data about the data: number of instances and attributes, attribute names, types, missing counts, the class label.</p>
-<p><b>Structured</b> (tables, Excel) · <b>Unstructured</b> (audio, video, text, images) · <b>Semi-structured</b> (XML). Dimensions: scalar 0-D, vector/audio/sensor 1-D, matrix/greyscale image 2-D, tensor/RGB image 3-D.</p>
-<svg viewBox="0 0 700 170" role="img" aria-label="Data types tree"><g stroke="var(--ink)" stroke-width="2" fill="none"><path d="M350 28V44H170V58M350 44H540V58M170 88V100H60V114M170 100H170V114M170 100H280V114M540 88V100H470V114M540 100H620V114M470 144V150M620 144V150"/></g><g fill="var(--soft)" stroke="var(--ink)"><rect x="300" y="4" width="100" height="24" rx="8"/><rect x="100" y="58" width="140" height="30" rx="8"/><rect x="470" y="58" width="140" height="30" rx="8"/></g><g text-anchor="middle"><text x="350" y="21">Data types</text><text x="170" y="78">Qualitative</text><text x="540" y="78">Quantitative</text><text x="60" y="132">Nominal</text><text x="170" y="132">Ordinal</text><text x="280" y="132">Binary</text><text x="470" y="132">Discrete</text><text x="620" y="132">Continuous</text><text x="620" y="166">(interval, ratio)</text></g></svg>
-<div class="card"><table><tr><th>Type</th><th>Meaning (your slides)</th><th>Example</th></tr>
-<tr><td>Nominal</td><td>Labels only, no order</td><td>Eye colour, gender</td></tr>
-<tr><td>Ordinal</td><td>Natural order, uneven gaps</td><td>Likert scale; high school &lt; bachelor's &lt; master's</td></tr>
-<tr><td>Binary</td><td>Nominal with 2 states. Symmetric: both equally important (gender). Asymmetric: not equal (HIV test result)</td><td>Yes/No</td></tr>
-<tr><td>Discrete</td><td>Finite/countable values, cannot be subdivided</td><td>Students in a class, days in a week</td></tr>
-<tr><td>Interval-scaled</td><td>Equal-size units, order, can be negative/0, no inherent zero</td><td>Temperature of each day</td></tr>
-<tr><td>Ratio-scaled</td><td>Has inherent zero-point</td><td>Years of experience</td></tr></table></div>
-<details><summary>Differentiate interval-scaled and ratio-scaled attributes with an example. <span class="tag">1 mark</span></summary><div><b>Interval-scaled:</b> measured on equal-size units; values have order and can be positive, zero or negative, and differences are meaningful, but there is no inherent zero (e.g. temperature of each day in °C). <b>Ratio-scaled:</b> a numeric attribute with an <b>inherent zero-point</b>, so ratios are meaningful (e.g. years of experience: 10 years is twice 5 years).</div></details>
-<details><summary>Is Age continuous or discrete? Data: 5, 10, 11, 13, 15, 35, 50, 55, 72, 89, 204, 215, 276 <span class="tag">2 marks</span></summary><div>Age is <b>continuous</b> (ratio-scaled): it is measured, and can take an infinite number of values within a range (25.5 years, 25.53 years). It is treated as discrete only when recorded in whole years. The data set is spread over a wide range, and 204, 215 and 276 are impossible ages, so they are <b>outliers</b> (noise). Age can also be discretized into intervals (young / middle / old) when an algorithm needs categories.</div></details>
-<details><summary>Classify: Patient Name, Patient ID, Weight (kg), Blood Group, Pain level (1-10), MRI Scan, X-Ray, Admitted (Yes/No). Identify the class label. <span class="tag">2 marks</span></summary><div><table><tr><th>Attribute</th><th>Type</th></tr><tr><td>Patient Name, Patient ID</td><td>Nominal, structured</td></tr><tr><td>Weight in kg</td><td>Continuous (ratio-scaled), structured</td></tr><tr><td>Blood Group</td><td>Nominal, structured</td></tr><tr><td>Pain level 1-10</td><td>Ordinal (discrete), structured</td></tr><tr><td>MRI Scan, X-Ray</td><td>Unstructured (images)</td></tr><tr><td>Admitted</td><td>Binary nominal, structured: <b>the class label</b></td></tr></table></div></details>
+<!-- ==================== SECTION 2 ==================== -->
+<section id="s2">
+  <div class="section-title">
+    <span class="sec-num">2</span>
+    <h2>Data &amp; Attribute Types</h2>
+  </div>
+
+  <h3>Fundamental Terminology</h3>
+  <div class="def-stack">
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Dataset</span>
+        <span class="def-badge">Collection</span>
+      </div>
+      <p class="def-body">Collection of data items organized with a defined structure.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">Student grade database</span>
+        <span class="pill">Pima Indian Diabetes dataset</span>
+        <span class="pill">Weather observation table</span>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Datapoint (Instance / Record / Tuple)</span>
+        <span class="def-badge">Single Unit</span>
+      </div>
+      <p class="def-body">One individual instance or single observation in the dataset.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">One patient record</span>
+        <span class="pill">One student profile</span>
+        <span class="pill">One sensor reading</span>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Attribute (Feature / Property)</span>
+        <span class="def-badge">Property</span>
+      </div>
+      <p class="def-body">A measurable property or characteristic describing each datapoint.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">Age</span>
+        <span class="pill">Blood Pressure</span>
+        <span class="pill">Temperature</span>
+        <span class="pill">Income</span>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Label (Class)</span>
+        <span class="def-badge">Target Attribute</span>
+      </div>
+      <p class="def-body">The special target attribute that the model is trained to predict.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill pill-accent">Outcome (0 or 1)</span>
+        <span class="pill pill-accent">Play (Yes or No)</span>
+        <span class="pill pill-accent">Vehicle Stolen (Yes or No)</span>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Meta-data</span>
+        <span class="def-badge">Data About Data</span>
+      </div>
+      <p class="def-body">High-level descriptive information summarizing the properties and structure of the dataset:</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Components</span>
+        <span class="pill">Number of instances (N)</span>
+        <span class="pill">Number of attributes</span>
+        <span class="pill">Attribute names</span>
+        <span class="pill">Attribute data types</span>
+        <span class="pill">Missing values counts</span>
+        <span class="pill">Target class label</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Data Organization &amp; Formats</h3>
+  <div class="grid-3">
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Structured Data</span>
+        <span class="def-badge">Tabular</span>
+      </div>
+      <p class="def-body">Conforms to a rigid tabular schema with well-defined rows and columns.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">SQL Tables</span>
+        <span class="pill">Excel spreadsheets</span>
+        <span class="pill">CSV files</span>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Semi-Structured Data</span>
+        <span class="def-badge">Tagged</span>
+      </div>
+      <p class="def-body">Does not conform to rigid tables, but contains internal markers and tags separating elements.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">XML documents</span>
+        <span class="pill">JSON records</span>
+        <span class="pill">HTML pages</span>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Unstructured Data</span>
+        <span class="def-badge">Raw Data</span>
+      </div>
+      <p class="def-body">Raw digital data lacking any formal data model or relational schema.</p>
+      <div class="def-examples">
+        <span class="def-examples-label">Examples</span>
+        <span class="pill">Audio recordings</span>
+        <span class="pill">Video streams</span>
+        <span class="pill">Raw text</span>
+        <span class="pill">Images &amp; Scans</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Data Dimensions</h3>
+  <div class="grid-4">
+    <div class="dim-card">
+      <span class="dim-badge">0-D (Scalar)</span>
+      <h4 class="dim-title">Single Value</h4>
+      <p class="dim-desc">Zero-dimensional numeric quantities.</p>
+      <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+        <span class="pill">Temperature = 25.4</span>
+        <span class="pill">Student Age = 21</span>
+      </div>
+    </div>
+
+    <div class="dim-card">
+      <span class="dim-badge">1-D (Vector)</span>
+      <h4 class="dim-title">Sequence Array</h4>
+      <p class="dim-desc">Ordered 1-dimensional series of observations.</p>
+      <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+        <span class="pill">Audio waveform</span>
+        <span class="pill">Sensor time series</span>
+      </div>
+    </div>
+
+    <div class="dim-card">
+      <span class="dim-badge">2-D (Matrix)</span>
+      <h4 class="dim-title">2D Grid / Table</h4>
+      <p class="dim-desc">Row-by-column tabular data or single-channel visuals.</p>
+      <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+        <span class="pill">Greyscale image (H×W)</span>
+        <span class="pill">Spreadsheet matrix</span>
+      </div>
+    </div>
+
+    <div class="dim-card">
+      <span class="dim-badge">3-D (Tensor)</span>
+      <h4 class="dim-title">Multi-Channel</h4>
+      <p class="dim-desc">Multi-dimensional volumetric or multi-channel data.</p>
+      <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+        <span class="pill">RGB Image (H×W×3)</span>
+        <span class="pill">Video (Frames×H×W)</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Attribute Hierarchy Tree</h3>
+  <div class="card" style="padding: 10px;">
+    <svg viewBox="0 0 700 170" role="img" aria-label="Data types tree">
+      <g stroke="var(--accent)" stroke-width="2" fill="none">
+        <path d="M350 28V44H170V58M350 44H540V58M170 88V100H60V114M170 100H170V114M170 100H280V114M540 88V100H470V114M540 100H620V114M470 144V150M620 144V150"/>
+      </g>
+      <g fill="var(--card-sub)" stroke="var(--accent)">
+        <rect x="290" y="4" width="120" height="26" rx="8"/>
+        <rect x="100" y="58" width="140" height="30" rx="8"/>
+        <rect x="470" y="58" width="140" height="30" rx="8"/>
+      </g>
+      <g text-anchor="middle" font-weight="600">
+        <text x="350" y="21" fill="var(--fg)">Data Types</text>
+        <text x="170" y="78" fill="var(--fg)">Qualitative</text>
+        <text x="540" y="78" fill="var(--fg)">Quantitative</text>
+        <text x="60" y="132" fill="var(--muted)">Nominal</text>
+        <text x="170" y="132" fill="var(--muted)">Ordinal</text>
+        <text x="280" y="132" fill="var(--muted)">Binary</text>
+        <text x="470" y="132" fill="var(--muted)">Discrete</text>
+        <text x="620" y="132" fill="var(--muted)">Continuous</text>
+        <text x="620" y="164" font-size="12" fill="var(--muted)">(interval, ratio)</text>
+      </g>
+    </svg>
+  </div>
+
+  <h3>Measurement Scales</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Attribute Type</th><th>Definition (Slides)</th><th>Examples</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Nominal</b></td>
+          <td>Categorical labels or names with no inherent ordering or ranking.</td>
+          <td>Eye colour, gender, marital status, blood group</td>
+        </tr>
+        <tr>
+          <td><b>Ordinal</b></td>
+          <td>Categorical values having a natural meaningful order, but differences between them cannot be quantified.</td>
+          <td>Likert scale (Agree, Neutral, Disagree); Education (High School &lt; Bachelor's &lt; Master's)</td>
+        </tr>
+        <tr>
+          <td><b>Binary</b></td>
+          <td>Nominal attribute with exactly 2 states.<br>
+          • <b>Symmetric:</b> both outcomes equally important (e.g. Gender).<br>
+          • <b>Asymmetric:</b> one outcome is rare &amp; significantly more critical (e.g. HIV test result).</td>
+          <td>Yes / No, Positive / Negative</td>
+        </tr>
+        <tr>
+          <td><b>Discrete</b></td>
+          <td>Numeric attribute with finite or countably infinite integer values; cannot be subdivided into fractions.</td>
+          <td>Students in a classroom, number of defect items, days in a week</td>
+        </tr>
+        <tr>
+          <td><b>Interval-Scaled</b></td>
+          <td>Measured on equal-size units; values have order, can be negative, zero, or positive, differences are meaningful, but has <b>no inherent absolute zero</b>.</td>
+          <td>Temperature (°C or °F), Calendar dates</td>
+        </tr>
+        <tr>
+          <td><b>Ratio-Scaled</b></td>
+          <td>Numeric attribute with a <b>true, inherent absolute zero-point</b>. Both differences and ratios are mathematically meaningful (10 is twice 5).</td>
+          <td>Years of experience, salary, height, weight, age</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Differentiate interval-scaled and ratio-scaled attributes with an example.</span></div>
+      <span class="q-tag">1 mark</span>
+    </summary>
+    <div class="q-body">
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Interval-Scaled Attribute</div>
+            <p class="step-text">Measured on equal-size units where values have a clear order, and differences are meaningful. However, there is <b>no inherent zero-point</b> (0 does not represent complete absence).<br><b>Example:</b> Temperature in °C (0°C is simply the freezing point of water, not the absence of thermal energy; 20°C is not "twice as hot" as 10°C).</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Ratio-Scaled Attribute</div>
+            <p class="step-text">A numeric attribute with a <b>true, inherent absolute zero</b>. Both differences and ratios are mathematically meaningful.<br><b>Example:</b> Years of experience (0 years means zero experience; 10 years is precisely twice 5 years).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Is Age continuous or discrete? Data: 5, 10, 11, 13, 15, 35, 50, 55, 72, 89, 204, 215, 276</span></div>
+      <span class="q-tag">2 marks</span>
+    </summary>
+    <div class="q-body">
+      <p><b>1. Nature of Age:</b> Age is inherently a <b>continuous</b> (ratio-scaled) attribute because it is measured continuously across time and can take fractional values (e.g. 21.5 years). It is treated as discrete only when recorded in truncated whole years.</p>
+      <p><b>2. Analysis of the given dataset:</b></p>
+      <ul>
+        <li>The values <b>204, 215, and 276</b> are biologically impossible human ages, representing extreme <b>outliers (noise)</b> that must be removed or cleaned during preprocessing.</li>
+        <li>Age can also be discretized into qualitative ordinal intervals (e.g., <i>Young</i>: ≤20, <i>Middle-aged</i>: 21–60, <i>Senior</i>: >60) if required by algorithms like ID3.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Classify: Patient Name, Patient ID, Weight (kg), Blood Group, Pain level (1-10), MRI Scan, X-Ray, Admitted (Yes/No). Identify the class label.</span></div>
+      <span class="q-tag">2 marks</span>
+    </summary>
+    <div class="q-body">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Attribute</th><th>Data Type &amp; Classification</th><th>Structure</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Patient Name, Patient ID</td><td>Nominal (Identifier / Key)</td><td>Structured</td></tr>
+            <tr><td>Weight in kg</td><td>Continuous, Ratio-scaled</td><td>Structured</td></tr>
+            <tr><td>Blood Group</td><td>Nominal categorical</td><td>Structured</td></tr>
+            <tr><td>Pain level (1–10)</td><td>Ordinal (Discrete ranking)</td><td>Structured</td></tr>
+            <tr><td>MRI Scan, X-Ray</td><td>Image data</td><td>Unstructured</td></tr>
+            <tr><td><b>Admitted (Yes/No)</b></td><td><b>Binary Nominal — THE CLASS LABEL</b></td><td>Structured</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
 </section>
 
-<section id="s3"><h2>3. Data quality and outlier detection</h2>
-<p><b>Why preprocess?</b> Real-world data is noisy, incomplete and inconsistent. "No quality data, no quality results." <b>Quality dimensions:</b> accuracy, completeness, consistency, timeliness, believability, interpretability, accessibility. <b>Major tasks:</b> cleaning, integration, transformation, reduction, discretization.</p>
-<div class="key"><b>Outlier:</b> a data point that differs significantly from other observations; it lies far from the overall pattern. Typical problems: noise and outliers, missing values, duplicates (e.g. age 300, negative expense).</div>
-<h3>3.1 Box plot analysis</h3>
-<div class="f">IQR = Q3 − Q1
-Upper whisker = Q3 + 1.5 × IQR
-Lower whisker = Q1 − 1.5 × IQR       Outside the whiskers = potential outlier</div>
-<p>Box plot shows min, Q1, median (Q2), Q3, max; the box spans the middle 50% (IQR). <b>Slide example</b> (4.3, 4.5, 4.5, 4.5, 4.7, 4.7, 4.7, 8.5, 13.2): Q1 = 4.5, Q3 = 6.6, IQR = 2.1, UW = 9.75, LW = 1.35, so <b>13.2 is an outlier</b>.</p>
-<p><b>Why 1.5 × IQR?</b> For X ~ N(μ, σ²): z<sub>0.25</sub> = −0.6745, z<sub>0.75</sub> = +0.6745, so Q1 ≈ μ − 0.6745σ, Q3 ≈ μ + 0.6745σ, IQR ≈ 1.349σ. Then 1.5·IQR ≈ 2.02σ and UW ≈ 0.6745σ + 2.02σ = <b>2.68σ</b>. Points beyond ±2.68σ are outliers.</p>
-<h3>3.2 Z-score analysis</h3>
-<div class="f">Z_i = (x_i − μ)/σ         σ = √( Σ(x_i − μ)² / (n − 1) )</div>
-<p>Pick a threshold (±1, ±2 or ±3). Slide example: μ = 5.956, σ = 3.016; for 13.2, Z = (13.2 − 5.956)/3.016 = <b>2.40</b>. Outlier at ±2σ, but no outliers at ±3σ.</p>
-<details><summary>Draw the box plot for Blood Pressure and Skin Thickness (Pima table). Identify outliers, remove them, compare mean and σ before and after. <span class="tag">3 marks</span></summary><div>
-<b>Blood Pressure</b> sorted: 32, 40, 50, 64, 66, 66, 70, 72, 74, 296. Q1 = 50, Q2 = 66, Q3 = 72, IQR = 22, LW = 50 − 33 = 17, UW = 72 + 33 = 105. So <b>296 is an outlier</b> (also physically impossible).
-<svg viewBox="0 0 700 100" role="img" aria-label="Blood pressure box plot"><line x1="40" y1="55" x2="660" y2="55" stroke="var(--line)"/><g stroke="var(--ink)" stroke-width="2"><line x1="60" y1="40" x2="60" y2="70"/><line x1="60" y1="55" x2="100" y2="55"/><rect x="100" y="32" width="90" height="46" fill="var(--soft)"/><line x1="150" y1="32" x2="150" y2="78"/><line x1="190" y1="55" x2="200" y2="55"/><line x1="200" y1="42" x2="200" y2="68"/></g><circle cx="610" cy="55" r="6" fill="var(--warn)"/><g text-anchor="middle"><text x="60" y="94">32</text><text x="100" y="24">Q1=50</text><text x="150" y="24">Q2=66</text><text x="190" y="24">Q3=72</text><text x="200" y="94">74</text><text x="610" y="38" style="fill:var(--warn)">296</text></g></svg>
-<table><tr><th></th><th>Mean</th><th>σ (n−1)</th></tr><tr><td>Before (n = 10)</td><td>83.0</td><td>76.2</td></tr><tr><td>After (n = 9)</td><td>59.3</td><td>15.0</td></tr></table>
-<b>Skin Thickness</b> sorted: 22, 23, 24, 29, 30, 32, 33, 35, 35, 45. Q1 = 24, Q3 = 35, IQR = 11, LW = 7.5, UW = 51.5. <b>No outliers.</b> The outlier pulled the mean up by about 24 and inflated σ five-fold.</div></details>
-<details><summary>Derive the upper and lower whiskers if the z-values of Q1 and Q3 are −0.5543 and +0.5543, so that anomalies lie beyond μ ± 2.9σ. <span class="tag">2 marks</span></summary><div>Q1 = μ − 0.5543σ, Q3 = μ + 0.5543σ, so IQR = 1.1086σ. Let UW = Q3 + k·IQR and set UW = μ + 2.9σ:<div class="f">μ + 0.5543σ + k(1.1086σ) = μ + 2.9σ
-k = (2.9 − 0.5543)/1.1086 ≈ 2.116
-UW = Q3 + 2.116·IQR       LW = Q1 − 2.116·IQR</div>(Same logic as the slides' 1.5 IQR ≈ 2.68σ.)</div></details>
-<details><summary>Is Insulin (0, 0, 0, 94, 168, 0, 88, 0, 543, 0) normally distributed? <span class="tag">2 marks</span></summary><div>No. Six of ten values are 0 (invalid, treat as missing), the median is 0 but the mean is about 89, and 543 creates a long right tail: the distribution is <b>right-skewed</b>, not bell-shaped. Handle by imputing the zeros and then re-plotting the histogram.</div></details>
+<!-- ==================== SECTION 3 ==================== -->
+<section id="s3">
+  <div class="section-title">
+    <span class="sec-num">3</span>
+    <h2>Data Quality &amp; Outlier Detection</h2>
+  </div>
+
+  <div class="key-box">
+    <strong>Why Preprocessing is Critical:</strong>
+    <p style="margin: 6px 0;">Real-world data is dirty: <i>noisy</i> (errors/outliers), <i>incomplete</i> (missing values), and <i>inconsistent</i> (duplicate codes or discrepancies). "No quality data, no quality results."</p>
+  </div>
+
+  <h3>Data Quality Dimensions</h3>
+  <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 12px 0;">
+    <span class="pill pill-accent">Accuracy</span>
+    <span class="pill pill-accent">Completeness</span>
+    <span class="pill pill-accent">Consistency</span>
+    <span class="pill pill-accent">Timeliness</span>
+    <span class="pill pill-accent">Believability</span>
+    <span class="pill pill-accent">Interpretability</span>
+    <span class="pill pill-accent">Accessibility</span>
+  </div>
+
+  <h3>Major Preprocessing Tasks</h3>
+  <div class="grid-3">
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">1. Data Cleaning</span></div>
+      <p class="def-body">Fill missing values, smooth noisy data, identify and remove outliers, resolve inconsistencies.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">2. Data Integration</span></div>
+      <p class="def-body">Combine multiple databases, files, or tables into a unified store.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">3. Data Transformation</span></div>
+      <p class="def-body">Normalization and aggregation to scale features into comparable intervals.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">4. Data Reduction</span></div>
+      <p class="def-body">Obtain reduced representation that produces identical analytical outcomes.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">5. Discretization</span></div>
+      <p class="def-body">Convert continuous numeric attributes into categorical interval bins.</p>
+    </div>
+  </div>
+
+  <h3>Outlier Detection Methods</h3>
+  <div class="card">
+    <h4 style="margin: 0 0 10px; color: var(--accent);">Method 1: Box Plot Analysis (Interquartile Range - IQR)</h4>
+    <div class="f">IQR = Q3 − Q1
+Upper Whisker (UW) = Q3 + 1.5 × IQR
+Lower Whisker (LW) = Q1 − 1.5 × IQR
+Outlier Criterion:  Value &lt; LW  or  Value &gt; UW</div>
+    <p style="font-size: 14.5px; margin: 8px 0;"><b>Normal Distribution Justification (Why 1.5 × IQR?):</b><br>
+    For a normal distribution $X \sim \mathcal{N}(\mu, \sigma^2)$, the quartiles correspond to $z_{0.25} = -0.6745$ and $z_{0.75} = +0.6745$.<br>
+    Hence, $\text{IQR} = 2 \times 0.6745\sigma \approx 1.349\sigma$.<br>
+    The upper cutoff is: $Q3 + 1.5 \times \text{IQR} \approx 0.6745\sigma + 1.5(1.349\sigma) \approx \mathbf{2.68\sigma}$. Observations beyond $\pm 2.68\sigma$ represent extreme tail outliers (only 0.7% of normal data).</p>
+  </div>
+
+  <div class="card">
+    <h4 style="margin: 0 0 10px; color: var(--accent);">Method 2: Z-Score Standard Score Method</h4>
+    <div class="f">Z_i = (x_i − μ) / σ          where  σ = √( Σ(x_i − μ)² / (n − 1) )
+Standard Cutoff:  |Z_i| &gt; 2  or  |Z_i| &gt; 3</div>
+    <p style="font-size: 14.5px; margin: 8px 0;"><b>Slide Example:</b> Given mean $\mu = 5.956$ and sample standard deviation $\sigma = 3.016$, testing value $x = 13.2$:
+    $$Z = \frac{13.2 - 5.956}{3.016} = \mathbf{2.40}$$
+    Since $2.40 > 2.0$, it is flagged as an outlier at the $\pm 2\sigma$ threshold (retained at $\pm 3\sigma$).</p>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Draw the box plot for Blood Pressure and Skin Thickness (Pima table). Identify outliers, remove them, compare mean and σ before and after.</span></div>
+      <span class="q-tag">3 marks</span>
+    </summary>
+    <div class="q-body">
+      <p><b>1. Blood Pressure Analysis:</b></p>
+      <p>Sorted observations: <code>32, 40, 50, 64, 66, 66, 70, 72, 74, 296</code> ($n=10$)</p>
+      <ul>
+        <li>$Q1 = 50$, $Q2 (\text{Median}) = 66$, $Q3 = 72$</li>
+        <li>$\text{IQR} = 72 - 50 = 22$</li>
+        <li>$\text{Lower Whisker} = 50 - 1.5(22) = 17$</li>
+        <li>$\text{Upper Whisker} = 72 + 1.5(22) = 105$</li>
+        <li><b>Outlier: 296</b> (since $296 > 105$; also physiologically impossible).</li>
+      </ul>
+
+      <svg viewBox="0 0 700 100" role="img" aria-label="Blood pressure box plot">
+        <line x1="40" y1="55" x2="660" y2="55" stroke="var(--border)"/>
+        <g stroke="var(--accent)" stroke-width="2">
+          <line x1="60" y1="40" x2="60" y2="70"/>
+          <line x1="60" y1="55" x2="100" y2="55"/>
+          <rect x="100" y="32" width="90" height="46" fill="var(--card-sub)"/>
+          <line x1="150" y1="32" x2="150" y2="78"/>
+          <line x1="190" y1="55" x2="200" y2="55"/>
+          <line x1="200" y1="42" x2="200" y2="68"/>
+        </g>
+        <circle cx="610" cy="55" r="6" fill="var(--danger)"/>
+        <g text-anchor="middle" font-size="12">
+          <text x="60" y="94" fill="var(--muted)">Min=32</text>
+          <text x="100" y="24" fill="var(--fg)">Q1=50</text>
+          <text x="150" y="24" fill="var(--fg)">Q2=66</text>
+          <text x="190" y="24" fill="var(--fg)">Q3=72</text>
+          <text x="200" y="94" fill="var(--muted)">Max=74</text>
+          <text x="610" y="38" fill="var(--danger)" font-weight="700">Outlier = 296</text>
+        </g>
+      </svg>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Stage</th><th>Sample Size</th><th>Mean</th><th>Sample $\sigma$ ($n-1$)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Before Outlier Removal</td><td>$n = 10$</td><td>83.0</td><td>76.2</td></tr>
+            <tr><td>After Removing 296</td><td>$n = 9$</td><td>59.3</td><td>15.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top: 14px;"><b>2. Skin Thickness Analysis:</b></p>
+      <p>Sorted observations: <code>22, 23, 24, 29, 30, 32, 33, 35, 35, 45</code> ($n=10$)</p>
+      <ul>
+        <li>$Q1 = 24$, $Q3 = 35$, $\text{IQR} = 11$</li>
+        <li>$\text{LW} = 24 - 1.5(11) = 7.5$, $\text{UW} = 35 + 1.5(11) = 51.5$</li>
+        <li>All values lie in $[22, 45] \subset [7.5, 51.5]$ ➔ <b>No outliers present.</b></li>
+      </ul>
+      <p><b>Conclusion:</b> A single extreme outlier inflated the mean by 23.7 units and increased the variance/standard deviation by more than 500%.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Derive the upper and lower whiskers if the z-values of Q1 and Q3 are −0.5543 and +0.5543, so that anomalies lie beyond μ ± 2.9σ.</span></div>
+      <span class="q-tag">2 marks</span>
+    </summary>
+    <div class="q-body">
+      <p>Given $Q1 = \mu - 0.5543\sigma$ and $Q3 = \mu + 0.5543\sigma$:</p>
+      <div class="f">IQR = Q3 − Q1 = (μ + 0.5543σ) − (μ − 0.5543σ) = 1.1086σ
+Target threshold: Upper Whisker = μ + 2.9σ
+Formula: Upper Whisker = Q3 + k · IQR
+
+Substitute:
+(μ + 0.5543σ) + k(1.1086σ) = μ + 2.9σ
+k(1.1086) = 2.9 − 0.5543 = 2.3457
+k = 2.3457 / 1.1086 ≈ 2.116
+
+Final Whisker Formulations:
+Upper Whisker = Q3 + 2.116 × IQR
+Lower Whisker = Q1 − 2.116 × IQR</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Is Insulin (0, 0, 0, 94, 168, 0, 88, 0, 543, 0) normally distributed?</span></div>
+      <span class="q-tag">2 marks</span>
+    </summary>
+    <div class="q-body">
+      <p><b>Answer:</b> <b>No</b>, the distribution is not normal for the following reasons:</p>
+      <ul>
+        <li>Six out of ten values are 0, which are physiologically invalid for fasting insulin (they represent missing data/sensor errors).</li>
+        <li>The median is 0, while the mean is $\approx 89.3$. In a normal distribution, Mean $\approx$ Median $\approx$ Mode.</li>
+        <li>The extreme value <b>543</b> produces a heavy, elongated right tail: the distribution is <b>severely right-skewed</b>.</li>
+      </ul>
+      <p><b>Action:</b> Treat zeros as missing values, impute them using median or class-wise mean, and then replot.</p>
+    </div>
+  </details>
 </section>
 
-<section id="s4"><h2>4. Missing data and imputation</h2>
-<p><b>Causes:</b> equipment malfunction, deleted due to inconsistency, not entered, not considered important. <b>Imputation</b> = replacing missing data with a substitute value to retain information. Libraries (R, Python, Weka) do not handle missing data automatically; a lot of missing data distorts distributions and biases the model.</p>
-<div class="card"><table><tr><th>Method</th><th>Note</th></tr>
-<tr><td>Ignore the tuple</td><td>Usually when the <b>class label is missing</b>. Poor if % missing varies. Fine if sample is large and missing at random</td></tr>
-<tr><td>Fill manually</td><td>Tedious, often infeasible</td></tr>
-<tr><td>Global constant</td><td>"Unknown", ∞ (a new class?)</td></tr>
-<tr><td>Attribute mean/median</td><td>Numerical. Keeps central tendency but <b>deflates variance</b></td></tr>
-<tr><td>Mode</td><td>Categorical attributes</td></tr>
-<tr><td>Class-wise mean</td><td>Smarter: mean of samples in the same class</td></tr>
-<tr><td>Most probable value</td><td>Bayesian formula or decision tree; uses the most information</td></tr>
-<tr><td>k-NN imputation</td><td>Find k nearest rows (e.g. Euclidean), take mean (numeric) or mode (categorical)</td></tr></table></div>
-<div class="key"><b>Slide rules:</b> remove a row with more than 50% missing values; remove a column like PAN that does not contribute to the target; mean-impute numeric columns (or class-wise mean); mode-impute the categorical/class column.</div>
-<details><summary>Which Pima features can be imputed and how? <span class="tag">1 mark</span></summary><div>Pregnancies (NA), Glucose (NULL), Age (NA): <b>mean/median imputation</b> (median if skewed), or class-wise mean. Insulin = 0 and BMI = 0.0 are invalid, so treat as missing and impute; BloodPressure 296 is an outlier to fix. The row with <b>Outcome = NA</b> (class label) should be <b>ignored</b>. If a row is mostly missing, remove it.</div></details>
-<details><summary>k-NN imputation (k = 1, 2) for missing Age. Data (Height, Weight, Age): ID1 (170, 70, 25), ID2 (165, 65, ?), ID3 (180, 80, 30), ID4 (175, 75, ?), ID5 (160, 60, 22) <span class="tag">3 marks</span></summary><div>ID2: Euclidean distance on (Height, Weight): to ID1 = √(25+25) = 7.07, ID5 = 7.07, ID4 = 14.14, ID3 = 21.2. <b>k = 1:</b> tie ID1 / ID5 → Age = 25 or 22. <b>k = 2:</b> mean of 25 and 22 = <b>23.5</b>.<br>ID4: distance to ID3 = 7.07, ID1 = 7.07, ID2 = 14.14. <b>k = 2:</b> mean of 30 and 25 = <b>27.5</b>.</div></details>
+<!-- ==================== SECTION 4 ==================== -->
+<section id="s4">
+  <div class="section-title">
+    <span class="sec-num">4</span>
+    <h2>Missing Data &amp; Imputation</h2>
+  </div>
+
+  <h3>Root Causes of Missing Data</h3>
+  <div class="grid-2">
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">1. Sensor &amp; Equipment Malfunction</span></div>
+      <p class="def-body">Hardware failures, dead batteries, or transmission drops causing null readouts.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">2. Manual Deletion (Inconsistency)</span></div>
+      <p class="def-body">Data deleted by administrators because recorded values contradicted verified facts.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">3. Value Omission During Entry</span></div>
+      <p class="def-body">Human subject skipped survey questions, or clerk missed data entry fields.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">4. Deemed Unimportant at Collection</span></div>
+      <p class="def-body">Field was not tracked initially and only became necessary at a later date.</p>
+    </div>
+  </div>
+
+  <h3>Imputation Strategies</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Method</th><th>Mechanism</th><th>Key Advantage / Disadvantage</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Ignore the Tuple</b></td>
+          <td>Drop the entire row from the dataset.</td>
+          <td>Essential when the <b>class label is missing</b>. Wasteful if feature missingness is low.</td>
+        </tr>
+        <tr>
+          <td><b>Manual Fill</b></td>
+          <td>Human operator manually investigates and inputs value.</td>
+          <td>Accurate but extremely slow, expensive, and infeasible on large datasets.</td>
+        </tr>
+        <tr>
+          <td><b>Global Constant</b></td>
+          <td>Replace with "Unknown", "Missing", or $\infty$.</td>
+          <td>Simple, but the algorithm might mistake the constant for an actual predictive class.</td>
+        </tr>
+        <tr>
+          <td><b>Attribute Mean / Median</b></td>
+          <td>Replace with mean (symmetric data) or median (skewed data).</td>
+          <td>Preserves overall mean, but <b>deflates overall variance</b>.</td>
+        </tr>
+        <tr>
+          <td><b>Attribute Mode</b></td>
+          <td>Replace with the most frequently occurring categorical value.</td>
+          <td>Standard approach for qualitative nominal/ordinal features.</td>
+        </tr>
+        <tr>
+          <td><b>Class-Wise Mean / Mode</b></td>
+          <td>Calculate mean or mode only among samples belonging to the <i>same class</i>.</td>
+          <td>Significantly smarter and preserves class-conditional distribution.</td>
+        </tr>
+        <tr>
+          <td><b>k-NN Imputation</b></td>
+          <td>Find $k$ nearest rows based on known features; take average or mode of their values.</td>
+          <td>Uses multi-attribute correlations; sensitive to feature scaling and distance metric.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="key-box">
+    <strong>Professor's Slide Rules for Data Preparation:</strong>
+    <ul style="margin: 6px 0 0; padding-left: 20px;">
+      <li><b>Rule 1:</b> Drop any instance/row containing <b>more than 50% missing values</b>.</li>
+      <li><b>Rule 2:</b> Remove columns (e.g. PAN Number, Student ID) that have zero predictive correlation with the target.</li>
+      <li><b>Rule 3:</b> Impute numerical continuous attributes using <b>mean</b> or <b>median</b> (or class-wise mean).</li>
+      <li><b>Rule 4:</b> Impute categorical features using the <b>mode</b>.</li>
+      <li><b>Rule 5:</b> If the <b>class label is missing</b>, ALWAYS ignore/drop that tuple.</li>
+    </ul>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Which Pima features can be imputed and how?</span></div>
+      <span class="q-tag">1 mark</span>
+    </summary>
+    <div class="q-body">
+      <ul>
+        <li><b>Pregnancies (NA), Glucose (NULL), Age (NA):</b> Impute using <b>mean</b> (or <b>median</b> if skewed), or class-wise mean.</li>
+        <li><b>Insulin = 0 and BMI = 0.0:</b> These are biologically impossible and represent invalid data; treat as missing and impute.</li>
+        <li><b>BloodPressure = 296:</b> Outlier to be clipped or removed.</li>
+        <li><b>Outcome = NA:</b> This is the target <b>class label</b>; the row must be <b>ignored (dropped)</b>.</li>
+        <li>If any patient row has $>50%$ attributes missing, delete the entire row.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>k-NN imputation (k = 1, 2) for missing Age. Data (Height, Weight, Age): ID1 (170, 70, 25), ID2 (165, 65, ?), ID3 (180, 80, 30), ID4 (175, 75, ?), ID5 (160, 60, 22)</span></div>
+      <span class="q-tag">3 marks</span>
+    </summary>
+    <div class="q-body">
+      <p>Calculate Euclidean distance $d = \sqrt{(\Delta \text{Height})^2 + (\Delta \text{Weight})^2}$ between query instance and known instances (ID1, ID3, ID5):</p>
+      
+      <div class="card">
+        <h4 style="margin:0 0 8px; color:var(--accent);">1. Imputing ID2 (165, 65, ?):</h4>
+        <ul>
+          <li>To ID1 (170, 70): $\sqrt{(170-165)^2 + (70-65)^2} = \sqrt{25 + 25} = \mathbf{7.07}$</li>
+          <li>To ID5 (160, 60): $\sqrt{(160-165)^2 + (60-65)^2} = \sqrt{25 + 25} = \mathbf{7.07}$</li>
+          <li>To ID3 (180, 80): $\sqrt{(180-165)^2 + (80-65)^2} = \sqrt{225 + 225} = 21.21$</li>
+        </ul>
+        <p><b>For k = 1:</b> Tie between ID1 (Age 25) and ID5 (Age 22) ➔ Impute <b>25 or 22</b> (or mean).<br>
+        <b>For k = 2:</b> Nearest neighbors are ID1 and ID5 ➔ $\text{Imputed Age} = \frac{25 + 22}{2} = \mathbf{23.5}$.</p>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 8px; color:var(--accent);">2. Imputing ID4 (175, 75, ?):</h4>
+        <ul>
+          <li>To ID1 (170, 70): $\sqrt{(170-175)^2 + (70-75)^2} = \sqrt{50} = \mathbf{7.07}$</li>
+          <li>To ID3 (180, 80): $\sqrt{(180-175)^2 + (80-75)^2} = \sqrt{50} = \mathbf{7.07}$</li>
+          <li>To ID5 (160, 60): $\sqrt{(160-175)^2 + (60-75)^2} = \sqrt{225 + 225} = 21.21$</li>
+        </ul>
+        <p><b>For k = 2:</b> Nearest neighbors are ID1 (Age 25) and ID3 (Age 30) ➔ $\text{Imputed Age} = \frac{25 + 30}{2} = \mathbf{27.5}$.</p>
+      </div>
+    </div>
+  </details>
 </section>
 
-<section id="s5"><h2>5. Noise, smoothing and discretization</h2>
-<p><b>Noise</b> = random error or variance in a measured variable. Smoothing: <b>binning</b> (sort, equal-frequency bins), <b>regression</b>, <b>clustering</b> (detect outliers).</p>
-<div class="f">Sorted price: 4, 8, 15, 21, 21, 24, 25, 28, 34   (3 equal-frequency bins)
-Bin means:      (9,9,9)    (22,22,22)  (29,29,29)
-Bin medians:    (8,8,8)    (21,21,21)  (28,28,28)
-Bin boundaries: (4,4,15)   (21,21,24)  (25,25,34)</div>
-<h3>Discretization</h3>
-<p>Convert a numeric attribute to categorical by intervals. <b>Unsupervised:</b> binning, clustering. <b>Supervised:</b> decision trees, χ² correlation. Data: 5, 10, 11, 13, 15, 35, 50, 55, 72, 89, 204, 215.</p>
-<div class="card"><table><tr><th>Equal-width (3 bins)</th><th>Equal-frequency (3 bins)</th></tr><tr><td>width = (215 − 5)/3 = 70<br>bin1: 5…72 (9 values)<br>bin2: 89<br>bin3: 204, 215<br>labels: 1 1 1 1 1 1 1 1 1 2 3 3</td><td>4 values per bin<br>bin1: 5, 10, 11, 13<br>bin2: 15, 35, 50, 55<br>bin3: 72, 89, 204, 215<br>labels: 1 1 1 1 2 2 2 2 3 3 3 3</td></tr></table></div>
-<p>Concept hierarchies map low-level to higher-level concepts (Silchar → Assam → India; price ranges).</p>
-<details><summary>Encode the 25 ages (18 ×6, 19 ×6, 20 ×6, 21, 22 ×2, 23, NA ×3) into 3 labels, and smooth by binning. <span class="tag">2+2 marks</span></summary><div>First <b>impute NA</b> with mean/median (median = 19). Then <b>equal-frequency discretization</b> (about 8 values per bin): label 1 = 18 (six values) + first 19s, label 2 = remaining 19s + 20s, label 3 = 20s/21/22/23; or an interval scheme 18 → 1, 19–20 → 2, 21–23 → 3. For smoothing: sort, make equal-frequency bins, replace each value by the bin mean/median/boundary as in the price example above.</div></details>
+<!-- ==================== SECTION 5 ==================== -->
+<section id="s5">
+  <div class="section-title">
+    <span class="sec-num">5</span>
+    <h2>Noise, Smoothing &amp; Discretization</h2>
+  </div>
+
+  <p><b>Noise</b> is random error or variance in a measured variable. Primary smoothing techniques include <b>Binning</b>, <b>Regression</b>, and <b>Clustering</b>.</p>
+
+  <h3>Binning Smoothing Worked Example</h3>
+  <div class="card">
+    <p><b>Sorted Price Data:</b> <code>4, 8, 15, 21, 21, 24, 25, 28, 34</code> (Partitioned into 3 equal-frequency bins):</p>
+    <div class="f">Bin 1: [4, 8, 15]        Bin 2: [21, 21, 24]      Bin 3: [25, 28, 34]
+
+Smoothing by Bin Means:
+Bin 1: (4+8+15)/3 = 9    ➔ [9, 9, 9]
+Bin 2: (21+21+24)/3 = 22 ➔ [22, 22, 22]
+Bin 3: (25+28+34)/3 = 29 ➔ [29, 29, 29]
+
+Smoothing by Bin Medians:
+Bin 1: median = 8        ➔ [8, 8, 8]
+Bin 2: median = 21       ➔ [21, 21, 21]
+Bin 3: median = 28       ➔ [28, 28, 28]
+
+Smoothing by Bin Boundaries:
+Bin 1: min=4, max=15     ➔ 4 ➔ 4,  8 ➔ 4 (closer to 4),  15 ➔ 15   ➔ [4, 4, 15]
+Bin 2: min=21, max=24    ➔ 21 ➔ 21, 21 ➔ 21, 24 ➔ 24              ➔ [21, 21, 24]
+Bin 3: min=25, max=34    ➔ 25 ➔ 25, 28 ➔ 25 (closer to 25), 34 ➔ 34➔ [25, 25, 34]</div>
+  </div>
+
+  <h3>Discretization: Equal-Width vs Equal-Frequency</h3>
+  <p>Data: <code>5, 10, 11, 13, 15, 35, 50, 55, 72, 89, 204, 215</code> ($N=12$, $k=3$ bins):</p>
+  
+  <div class="grid-2">
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Equal-Width Binning</span>
+        <span class="def-badge">Unsupervised</span>
+      </div>
+      <p class="def-body">Divides range into $k$ intervals of equal size: $W = \frac{\text{Max} - \text{Min}}{k} = \frac{215 - 5}{3} = 70$.</p>
+      <div style="margin-top:8px; font-size:14px;">
+        <div><b>Bin 1 [5, 75]:</b> 5, 10, 11, 13, 15, 35, 50, 55, 72 (9 values)</div>
+        <div><b>Bin 2 (75, 145]:</b> 89 (1 value)</div>
+        <div><b>Bin 3 (145, 215]:</b> 204, 215 (2 values)</div>
+        <div style="margin-top:6px; color:var(--danger);"><b>Drawback:</b> Heavily skewed by extreme outliers.</div>
+      </div>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header">
+        <span class="def-term">Equal-Frequency (Equal-Depth)</span>
+        <span class="def-badge">Unsupervised</span>
+      </div>
+      <p class="def-body">Divides range so each bin contains approximately equal sample count: $\frac{N}{k} = \frac{12}{3} = 4$ per bin.</p>
+      <div style="margin-top:8px; font-size:14px;">
+        <div><b>Bin 1:</b> 5, 10, 11, 13 (4 values) ➔ Label 1</div>
+        <div><b>Bin 2:</b> 15, 35, 50, 55 (4 values) ➔ Label 2</div>
+        <div><b>Bin 3:</b> 72, 89, 204, 215 (4 values) ➔ Label 3</div>
+        <div style="margin-top:6px; color:var(--ok);"><b>Advantage:</b> Outliers are naturally grouped without skewing.</div>
+      </div>
+    </div>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Encode the 25 ages (18 ×6, 19 ×6, 20 ×6, 21, 22 ×2, 23, NA ×3) into 3 labels, and smooth by binning.</span></div>
+      <span class="q-tag">2+2 marks</span>
+    </summary>
+    <div class="q-body">
+      <p><b>Step 1: Impute Missing Data:</b><br>
+      The 3 <code>NA</code> values are imputed using the median of known ages (Median = 19). Now $N = 25$.</p>
+      <p><b>Step 2: Equal-Frequency Discretization:</b><br>
+      Targeting 3 bins ($approx 8$ values per bin):</p>
+      <ul>
+        <li><b>Label 1:</b> Six 18s + first two 19s (8 items)</li>
+        <li><b>Label 2:</b> Remaining 19s + 20s (8 items)</li>
+        <li><b>Label 3:</b> 20s, 21, 22, 23 (9 items)</li>
+      </ul>
+      <p>Alternatively, use clean ordinal age ranges: $18 \rightarrow 1$, $19\text{--}20 \rightarrow 2$, $21\text{--}23 \rightarrow 3$.</p>
+      <p><b>Step 3: Smoothing by Binning:</b><br>
+      Sort the array, group into equal-depth bins, and replace each member of the bin with its respective bin mean or median.</p>
+    </div>
+  </details>
 </section>
 
-<section id="s6"><h2>6. Normalization (data transformation)</h2>
-<p>Scales an attribute into a small range so that no attribute dominates because of a larger range. Essential for distance-based methods (nearest neighbour, clustering) and neural networks.</p>
-<div class="f">Min-max:  v' = (v − min_A)/(max_A − min_A) × (new_max − new_min) + new_min
-Z-score:  v' = (v − μ_A)/σ_A            (useful when min and max are unknown)
-Decimal:  v' = v / 10^j                  j = smallest integer with max|v'| &lt; 1</div>
-<p><b>Slide examples:</b> F1 = 5…32 to [0,1]: 16 → (16−5)/(32−5) = 0.407. To [−5,5]: 16 → 0.407 × 10 − 5 = −0.925. Decimal scaling of 4.3…13.2: max = 13.2, j = 2, so 4.3 → 0.043 and 13.2 → 0.132. A range 917 to 986 → divide by 1000.</p>
-<details><summary>Normalize Blood Pressure to [−0.5, +0.5]. Compare with z-score. <span class="tag">2 marks</span></summary><div>min = 32, max = 296. v' = (v − 32)/264 × (0.5 − (−0.5)) + (−0.5). So 32 → −0.5, 296 → +0.5, 72 → −0.348, 66 → −0.386, 40 → −0.470. The outlier 296 squeezes normal values into about [−0.5, −0.3]. Z-score (μ = 83, σ = 76.2): 72 → −0.14, 296 → 2.80. It has no fixed range, centres data at 0, and does not need min/max.</div></details>
+<!-- ==================== SECTION 6 ==================== -->
+<section id="s6">
+  <div class="section-title">
+    <span class="sec-num">6</span>
+    <h2>Normalization (Data Transformation)</h2>
+  </div>
+
+  <p>Scales attribute ranges so that large-magnitude features do not dominate distance calculations in k-NN, SVM, and Neural Networks.</p>
+
+  <div class="grid-3">
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Min-Max Normalization</span></div>
+      <div class="f" style="font-size:12px;">v' = (v − min_A) / (max_A − min_A) × (new_max − new_min) + new_min</div>
+      <p class="def-body">Preserves exact linear relationships. Maps values into a fixed interval (e.g. $[0, 1]$ or $[-1, 1]$).</p>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Z-Score Normalization</span></div>
+      <div class="f" style="font-size:12px;">v' = (v − μ_A) / σ_A</div>
+      <p class="def-body">Centres distribution at 0 with unit variance. Robust when min and max are unknown or outliers exist.</p>
+    </div>
+
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Decimal Scaling</span></div>
+      <div class="f" style="font-size:12px;">v' = v / 10^j
+where j = smallest integer such that max|v'| &lt; 1</div>
+      <p class="def-body">Normalizes by shifting the decimal point according to maximum absolute value.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4 style="margin:0 0 10px; color:var(--accent);">Worked Examples from Slides:</h4>
+    <p><b>1. Scale $F_1 = [5, 32]$: Normalize $v = 16$ to $[0, 1]$:</b><br>
+    $$v' = \frac{16 - 5}{32 - 5} = \frac{11}{27} \approx \mathbf{0.407}$$</p>
+    <p><b>2. Scale to $[-5, 5]$:</b><br>
+    $$v' = 0.407 \times (5 - (-5)) + (-5) = 4.074 - 5 = \mathbf{-0.926}$$</p>
+    <p><b>3. Decimal Scaling for range $[-917, 986]$:</b><br>
+    $\text{Max}|v| = 986$. Smallest power of 10 exceeding 986 is $10^3 = 1000$ ($j=3$).<br>
+    Divide all values by 1000: $-917 \rightarrow \mathbf{-0.917}$, $986 \rightarrow \mathbf{+0.986}$.</p>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Normalize Blood Pressure to [−0.5, +0.5]. Compare with z-score.</span></div>
+      <span class="q-tag">2 marks</span>
+    </summary>
+    <div class="q-body">
+      <p>Given $\min = 32$, $\max = 296$, target range $[-0.5, +0.5]$ (range width = $1.0$):</p>
+      <div class="f">v' = (v − 32) / (296 − 32) × (0.5 − (−0.5)) + (−0.5) = (v − 32)/264 − 0.5
+
+Values:
+• v = 32  ➔ −0.5
+• v = 40  ➔ −0.470
+• v = 66  ➔ −0.386
+• v = 72  ➔ −0.348
+• v = 296 ➔ +0.500</div>
+      <p><b>Comparison with Z-Score:</b><br>
+      In Min-Max, the single outlier $296$ compresses all 9 legitimate physiological readings into the narrow band $[-0.5, -0.348]$.<br>
+      Under Z-Score ($mu = 83$, $sigma = 76.2$), $72 \rightarrow -0.14$ and $296 \rightarrow +2.80$. Z-score is unbounded, centres data at zero, and handles unconstrained ranges without needing global $\min$ or $\max$.</p>
+    </div>
+  </details>
 </section>
 
-<section id="s7"><h2>7. Decision tree induction</h2>
-<p>A tree where each <b>internal (decision) node</b> tests a feature, each <b>branch</b> is an outcome, and each <b>leaf</b> gives a class label. Root = whole dataset split by the best feature. <b>Pruning</b> removes branches to reduce overfitting. Best splits come from impurity measures:</p>
-<div class="f">Gini = 1 − Σ p_i²      Entropy = − Σ p_i log₂ p_i      Error = 1 − max(p_i)</div>
-<p><b>Entropy</b> measures impurity. Pure node = 0. 50/50 split = 1 (maximum). The minus sign keeps entropy ≥ 0 because log₂ p &lt; 0. Slide: 16 green + 14 pink of 30 → Info(D) = 0.99.</p>
-<h3>7.1 ID3: Information Gain</h3>
-<div class="f">Info(D) = − Σ p_i log₂ p_i,   p_i = |C_i,D| / |D|
-Info_A(D) = Σ_j (|D_j|/|D|) · Info(D_j)
-Gain(A) = Info(D) − Info_A(D)         → choose the highest Gain(A)</div>
-<div class="key"><b>Slide example (Where = Home 3 / Work 3):</b> Info(D) = 1. Info<sub>Action</sub> = 1.000, Info<sub>Author</sub> = (4/6)(0.811) + (2/6)(0) = 0.540, Info<sub>Thread</sub> = 0.918, Info<sub>Length</sub> = 1.000. Gains: 0, <b>0.460</b>, 0.082, 0. <b>Author is the root.</b></div>
-<details><summary>Calculate the entropy of the Weather table (Play: 4 Yes, 4 No) and use ID3 to find the root. <span class="tag">1+3 marks</span></summary><div>Info(D) = −(4/8)log₂(4/8) − (4/8)log₂(4/8) = <b>1</b>.
-<div class="card"><table><tr><th>A</th><th>Partitions (Yes, No)</th><th>Info<sub>A</sub>(D)</th><th>Gain(A)</th></tr>
-<tr><td>Weather</td><td>Sunny (0,3), Overcast (2,0), Rain (2,1)</td><td>(3/8)(0.918) = 0.344</td><td><b>0.656</b></td></tr>
-<tr><td>Temperature</td><td>Hot (1,2), Mild (1,1), Cool (2,1)</td><td>0.938</td><td>0.062</td></tr>
-<tr><td>Humidity</td><td>High (2,3), Normal (2,1)</td><td>0.951</td><td>0.049</td></tr>
-<tr><td>Wind</td><td>Weak (3,2), Strong (1,2)</td><td>0.951</td><td>0.049</td></tr></table></div>
-<b>Root = Weather</b> (highest Gain). Sunny → No, Overcast → Yes, Rain needs a further split.
-<svg viewBox="0 0 520 120" role="img" aria-label="Weather root tree"><g stroke="var(--ink)" stroke-width="2"><line x1="260" y1="36" x2="90" y2="80"/><line x1="260" y1="36" x2="260" y2="80"/><line x1="260" y1="36" x2="430" y2="80"/></g><g fill="var(--soft)" stroke="var(--ink)"><rect x="205" y="8" width="110" height="28" rx="8"/><rect x="45" y="80" width="90" height="28" rx="8"/><rect x="215" y="80" width="90" height="28" rx="8"/><rect x="380" y="80" width="100" height="28" rx="8"/></g><g text-anchor="middle"><text x="260" y="27">Weather</text><text x="90" y="99">Sunny: No</text><text x="260" y="99">Overcast: Yes</text><text x="430" y="99">Rain: split more</text></g></svg></div></details>
-<details><summary>Entropy of the Pima table with Outcome as class. <span class="tag">1 mark</span></summary><div>It cannot be calculated directly because one row has <b>Outcome = NA</b> (missing class label). Ignore that tuple: 9 rows remain, 5 with Outcome = 1 and 4 with 0. Info(D) = −(5/9)log₂(5/9) − (4/9)log₂(4/9) ≈ <b>0.991</b>.</div></details>
-<h3>7.2 Limitation of information gain and Gain Ratio (C4.5)</h3>
-<p>Gain is <b>biased towards attributes with many distinct values</b>. Slide: splitting on Roll No. (unique for every student) gives every subset entropy 0, so Gain = 1.0, equal to Study Hours, but it is useless on new data (pure overfitting). Fix:</p>
-<div class="f">SplitInfo(A) = − Σ_j (|D_j|/|D|) log₂(|D_j|/|D|)
-GainRatio(A) = Gain(A) / SplitInfo(A)      → choose the highest</div>
-<p>Many unique values give a high SplitInfo, which penalises the attribute; balanced partitions are favoured. <b>Slide result:</b> Gain(Author) = 0.459, SplitInfo = 0.918, GainRatio = <b>0.500</b>; Thread 0.0817/1 = 0.0817; Action and Length = 0. Root = Author.</p>
-<details><summary>Analyse Gain(A) = Info(D) − Info_A(D), show the necessity of split information with an example, and derive the ratio of information gain. <span class="tag">10 marks</span></summary><div><b>Gain</b> is the reduction in uncertainty after splitting on A: Info(D) is the uncertainty before, Info<sub>A</sub>(D) the weighted uncertainty after. <b>Problem:</b> an ID-like attribute splits D into |D| singleton subsets, each pure, so Info<sub>A</sub>(D) = 0 and Gain is maximal (6 students: Gain(Roll) = 1.0 = Gain(Study Hours)), yet it cannot generalise. <b>Split information</b> measures how broadly and evenly A partitions the data: SplitInfo(Roll) = −6·(1/6)log₂(1/6) = 2.585, while SplitInfo(Study) = −2·(1/2)log₂(1/2) = 1. So GainRatio(Roll) = 1/2.585 = 0.387 &lt; GainRatio(Study) = 1/1 = 1.0, and Study Hours is correctly chosen. <b>Derivation:</b> normalise Gain by SplitInfo(A) = −Σ(|D_j|/|D|)log₂(|D_j|/|D|), giving GainRatio(A) = Gain(A)/SplitInfo(A).</div></details>
-<h3>7.3 CART</h3>
-<p><b>C</b>lassification <b>A</b>nd <b>R</b>egression <b>T</b>rees: recursive <b>binary</b> partitioning, so every internal node has exactly two branches. Classification uses <b>Gini impurity</b> (leaf = majority class); regression uses MSE/SSE (leaf = mean).</p>
-<div class="f">Gini(D) = 1 − Σ p_k²          p_k = n_k / N
-Gini_split = (|D_L|/|D|)·Gini(D_L) + (|D_R|/|D|)·Gini(D_R)
-ΔGini = Gini(D) − Gini_split      Best split = argmin Gini_split = argmax ΔGini
-Continuous X_j: D_L = {X_j ≤ t}, D_R = {X_j &gt; t}; t = midpoints of sorted values</div>
-<div class="key"><b>Slide example</b> (Age 22, 25, 28, 35, 40, 45; Buy: N, N, Y, Y, Y, Y): Gini(D) = 1 − (4/6)² − (2/6)² = 0.4444. Thresholds 23.5, 26.5, 31.5, 37.5, 42.5 give Gini<sub>split</sub> = 0.400, 0.347, 0.222, <b>0.1667</b>, 0.200. Best = Age ≤ 37.5, ΔGini = 0.2777. Income ≤ 47.5 ties. <b>Stopping:</b> max depth, min samples, min impurity decrease. <b>Pruning:</b> cost-complexity R_α(T) = R(T) + α|T|.</div>
-<details><summary>Use CART to find the root for the Weather table and compare with ID3. <span class="tag">3+2 marks</span></summary><div>Gini(D) = 1 − (½)² − (½)² = 0.5. Binary splits (Gini<sub>split</sub>):<div class="f">Weather = Sunny | rest : (3/8)(0) + (5/8)(0.32) = 0.200   ← minimum
-Weather = Overcast | rest: (2/8)(0) + (6/8)(0.444) = 0.333
-Weather = Rain | rest    : 0.467
-Temperature (Hot/Cool | rest), Humidity, Wind : 0.467 each; Mild | rest: 0.500</div>ΔGini = 0.5 − 0.2 = 0.3. <b>Root = Weather</b> (Sunny vs {Overcast, Rain}). <b>Same attribute as ID3</b>, but ID3 uses a <b>multiway</b> split (3 branches, Info Gain) and CART a <b>binary</b> split (Gini). If they differed, the reason is the different criterion (entropy vs Gini) and that ID3 favours many-valued attributes.</div></details>
-<div class="card"><table><tr><th></th><th>ID3</th><th>C4.5</th><th>CART</th></tr><tr><td>Criterion</td><td>Information Gain</td><td>Gain Ratio</td><td>Gini / MSE</td></tr><tr><td>Split</td><td>Multiway</td><td>Multiway / binary</td><td>Binary</td></tr><tr><td>Regression</td><td>No</td><td>No</td><td>Yes</td></tr><tr><td>Continuous features</td><td>Limited</td><td>Yes</td><td>Yes</td></tr><tr><td>Pruning</td><td>Limited</td><td>Yes</td><td>Cost-complexity</td></tr></table></div>
-<p><b>CART advantages:</b> interpretable if-then rules, little preprocessing, no normalization needed, numeric and categorical, nonlinear and interactions. <b>Limitations:</b> overfits, unstable, greedy, axis-aligned splits, biased on imbalanced data → Random Forest, Gradient Boosting.</p>
+<!-- ==================== SECTION 7 ==================== -->
+<section id="s7">
+  <div class="section-title">
+    <span class="sec-num">7</span>
+    <h2>Decision Tree Induction</h2>
+  </div>
+
+  <div class="def-stack">
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Decision Tree Components</span></div>
+      <p class="def-body">
+        • <b>Root Node:</b> Holds the entire dataset, tested on the single best split attribute.<br>
+        • <b>Internal Nodes:</b> Feature evaluation tests.<br>
+        • <b>Branches:</b> Specific attribute outcomes.<br>
+        • <b>Leaf Nodes:</b> Terminal nodes holding class labels.
+      </p>
+    </div>
+  </div>
+
+  <h3>Core Impurity Metrics</h3>
+  <div class="f">Entropy(D) = − Σ_{i=1}^m p_i log₂ p_i       (Pure node = 0, 50/50 split = 1.0)
+Gini(D)    = 1 − Σ_{i=1}^m p_i²            (Pure node = 0, 50/50 split = 0.5)
+Error(D)   = 1 − max_i(p_i)                (Pure node = 0, 50/50 split = 0.5)</div>
+
+  <h3>7.1 ID3 Algorithm (Information Gain)</h3>
+  <div class="f">Info(D) = − Σ p_i log₂ p_i
+Info_A(D) = Σ_{j=1}^v (|D_j| / |D|) · Info(D_j)
+Gain(A) = Info(D) − Info_A(D)        ➔ Select attribute with HIGHEST Gain(A)</div>
+
+  <div class="key-box">
+    <strong>Slide Example (Where = Home 3 / Work 3):</strong>
+    <p style="margin:4px 0;">Total dataset entropy $	ext{Info}(D) = 1.0$. Partition entropies: $	ext{Info}_{	ext{Action}} = 1.000$, $	ext{Info}_{	ext{Author}} = (4/6)(0.811) + (2/6)(0) = 0.540$, $	ext{Info}_{	ext{Thread}} = 0.918$, $	ext{Info}_{	ext{Length}} = 1.000$.</p>
+    <p style="margin:4px 0;"><b>Gains:</b> $	ext{Gain}(	ext{Action}) = 0$, $mathbf{	ext{Gain}(	ext{Author}) = 0.460}$, $	ext{Gain}(	ext{Thread}) = 0.082$, $	ext{Gain}(	ext{Length}) = 0$. ➔ <b>Author is selected as the Root.</b></p>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Calculate the entropy of the Weather table (Play: 4 Yes, 4 No) and use ID3 to find the root.</span></div>
+      <span class="q-tag">1+3 marks</span>
+    </summary>
+    <div class="q-body">
+      <p><b>Step 1: Total Entropy Info(D):</b><br>
+      $p(\text{Yes}) = 4/8 = 0.5$, $p(\text{No}) = 4/8 = 0.5$<br>
+      $\text{Info}(D) = -(0.5)\log_2(0.5) - (0.5)\log_2(0.5) = \mathbf{1.0}$</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Attribute (A)</th><th>Partitions (Yes, No)</th><th>Info_A(D)</th><th>Gain(A) = 1.0 − Info_A(D)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Weather</b></td>
+              <td>Sunny (0, 3) ➔ pure<br>Overcast (2, 0) ➔ pure<br>Rain (2, 1)</td>
+              <td>$\frac{3}{8}(0) + \frac{2}{8}(0) + \frac{3}{8}(0.918) = \mathbf{0.344}$</td>
+              <td>$1.0 - 0.344 = \mathbf{0.656}$ 🌟 (Highest)</td>
+            </tr>
+            <tr><td>Temperature</td><td>Hot (1, 2), Mild (1, 1), Cool (2, 1)</td><td>0.938</td><td>0.062</td></tr>
+            <tr><td>Humidity</td><td>High (2, 3), Normal (2, 1)</td><td>0.951</td><td>0.049</td></tr>
+            <tr><td>Wind</td><td>Weak (3, 2), Strong (1, 2)</td><td>0.951</td><td>0.049</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><b>Decision:</b> <b>Weather</b> is chosen as the <b>Root Node</b> because it maximizes Information Gain ($0.656$).</p>
+      
+      <svg viewBox="0 0 520 120" role="img" aria-label="Weather root tree">
+        <g stroke="var(--accent)" stroke-width="2">
+          <line x1="260" y1="36" x2="90" y2="80"/>
+          <line x1="260" y1="36" x2="260" y2="80"/>
+          <line x1="260" y1="36" x2="430" y2="80"/>
+        </g>
+        <g fill="var(--card-sub)" stroke="var(--accent)">
+          <rect x="205" y="8" width="110" height="28" rx="8"/>
+          <rect x="45" y="80" width="90" height="28" rx="8"/>
+          <rect x="215" y="80" width="90" height="28" rx="8"/>
+          <rect x="380" y="80" width="100" height="28" rx="8"/>
+        </g>
+        <g text-anchor="middle" font-weight="600">
+          <text x="260" y="27" fill="var(--fg)">Weather</text>
+          <text x="90" y="99" fill="var(--danger)">Sunny: No</text>
+          <text x="260" y="99" fill="var(--ok)">Overcast: Yes</text>
+          <text x="430" y="99" fill="var(--muted)">Rain: split</text>
+        </g>
+      </svg>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Entropy of the Pima table with Outcome as class.</span></div>
+      <span class="q-tag">1 mark</span>
+    </summary>
+    <div class="q-body">
+      <p>Cannot be computed directly on all 10 rows because one row has <b>Outcome = NA</b> (missing class label). Dropping that invalid row leaves 9 rows: 5 with $\text{Outcome} = 1$ and 4 with $\text{Outcome} = 0$.</p>
+      <div class="f">Info(D) = − (5/9) log₂(5/9) − (4/9) log₂(4/9) ≈ 0.991</div>
+    </div>
+  </details>
+
+  <h3>7.2 Limitation of Information Gain &amp; C4.5 (Gain Ratio)</h3>
+  <div class="trap">
+    <strong>The Flaw of Information Gain:</strong> ID3 is heavily biased towards features with many distinct values (e.g. Roll Number or Transaction ID). Splitting on unique IDs creates pure partitions with $	ext{Info}_A(D) = 0$ and $	ext{Gain} = 1.0$, but the model merely memorizes the data and fails completely on unseen instances.
+  </div>
+
+  <div class="f">SplitInfo_A(D) = − Σ_{j=1}^v (|D_j| / |D|) log₂ (|D_j| / |D|)
+GainRatio(A)   = Gain(A) / SplitInfo_A(D)        ➔ Select HIGHEST GainRatio(A)</div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Analyse Gain(A) = Info(D) − Info_A(D), show the necessity of split information with an example, and derive the ratio of information gain.</span></div>
+      <span class="q-tag">10 marks</span>
+    </summary>
+    <div class="q-body">
+      <p><b>1. Meaning of Information Gain:</b> $\text{Gain}(A)$ measures the expected reduction in entropy (uncertainty) achieved by partitioning dataset $D$ using feature $A$.</p>
+      <p><b>2. Failure Mode (Why Split Information is Necessary):</b><br>
+      Suppose a class has 6 students with attribute <code>Roll_No</code> (values 1 to 6). Splitting on <code>Roll_No</code> yields 6 pure singleton subsets ($|D_j| = 1$), each having entropy 0. Thus $\text{Info}_{\text{Roll}}(D) = 0$, giving $\text{Gain}(\text{Roll}) = 1.0$, identical to a truly predictive attribute like <code>Study_Hours</code>.</p>
+      <p><b>3. Split Information Penalty:</b></p>
+      <div class="f">SplitInfo(Roll)  = − 6 × (1/6) log₂(1/6) = log₂(6) ≈ 2.585
+SplitInfo(Study) = − 2 × (1/2) log₂(1/2) = 1.000
+
+GainRatio(Roll)  = 1.0 / 2.585 = 0.387
+GainRatio(Study) = 1.0 / 1.000 = 1.000</div>
+      <p><b>Conclusion:</b> $\text{GainRatio}$ penalizes fragmented splits and selects <code>Study_Hours</code> over <code>Roll_No</code>.</p>
+    </div>
+  </details>
+
+  <h3>7.3 CART (Classification and Regression Trees)</h3>
+  <p>CART uses strictly <b>binary splits</b> (two child nodes per decision) and optimizes <b>Gini Impurity</b>.</p>
+  <div class="f">Gini(D) = 1 − Σ p_k²
+Gini_split(A) = (|D_L| / |D|) · Gini(D_L) + (|D_R| / |D|) · Gini(D_R)
+ΔGini(A) = Gini(D) − Gini_split(A)        ➔ Best split: MIN Gini_split or MAX ΔGini
+Continuous Features: Evaluate midpoints of sorted unique values.</div>
+
+  <div class="key-box">
+    <strong>Slide Example (Age: 22, 25, 28, 35, 40, 45; Buy: N, N, Y, Y, Y, Y):</strong>
+    <p style="margin:4px 0;">Total dataset $	ext{Gini}(D) = 1 - (4/6)^2 - (2/6)^2 = 0.4444$. Candidate midpoint thresholds: 23.5, 26.5, 31.5, 37.5, 42.5 produce $	ext{Gini}_{	ext{split}} = 0.400, 0.347, 0.222, mathbf{0.1667}, 0.200$.</p>
+    <p style="margin:4px 0;"><b>Best Split:</b> $	ext{Age} le 37.5$, yielding $Delta 	ext{Gini} = 0.2777$.</p>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Use CART to find the root for the Weather table and compare with ID3.</span></div>
+      <span class="q-tag">3+2 marks</span>
+    </summary>
+    <div class="q-body">
+      <p>$\text{Gini}(D) = 1 - (4/8)^2 - (4/8)^2 = 0.500$. Evaluating binary candidates:</p>
+      <div class="f">Weather = Sunny | rest:    (3/8)(0) + (5/8)[1 − (2/5)² − (3/5)²] = 0.200  ← MINIMUM
+Weather = Overcast | rest: (2/8)(0) + (6/8)[1 − (2/6)² − (4/6)²] = 0.333
+Weather = Rain | rest:     0.467
+Temperature / Wind splits: ≥ 0.467</div>
+      <p>$\Delta \text{Gini} = 0.500 - 0.200 = \mathbf{0.300}$. <b>Root = Weather (Sunny vs {Overcast, Rain})</b>.<br>
+      <b>Comparison:</b> Both ID3 and CART select <b>Weather</b> as root, but ID3 performs a <b>3-way multiway split</b> using Information Gain, while CART enforces a <b>binary split</b> using Gini impurity.</p>
+    </div>
+  </details>
+
+  <h3>Algorithm Comparison Table</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>ID3</th><th>C4.5</th><th>CART</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Splitting Metric</td><td>Information Gain</td><td>Gain Ratio</td><td>Gini Impurity (Class) / MSE (Reg)</td></tr>
+        <tr><td>Branching Type</td><td>Multiway</td><td>Multiway &amp; Binary</td><td>Strictly Binary</td></tr>
+        <tr><td>Continuous Features</td><td>No (Categorical only)</td><td>Yes (Thresholding)</td><td>Yes (Midpoint thresholding)</td></tr>
+        <tr><td>Regression Support</td><td>No</td><td>No</td><td>Yes</td></tr>
+        <tr><td>Pruning Technique</td><td>None</td><td>Post-pruning (Error-based)</td><td>Cost-Complexity Pruning $R_\alpha(T)$</td></tr>
+      </tbody>
+    </table>
+  </div>
 </section>
 
-<section id="s8"><h2>8. Support Vector Machines (SVM)</h2>
-<p>SVM comes from statistical learning theory (Vapnik and Chervonenkis). It can represent non-linear functions and has an efficient training algorithm. It gave a 1.1% error rate on handwritten digits, comparable to a carefully built ANN.</p>
-<div class="key"><b>Key idea:</b> many lines separate two linearly separable classes, so choose the boundary <b>as far from both classes as possible</b>: maximise the margin m. <b>Support vectors</b> are the points the margin pushes against.</div>
-<svg viewBox="0 0 420 200" width="420" role="img" aria-label="SVM margin"><line x1="60" y1="170" x2="360" y2="30" stroke="var(--ink)" stroke-width="3"/><line x1="40" y1="140" x2="340" y2="0" stroke="var(--ink)" stroke-dasharray="6 4"/><line x1="90" y1="200" x2="390" y2="60" stroke="var(--ink)" stroke-dasharray="6 4"/><g fill="var(--ok)"><circle cx="110" cy="60" r="6"/><circle cx="170" cy="45" r="6"/><circle cx="230" cy="40" r="6"/><circle cx="200" cy="90" r="7" stroke="var(--fg)" stroke-width="2"/></g><g fill="var(--warn)"><circle cx="250" cy="180" r="6"/><circle cx="320" cy="160" r="6"/><circle cx="190" cy="185" r="6"/><circle cx="240" cy="140" r="7" stroke="var(--fg)" stroke-width="2"/></g><text x="270" y="105">wᵀx + b = 0</text><text x="20" y="130">wᵀx + b = +1</text><text x="300" y="190">−1</text></svg>
-<div class="f">Hyperplane: wᵀx + b = 0        margins: wᵀx + b ≥ +1 and wᵀx + b ≤ −1
-Margin m = 2/√(w·w) = 2/‖w‖
-Labels y_i ∈ {+1, −1}      constraint: y_i(wᵀx_i + b) ≥ 1  ∀i</div>
-<p><b>Primal (hard margin):</b> maximising 2/‖w‖ is the same as</p>
-<div class="f">Minimise  ½‖w‖² = ½ wᵀw     subject to   y_i(wᵀx_i + b) ≥ 1</div>
-<details><summary>Derive the dual optimization of the hard-margin SVM. <span class="tag">5 marks</span></summary><div><b>Step 1: Lagrangian</b> with multipliers α_i ≥ 0 for constraints 1 − y_i(wᵀx_i + b) ≤ 0:
-<div class="f">L = ½ wᵀw + Σ α_i (1 − y_i(wᵀx_i + b))</div><b>Step 2: set gradients to zero.</b>
-<div class="f">∂L/∂w = w − Σ α_i y_i x_i = 0  ⇒  w = Σ α_i y_i x_i
-∂L/∂b = −Σ α_i y_i = 0        ⇒  Σ α_i y_i = 0,   α_i ≥ 0</div><b>Step 3: substitute</b> w back into L. The b-term vanishes because Σα_i y_i = 0, and wᵀw = Σ_i Σ_j α_i α_j y_i y_j (x_iᵀx_j):
-<div class="f">max_α W(α) = Σ α_i − ½ Σ_i Σ_j α_i α_j y_i y_j (x_iᵀ x_j)
-subject to  Σ α_i y_i = 0,   α_i ≥ 0</div>This is the <b>dual problem</b>. It depends only on the dot products x_iᵀx_j, which enables kernels. Points with α_i &gt; 0 are the support vectors. Then w = Σ α_i y_i x_i and b = −½( min_{y_i=+1} w·x_i + max_{y_i=−1} w·x_i ).</div></details>
-<details open><summary>Worked example: find the maximum-margin hyperplane for (2,2) → −1, (4,5) → +1, (7,4) → +1. <span class="tag">slide example</span></summary><div>Dot products: x₁·x₁ = 8, x₁·x₂ = 18, x₁·x₃ = 22, x₂·x₂ = 41, x₂·x₃ = 48, x₃·x₃ = 65. Constraint: −α₁ + α₂ + α₃ = 0, so α₁ = α₂ + α₃.
-<div class="f">W = (α₁+α₂+α₃) − ½(8α₁² + 41α₂² + 65α₃² − 36α₁α₂ − 44α₁α₃ + 96α₂α₃)
-Substitute α₁:  W = 2(α₂+α₃) − ½(13α₂² + 32α₂α₃ + 29α₃²)
-∂W/∂α₂ = 2 − 13α₂ − 16α₃ = 0      ∂W/∂α₃ = 2 − 16α₂ − 29α₃ = 0
-α₂ = 26/121,  α₃ = −6/121,  α₁ = 20/121
+<!-- ==================== SECTION 8 ==================== -->
+<section id="s8">
+  <div class="section-title">
+    <span class="sec-num">8</span>
+    <h2>Support Vector Machines (SVM)</h2>
+  </div>
+
+  <div class="key-box">
+    <strong>Fundamental Principle of SVM:</strong>
+    <p style="margin: 6px 0;">Among all possible separating hyperplanes, SVM selects the unique hyperplane that maximizes the geometric margin ($m = rac{2}{|w|}$). The position is governed solely by <b>Support Vectors</b>.</p>
+  </div>
+
+  <div class="card" style="padding: 10px;">
+    <svg viewBox="0 0 420 200" width="420" role="img" aria-label="SVM margin">
+      <line x1="60" y1="170" x2="360" y2="30" stroke="var(--accent)" stroke-width="3"/>
+      <line x1="40" y1="140" x2="340" y2="0" stroke="var(--accent)" stroke-dasharray="6 4"/>
+      <line x1="90" y1="200" x2="390" y2="60" stroke="var(--accent)" stroke-dasharray="6 4"/>
+      <g fill="var(--ok)">
+        <circle cx="110" cy="60" r="6"/>
+        <circle cx="170" cy="45" r="6"/>
+        <circle cx="230" cy="40" r="6"/>
+        <circle cx="200" cy="90" r="7" stroke="var(--fg)" stroke-width="2"/>
+      </g>
+      <g fill="var(--danger)">
+        <circle cx="250" cy="180" r="6"/>
+        <circle cx="320" cy="160" r="6"/>
+        <circle cx="190" cy="185" r="6"/>
+        <circle cx="240" cy="140" r="7" stroke="var(--fg)" stroke-width="2"/>
+      </g>
+      <g font-weight="700">
+        <text x="270" y="105" fill="var(--fg)">wᵀx + b = 0</text>
+        <text x="20" y="130" fill="var(--ok)">wᵀx + b = +1</text>
+        <text x="300" y="190" fill="var(--danger)">wᵀx + b = −1</text>
+      </g>
+    </svg>
+  </div>
+
+  <h3>Primal &amp; Dual Formulations</h3>
+  <div class="f">Hyperplane:  wᵀx + b = 0
+Margin:      m = 2 / ‖w‖
+Constraints: y_i (wᵀx_i + b) ≥ 1,   y_i ∈ {+1, −1}
+
+Primal Problem:
+Minimise  ½ ‖w‖² = ½ wᵀw    subject to  y_i(wᵀx_i + b) ≥ 1  ∀i
+
+Dual Problem:
+Maximise  W(α) = Σ_{i=1}^n α_i − ½ Σ_i Σ_j α_i α_j y_i y_j (x_iᵀ x_j)
+subject to  Σ α_i y_i = 0  and  α_i ≥ 0</div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Derive the dual optimization of the hard-margin SVM.</span></div>
+      <span class="q-tag">5 marks</span>
+    </summary>
+    <div class="q-body">
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Formulate Lagrangian Function</div>
+            <p class="step-text">Introduce Lagrange multipliers $\alpha_i \ge 0$:
+            $$L(w, b, \alpha) = \frac{1}{2} w^T w + \sum_{i=1}^n \alpha_i \Big(1 - y_i(w^T x_i + b)\Big)$$</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Set Gradients to Zero (Stationarity)</div>
+            <p class="step-text">
+            $$\frac{\partial L}{\partial w} = w - \sum_{i=1}^n \alpha_i y_i x_i = 0 \implies \mathbf{w = \sum_{i=1}^n \alpha_i y_i x_i}$$
+            $$\frac{\partial L}{\partial b} = -\sum_{i=1}^n \alpha_i y_i = 0 \implies \mathbf{\sum_{i=1}^n \alpha_i y_i = 0}$$</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Substitute Back to Obtain Dual</div>
+            <p class="step-text">The linear $b$-term vanishes because $\sum \alpha_i y_i = 0$. The resulting Dual Problem depends <i>only on inner products</i> $x_i^T x_j$:
+            $$\max_\alpha W(\alpha) = \sum_{i=1}^n \alpha_i - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j (x_i^T x_j)$$
+            $$\text{subject to } \sum_{i=1}^n \alpha_i y_i = 0 \quad \text{and} \quad \alpha_i \ge 0$$</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Worked example: find the maximum-margin hyperplane for (2,2) → −1, (4,5) → +1, (7,4) → +1.</span></div>
+      <span class="q-tag">Slide Example</span>
+    </summary>
+    <div class="q-body">
+      <p>Dot products: $x_1 \cdot x_1 = 8$, $x_1 \cdot x_2 = 18$, $x_1 \cdot x_3 = 22$, $x_2 \cdot x_2 = 41$, $x_2 \cdot x_3 = 48$, $x_3 \cdot x_3 = 65$.<br>
+      Constraint: $-\alpha_1 + \alpha_2 + \alpha_3 = 0 \implies \alpha_1 = \alpha_2 + \alpha_3$.</p>
+      <div class="f">W = (α₁ + α₂ + α₃) − ½ (8α₁² + 41α₂² + 65α₃² − 36α₁α₂ − 44α₁α₃ + 96α₂α₃)
+Substitute α₁: W = 2(α₂ + α₃) − ½ (13α₂² + 32α₂α₃ + 29α₃²)
+Setting ∂W/∂α₂ = 0 and ∂W/∂α₃ = 0:
+α₂ = 26/121,   α₃ = −6/121,   α₁ = 20/121
 w = Σ α_i y_i x_i = (2/11, 6/11)
-b = −½( min(w·x₂, w·x₃) + max(w·x₁) ) = −½(38/11 + 16/11) = −27/11
-f(x) = (2/11)x₁ + (6/11)x₂ − 27/11 = 0   ⇔   x₁ + 3x₂ − 13.5 = 0</div><b>Check:</b> w·x₂ + b = 38/11 − 27/11 = 1 ✓ and w·x₁ + b = 16/11 − 27/11 = −1 ✓.<div class="trap">Strictly, α₃ = −6/121 breaks α ≥ 0, so the true optimum has α₃ = 0 (x₃ is not a support vector). In the exam, follow your professor's steps above and mention this only if asked.</div></div></details>
-<details><summary>Predict with a given w and b: w = [2, 1], b = −3, support vectors +ve (1,2), (2,0), −ve (0,2), (1,0). <span class="tag">slide example</span></summary><div>Centroids: x₊ = (1.5, 1), x₋ = (0.5, 1); their average (1, 1) lies on 2x₁ + x₂ − 3 = 0 (2 + 1 − 3 = 0 ✓). Classify a new point by the sign of f(x) = wᵀx + b.</div></details>
-<h3>Linearly inseparable data: soft margin (slack variables)</h3>
-<div class="f">y_i(wᵀx_i + b) ≥ 1 − ξ_i,   ξ_i ≥ 0
-Minimise  ½‖w‖² + C Σ ξ_i
-ξ_i = 0: correct, on/outside margin    0 &lt; ξ_i ≤ 1: inside margin, still correct    ξ_i &gt; 1: misclassified</div>
-<div class="card"><table><tr><th>C small</th><th>C large</th></tr><tr><td>Weak penalty, <b>wider margin</b>, more violations, possible underfitting</td><td>Strong penalty, <b>narrower margin</b>, fits training data closely, possible overfitting</td></tr></table></div>
-<p><b>Soft-margin dual:</b> max Σα_i − ½ΣΣ α_iα_j y_i y_j x_iᵀx_j subject to <b>0 ≤ α_i ≤ C</b> and Σα_i y_i = 0. The bound comes from ∂L/∂ξ_i = C − α_i − μ_i = 0 with μ_i ≥ 0. If ξ_i &gt; 0 then μ_i = 0 and α_i = C; if ξ_i = 0 then α_i &lt; C.</p>
-<h3>Non-linear SVM and the kernel trick</h3>
-<p>Map inputs with Φ: Rⁿ → H (higher-dimensional space) where the data becomes linearly separable; a linear boundary in H is non-linear in input space. The dual only needs dot products, so use a <b>kernel</b> K(x_i, x_j) = Φ(x_i)·Φ(x_j) without computing Φ explicitly.</p>
-<div class="f">Polynomial: K(x_i,x_j) = (x_i·x_j + c)^d
-Gaussian RBF: K(x_i,x_j) = exp(−γ‖x_i − x_j‖²)
-Sigmoid:   K(x_i,x_j) = tanh(κ(x_i·x_j) + θ)
-Decision function: f(x) = Σ_{i=1..Ns} α_i y_i K(x_i, x) + b
-Bias from a support vector x_k on the margin: b = y_k − Σ α_i y_i K(x_i, x_k)</div>
-<div class="key"><b>Slide example</b> (1-D: x = 1, 2, 6 → +1; 4, 5 → −1; kernel K(a,x) = (ax + 1)²): α = (0, 2.5, 0, 7.333, 4.833), support vectors x = 2, 4, 5. b = 1 − [2.5(25) − 7.333(121) + 4.833(169)] = 8. f(x) = 0.6667x² − 5.333x + 8. Predict: f &gt; 0 → class +1, f &lt; 0 → class −1, f = 0 → on the boundary.</div>
-<details><summary>Explain how SVM handles linearly inseparable cases, with an example. <span class="tag">2 marks</span></summary><div>Two ways. (1) <b>Soft margin:</b> add slack variables ξ<sub>i</sub> ≥ 0 so points may violate the margin: minimise ½‖w‖² + CΣξ<sub>i</sub> subject to y<sub>i</sub>(wᵀx<sub>i</sub> + b) ≥ 1 − ξ<sub>i</sub>; C trades margin width against errors. (2) <b>Kernel trick:</b> map to a higher-dimensional space where the data is separable. <b>Example:</b> 1-D points 1, 2, 6 (+1) and 4, 5 (−1) cannot be split by one threshold, but with the polynomial kernel (ax + 1)² the discriminant f(x) = 0.667x² − 5.333x + 8 separates them.</div></details>
+b = −½ ( min(w·x₂, w·x₃) + max(w·x₁) ) = −27/11
+
+Hyperplane: (2/11)x₁ + (6/11)x₂ − 27/11 = 0   ⇔   x₁ + 3x₂ − 13.5 = 0</div>
+      <div class="trap">Strictly $alpha_3 = -6/121$ violates $alpha_i ge 0$, meaning point $x_3$ is non-support vector with true $alpha_3 = 0$. Follow professor's slide steps above unless instructed otherwise.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Predict with a given w and b: w = [2, 1], b = −3, support vectors +ve (1,2), (2,0), −ve (0,2), (1,0).</span></div>
+      <span class="q-tag">Slide Example</span>
+    </summary>
+    <div class="q-body">
+      <p>Centroids of support vectors: $x_+ = (1.5, 1)$, $x_- = (0.5, 1)$. Their midpoint $(1, 1)$ lies exactly on the decision boundary $2(1) + 1(1) - 3 = 0$. Classify new points using: $f(x) = \text{sign}(w^T x + b) = \text{sign}(2x_1 + x_2 - 3)$.</p>
+    </div>
+  </details>
+
+  <h3>Soft-Margin SVM &amp; Inseparable Data</h3>
+  <div class="f">y_i (wᵀx_i + b) ≥ 1 − ξ_i,   ξ_i ≥ 0 (slack variables)
+Objective: Minimise  ½ ‖w‖² + C Σ ξ_i</div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Parameter C Value</th><th>Margin Width</th><th>Slack Penalty</th><th>Risk</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>Small C</b></td><td>Wider margin</td><td>Tolerates errors/violations</td><td>Underfitting risk</td></tr>
+        <tr><td><b>Large C</b></td><td>Narrower margin</td><td>Strict penalty for violations</td><td>Overfitting risk</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Non-Linear SVM &amp; Kernel Functions</h3>
+  <div class="grid-3">
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Polynomial Kernel</span></div>
+      <div class="f" style="font-size:12px;">K(x_i, x_j) = (x_iᵀx_j + c)^d</div>
+      <p class="def-body">Models feature cross-products up to degree $d$.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Gaussian RBF Kernel</span></div>
+      <div class="f" style="font-size:12px;">K(x_i, x_j) = exp(−γ ‖x_i − x_j‖²)</div>
+      <p class="def-body">Maps points into infinite-dimensional Hilbert space.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Sigmoid Kernel</span></div>
+      <div class="f" style="font-size:12px;">K(x_i, x_j) = tanh(κ x_iᵀx_j + c)</div>
+      <p class="def-body">Equivalent to a two-layer neural perceptron.</p>
+    </div>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Explain how SVM handles linearly inseparable cases, with an example.</span></div>
+      <span class="q-tag">2 marks</span>
+    </summary>
+    <div class="q-body">
+      <p>SVM handles inseparability in two ways:</p>
+      <ul>
+        <li><b>1. Soft Margin:</b> Adds slack variables $\xi_i \ge 0$ allowing margin violations, tuned by penalty parameter $C$.</li>
+        <li><b>2. Kernel Trick:</b> Projects low-dimensional inseparable data into higher-dimensional space where linear separation exists.</li>
+      </ul>
+      <p><b>Example:</b> 1-D data $x = 1, 2, 6$ ($+1$) and $4, 5$ ($-1$) cannot be linearly split. Using polynomial kernel $K(a, x) = (ax + 1)^2$ transforms them into a parabola $f(x) = 0.667x^2 - 5.333x + 8 = 0$, completely separating the classes.</p>
+    </div>
+  </details>
 </section>
 
-<section id="s9"><h2>9. k-Nearest Neighbour (k-NN)</h2>
-<div class="key">k-NN is a <b>lazy</b>, <b>instance-based</b>, <b>non-parametric</b> learner. It stores the whole training set and computes only when a test instance arrives: find the k closest training points and take a <b>majority vote</b> (classification) or the <b>average</b> (regression).</div>
-<p><b>Algorithm:</b> (1) compute the distance from x<sub>test</sub> to every x<sub>i</sub> in D; (2) sort ascending; (3) pick the k nearest; (4) read their class labels; (5) majority vote gives y<sub>test</sub>.</p>
-<div class="f">Euclidean (L2):  d(x,y) = √( Σ (x_i − y_i)² )
-Manhattan (L1):  d(x,y) = Σ |x_i − y_i|
-Minkowski:       d(x,y) = ( Σ |x_i − y_i|^p )^(1/p)     p = 1 Manhattan, p = 2 Euclidean</div>
-<p><b>Training:</b> just store data (very fast). <b>Prediction:</b> computationally heavy, because distances to all training samples are needed. <b>Storage:</b> high.</p>
-<h3>Choosing k</h3>
-<p><b>Rule of thumb:</b> k ≈ √n (n = training samples). Use an <b>odd k</b> for binary classification to avoid ties. <b>Cross-validation:</b> split into training and validation (e.g. 5-fold), try k = 1…30, pick the k with maximum validation accuracy (or minimum error). <b>Elbow method:</b> plot error rate vs k and pick the point where the curve flattens. Very large k biases towards the majority class. <b>Normalize features first</b> (distance-based method).</p>
-<svg viewBox="0 0 360 150" width="360" role="img" aria-label="Elbow curve"><g stroke="var(--fg)"><line x1="40" y1="120" x2="340" y2="120"/><line x1="40" y1="10" x2="40" y2="120"/></g><polyline points="50,20 80,60 110,90 140,102 190,106 250,108 320,109" fill="none" stroke="var(--ink)" stroke-width="3"/><circle cx="140" cy="102" r="6" fill="var(--warn)"/><text x="150" y="90" style="fill:var(--warn)">elbow: best k</text><text x="150" y="142">k</text><text x="4" y="70">error</text></svg>
-<details open><summary>Slide example: predict the loan for income = 39.5 using 1-NN and 3-NN. Data (income → loan): 30 N, 32 N, 35 Y, 35 N, 40 Y, 42 N, 43 Y, 44 Y, 50 Y <span class="tag">slide example</span></summary><div><b>1-NN:</b> closest point is 40 (distance 0.5), loan = Yes → predict <b>Yes</b>. <b>3-NN:</b> nearest are 40 (Y), 42 (N), 43 (Y) → 2 Yes vs 1 No → predict <b>Yes</b>.</div></details>
-<details><summary>k-NN for the Weather table (Sunny, Hot, Normal, Weak) with k = 1. Justify k. <span class="tag">2.5 marks</span></summary><div>For categorical attributes use the <b>overlap (Hamming) distance</b> = number of mismatching attributes. Distances to the 8 rows: 1 (Sunny,Hot,High,Weak: No) → 1; 2 (No) → 2; 3 (Yes) → 2; 4 (Yes) → 3; 5 (Yes) → 2; 6 (No) → 3; 7 (Yes) → 3; 8 (No) → 2. <b>k = 1</b> picks row 1 → <b>Play = No</b>. With k = 3 four rows tie at distance 2 (No, Yes, Yes, No), so the vote is ambiguous. Justify k by the rule √8 ≈ 3 or by cross-validation, choosing an odd k that avoids ties.</div></details>
-<details><summary>Differentiate eager and lazy learners. Why is k-NN lazy and Naive Bayes not? <span class="tag">2 marks</span></summary><div>See the Eager vs lazy table in the Naive Bayes section. k-NN stores the training data as-is and generalises only at query time, so it is lazy; Naive Bayes builds P(C) and P(x<sub>i</sub>|C) during training, so it is eager.</div></details>
+<!-- ==================== SECTION 9 ==================== -->
+<section id="s9">
+  <div class="section-title">
+    <span class="sec-num">9</span>
+    <h2>k-Nearest Neighbour (k-NN)</h2>
+  </div>
+
+  <div class="key-box">
+    <strong>Three Defining Properties of k-NN:</strong>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;">
+      <span class="pill pill-accent"><b>Lazy Learner:</b> No training model built</span>
+      <span class="pill pill-accent"><b>Instance-Based:</b> Classifies by comparing against stored points</span>
+      <span class="pill pill-accent"><b>Non-Parametric:</b> Assumes no functional form for $P(X)$</span>
+    </div>
+  </div>
+
+  <h3>5-Step Execution Workflow</h3>
+  <div class="step-flow">
+    <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Compute Distance</div><p class="step-text">Calculate geometric distance from query point $x_{\text{test}}$ to every training point in $D$.</p></div></div>
+    <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Sort Distances</div><p class="step-text">Sort computed distances in ascending order.</p></div></div>
+    <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Select $k$ Neighbours</div><p class="step-text">Extract top $k$ rows closest to the query point.</p></div></div>
+    <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Read Labels</div><p class="step-text">Retrieve ground-truth target class labels of these $k$ instances.</p></div></div>
+    <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Aggregate Voting</div><p class="step-text">Take <b>majority vote</b> (for classification) or <b>arithmetic mean</b> (for regression).</p></div></div>
+  </div>
+
+  <h3>Distance Metrics</h3>
+  <div class="grid-3">
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Euclidean (L2 Norm)</span></div>
+      <div class="f" style="font-size:12px;">d(x, y) = √( Σ_{i=1}^n (x_i − y_i)² )</div>
+      <p class="def-body">Straight-line shortest distance between two points.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Manhattan (L1 Norm)</span></div>
+      <div class="f" style="font-size:12px;">d(x, y) = Σ_{i=1}^n |x_i − y_i|</div>
+      <p class="def-body">Sum of absolute axis-aligned differences.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Minkowski Distance</span></div>
+      <div class="f" style="font-size:12px;">d(x, y) = ( Σ |x_i − y_i|^p )^(1/p)</div>
+      <p class="def-body">Generalized metric: $p=1$ (Manhattan), $p=2$ (Euclidean).</p>
+    </div>
+  </div>
+
+  <h3>Choosing $k$ &amp; The Elbow Method</h3>
+  <div class="grid-2">
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Heuristic Rules</span></div>
+      <p class="def-body">Rule of thumb: $k \approx \sqrt{n}$. Always use an <b>odd $k$</b> in binary classification to prevent voting ties.</p>
+    </div>
+    <div class="def-card">
+      <div class="def-header"><span class="def-term">Cross-Validation</span></div>
+      <p class="def-body">Test range $k = 1 \dots 30$; pick the value of $k$ that minimizes validation error.</p>
+    </div>
+  </div>
+
+  <div class="card" style="padding: 10px;">
+    <svg viewBox="0 0 360 150" width="360" role="img" aria-label="Elbow curve">
+      <g stroke="var(--fg)">
+        <line x1="40" y1="120" x2="340" y2="120"/>
+        <line x1="40" y1="10" x2="40" y2="120"/>
+      </g>
+      <polyline points="50,20 80,60 110,90 140,102 190,106 250,108 320,109" fill="none" stroke="var(--accent)" stroke-width="3"/>
+      <circle cx="140" cy="102" r="6" fill="var(--danger)"/>
+      <text x="150" y="90" fill="var(--danger)" font-weight="700">Elbow: Best k</text>
+      <text x="150" y="142" fill="var(--fg)">Value of k ➔</text>
+      <text x="10" y="70" fill="var(--fg)" transform="rotate(-90 20 70)">Error Rate</text>
+    </svg>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Slide example: predict the loan for income = 39.5 using 1-NN and 3-NN. Data: 30 N, 32 N, 35 Y, 35 N, 40 Y, 42 N, 43 Y, 44 Y, 50 Y</span></div>
+      <span class="q-tag">Slide Example</span>
+    </summary>
+    <div class="q-body">
+      <p>Distances from $39.5$: $|40 - 39.5| = 0.5$ (Y), $|42 - 39.5| = 2.5$ (N), $|43 - 39.5| = 3.5$ (Y), $|35 - 39.5| = 4.5$ (Y, N).</p>
+      <ul>
+        <li><b>1-NN:</b> Nearest point is 40 ($	ext{Loan} = 	ext{Yes}$) ➔ Predict <b>Yes</b>.</li>
+        <li><b>3-NN:</b> Three nearest are 40 (Y), 42 (N), 43 (Y) ➔ Majority vote (2 Yes vs 1 No) ➔ Predict <b>Yes</b>.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>k-NN for the Weather table (Sunny, Hot, Normal, Weak) with k = 1. Justify k.</span></div>
+      <span class="q-tag">2.5 marks</span>
+    </summary>
+    <div class="q-body">
+      <p>For categorical attributes, use <b>Hamming (overlap) distance</b> = count of mismatching attributes. Comparing query against the 8 training rows:</p>
+      <ul>
+        <li>Row 1 (Sunny, Hot, High, Weak: No) ➔ Mismatch only on Humidity (1 mismatch) ➔ Distance = 1</li>
+        <li>All other rows have distance $ge 2$.</li>
+      </ul>
+      <p><b>For k = 1:</b> Closest is Row 1 ➔ Predict <b>Play = No</b>.<br>
+      <b>Justification of k:</b> $k \approx \sqrt{8} \approx 3$, but at $k=3$ four rows tie at distance 2, making the vote ambiguous. An odd $k=1$ (or cross-validated choice) provides an unambiguous prediction.</p>
+    </div>
+  </details>
 </section>
 
-<section id="s10"><h2>10. Naive Bayes classifier</h2>
-<p>A <b>probabilistic</b> classifier based on Bayes' theorem. It assumes features are <b>conditionally independent</b> given the class. It is an <b>eager learner</b>: it builds a model of priors and conditional probabilities.</p>
-<div class="f">P(C|X) = P(X|C) P(C) / P(X)
-   posterior = likelihood × prior / evidence
-X = (x₁,…,x_n):  P(X|C) = P(x₁|C)·P(x₂|C)·…·P(x_n|C)
-Ĉ = argmax_C  P(C) Π_{i=1..n} P(x_i|C)          (P(X) is constant, so ignored)</div>
-<details open><summary>Predict Stolen for X = (Red, SUV, Domestic) from the 10-row vehicle table (5 Yes, 5 No). <span class="tag">slide example</span></summary><div>Step 1, priors: P(Yes) = 5/10 = 0.5, P(No) = 0.5.<br>Step 2, conditionals: Yes: P(Red|Yes) = 3/5 = 0.6, P(SUV|Yes) = 1/5 = 0.2, P(Domestic|Yes) = 2/5 = 0.4. No: P(Red|No) = 2/5 = 0.4, P(SUV|No) = 2/5 = 0.4, P(Domestic|No) = 3/5 = 0.6.<div class="f">P(Yes|X) ∝ 0.5 × 0.6 × 0.2 × 0.4 = 0.024
-P(No|X)  ∝ 0.5 × 0.4 × 0.4 × 0.6 = 0.048   → predicted class: Not stolen</div></div></details>
-<h3>Zero-probability problem and Laplace smoothing</h3>
-<p>If a value never occurs with a class, e.g. P(Red|No) = 0, then P(X|No) = 0 wipes out the whole product. It only means the combination was <b>not observed</b>, not that it is impossible. <b>Laplace smoothing:</b> add 1 to each count.</p>
-<div class="f">P(x_i|C) = (n_{x_i,C} + 1) / (N_C + k)       k = number of distinct values of that attribute</div>
-<details><summary>Problem 2 (7 rows): X = (Red, Sports, Imported). Solve, show the zero-frequency problem and fix it with Laplace smoothing. <span class="tag">2.5+2.5 marks</span></summary><div>Data: Yes rows = (Red,Sports,Dom), (Red,Sports,Dom), (Red,SUV,Dom), (Yellow,Sports,Imp); No rows = (Yellow,Sports,Dom), (Yellow,SUV,Imp), (Yellow,SUV,Imp). P(Yes) = 4/7, P(No) = 3/7.<div class="f">Yes: 4/7 × (3/4)(3/4)(1/4) = 4/7 × 0.1406 = 0.0804
-No : 3/7 × (0/3)(1/3)(2/3) = 0        ← P(Red|No) = 0</div>Here the answer is still Yes, but the zero kills the No class completely, so any other evidence is ignored. <b>Laplace (each attribute has k = 2 distinct values here):</b> P(Red|No) = (0+1)/(3+2) = 1/5, P(Sports|No) = (1+1)/5 = 2/5, P(Imported|No) = (2+1)/5 = 3/5, giving No: 3/7 × 1/5 × 2/5 × 3/5 = 0.0206. Yes (smoothed): 4/7 × (4/6)(4/6)(2/6) = 0.0847. Yes &gt; No, so <b>predict Yes</b>, and the No class is no longer zero.</div></details>
-<p><b>Continuous attributes</b> (not in your slides, so check if taught): use Gaussian P(x|C) = (1/(√(2π)σ_C)) exp(−(x−μ_C)²/(2σ_C²)) with μ_C, σ_C computed per class; or discretize first (Section 5) and then use counts.</p>
-<h3>Eager vs lazy learners</h3>
-<div class="card"><table><tr><th></th><th>Lazy</th><th>Eager</th></tr><tr><td>Generalisation</td><td>Delayed until a query arrives</td><td>Model built before any query</td></tr><tr><td>Training</td><td>Just stores data, very fast</td><td>Long, model building</td></tr><tr><td>Prediction</td><td>Slow: all data processed per query</td><td>Fast: apply learned model</td></tr><tr><td>Storage</td><td>High (keeps all data)</td><td>Low (only parameters)</td></tr><tr><td>Examples</td><td>k-NN, case-based reasoning</td><td>Decision Trees, Naive Bayes, SVM, Neural Nets</td></tr></table></div>
-<details><summary>Why is k-NN lazy and Naive Bayes not? <span class="tag">2 marks</span></summary><div>k-NN does <b>no training</b>: it stores the entire dataset and at prediction time computes the distance from the test instance to every training instance, sorts them, and takes a majority vote of the k nearest. It is instance-based and non-parametric. Naive Bayes computes priors P(C) and conditionals P(x<sub>i</sub>|C) <b>during training</b>, builds a model, and uses only those probabilities to predict, so it is an eager learner.</div></details>
+<!-- ==================== SECTION 10 ==================== -->
+<section id="s10">
+  <div class="section-title">
+    <span class="sec-num">10</span>
+    <h2>Naive Bayes Classifier</h2>
+  </div>
+
+  <div class="key-box">
+    <strong>Bayes' Theorem &amp; Conditional Independence:</strong>
+    <div class="f">P(C | X) = [ P(X | C) · P(C) ] / P(X)
+Posterior = (Likelihood × Prior) / Evidence
+
+Class Decision:
+Ĉ = argmax_{C} P(C) · Π_{i=1}^n P(x_i | C)</div>
+  </div>
+
+  <details open>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Predict Stolen for X = (Red, SUV, Domestic) from the 10-row vehicle table (5 Yes, 5 No).</span></div>
+      <span class="q-tag">Slide Example</span>
+    </summary>
+    <div class="q-body">
+      <p><b>Priors:</b> $P(\text{Yes}) = 5/10 = 0.5$, $P(\text{No}) = 5/10 = 0.5$.</p>
+      <p><b>Conditionals:</b></p>
+      <ul>
+        <li><b>For Yes:</b> $P(\text{Red}|\text{Yes}) = 3/5 = 0.6$, $P(\text{SUV}|\text{Yes}) = 1/5 = 0.2$, $P(\text{Domestic}|\text{Yes}) = 2/5 = 0.4$</li>
+        <li><b>For No:</b> $P(\text{Red}|\text{No}) = 2/5 = 0.4$, $P(\text{SUV}|\text{No}) = 2/5 = 0.4$, $P(\text{Domestic}|\text{No}) = 3/5 = 0.6$</li>
+      </ul>
+      <div class="f">P(Yes | X) ∝ 0.5 × 0.6 × 0.2 × 0.4 = 0.024
+P(No  | X) ∝ 0.5 × 0.4 × 0.4 × 0.6 = 0.048
+
+Prediction: P(No|X) > P(Yes|X) ➔ PREDICT NOT STOLEN</div>
+    </div>
+  </details>
+
+  <h3>Zero-Probability Problem &amp; Laplace Smoothing</h3>
+  <div class="trap">
+    <strong>Zero-Probability Trap:</strong> If an attribute combination has zero training occurrences ($P(x_i|C) = 0$), multiplying causes the entire product to become zero, discarding all other strong evidence.
+  </div>
+
+  <div class="card">
+    <h4 style="margin:0 0 8px; color:var(--accent);">Laplace Correction Formula:</h4>
+    <div class="f">P(x_i | C) = (n_{x_i, C} + 1) / (N_C + k)
+where:
+  n_{x_i, C} = count of samples in class C with value x_i
+  N_C        = total samples in class C
+  k          = number of distinct categorical values for feature A</div>
+  </div>
+
+  <details>
+    <summary>
+      <div class="q-title"><span class="q-indicator">Q</span><span>Problem 2 (7 rows): X = (Red, Sports, Imported). Solve, show the zero-frequency problem and fix it with Laplace smoothing.</span></div>
+      <span class="q-tag">2.5+2.5 marks</span>
+    </summary>
+    <div class="q-body">
+      <p>Priors: $P(\text{Yes}) = 4/7$, $P(\text{No}) = 3/7$.</p>
+      <div class="f">Without Laplace:
+P(Yes | X) ∝ (4/7) × (3/4)(3/4)(1/4) = 0.0804
+P(No  | X) ∝ (3/7) × (0/3)(1/3)(2/3) = 0       ← P(Red|No) = 0 wipes out class No!
+
+With Laplace Correction (k = 2 values per attribute):
+P(Red|No)      = (0 + 1) / (3 + 2) = 1/5
+P(Sports|No)   = (1 + 1) / (3 + 2) = 2/5
+P(Imported|No) = (2 + 1) / (3 + 2) = 3/5
+P(No | X) ∝ (3/7) × (1/5) × (2/5) × (3/5) = 0.0206
+
+P(Yes | X) smoothed: (4/7) × (4/6)(4/6)(2/6) = 0.0847
+Since 0.0847 > 0.0206 ➔ PREDICT YES (and class No is not wiped out)</div>
+    </div>
+  </details>
+
+  <h3>Eager vs Lazy Learners</h3>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Dimension</th><th>Lazy Learners (e.g. k-NN)</th><th>Eager Learners (e.g. Naive Bayes, Decision Trees)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Generalization</b></td>
+          <td>Delayed until a specific test query arrives.</td>
+          <td>Constructs global decision model <i>before</i> receiving test queries.</td>
+        </tr>
+        <tr>
+          <td><b>Training Speed</b></td>
+          <td>Instantaneous (simply stores training rows).</td>
+          <td>Computationally intensive during training phase.</td>
+        </tr>
+        <tr>
+          <td><b>Prediction Speed</b></td>
+          <td>Very slow (computes distance to all training samples).</td>
+          <td>Extremely fast (simply evaluates learned parameters or tree nodes).</td>
+        </tr>
+        <tr>
+          <td><b>Memory / Storage</b></td>
+          <td>High (must persist the entire dataset in RAM).</td>
+          <td>Low (stores only model weights, priors, or split rules).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </section>
 
-<section id="s11"><h2>11. Last-hour cheat sheet</h2>
-<div class="card"><table><tr><th>Topic</th><th>Remember</th></tr>
-<tr><td>Box plot</td><td>IQR = Q3 − Q1; UW = Q3 + 1.5 IQR; LW = Q1 − 1.5 IQR; 1.5 IQR ≈ ±2.68σ</td></tr>
-<tr><td>Z-score</td><td>(x − μ)/σ with σ using n − 1</td></tr>
-<tr><td>Min-max</td><td>(v − min)/(max − min) × (new_max − new_min) + new_min</td></tr>
-<tr><td>Decimal scaling</td><td>v/10^j, j smallest with max|v'| &lt; 1</td></tr>
-<tr><td>Binning</td><td>Sort → equal-frequency bins → means / medians / boundaries. Equal-width = (max − min)/bins</td></tr>
-<tr><td>Info, Gain</td><td>Gain(A) = Info(D) − Info_A(D); pure = 0, 50/50 = 1</td></tr>
-<tr><td>Gain Ratio</td><td>Gain(A)/SplitInfo(A) (C4.5)</td></tr>
-<tr><td>CART</td><td>Gini = 1 − Σp²; binary; min Gini_split</td></tr>
-<tr><td>SVM</td><td>m = 2/‖w‖; min ½‖w‖²; dual max Σα − ½ΣΣαα y y (x·x); w = Σα y x; soft margin 0 ≤ α ≤ C</td></tr>
-<tr><td>k-NN</td><td>Lazy; L1 / L2 distance; k ≈ √n, odd k; normalize; elbow / CV</td></tr>
-<tr><td>Naive Bayes</td><td>Ĉ = argmax P(C) Π P(x_i|C); Laplace (n + 1)/(N_C + k)</td></tr></table></div>
-<div class="trap"><b>Common mistakes:</b> forgetting the prior P(C); using n instead of n − 1 for σ; using log₁₀ instead of log₂; keeping a row whose class label is missing; using multiway splits in CART; not writing intermediate steps.</div>
+<!-- ==================== SECTION 11 ==================== -->
+<section id="s11">
+  <div class="section-title">
+    <span class="sec-num">11</span>
+    <h2>Last-Hour Exam Cheat Sheet</h2>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Topic</th><th>Core Formulas &amp; Golden Rules</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>Box Plot &amp; Outliers</b></td><td>$\text{IQR} = Q3 - Q1$, $\text{UW} = Q3 + 1.5\text{IQR}$, $\text{LW} = Q1 - 1.5\text{IQR}$; $1.5\text{IQR} \approx \pm 2.68\sigma$.</td></tr>
+        <tr><td><b>Z-Score</b></td><td>$Z = (x - \mu) / \sigma$; sample standard deviation uses denominator $(n-1)$.</td></tr>
+        <tr><td><b>Min-Max Normalization</b></td><td>$v' = \frac{v - \min}{\max - \min}(\text{new\_max} - \text{new\_min}) + \text{new\_min}$.</td></tr>
+        <tr><td><b>Binning</b></td><td>Sort data first! Equal-width: $W = (\max - \min)/k$. Equal-depth: $N/k$ samples per bin.</td></tr>
+        <tr><td><b>ID3 Info Gain</b></td><td>$\text{Gain}(A) = \text{Info}(D) - \text{Info}_A(D)$. Uses $\log_2$. Pure node = 0.</td></tr>
+        <tr><td><b>Gain Ratio (C4.5)</b></td><td>$\text{GainRatio}(A) = \text{Gain}(A) / \text{SplitInfo}(A)$. Eliminates multi-valued feature bias.</td></tr>
+        <tr><td><b>CART Gini</b></td><td>$\text{Gini} = 1 - \sum p_i^2$; strictly binary splits; select minimum $\text{Gini}_{\text{split}}$.</td></tr>
+        <tr><td><b>SVM Margin &amp; Dual</b></td><td>Margin $m = 2/\|w\|$; minimize $\frac{1}{2}\|w\|^2$; dual maximizes $\sum \alpha_i - \frac{1}{2}\sum\sum \alpha\alpha yy(x^Tx)$. Soft-margin: $0 \le \alpha_i \le C$.</td></tr>
+        <tr><td><b>k-NN Classifier</b></td><td>$k \approx \sqrt{n}$; use odd $k$; always normalize features first because it is distance-based.</td></tr>
+        <tr><td><b>Naive Bayes</b></td><td>$\hat{C} = \text{argmax} P(C)\prod P(x_i|C)$; Laplace: $(n + 1)/(N_C + k)$.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="trap">
+    <strong>Top 6 Mistakes to Avoid in the Exam Hall:</strong>
+    <ol style="margin: 8px 0 0; padding-left: 20px;">
+      <li><b>Forgetting Prior $P(C)$ in Naive Bayes:</b> Do not calculate only likelihood products; multiply by the class prior!</li>
+      <li><b>Using Population $sigma$ instead of Sample $sigma$:</b> Always divide by $n - 1$ when computing sample standard deviation.</li>
+      <li><b>Base of Logarithms:</b> Information theory uses $log_2$, not natural $ln$ or $log_{10}$. ($log_2(x) = rac{ln(x)}{ln(2)}$).</li>
+      <li><b>Missing Class Labels:</b> If a row has a missing class label, <b>drop the row</b>. Never impute the target label for model training!</li>
+      <li><b>CART Branching:</b> Never make multiway splits in CART; CART is strictly binary.</li>
+      <li><b>Skipping Derivation Steps:</b> In SVM dual derivations, explicitly write down the Lagrangian stationarity conditions $rac{partial L}{partial w} = 0$ and $rac{partial L}{partial b} = 0$.</li>
+    </ol>
+  </div>
 </section>
+
 </main>
+
 <button id="tt" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">🌓</button>
+
 <script>
-(function(){var r=document.documentElement,b=document.getElementById('tt');
-try{var s=localStorage.getItem('theme');if(s)r.setAttribute('data-theme',s)}catch(e){}
-b.onclick=function(){var t=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
-t=t==='dark'?'light':'dark';r.setAttribute('data-theme',t);try{localStorage.setItem('theme',t)}catch(e){}}})();
-</script></body></html>
+// Theme Management
+(function() {
+  const root = document.documentElement;
+  const toggleBtn = document.getElementById('tt');
+  
+  try {
+    const saved = localStorage.getItem('theme');
+    if (saved) root.setAttribute('data-theme', saved);
+  } catch (e) {}
+
+  toggleBtn.onclick = function() {
+    const current = root.getAttribute('data-theme') || 
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const target = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', target);
+    try { localStorage.setItem('theme', target); } catch (e) {}
+  };
+})();
+
+// Real-time Search Filter
+document.getElementById('guide-search').addEventListener('input', function(e) {
+  const query = e.target.value.toLowerCase().trim();
+  const sections = document.querySelectorAll('main section');
+  
+  sections.forEach(sec => {
+    if (!query) {
+      sec.style.display = '';
+      sec.querySelectorAll('.def-card, details, .card').forEach(el => el.style.display = '');
+      return;
+    }
+    
+    const text = sec.textContent.toLowerCase();
+    if (text.includes(query)) {
+      sec.style.display = '';
+      sec.querySelectorAll('details').forEach(d => {
+        if (d.textContent.toLowerCase().includes(query)) {
+          d.open = true;
+          d.style.display = '';
+        } else {
+          d.style.display = 'none';
+        }
+      });
+      sec.querySelectorAll('.def-card').forEach(c => {
+        c.style.display = c.textContent.toLowerCase().includes(query) ? '' : 'none';
+      });
+    } else {
+      sec.style.display = 'none';
+    }
+  });
+});
+</script>
+</body>
+</html>
